@@ -1,0 +1,1 @@
+Narzêdzia do wymiany obróbki danych GIS i ich wymiany z modelami hydraulicznycmi, g³ównie HEC-RAS.
