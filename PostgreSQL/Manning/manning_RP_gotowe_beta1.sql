@@ -741,4 +741,4 @@ alter table raf_manning."Manning" rename column n_value to "N_Value";
 --------------------------------------------
 
 DROP TABLE raf_manning.got, raf_manning.przekroje_inter, raf_manning.roznica, raf_manning.tab_f1 CASCADE;
----------------------------
+----------------------------
