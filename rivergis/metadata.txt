@@ -1,0 +1,40 @@
+[general]
+name=RiverGIS
+qgisMinimumVersion=2.8
+description=Set of tools that help you create 2D HEC-RAS flow model and process its results.
+
+about=Currently only 2D geometry is supported. For 1D consider Q-RAS plugin.
+      For some operations RiverGIS needs an active connection to a PostGIS database (2.1+).
+      Loading HEC-RAS 2D results requires h5py Python package (http://www.h5py.org).
+      The plugin is built on top of DB Manager by Giuseppe Sucameli.
+
+version=0.18
+author=Radoslaw Pasiok
+email=rpasiok@gmail.com
+
+experimental=True
+changelog=
+    0.20 - create2dAreaMesh: different mesh cell size along and across a structure
+    0.18 - added universal HEC-RAS result loader from HDF (2D results functioning for now)
+    0.16 - added import geometric data from ISOK
+           depth raster and flood range polygon creation
+           removed GRASS7 processing module dependency for water surface raster creation
+           a toolbar added
+    0.15.1 - tutorial added: Create HEC-RAS 2D Geometry
+    0.15 - bugfix: corrected mesh spacing between breakpoints 
+    0.14 - multiple mesh rows can be aligned to a structure 
+    0.13 - added description of h5py installation for OSGeo4W,
+           added support for new processing algorithm name: ogr2ogr, 
+           bugfix: correct line endings in create2darea 
+    0.12 - added Create Water Surface Raster 
+    0.11 - fixed bug in Create 2D Areas
+    0.1 - First testing release
+
+tags=flood,river,flow,model,2d,hydraulics,hdf,depth,hec-ras
+
+homepage=http://rivergis.com
+repository=https://github.com/erpas/rivergis
+tracker=https://github.com/erpas/rivergis/issues
+icon=icons/rivergis.svg
+class_name=RiverGISPlugin
+

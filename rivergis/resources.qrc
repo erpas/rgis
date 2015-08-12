@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="/rivergis">
+    <file>icons/save2dmeshPtsToGeo.svg</file>
+    <file>icons/loadWselHdf.svg</file>
+    <file>icons/createDepthsAndRange.svg</file>
+    <file>icons/createWselRaster.svg</file>
+    <file>icons/importFromIsok.svg</file>
+    <file>icons/action_refresh.png</file>
+    <file>icons/rivergis.svg</file>
+    <file>icons/correctLateralWeir.svg</file>
+    <file>icons/2darea_perimeter.svg</file>
+    <file>icons/2darea.svg</file>
+    <file>icons/rivergis.svg</file>
+  </qresource>
+</RCC>
