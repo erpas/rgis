@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RiverGIS</class>
+ <widget class="QMainWindow" name="RiverGIS">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>RiverGIS</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/rivergis/icons/rivergis.svg</normaloff>:/rivergis/icons/rivergis.svg</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEdCurDatabase">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>-----</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="labelCurSchema">
+        <property name="text">
+         <string>Current Schema:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="lineEdCurSchema">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>------</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCurDatabase">
+        <property name="text">
+         <string>Current Connection:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QTextEdit" name="textEdit">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Projection</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>400</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelpContents"/>
+   </widget>
+   <widget class="QMenu" name="menu_Results">
+    <property name="title">
+     <string>Results</string>
+    </property>
+    <addaction name="actionLoad_WSEL_from_HEC_RAS"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_Water_Surface_Raster"/>
+    <addaction name="actionCreate_Depths_and_Flood_Range"/>
+   </widget>
+   <widget class="QMenu" name="menu_Geometry">
+    <property name="title">
+     <string>Geometry</string>
+    </property>
+    <addaction name="actionCreate2dArea"/>
+    <addaction name="actionPreview_2D_Mesh"/>
+    <addaction name="actionSave_mesh_points_to_HEC_RAS_geometry_file"/>
+    <addaction name="actionCorrect_Lateral_Weirs"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_1d_PostGIS_Tables"/>
+   </widget>
+   <widget class="QMenu" name="menuDB">
+    <property name="title">
+     <string>Database</string>
+    </property>
+    <addaction name="actionRefresh"/>
+    <addaction name="actionImportRiverFromIsokp"/>
+   </widget>
+   <addaction name="menuDB"/>
+   <addaction name="menu_Geometry"/>
+   <addaction name="menu_Results"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dock">
+   <property name="accessibleName">
+    <string>QRAS_DBView</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Connections</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents"/>
+  </widget>
+  <action name="actionCreate2dAreaPerimeter">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/2darea_perimeter.svg</normaloff>:/rivergis/icons/2darea_perimeter.svg</iconset>
+   </property>
+   <property name="text">
+    <string>2D Area (Perimeter)</string>
+   </property>
+  </action>
+  <action name="actionCorrect_Lateral_Weirs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/correctLateralWeir.svg</normaloff>:/rivergis/icons/correctLateralWeir.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Correct Lateral Weirs</string>
+   </property>
+  </action>
+  <action name="actionCreate2dArea">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/2darea.svg</normaloff>:/rivergis/icons/2darea.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Create 2D Flow Areas</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionHelpContents">
+   <property name="text">
+    <string>Contents</string>
+   </property>
+  </action>
+  <action name="actionLoad_2D_WSEL_from_HDF">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Load 2D WSEL from HDF</string>
+   </property>
+  </action>
+  <action name="actionCreate_Water_Surface_Raster">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/createWselRaster.svg</normaloff>:/rivergis/icons/createWselRaster.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Create Water Surface Raster</string>
+   </property>
+  </action>
+  <action name="actionImportRiverFromIsokp">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/importFromIsok.svg</normaloff>:/rivergis/icons/importFromIsok.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Import River Data From ISOKP Database</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/action_refresh.png</normaloff>:/rivergis/icons/action_refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+  </action>
+  <action name="actionCreate_Depths_and_Flood_Range">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/createDepthsAndRange.svg</normaloff>:/rivergis/icons/createDepthsAndRange.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Create Depths and Flood Range</string>
+   </property>
+  </action>
+  <action name="actionLoad_1D_WSEL_from_HDF">
+   <property name="text">
+    <string>Load 1D WSEL from HDF</string>
+   </property>
+  </action>
+  <action name="actionLoad_WSEL_from_HEC_RAS">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Load max WSEL from HEC-RAS</string>
+   </property>
+  </action>
+  <action name="actionCreate_1d_PostGIS_Tables">
+   <property name="text">
+    <string>Create 1D PostGIS Tables</string>
+   </property>
+  </action>
+  <action name="actionSave_mesh_points_to_HEC_RAS_geometry_file">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Save mesh points to HEC-RAS geometry file</string>
+   </property>
+  </action>
+  <action name="actionPreview_2D_Mesh">
+   <property name="text">
+    <string>Preview 2D Mesh</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsProjectionSelectionWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsprojectionselectionwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>textEdit</tabstop>
+  <tabstop>lineEdCurSchema</tabstop>
+  <tabstop>lineEdCurDatabase</tabstop>
+ </tabstops>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
