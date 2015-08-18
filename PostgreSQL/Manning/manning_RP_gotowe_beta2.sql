@@ -51,7 +51,7 @@ CREATE INDEX idx_single_line
 
 DROP VIEW raf_manning2.multiline2line;
 ------------------------------------------------------------------------------------------------
--- Przesucięcie punktów o 5 mm wzdluz lini celem odpowiedniego sczytania wartosci N_Value  --
+-- Stworzenie punktów na poczatku linii przesunietych o 5 mm wzdluz lini celem odpowiedniego sczytania wartosci N_Value  --
 ------------------------------------------------------------------------------------------------
 
 CREATE VIEW raf_manning2.linp AS
