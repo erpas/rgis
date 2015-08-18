@@ -91,8 +91,9 @@ class DlgImportRiverFromIsokp(QDialog):
       return
     QApplication.setOverrideCursor(Qt.WaitCursor)
     # PostGIS connection
-    connParams = "dbname = '%s' user = '%s' host = '%s' password = '%s'" % (self.rgis.dbname,self.rgis.user,self.rgis.host,self.rgis.passwd)
-    conn = psycopg2.connect(connParams)
+    # connParams = "host='%s' port='%s' database='%s' user='%s' password='%s' sslmode='%s'" % \
+    #              (self.rgis.host,self.rgis.port,self.rgis.dbname,self.rgis.user,self.rgis.passwd,self.rgis.sslmode)
+    conn = self.rgis.conn
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     createPgFunctionCreateIndexIfNotExists(self.rgis)
     schema = self.ui.lineEdSchema.text()

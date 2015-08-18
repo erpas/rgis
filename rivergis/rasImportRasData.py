@@ -21,17 +21,16 @@ email                : rpasiok@gmail.com
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
-import processing
 
 import traceback
 from miscFunctions import *
 from os.path import dirname
 
 from hecras import HecrasProject, HecrasPlan
-from dlg_loadWselHecRas import DlgLoadWselHecRas
+from dlg_rasImportRasData import DlgImportRasData
 
 
-class WorkerLoadWselHecRas(QObject):
+class WorkerRasImportRasData(QObject):
   '''Worker for loading water surface elevation data from HEC-RAS result file in HDF format.'''
   def __init__(self, rgis):
     QObject.__init__(self)
@@ -61,7 +60,7 @@ class WorkerLoadWselHecRas(QObject):
       return
 
     # read project's plans data and populate plans combo
-    dlg = DlgLoadWselHecRas(rgis)
+    dlg = DlgImportRasData(rgis)
     for i,id in enumerate(self.prj.planHdfFiles):
       plan = HecrasPlan(self.prj,id)
       dlg.ui.planCbo.addItem(plan.name,plan.file)

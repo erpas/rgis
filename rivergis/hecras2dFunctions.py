@@ -25,9 +25,9 @@ from qgis.core import *
 from qgis.utils import *
 
 from qgis.gui import QgsMessageBar
-from dlg_2dAreaMesh import *
-from dlg_createWaterSurfRaster import *
-from dlg_createDepthsAndFloodRange import *
+from dlg_ras2dAreaMesh import *
+from dlg_rasWaterSurfaceGeneration import *
+from dlg_rasFloodplainDelineation import *
 
 from subprocess import call
 from os.path import expanduser, join, dirname, abspath, basename, isfile
@@ -498,7 +498,7 @@ def ras2dPreviewMesh(rgis):
   
 def ras2dCreateWaterSurfaceRaster(rgis):
   addInfo(rgis, '\n<b>Running Create Water Surface Raster</b>' )
-  layers = DlgCreateWaterSurfRaster(rgis)
+  layers = DlgRasWaterSurfaceGeneration(rgis)
   if layers.exec_() == QDialog.Accepted:
     ptsLayer = layers.ptsLayer
     Water_level_attribute = layers.ui.cboWselAttr.currentText()

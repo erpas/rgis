@@ -56,7 +56,7 @@ class Ui_hecrasPlanDialog(object):
     self.label_2.setText(_translate("planDialog", "Projection", None))
 
 
-class DlgLoadWselHecRas(QtGui.QDialog):
+class DlgImportRasData(QtGui.QDialog):
   def __init__(self, rgis):
     QtGui.QDialog.__init__(self)
     self.rgis = rgis

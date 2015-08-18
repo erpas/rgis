@@ -86,7 +86,7 @@ class HecrasPlan():
     pass
 
   def loadTxt(self):
-    '''Load some plan details from txt *.p** file'''
+    '''Loads some plan details from txt *.p** file'''
     planTxt = open(self.baseName+plan, "r").readlines()
     for line in planTxt:
       i = line.index('=') + 1
@@ -111,7 +111,7 @@ class HecrasPlan():
         self.is2D = False
 
   def checkHasResults(self):
-    '''Checks if the plan has some results and if they are steady'''
+    '''Checks if the plan has some results and if it is a steady simulation'''
     try:
         res = self.hdf['/Results']
         self.hasResults = True

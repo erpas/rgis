@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_2dAreaMesh.ui'
+# Form implementation generated from reading ui file 'ui_ras2dAreaMesh.ui'
 #
-# Created: Mon May 11 18:58:19 2015
+# Created: Thu Aug 13 12:31:34 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!

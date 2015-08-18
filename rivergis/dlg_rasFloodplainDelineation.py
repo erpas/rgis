@@ -16,12 +16,12 @@ from math import sqrt, pow, atan2, pi, floor
 import processing
 from miscFunctions import *
 
-from ui_createDepthsAndFloodRange import *
+from ui_rasFloodplainDelineation import *
 
-class DlgCreateDepthsAndFloodRange(QDialog):
+class DlgRasFloodplainDelineation(QDialog):
   def __init__(self, rgis):
     QDialog.__init__(self)
-    self.ui = Ui_DlgCreateDepthsAndFloodRange()
+    self.ui = Ui_DlgFloodplainDelineation()
     self.ui.setupUi(self)
     self.rgis = rgis
     
@@ -104,6 +104,8 @@ class DlgCreateDepthsAndFloodRange(QDialog):
       dtm = abspath(tile[2])
       wsel = abspath(tile[3])
       depth = processing.runalg("saga:rastercalculator",dtm,wsel,"ifelse(gt((b-a),0),(b-a), (-9999))",False,8,None)
+      if not depth:
+        continue
       depthClipped = processing.runalg("saga:clipgridwithpolygon",depth['RESULT'],siatka,None)
       depths += depthClipped['OUTPUT'] + '\n'
       maska = processing.runalg("saga:reclassifygridvalues",depth['RESULT'],2,0,1,0,0,1,2,0,"-999999,0,-99999,0,20,1,20,100,1",0,True,0,True,0,None)
