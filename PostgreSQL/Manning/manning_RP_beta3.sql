@@ -7,6 +7,10 @@ CREATE TABLE radek.xscutlines
   CONSTRAINT xscutlines_pkey PRIMARY KEY (gid)
 );
 
+CREATE INDEX sidx_xscutlines_geom ON
+    radek.xscutlines
+USING gist (geom);
+
 -- tabela uzytkowania
 CREATE TABLE radek.uzytkowanie
 (
@@ -16,6 +20,10 @@ CREATE TABLE radek.uzytkowanie
   geom geometry(Polygon,2180), -- UWAGA: geometria prosta a NIE multi
   CONSTRAINT uzytkowanie_pkey PRIMARY KEY (gid)
 );
+
+CREATE INDEX sidx_uzytkowanie_geom ON
+    radek.uzytkowanie
+USING gist (geom);
 
 -- dodaj jakies obiekty do powyzszych tabel i uruchom zapytania ponizej
 
@@ -38,18 +46,9 @@ USING gist (geom);
 
 with linie_z_poligonow as ( -- tymczasowe granice poligonow uzytkowania
 SELECT 
-    Distinct ST_MakeLine(sp,ep) as geom
-FROM -- http://stackoverflow.com/questions/7595635/how-to-convert-polygon-data-into-line-segments-using-postgis
-   -- extract the endpoints for every 2-point line segment for each linestring
-   (SELECT
-      ST_PointN(geom, generate_series(1, ST_NPoints(geom)-1)) as sp,
-      ST_PointN(geom, generate_series(2, ST_NPoints(geom)  )) as ep
-    FROM
-       -- extract the individual linestrings
-      (SELECT (ST_Dump(ST_Boundary(geom))).geom
-       FROM radek.uzytkowanie
-       ) AS linestrings
-    ) AS segments )
+    (ST_Dump(ST_Boundary(geom))).geom
+FROM radek.uzytkowanie
+)
 insert into radek.pkty_zmiany
     (xs_hid, geom)
 select
@@ -58,6 +57,9 @@ select
 from 
     linie_z_poligonow l,
     radek.xscutlines xs
+where
+    l.geom && xs.geom;
+
 
 -- dodaj do pktow zmiany poczatki przekrojow
 insert into radek.pkty_zmiany
@@ -66,7 +68,7 @@ select
     xs.hydroid,
     ST_LineInterpolatePoint(xs.geom, 0.0)
 from
-    radek.xscutlines xs
+    radek.xscutlines xs;
     
     
 -- ustal polozenie pktow zmiany wzdluz przekrojow
@@ -78,7 +80,7 @@ set
 from
     radek.xscutlines as xs
 where
-    xs.hydroid = p.xs_hid
+    xs.hydroid = p.xs_hid;
 
     
 -- probkuj kod uzytkowania z poligonow
@@ -91,5 +93,5 @@ from
     radek.uzytkowanie as u
 where
     p.geom && u.geom and
-    ST_Intersects(p.geom, u.geom)
+    ST_Intersects(p.geom, u.geom);
     
