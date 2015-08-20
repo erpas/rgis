@@ -53,8 +53,8 @@ class HecDatabase(object):
     def crete_hecobject(self, hecobject, schema, srid):
         obj = hecobject(schema, srid)
         qry = obj.build_table_sql
-        HecDatabase.run_sql(qry)
-        HecDatabase.register(obj)
+        self.run_sql(qry)
+        self.register(obj)
 
 
     def add_to_view(self):
