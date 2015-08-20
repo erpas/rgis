@@ -8,7 +8,7 @@ from qgis.utils import *
 
 from os.path import dirname
 
-from ui_2dAreaMesh import *
+from ui_ras2dAreaMesh import *
 
 class Dlg2dAreaMeshLayers(QDialog):
   def __init__(self, parent=None):
