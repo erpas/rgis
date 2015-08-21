@@ -1,63 +1,21 @@
 __author__ = 'ldebek'
-import psycopg2
-import sys
-from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI
 
 class HecRasObject(object):
     """
     Class for HEC-RAS geometry objects processing.
     """
-    dbname = 'CMPiS_Gdynia'
-    host = 'pzrpgeosrv.imgw.ad'
-    port = '5432'
-    user = 'ldebek'
-    password = ''
-    schema = 'public'
-    srid = '2180'
-
-    def __init__(self):
-        self.con = None
-        self.uri = None
-        self.vlayer = None
+    def __init__(self, schema, srid):
+        self.schema = schema
+        self.srid = srid
         self.name = self.__class__.__name__
-        self.tab_sql = None
+        self.geom_type = None
+        self.attrs = None
 
     def build_table_sql(self):
         qry = ['id serial PRIMARY KEY', 'geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         qry += [' '.join(field) for field in self.attrs]
-        self.tab_sql = 'CREATE TABLE {0}."{1}"(\n\t{2});'.format(self.schema, self.name, ',\n\t'.join(qry))
-
-    def connect_pg(self):
-        try:
-            self.con = psycopg2.connect(database=self.dbname, host=self.host, port=self.port, user=self.user, password=self.password)
-        except Exception, e:
-            print(e)
-            sys.exit(1)
-
-    def run_sql(self, sql):
-        try:
-            cur = self.con.cursor()
-            cur.execute(sql)
-            self.con.commit()
-        except Exception, e:
-            if self.con:
-                self.con.rollback()
-            else:
-                pass
-            print(e)
-            sys.exit(1)
-        finally:
-            if self.con:
-                self.con.close()
-            else:
-                pass
-
-    def add_to_view(self):
-        self.uri = QgsDataSourceURI()
-        self.uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
-        self.uri.setDataSource(self.schema, self.name, 'geom')
-        self.vlayer = QgsVectorLayer(self.uri.uri(), self.name, 'postgres')
-        QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
+        tab_sql = 'CREATE TABLE {0}."{1}"(\n\t{2});'.format(self.schema, self.name, ',\n\t'.join(qry))
+        return tab_sql
 
 
 class StreamCenterline(HecRasObject):
