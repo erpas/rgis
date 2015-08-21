@@ -7,10 +7,7 @@ Description          : HEC-RAS tools for QGIS
 Date                 : January, 2015
 copyright            : (C) 2015 by RiverGIS Group
 email                : rpasiok@gmail.com
-
-The content of this file is based on
-- DB Manager by Giuseppe Sucameli (2011)
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -34,9 +31,9 @@ import psycopg2.extras
 import processing
 from _ui_rivergis import Ui_RiverGIS
 
-# from hecras2dFunctions import *
 from hecras1dFunctions import *
 from isokpFunctions import *
+from pg_functions import *
 
 from rasImportRasData import WorkerRasImportRasData
 
@@ -98,6 +95,9 @@ class RiverGIS(QMainWindow):
 
     # get PostGIS connections details and populate connections' combo
     self.connChanged()
+
+    # set project CRS as a default projection
+    self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
 
   def closeEvent(self, e):
     self.unregisterAllActions()
@@ -173,7 +173,9 @@ class RiverGIS(QMainWindow):
     if schemaExists:
       self.ui.schemasCbo.setCurrentIndex(schemaExists)
     self.schemaChanged()
-    self.createPgFunctionCreateIndexIfNotExists()
+
+    # create or update PG functions
+    createAllPgFunctions()
 
 
   def schemaChanged(self):
@@ -361,26 +363,3 @@ class RiverGIS(QMainWindow):
         self.unregisterAction( action, menuName )
     del self._registeredDbActions
 
-  def createPgFunctionCreateIndexIfNotExists(self):
-      cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-      qry = '''CREATE OR REPLACE FUNCTION create_st_index_if_not_exists
-        (schema text, t_name text) RETURNS void AS $$
-      DECLARE
-        full_index_name varchar;
-      BEGIN
-      full_index_name = t_name || '_' || 'geom_idx';
-      IF NOT EXISTS (
-          SELECT 1
-          FROM   pg_class c
-          JOIN   pg_namespace n ON n.oid = c.relnamespace
-          WHERE  c.relname = full_index_name
-          AND    n.nspname = schema
-          ) THEN
-
-          execute 'CREATE INDEX ' || full_index_name || ' ON ' || schema || '.' || t_name || ' USING GIST (geom)';
-      END IF;
-      END
-      $$
-      LANGUAGE plpgsql VOLATILE;'''
-      cur.execute(qry)
-      self.conn.commit()
