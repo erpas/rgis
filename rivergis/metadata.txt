@@ -1,19 +1,21 @@
 [general]
 name=RiverGIS
 qgisMinimumVersion=2.8
-description=Set of tools that help you create 2D HEC-RAS flow model and process its results.
+description=Set of tools that help you create HEC-RAS flow model and process its results.
 
-about=Currently only 2D geometry is supported. For 1D consider Q-RAS plugin.
+about=Simply, it aims to be a HEC-GeoRAS for QGIS.
       For some operations RiverGIS needs an active connection to a PostGIS database (2.1+).
       Loading HEC-RAS 2D results requires h5py Python package (http://www.h5py.org).
-      The plugin is built on top of DB Manager by Giuseppe Sucameli.
 
-version=0.18
-author=Radoslaw Pasiok
+
+version=0.24
+author=RiverGIS Team
 email=rpasiok@gmail.com
 
 experimental=True
 changelog=
+    0.24 - dropped DB Manager dependency, menu is more similar to HEC-GeoRAS
+    0.22 - rewritten creating WSEL raster (scipy and QgsTinInterpolation interpolation engines)
     0.20 - create2dAreaMesh: different mesh cell size along and across a structure
     0.18 - added universal HEC-RAS result loader from HDF (2D results functioning for now)
     0.16 - added import geometric data from ISOK

@@ -20,7 +20,7 @@ class DlgRasWaterSurfaceGeneration(QDialog):
     QDialog.__init__(self, parent)
     self.ui = Ui_DlgWaterSurfaceGeneration()
     self.ui.setupUi(self)
-    self.qras = parent
+    self.rgis = parent
     QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.accept)
     QObject.connect(self.ui.buttonBox, SIGNAL("rejected()"), self.rejectDlg)
     QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
@@ -32,7 +32,7 @@ class DlgRasWaterSurfaceGeneration(QDialog):
     self.updateInterpTypeCbo()
 
   def addInfo(self, text):
-    self.qras.ui.textEdit.append(text)
+    self.rgis.ui.textEdit.append(text)
 
   def array2raster(self, newRasterfn,rasterOrigin,pixelWidth,pixelHeight,array):
     cols = array.shape[1]
@@ -144,7 +144,7 @@ class DlgRasWaterSurfaceGeneration(QDialog):
     pass
 
   def populatePointsCombo(self):
-    for layerId, layer in self.qras.mapRegistry.mapLayers().iteritems():
+    for layerId, layer in self.rgis.mapRegistry.mapLayers().iteritems():
       if layer.type() == 0 and layer.geometryType() == 0: # vector and points
         self.ui.cboPoints.addItem(layer.name(), layerId)
       if layer.type() == 0 and layer.geometryType() == 1: # vector and polylines
@@ -158,7 +158,7 @@ class DlgRasWaterSurfaceGeneration(QDialog):
   def cboPointsChanged(self):
     curInd = self.ui.cboPoints.currentIndex()
     lid = self.ui.cboPoints.itemData(curInd)
-    self.ptsLayer = self.qras.mapRegistry.mapLayer(lid)
+    self.ptsLayer = self.rgis.mapRegistry.mapLayer(lid)
     self.updatePointsAttrs()
 
   def updateInterpTypeCbo(self):
