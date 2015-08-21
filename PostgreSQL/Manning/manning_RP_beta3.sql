@@ -51,7 +51,7 @@ FROM radek.uzytkowanie
 )
 insert into radek.pkty_zmiany
     (xs_hid, geom)
-select
+select distinct
     xs.hydroid, -- zeby wiedziec na jakim przekroju lezy punkt
     (ST_Dump(ST_Intersection(l.geom, xs.geom))).geom as geom
 from 
@@ -76,7 +76,7 @@ from
 update 
     radek.pkty_zmiany as p
 set
-    m = ST_LineLocatePoint(xs.geom, p.geom)
+    m = ST_LineLocatePoint(xs.geom, p.geom) + 0.001
 from
     radek.xscutlines as xs
 where
