@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_rivergis.ui'
 #
-# Created: Tue Aug 18 09:05:33 2015
+# Created: Fri Aug 21 08:28:25 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -152,7 +152,7 @@ class Ui_RiverGIS(object):
         self.actionRASSaveMeshPointsToHECRASGeometry.setIcon(icon9)
         self.actionRASSaveMeshPointsToHECRASGeometry.setObjectName(_fromUtf8("actionRASSaveMeshPointsToHECRASGeometry"))
         self.actionRASPreview2DMesh = QtGui.QAction(RiverGIS)
-        self.actionRASPreview2DMesh.setEnabled(False)
+        self.actionRASPreview2DMesh.setEnabled(True)
         self.actionRASPreview2DMesh.setObjectName(_fromUtf8("actionRASPreview2DMesh"))
         self.actionRASCreateRASLayers = QtGui.QAction(RiverGIS)
         self.actionRASCreateRASLayers.setObjectName(_fromUtf8("actionRASCreateRASLayers"))

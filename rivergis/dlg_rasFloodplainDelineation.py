@@ -8,11 +8,7 @@ from qgis.utils import *
 
 from subprocess import call
 from os.path import expanduser, join, dirname, abspath, basename, isfile
-import psycopg2
-import psycopg2.extras
-import time
 import uuid
-from math import sqrt, pow, atan2, pi, floor
 import processing
 from miscFunctions import *
 

@@ -7,10 +7,7 @@ Description          : HEC-RAS tools for QGIS
 Date                 : January, 2015
 copyright            : (C) 2015 by RiverGIS Group
 email                : rpasiok@gmail.com
-
-The content of this file is based on
-- DB Manager by Giuseppe Sucameli (2011)
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -34,9 +31,9 @@ import psycopg2.extras
 import processing
 from _ui_rivergis import Ui_RiverGIS
 
-from hecras2dFunctions import *
 from hecras1dFunctions import *
 from isokpFunctions import *
+from pg_functions import *
 
 from rasImportRasData import WorkerRasImportRasData
 
@@ -49,6 +46,10 @@ class RiverGIS(QMainWindow):
     self.ui = Ui_RiverGIS()
     self.ui.setupUi(self)
     self.conn = None
+    self.passwd = None
+    self.iface = iface
+    self.mapRegistry = QgsMapLayerRegistry.instance()
+    self.rivergisPath = os.path.dirname(__file__)
 
     # create status bar
     self.statusBar = QStatusBar(self)
@@ -67,7 +68,6 @@ class RiverGIS(QMainWindow):
     self.ui.actionAbout.triggered.connect(self.about)
     self.ui.actionHelpContents.triggered.connect(self.showRGisHelp)
 
-
     # toolbar
     self.ui.toolBar = QToolBar("Default", self)
     self.ui.toolBar.setObjectName("DB_ToolBar")
@@ -79,7 +79,7 @@ class RiverGIS(QMainWindow):
     self.ui.toolBar.addAction( self.ui.actionRASFloodplainDelineation )
     self.addToolBar(self.ui.toolBar)
 
-    # self.ui.crsWidget.crsChanged.connect(self.updateDefaultCrs)
+    self.ui.crsWidget.crsChanged.connect(self.updateDefaultCrs)
     self.ui.connsCbo.activated.connect(self.connChanged)
     self.ui.schemasCbo.activated.connect(self.schemaChanged)
 
@@ -87,9 +87,6 @@ class RiverGIS(QMainWindow):
     self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>For some operations RiverGIS needs a <b>connection to a PostGIS database</b>. Please, choose a connection and schema from the above combo boxes.<br>')
     self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br><br>')
     self.ui.textEdit.append('<b>Loading HEC-RAS 2D results</b> requires a h5py Python package ( http://www.h5py.org ).<br><br>')
-    self.iface = iface
-    self.mapRegistry = QgsMapLayerRegistry.instance()
-    self.rivergisPath = os.path.dirname(__file__)
 
     # restore the window state
     settings = QSettings()
@@ -98,6 +95,9 @@ class RiverGIS(QMainWindow):
 
     # get PostGIS connections details and populate connections' combo
     self.connChanged()
+
+    # set project CRS as a default projection
+    self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
 
   def closeEvent(self, e):
     self.unregisterAllActions()
@@ -144,19 +144,19 @@ class RiverGIS(QMainWindow):
     connName = self.ui.connsCbo.currentText()
     s.endGroup()
     s.beginGroup('/PostgreSQL/connections/%s' % connName)
-    host = s.value('host')
-    port = s.value('port')
-    database = s.value('database')
-    user = s.value('username')
-    passwd = s.value('password')
-    sslmode = s.value('sslmode')
-    connParams = "host='%s' port='%s' dbname='%s' user='%s' password='%s'" % \
-                 (host,port,database,user,passwd)
+    self.host = s.value('host')
+    self.port = s.value('port')
+    self.database = s.value('database')
+    self.user = s.value('username')
+    self.passwd = s.value('password')
+    self.sslmode = s.value('sslmode')
+    self.connParams = "host='%s' port='%s' dbname='%s' user='%s' password='%s'" % \
+                 (self.host,self.port,self.database,self.user,self.passwd)
     sslmodesList = [0,'disable', 'allow', 'prefer', 'require']
-    if sslmode:
-      connParams += " sslmode='%s'" % sslmodesList[sslmode]
-    self.conn = psycopg2.connect(connParams)
-    addInfo(self,'Current DB Connection is: %s' % self.curConnName)
+    if self.sslmode:
+      self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
+    self.conn = psycopg2.connect(self.connParams)
+    addInfo(self,'Current DB connection is: %s' % self.curConnName)
 
     # refresh schemas combo
     schemaName = self.ui.schemasCbo.currentText()
@@ -173,6 +173,9 @@ class RiverGIS(QMainWindow):
     if schemaExists:
       self.ui.schemasCbo.setCurrentIndex(schemaExists)
     self.schemaChanged()
+
+    # create or update PG functions
+    createAllPgFunctions()
 
 
   def schemaChanged(self):
@@ -209,13 +212,20 @@ class RiverGIS(QMainWindow):
       QMessageBox.warning(None, "2D Area", "Please, choose a connection and schema.")
       return
     else:
-      ras2dCreate2dArea(self)
+      from dlg_ras2dAreaMesh import *
+      addInfo(self, '<br><b>Running Create 2D Flow Areas</b>' )
+      dlg = DlgRasCreate2dFlowAreas(self)
+      dlg.exec_()
+
 
   def rasPreview2DMesh(self):
+    from ras2dPreviewMesh import *
     ras2dPreviewMesh(self)
 
+
   def rasSaveMeshPtsToHecrasGeo(self):
-      ras2dSaveMeshPtsToGeometry(self)
+    from ras2dSaveMeshPtsToGeometry import *
+    ras2dSaveMeshPtsToGeometry(self)
 
 
   # RAS Mapping function
@@ -353,28 +363,3 @@ class RiverGIS(QMainWindow):
         self.unregisterAction( action, menuName )
     del self._registeredDbActions
 
-  def createPgFunctionCreateIndexIfNotExists(self):
-      connParams = "dbname = '%s' user = '%s' host = '%s' password = '%s'" % (self.dbname,self.user,self.host,self.passwd)
-      conn = psycopg2.connect(connParams)
-      cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-      qry = '''CREATE OR REPLACE FUNCTION create_st_index_if_not_exists
-        (schema text, t_name text) RETURNS void AS $$
-      DECLARE
-        full_index_name varchar;
-      BEGIN
-      full_index_name = t_name || '_' || 'geom_idx';
-      IF NOT EXISTS (
-          SELECT 1
-          FROM   pg_class c
-          JOIN   pg_namespace n ON n.oid = c.relnamespace
-          WHERE  c.relname = full_index_name
-          AND    n.nspname = schema
-          ) THEN
-
-          execute 'CREATE INDEX ' || full_index_name || ' ON ' || schema || '.' || t_name || ' USING GIST (geom)';
-      END IF;
-      END
-      $$
-      LANGUAGE plpgsql VOLATILE;'''
-      cur.execute(qry)
-      conn.commit()
