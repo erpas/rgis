@@ -11,7 +11,7 @@ class HecRasObject(object):
         self.geom_type = None
         self.attrs = None
 
-    def build_table_sql(self):
+    def build_table(self):
         qry = ['id serial PRIMARY KEY', 'geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         qry += [' '.join(field) for field in self.attrs]
         tab_sql = 'CREATE TABLE {0}."{1}"(\n\t{2});'.format(self.schema, self.name, ',\n\t'.join(qry))
@@ -240,8 +240,4 @@ class CommonMethods(object):
 
 if __name__ == '__main__':
     x = StreamCenterline3D()
-    x.build_table_sql()
-    x.connect_pg()
-    x.run_sql(x.tab_sql)
-    x.add_to_view()
-    print(x.tab_sql)
+    x.build_table()

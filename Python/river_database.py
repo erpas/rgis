@@ -3,9 +3,9 @@ __author__ = 'ldebek'
 import psycopg2
 import sys
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI
-from hecbase import *
+from hecobjects import *
 
-class HecDatabase(object):
+class RiverDatabase(object):
     """
     Class handling database and hecobjects.
     """
@@ -46,16 +46,27 @@ class HecDatabase(object):
             print(e)
             sys.exit(1)
 
+    def chack_if_exists(self, obj):
+        if obj.name in obj.schema:
+            return True
+        else:
+            return False
+
     def register(self, obj):
         key = obj.name
         self.hecobjects[key] = obj
 
     def crete_hecobject(self, hecobject, schema, srid):
         obj = hecobject(schema, srid)
-        qry = obj.build_table_sql
-        self.run_sql(qry)
-        self.register(obj)
+        if self.chack_if_exists(obj) is False:
+            qry = obj.build_table
+            self.run_sql(qry)
+            self.register(obj)
+        else:
+            pass
 
+    def import_hecobject(self, sdf):
+        pass
 
     def add_to_view(self):
         self.uri = QgsDataSourceURI()
