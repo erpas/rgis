@@ -4,9 +4,12 @@ class HecRasObject(object):
     """
     Class for HEC-RAS geometry objects processing.
     """
-    def __init__(self, schema, srid):
-        self.schema = schema
-        self.srid = srid
+    SCHEMA = None
+    SRID = None
+
+    def __init__(self):
+        self.schema = self.SCHEMA
+        self.srid = self.SRID
         self.name = self.__class__.__name__
         self.geom_type = None
         self.attrs = None
