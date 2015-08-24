@@ -1,0 +1,481 @@
+DEBUG:PyQt4.uic.uiparser:UI version is 4.0
+DEBUG:PyQt4.uic.uiparser:uiname is ManageConnectionsDialog
+DEBUG:PyQt4.uic.uiparser:toplevel widget is QDialog
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property windowTitle
+DEBUG:PyQt4.uic.uiparser:push QDialog ManageConnectionsDialog
+DEBUG:PyQt4.uic.uiparser:push QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.uiparser:push QHBoxLayout horizontalLayout
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label
+DEBUG:PyQt4.uic.uiparser:new topwidget ManageConnectionsDialog
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leFileName
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leFileName
+DEBUG:PyQt4.uic.uiparser:new topwidget ManageConnectionsDialog
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnBrowse
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnBrowse
+DEBUG:PyQt4.uic.uiparser:new topwidget ManageConnectionsDialog
+DEBUG:PyQt4.uic.uiparser:pop layout QHBoxLayout horizontalLayout
+DEBUG:PyQt4.uic.properties:setting property editTriggers
+DEBUG:PyQt4.uic.properties:setting property alternatingRowColors
+DEBUG:PyQt4.uic.properties:setting property selectionMode
+DEBUG:PyQt4.uic.uiparser:push QListWidget listConnections
+DEBUG:PyQt4.uic.uiparser:pop widget QListWidget listConnections
+DEBUG:PyQt4.uic.uiparser:new topwidget ManageConnectionsDialog
+DEBUG:PyQt4.uic.properties:setting property orientation
+DEBUG:PyQt4.uic.properties:setting property standardButtons
+DEBUG:PyQt4.uic.uiparser:push QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:pop widget QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:new topwidget ManageConnectionsDialog
+DEBUG:PyQt4.uic.uiparser:pop layout QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.uiparser:pop widget QDialog ManageConnectionsDialog
+DEBUG:PyQt4.uic.uiparser:new topwidget None
+DEBUG:PyQt4.uic.uiparser:UI version is 4.0
+DEBUG:PyQt4.uic.uiparser:uiname is NewConnectionDialog
+DEBUG:PyQt4.uic.uiparser:toplevel widget is QDialog
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property windowTitle
+DEBUG:PyQt4.uic.uiparser:push QDialog NewConnectionDialog
+DEBUG:PyQt4.uic.uiparser:push QGridLayout gridLayout
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label
+DEBUG:PyQt4.uic.uiparser:new topwidget NewConnectionDialog
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leName
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leName
+DEBUG:PyQt4.uic.uiparser:new topwidget NewConnectionDialog
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_2
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_2
+DEBUG:PyQt4.uic.uiparser:new topwidget NewConnectionDialog
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leURL
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leURL
+DEBUG:PyQt4.uic.uiparser:new topwidget NewConnectionDialog
+DEBUG:PyQt4.uic.properties:setting property orientation
+DEBUG:PyQt4.uic.properties:setting property standardButtons
+DEBUG:PyQt4.uic.uiparser:push QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:pop widget QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:new topwidget NewConnectionDialog
+DEBUG:PyQt4.uic.uiparser:pop layout QGridLayout gridLayout
+DEBUG:PyQt4.uic.uiparser:pop widget QDialog NewConnectionDialog
+DEBUG:PyQt4.uic.uiparser:new topwidget None
+DEBUG:PyQt4.uic.uiparser:UI version is 4.0
+DEBUG:PyQt4.uic.uiparser:uiname is RecordDialog
+DEBUG:PyQt4.uic.uiparser:toplevel widget is QDialog
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property windowTitle
+DEBUG:PyQt4.uic.uiparser:push QDialog RecordDialog
+DEBUG:PyQt4.uic.uiparser:push QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.properties:setting property lineWrapMode
+DEBUG:PyQt4.uic.properties:setting property openExternalLinks
+DEBUG:PyQt4.uic.uiparser:push QTextBrowser textMetadata
+DEBUG:PyQt4.uic.uiparser:pop widget QTextBrowser textMetadata
+DEBUG:PyQt4.uic.uiparser:new topwidget RecordDialog
+DEBUG:PyQt4.uic.properties:setting property orientation
+DEBUG:PyQt4.uic.properties:setting property standardButtons
+DEBUG:PyQt4.uic.uiparser:push QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:pop widget QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:new topwidget RecordDialog
+DEBUG:PyQt4.uic.uiparser:pop layout QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.uiparser:pop widget QDialog RecordDialog
+DEBUG:PyQt4.uic.uiparser:new topwidget None
+DEBUG:PyQt4.uic.uiparser:UI version is 4.0
+DEBUG:PyQt4.uic.uiparser:uiname is XMLDialog
+DEBUG:PyQt4.uic.uiparser:toplevel widget is QDialog
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property windowTitle
+DEBUG:PyQt4.uic.uiparser:push QDialog XMLDialog
+DEBUG:PyQt4.uic.uiparser:push QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel lblXMLRequest
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel lblXMLRequest
+DEBUG:PyQt4.uic.uiparser:new topwidget XMLDialog
+DEBUG:PyQt4.uic.uiparser:push QTextBrowser txtbrXMLRequest
+DEBUG:PyQt4.uic.uiparser:pop widget QTextBrowser txtbrXMLRequest
+DEBUG:PyQt4.uic.uiparser:new topwidget XMLDialog
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel lblXMLResponse
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel lblXMLResponse
+DEBUG:PyQt4.uic.uiparser:new topwidget XMLDialog
+DEBUG:PyQt4.uic.properties:setting property lineWrapMode
+DEBUG:PyQt4.uic.properties:setting property openExternalLinks
+DEBUG:PyQt4.uic.uiparser:push QTextBrowser txtbrXMLResponse
+DEBUG:PyQt4.uic.uiparser:pop widget QTextBrowser txtbrXMLResponse
+DEBUG:PyQt4.uic.uiparser:new topwidget XMLDialog
+DEBUG:PyQt4.uic.properties:setting property orientation
+DEBUG:PyQt4.uic.properties:setting property standardButtons
+DEBUG:PyQt4.uic.uiparser:push QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:pop widget QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:new topwidget XMLDialog
+DEBUG:PyQt4.uic.uiparser:pop layout QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.uiparser:pop widget QDialog XMLDialog
+DEBUG:PyQt4.uic.uiparser:new topwidget None
+DEBUG:PyQt4.uic.uiparser:UI version is 4.0
+DEBUG:PyQt4.uic.uiparser:uiname is MetaSearchDialog
+DEBUG:PyQt4.uic.uiparser:toplevel widget is QDialog
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property windowTitle
+DEBUG:PyQt4.uic.uiparser:push QDialog MetaSearchDialog
+DEBUG:PyQt4.uic.uiparser:push QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.properties:setting property currentIndex
+DEBUG:PyQt4.uic.uiparser:push QTabWidget tabWidget
+DEBUG:PyQt4.uic.uiparser:push QWidget tabSearch
+DEBUG:PyQt4.uic.uiparser:push QVBoxLayout verticalLayout_2
+DEBUG:PyQt4.uic.properties:setting property sizePolicy
+DEBUG:PyQt4.uic.properties:setting property title
+DEBUG:PyQt4.uic.uiparser:push QGroupBox groupBox
+DEBUG:PyQt4.uic.uiparser:push QGridLayout gridLayout_3
+DEBUG:PyQt4.uic.properties:setting property sizePolicy
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leKeywords
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leKeywords
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_3
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_3
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnCanvasBbox
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnCanvasBbox
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnSearch
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnSearch
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnGlobalBbox
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnGlobalBbox
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property sizePolicy
+DEBUG:PyQt4.uic.uiparser:push QComboBox cmbConnectionsSearch
+DEBUG:PyQt4.uic.uiparser:pop widget QComboBox cmbConnectionsSearch
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.uiparser:push QGridLayout gridLayout_2
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_4
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_4
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property enabled
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leEast
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leEast
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_7
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_7
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leNorth
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leNorth
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_6
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_6
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leWest
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leWest
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_8
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_8
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLineEdit leSouth
+DEBUG:PyQt4.uic.uiparser:pop widget QLineEdit leSouth
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.uiparser:pop layout QGridLayout gridLayout_2
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox
+DEBUG:PyQt4.uic.uiparser:pop layout QGridLayout gridLayout_3
+DEBUG:PyQt4.uic.uiparser:pop widget QGroupBox groupBox
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabSearch
+DEBUG:PyQt4.uic.properties:setting property sizePolicy
+DEBUG:PyQt4.uic.properties:setting property title
+DEBUG:PyQt4.uic.uiparser:push QGroupBox groupBox_2
+DEBUG:PyQt4.uic.uiparser:push QGridLayout gridLayout_5
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel lblResults
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel lblResults
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property toolTip
+DEBUG:PyQt4.uic.properties:setting property editTriggers
+DEBUG:PyQt4.uic.properties:setting property alternatingRowColors
+DEBUG:PyQt4.uic.properties:setting property rootIsDecorated
+DEBUG:PyQt4.uic.properties:setting property itemsExpandable
+DEBUG:PyQt4.uic.properties:setting property sortingEnabled
+DEBUG:PyQt4.uic.properties:setting property allColumnsShowFocus
+DEBUG:PyQt4.uic.uiparser:push QTreeWidget treeRecords
+DEBUG:PyQt4.uic.uiparser:pop widget QTreeWidget treeRecords
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnPrev
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnPrev
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnShowXml
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnShowXml
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnFirst
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnFirst
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property sizePolicy
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnAddToWms
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnAddToWms
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property sizePolicy
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnAddToWfs
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnAddToWfs
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnLast
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnLast
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property sizePolicy
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnAddToWcs
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnAddToWcs
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.properties:setting property minimumSize
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnNext
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnNext
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_2
+DEBUG:PyQt4.uic.uiparser:pop layout QGridLayout gridLayout_5
+DEBUG:PyQt4.uic.uiparser:pop widget QGroupBox groupBox_2
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabSearch
+DEBUG:PyQt4.uic.uiparser:pop layout QVBoxLayout verticalLayout_2
+DEBUG:PyQt4.uic.uiparser:pop widget QWidget tabSearch
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabWidget
+DEBUG:PyQt4.uic.uiparser:push QWidget tabServers
+DEBUG:PyQt4.uic.uiparser:push QGridLayout gridLayout
+DEBUG:PyQt4.uic.uiparser:push QComboBox cmbConnectionsServices
+DEBUG:PyQt4.uic.uiparser:pop widget QComboBox cmbConnectionsServices
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnServerInfo
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnServerInfo
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnCapabilities
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnCapabilities
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnNew
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnNew
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnEdit
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnEdit
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnDelete
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnDelete
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnSave
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnSave
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property openExternalLinks
+DEBUG:PyQt4.uic.uiparser:push QTextBrowser textMetadata
+DEBUG:PyQt4.uic.uiparser:pop widget QTextBrowser textMetadata
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnAddDefault
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnAddDefault
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QPushButton btnLoad
+DEBUG:PyQt4.uic.uiparser:pop widget QPushButton btnLoad
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabServers
+DEBUG:PyQt4.uic.uiparser:pop layout QGridLayout gridLayout
+DEBUG:PyQt4.uic.uiparser:pop widget QWidget tabServers
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabWidget
+DEBUG:PyQt4.uic.uiparser:push QWidget tabSettings
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property title
+DEBUG:PyQt4.uic.uiparser:push QGroupBox groupBox_3
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_5
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_5
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_3
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.uiparser:push QSpinBox spnRecords
+DEBUG:PyQt4.uic.uiparser:pop widget QSpinBox spnRecords
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_3
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.properties:setting property alignment
+DEBUG:PyQt4.uic.uiparser:push QLabel label_2
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_2
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_3
+DEBUG:PyQt4.uic.uiparser:pop widget QGroupBox groupBox_3
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabSettings
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property title
+DEBUG:PyQt4.uic.uiparser:push QGroupBox groupBox_4
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property value
+DEBUG:PyQt4.uic.uiparser:push QSpinBox spnTimeout
+DEBUG:PyQt4.uic.uiparser:pop widget QSpinBox spnTimeout
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_4
+DEBUG:PyQt4.uic.properties:setting property geometry
+DEBUG:PyQt4.uic.properties:setting property text
+DEBUG:PyQt4.uic.uiparser:push QLabel label_9
+DEBUG:PyQt4.uic.uiparser:pop widget QLabel label_9
+DEBUG:PyQt4.uic.uiparser:new topwidget self.groupBox_4
+DEBUG:PyQt4.uic.uiparser:pop widget QGroupBox groupBox_4
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabSettings
+DEBUG:PyQt4.uic.uiparser:pop widget QWidget tabSettings
+DEBUG:PyQt4.uic.uiparser:new topwidget self.tabWidget
+DEBUG:PyQt4.uic.uiparser:pop widget QTabWidget tabWidget
+DEBUG:PyQt4.uic.uiparser:new topwidget MetaSearchDialog
+DEBUG:PyQt4.uic.properties:setting property orientation
+DEBUG:PyQt4.uic.properties:setting property standardButtons
+DEBUG:PyQt4.uic.uiparser:push QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:pop widget QDialogButtonBox buttonBox
+DEBUG:PyQt4.uic.uiparser:new topwidget MetaSearchDialog
+DEBUG:PyQt4.uic.uiparser:pop layout QVBoxLayout verticalLayout
+DEBUG:PyQt4.uic.uiparser:pop widget QDialog MetaSearchDialog
+DEBUG:PyQt4.uic.uiparser:new topwidget None
+INFO:OpenGL.acceleratesupport:No OpenGL_accelerate module loaded: No module named OpenGL_accelerate
+INFO:OpenGL.formathandler:Unable to load registered array format handler numeric:
+Traceback (most recent call last):
+  File "C:\OSGeo4W\apps\Python27\lib\site-packages\OpenGL\arrays\formathandler.py", line 44, in loadPlugin
+    plugin_class = entrypoint.load()
+  File "C:\OSGeo4W\apps\Python27\lib\site-packages\OpenGL\plugins.py", line 14, in load
+    return importByName( self.import_path )
+  File "C:\OSGeo4W\apps\Python27\lib\site-packages\OpenGL\plugins.py", line 28, in importByName
+    module = __import__( ".".join(moduleName), {}, {}, moduleName)
+  File "C:/OSGeo4W/apps/qgis-ltr/./python\qgis\utils.py", line 478, in _import
+    mod = _builtin_import(name, globals, locals, fromlist, level)
+  File "C:\OSGeo4W\apps\Python27\lib\site-packages\OpenGL\arrays\numeric.py", line 15, in <module>
+    raise ImportError( """No Numeric module present: %s"""%(err))
+ImportError: No Numeric module present: No module named Numeric
+
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_OBJECT_ATTACHED_OBJECTS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_OBJECT_DELETE_STATUS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_OBJECT_INFO_LOG_LENGTH_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_OBJECT_SHADER_SOURCE_LENGTH_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_OBJECT_SUBTYPE_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_OBJECT_TYPE_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_OBJECT_VALIDATE_STATUS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_PROGRAM_OBJECT_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.GL_SHADER_OBJECT_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glAttachObjectARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glDeleteObjectARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glDetachObjectARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glGetAttachedObjectsARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glGetHandleARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glGetObjectParameterfvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glGetObjectParameterivARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.shader_objects.glInitShaderObjectsARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.fragment_shader.glInitFragmentShaderARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_shader.GL_OBJECT_ACTIVE_ATTRIBUTES_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_shader.GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_shader.base_glGetActiveAttribARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_shader.glGetObjectParameterivARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_shader.glInitVertexShaderARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_CURRENT_MATRIX_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_CURRENT_MATRIX_STACK_DEPTH_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX0_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX10_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX11_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX12_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX13_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX14_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX15_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX16_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX17_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX18_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX19_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX1_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX20_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX21_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX22_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX23_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX24_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX25_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX26_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX27_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX28_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX29_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX2_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX30_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX31_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX3_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX4_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX5_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX6_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX7_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX8_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MATRIX9_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_ADDRESS_REGISTERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_ATTRIBS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_ENV_PARAMETERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_INSTRUCTIONS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_MATRICES_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_NATIVE_ATTRIBS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_NATIVE_PARAMETERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_PARAMETERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_MAX_PROGRAM_TEMPORARIES_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_ADDRESS_REGISTERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_ATTRIBS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_BINDING_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_ERROR_POSITION_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_ERROR_STRING_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_FORMAT_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_FORMAT_ASCII_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_INSTRUCTIONS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_LENGTH_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_NATIVE_ATTRIBS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_NATIVE_INSTRUCTIONS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_NATIVE_PARAMETERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_NATIVE_TEMPORARIES_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_PARAMETERS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_STRING_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_TEMPORARIES_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_TRANSPOSE_CURRENT_MATRIX_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.GL_VERTEX_PROGRAM_ARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glBindProgramARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glDeleteProgramsARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glGenProgramsARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glGetProgramEnvParameterdvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glGetProgramEnvParameterfvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glGetProgramLocalParameterdvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glGetProgramLocalParameterfvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glGetProgramStringARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glGetProgramivARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glInitVertexProgramARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramEnvParameter4dARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramEnvParameter4dvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramEnvParameter4fARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramEnvParameter4fvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramLocalParameter4dARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramLocalParameter4dvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramLocalParameter4fARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramLocalParameter4fvARB
+DEBUG:OpenGL.GL.shaders:Found no alternate for: OpenGL.GL.ARB.vertex_program.glProgramStringARB
+DEBUG:InaSAFE:Sentry logging disabled in safe
+DEBUG:InaSAFE:Sentry logging disabled in safe

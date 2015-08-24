@@ -175,7 +175,7 @@ class RiverGIS(QMainWindow):
     self.schemaChanged()
 
     # create or update PG functions
-    createAllPgFunctions()
+    createAllPgFunctions(self)
 
 
   def schemaChanged(self):
@@ -186,7 +186,7 @@ class RiverGIS(QMainWindow):
 
 
   def importRiverIsokp(self):
-    from dlg_importRiverFromIsokp import *
+    from dlg_importRiverFromIsokp import DlgImportRiverFromIsokp
     addInfo(self, '\n<b>Running Import River Data From ISOKP Database</b>' )
     if self.curConnName is None:
       addInfo(self, "No database selected or you are not connected to it.")
@@ -200,8 +200,9 @@ class RiverGIS(QMainWindow):
 
   def rasCreateRASLayers(self):
     addInfo(self, '\n<b>Creating HEC-RAS 1D Layers as PostGIS tables.</b>' )
-
-
+    from dlg_rasCreateRasLayers import DlgCreateRasLayers
+    dlg = DlgCreateRasLayers(self)
+    dlg.exec_()
 
 
   # 2D HEC-RAS Geometry Functions
@@ -212,19 +213,19 @@ class RiverGIS(QMainWindow):
       QMessageBox.warning(None, "2D Area", "Please, choose a connection and schema.")
       return
     else:
-      from dlg_ras2dAreaMesh import *
+      from dlg_ras2dAreaMesh import DlgRasCreate2dFlowAreas
       addInfo(self, '<br><b>Running Create 2D Flow Areas</b>' )
       dlg = DlgRasCreate2dFlowAreas(self)
       dlg.exec_()
 
 
   def rasPreview2DMesh(self):
-    from ras2dPreviewMesh import *
+    from ras2dPreviewMesh import ras2dPreviewMesh
     ras2dPreviewMesh(self)
 
 
   def rasSaveMeshPtsToHecrasGeo(self):
-    from ras2dSaveMeshPtsToGeometry import *
+    from ras2dSaveMeshPtsToGeometry import ras2dSaveMeshPtsToGeometry, createNewGeometry
     ras2dSaveMeshPtsToGeometry(self)
 
 
@@ -268,7 +269,7 @@ class RiverGIS(QMainWindow):
       self.threadWselHecRas.deleteLater()
 
   def rasWaterSurfaceGeneration(self):
-    from dlg_rasWaterSurfaceGeneration import *
+    from dlg_rasWaterSurfaceGeneration import DlgRasWaterSurfaceGeneration
     addInfo(self, '<br><b>Running Create Water Surface Raster</b>' )
     dlg = DlgRasWaterSurfaceGeneration(self)
     dlg.exec_()
@@ -278,7 +279,7 @@ class RiverGIS(QMainWindow):
     QgsMessageLog.logMessage('Thread loading WSEL raised an exception:{}\n'.format(exception_string), level=QgsMessageLog.CRITICAL)
     
   def rasFloodplainDelineation(self):
-    from dlg_rasFloodplainDelineation import *
+    from dlg_rasFloodplainDelineation import DlgRasFloodplainDelineation
     addInfo(self, '\n<b>Running floodplain delineation.</b>' )
     dialog = DlgRasFloodplainDelineation(self)
     dialog.exec_()

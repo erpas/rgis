@@ -112,11 +112,9 @@ class DlgRasCreate2dFlowAreas(QDialog):
     qry += 'create table if not exists %s.wyciecie_pkt_org (gid serial primary key,geom geometry(Polygon, %i));' % (self.schName, srid)
     qry += "select create_st_index_if_not_exists('%s','wyciecie_pkt_org');" % (self.schName)
 
-    time.sleep(0.05)
+    # time.sleep(0.05)
     cur.execute(qry)
     self.rgis.conn.commit()
-
-
 
     qry += '''CREATE OR REPLACE FUNCTION makegrid(geometry, float, integer)
     RETURNS geometry AS
