@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 
+from subprocess import call
+from os.path import expanduser, join
+import uuid
+
+import psycopg2
+import psycopg2.extras
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
-
-from subprocess import call
-from os.path import expanduser, join, dirname
-import psycopg2
-import psycopg2.extras
-import time
-import uuid
-from math import sqrt, pow, atan2, pi, floor
-
-from ui_ras2dAreaMesh import *
+from math import floor
+from ui.ui_ras2dAreaMesh import *
 from ras2dSaveMeshPtsToGeometry import *
-from miscFunctions import *
+
 
 class DlgRasCreate2dFlowAreas(QDialog):
   def __init__(self, rgis):
@@ -56,7 +55,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     wrongGeo = False
     if not self.areasLayer: # no areas layer
       return
-    addInfo(self.rgis, "Creating function makegrid..." )
+    self.rgis.addInfo("Creating function makegrid..." )
     areas = self.areasLayer
     nameAttr = self.ui.cbo2dAreasNameAttr.currentText()
     meshSizeAttr = self.ui.cbo2dAreasMeshSizeAttr.currentText()
@@ -71,9 +70,9 @@ class DlgRasCreate2dFlowAreas(QDialog):
     srid = areas.dataProvider().crs().postgisSrid()
     geoFileName = self.ui.lineEditGeoFile.text()
     if structures:
-      addInfo(self.rgis, '\n\n<b>Running 2D Area</b> (%s, %s, %s, %s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr, structures.name(), structMeshSizeAlongAttr, structMeshSizeAcrossAttr) )
+      self.rgis.addInfo('\n\n<b>Running 2D Area</b> (%s, %s, %s, %s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr, structures.name(), structMeshSizeAlongAttr, structMeshSizeAcrossAttr) )
     else:
-      addInfo(self.rgis, '\n\n<b>Running 2D Area</b> (%s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr) )
+      self.rgis.addInfo('\n\n<b>Running 2D Area</b> (%s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr) )
 
     uid = str(uuid.uuid4())
     workDirName = join(expanduser("~"), "qgis_processing_temp", uid)
@@ -81,7 +80,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     call(["mkdir", workDirName], shell=True)
 
     cur = self.rgis.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    addInfo(self.rgis, "  Creating tables..." )
+    self.rgis.addInfo("  Creating tables..." )
 
     # create 2dareas table
     qry = 'drop table if exists %s.areas2d cascade;' % self.schName
@@ -127,7 +126,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     cur.execute(qry)
     self.rgis.conn.commit()
 
-    addInfo(self.rgis, "  Inserting polygons into 2D areas PostGIS table..." )
+    self.rgis.addInfo("  Inserting polygons into 2D areas PostGIS table..." )
 
     areaFeats = areas.getFeatures()
 
@@ -149,7 +148,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     cur.execute(qry)
     self.rgis.conn.commit()
 
-    addInfo(self.rgis, "  Creating preliminary regular mesh points..." )
+    self.rgis.addInfo("  Creating preliminary regular mesh points..." )
 
     qry = '''insert into %s.mesh_pts (aid, lid, geom)
     SELECT gid, -1, (ST_Dump(makegrid(geom, cellsize, %i))).geom as geom from %s.areas2d;''' % (self.schName, srid, self.schName)
@@ -168,7 +167,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     ''' % ((self.schName,) * 3)
     cur.execute(qry)
 
-    addInfo(self.rgis, "  Inserting structures into PostGIS table" )
+    self.rgis.addInfo("  Inserting structures into PostGIS table" )
 
     if structures:
       structFeats = structures.getFeatures()
@@ -177,7 +176,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
 
       for feat in structFeats:
         if not feat[structMeshSizeAlongAttr] or not feat[structMeshSizeAcrossAttr]:
-          addInfo(self.rgis, "\n\n<b>Warning: Some structures have no cell size specified. Crash expected...</b>\n\n" )
+          self.rgis.addInfo("\n\n<b>Warning: Some structures have no cell size specified. Crash expected...</b>\n\n" )
         csalong = float(feat[structMeshSizeAlongAttr])
         csacross = float(feat[structMeshSizeAcrossAttr])
         rows = int(feat[structMeshRowsAttr])
@@ -188,14 +187,14 @@ class DlgRasCreate2dFlowAreas(QDialog):
           for pt in line:
             qry += '%.4f %.4f, ' % (pt.x(), pt.y())
         else:
-          addInfo(self.rgis,"&nbsp;&nbsp;<b>Structure line id=%i has a wrong (empty) geometry!</b>\n" % feat['Id'])
+          self.rgis.addInfo("&nbsp;&nbsp;<b>Structure line id=%i has a wrong (empty) geometry!</b>\n" % feat['Id'])
           wrongGeo = True
         qry = qry[:-2] + ")',%i)),\n" % srid
 
       qry = qry[:-2] + ';'
       if wrongGeo:
         print qry
-        addInfo(self.rgis, "\n  Check (or replace) structure lines with wrong geometry and try again.\n\n")
+        self.rgis.addInfo("\n  Check (or replace) structure lines with wrong geometry and try again.\n\n")
         return
       cur.execute(qry)
       self.rgis.conn.commit()
@@ -231,17 +230,17 @@ class DlgRasCreate2dFlowAreas(QDialog):
     ''' % ((self.schName,) * 3)
     cur.execute(qry)
 
-    addInfo(self.rgis, "  Creating routes along structure lines..." )
+    self.rgis.addInfo("  Creating routes along structure lines..." )
 
     qry = 'insert into %s.struct_lines_m (aid, cellsizealong, cellsizeacross, meshrows, geom) select aid, cellsizealong, cellsizeacross, meshrows, (ST_Dump(ST_AddMeasure(geom, 0, ST_Length(geom)))).geom from %s.struct_lines;' % ((self.schName,) * 2)
 
-    addInfo(self.rgis, "  Deleting orignal mesh points near structures..." )
+    self.rgis.addInfo("  Deleting orignal mesh points near structures..." )
     qry += 'insert into %s.wyciecie_pkt_org (geom) select ST_Buffer(geom, meshrows*cellsizeacross+cellsizealong*0.6, \'endcap=flat join=round\') from %s.struct_lines_m;' % ((self.schName,) * 2)
     qry += 'delete from %s.mesh_pts as p using %s.wyciecie_pkt_org as w where w.geom && p.geom and ST_Intersects(w.geom, p.geom);' % ((self.schName,) * 2)
     cur.execute(qry)
     self.rgis.conn.commit()
 
-    addInfo(self.rgis, "  Creating mesh points along structures..." )
+    self.rgis.addInfo("  Creating mesh points along structures..." )
 
     # find structures that breakpoints is located on ( tolerance = 10 [map units] )
     breakPtsLocTol = 10
@@ -284,7 +283,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       ''' % (self.schName, locate, self.schName)
       cur.execute(qry)
 
-    addInfo(self.rgis, "  Creating aligned mesh points along structures..." )
+    self.rgis.addInfo("  Creating aligned mesh points along structures..." )
 
     qry = "SELECT gid, aid, cellsizealong, cellsizeacross, ST_Length(geom) as len, meshrows as rows from %s.struct_lines_m;" % self.schName
     cur.execute(qry)
@@ -302,7 +301,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       ms = cur.fetchall()
 
       if not ms: # no breakpoints: create aligned mesh at regular interval = cellsize
-        addInfo(self.rgis, "  Creating aligned mesh points for structure id=%i" % id )
+        self.rgis.addInfo("  Creating aligned mesh points for structure id=%i" % id )
         for i in range(0, imax+1):
           dist = i * odl
           for j in range(0,rows):
@@ -311,7 +310,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
             cur.execute(qry)
 
       else: # create cellfaces at structure breakpoints
-        addInfo(self.rgis, "  Creating breakpoints for structure id=%i " % id )
+        self.rgis.addInfo("  Creating breakpoints for structure id=%i " % id )
         sm_param = 4
         db_min = 10.**9
         bm = [] # breakpoints m list (linear locations on current structure)
@@ -362,7 +361,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     self.rgis.conn.commit()
 
 
-    addInfo(self.rgis, "  Deleting mesh points located too close to each other or outside the 2D area..." )
+    self.rgis.addInfo("  Deleting mesh points located too close to each other or outside the 2D area..." )
 
     qry = '''delete from %s.mesh_pts as p1 using %s.mesh_pts as p2
       where p1.lid <> -1 and p2.lid <> -1 and p1.lid <> p2.lid and p1.gid > p2.gid
@@ -384,10 +383,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
   
   def displayHelp(self):
     self.rgis.showHelp('create2darea.html') 
-    
-  def addInfo(self, text):
-    self.rgis.ui.textEdit.append(text)
-    
+
   def populateLayerCombos(self):
     for layerId, layer in self.rgis.mapRegistry.mapLayers().iteritems():
       if layer.type() == 0 and layer.geometryType() == 0: # vector and points

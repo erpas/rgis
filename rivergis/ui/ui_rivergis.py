@@ -2,13 +2,12 @@
 
 # Form implementation generated from reading ui file 'ui_rivergis.ui'
 #
-# Created: Fri Aug 21 08:28:25 2015
+# Created: Fri Aug 21 09:20:15 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-from qgis.gui import QgsProjectionSelectionWidget
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -265,4 +264,4 @@ class Ui_RiverGIS(object):
         self.actionRASXSElevations.setText(_translate("RiverGIS", "Elevations", None))
         self.actionRASXSAll.setText(_translate("RiverGIS", "All", None))
 
-import resources_rc
+from qgsprojectionselectionwidget import QgsProjectionSelectionWidget

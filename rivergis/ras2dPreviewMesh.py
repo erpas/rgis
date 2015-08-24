@@ -25,13 +25,12 @@ from qgis.core import *
 from qgis.utils import *
 
 import processing
-from miscFunctions import *
 
 def ras2dPreviewMesh(rgis):
   """Loads the mesh points to the canvas and builds Voronoi polygons"""
 
   if not rgis.crs.postgisSrid():
-    addInfo(rgis, '\n  Default CRS not set. Choose a projection and try again.\n')
+    rgis.addInfo(rgis, '\n  Default CRS not set. Choose a projection and try again.\n')
     return
   uri = QgsDataSourceURI()
   uri.setConnection(rgis.host, rgis.port, rgis.database, rgis.user, rgis.passwd)

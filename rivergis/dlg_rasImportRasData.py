@@ -2,8 +2,6 @@
 
 from PyQt4 import QtCore, QtGui
 from qgis.gui import *
-from os.path import dirname
-from miscFunctions import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -65,6 +63,8 @@ class DlgImportRasData(QtGui.QDialog):
 
     QtCore.QObject.connect(self.ui.buttonBox, QtCore.SIGNAL("accepted()"), self.accept)
     QtCore.QObject.connect(self.ui.buttonBox, QtCore.SIGNAL("rejected()"), self.reject)
+
+    self.ui.crsWidget.setCrs(self.rgis.iface.mapCanvas().mapRenderer().destinationCrs())
 
   def accept(self):
     self.rgis.wselCrs = self.ui.crsWidget.crs()

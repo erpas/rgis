@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import psycopg2
+import psycopg2.extras
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
-
-from ui_importRiverFromIsokp import *
-import psycopg2
-import psycopg2.extras
-from miscFunctions import *
+from ui.ui_importRiverFromIsokp import *
 
 
 class DlgImportRiverFromIsokp(QDialog):
@@ -28,8 +27,8 @@ class DlgImportRiverFromIsokp(QDialog):
     QObject.connect(self.ui.cboRivers,SIGNAL("currentIndexChanged(int)"),self.cboRiversChanged)
 
     # self.ui.cboRivers.addItem("")
-    self.ui.lineEdConnection.setText( rgis.ui.lineEdCurDatabase.text() )
-    self.ui.lineEdSchema.setText( rgis.ui.lineEdCurSchema.text() )
+    self.ui.lineEdConnection.setText( rgis.ui.connsCbo.currentText() )
+    self.ui.lineEdSchema.setText( rgis.ui.schemasCbo.currentText() )
     self.populateCboRivers()
     self.riv_id = None
 
@@ -40,7 +39,7 @@ class DlgImportRiverFromIsokp(QDialog):
     try:
       import MySQLdb
     except:
-      addInfo(self.rgis, "\n\nQGIS couldn't import mysql-python Python package and cannot connect to ISOKP Database. Download compiled module mysql-python from\nhttp://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python\nand install with:\npip install module_name.whl")
+      rgis.addInfo("\n\nQGIS couldn't import mysql-python Python package and cannot connect to ISOKP Database. Download compiled module mysql-python from\nhttp://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python\nand install with:\npip install module_name.whl")
       QMessageBox.warning(self.rgis, "Import River From ISOKP", "QGIS couldn't import mysql-python Python package and cannot connect to ISOKP Database. Download compiled module mysql-python from\nhttp://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python\nand install with:\npip install module_name.whl")
       return
     self.mydb = None
@@ -97,7 +96,7 @@ class DlgImportRiverFromIsokp(QDialog):
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     createPgFunctionCreateIndexIfNotExists(self.rgis)
     schema = self.ui.lineEdSchema.text()
-    addInfo(self.rgis, "  Creating tables...")
+    self.rgis.addInfo("  Creating tables...")
     # create rivers table
     qry = 'create schema if not exists %s;' % schema
     qry += 'create table if not exists %s.rivers (gid serial primary key, topo_id integer, name text, full_name text, geom geometry(Linestring, %i));' % (schema, self.srid)
@@ -120,7 +119,7 @@ class DlgImportRiverFromIsokp(QDialog):
 
 
     # insert the river to PostGIS table
-    addInfo(self.rgis, "  Adding %s river data to the database..." % self.riv_mikeName)
+    self.rgis.addInfo("  Adding %s river data to the database..." % self.riv_mikeName)
     # check if the river exists in the database
     qry = '''select * from %s.rivers;''' % schema
     cur.execute(qry)
@@ -155,7 +154,7 @@ class DlgImportRiverFromIsokp(QDialog):
       chainages.append(round(item[0],1))
     for mxs in mxsecs:
       if round(mxs[3],1) in chainages:
-        addInfo(self.rgis, "  Skipping xsection %.3f on river %s (already exists)" % (mxs[3], self.riv_mikeName))
+        self.rgis.addInfo("  Skipping xsection %.3f on river %s (already exists)" % (mxs[3], self.riv_mikeName))
         continue
       # get points of the xsec from ISOKP
       coordsStr = ''
@@ -178,7 +177,7 @@ class DlgImportRiverFromIsokp(QDialog):
         schema, xs_gid, mpt[4], mpt[5], mpt[6], mpt[8], mpt[9], mpt[2], mpt[3], self.srid)
       cur.execute(qry)
     conn.commit()
-    addInfo(self.rgis, "  OK")
+    self.rgis.addInfo("  OK")
     QApplication.setOverrideCursor(Qt.ArrowCursor)
     del mcur, cur
     QDialog.accept(self)

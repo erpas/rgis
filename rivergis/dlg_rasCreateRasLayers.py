@@ -6,7 +6,7 @@ from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
 
-from ui_rasCreateRASLayers import *
+from ui.ui_rasCreateRASLayers import *
 
 class DlgCreateRasLayers(QDialog):
   def __init__(self, parent=None):
