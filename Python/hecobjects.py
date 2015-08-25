@@ -14,10 +14,11 @@ class HecRasObject(object):
         self.geom_type = None
         self.attrs = None
 
-    def build_table(self):
+    def pg_create_table(self):
+        schema_name = '"{0}"."{1}"'.format(self.schema, self.name)
         qry = ['id serial PRIMARY KEY', 'geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         qry += [' '.join(field) for field in self.attrs]
-        qry = 'CREATE TABLE {0}."{1}"(\n\t{2});'.format(self.schema, self.name, ',\n\t'.join(qry))
+        qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});'.format(schema_name, schema_name, ',\n\t'.join(qry))
         return qry
 
 
@@ -92,7 +93,6 @@ DROP FUNCTION IF EXISTS from_to_node ()
 
     def pg_lengths_stations(self):
         qry = '''
-
 CREATE OR REPLACE VIEW pnts1 AS
 SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
 FROM "StreamCenterline"
@@ -117,6 +117,7 @@ SELECT * FROM "StreamCenterline"
 WHERE "StreamCenterline"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "Endpoints"))
 '''
         return qry
+
 
 class BankLines(HecRasObject):
     """
@@ -317,8 +318,3 @@ class Junctions(HecRasObject):
 
 class CommonMethods(object):
     pass
-
-
-if __name__ == '__main__':
-    x = StreamCenterline3D()
-    x.build_table()
