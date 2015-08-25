@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
-from qgis.utils import *
-from osgeo import osr
-from osgeo import gdal
-import numpy as np
 import traceback
 import uuid
 from os.path import expanduser, join
 from subprocess import call
 
-from ui_rasWaterSurfaceGeneration import *
+from osgeo import osr
+from osgeo import gdal
+import numpy as np
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from qgis.core import *
+from qgis.gui import *
+from qgis.utils import *
+from ui.ui_rasWaterSurfaceGeneration import *
+
 
 class DlgRasWaterSurfaceGeneration(QDialog):
   def __init__(self, parent=None):

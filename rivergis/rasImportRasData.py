@@ -23,7 +23,6 @@ from PyQt4.QtGui import *
 from qgis.core import *
 
 import traceback
-from miscFunctions import *
 from os.path import dirname
 
 from hecras import HecrasProject, HecrasPlan
@@ -34,13 +33,13 @@ class WorkerRasImportRasData(QObject):
   '''Worker for loading water surface elevation data from HEC-RAS result file in HDF format.'''
   def __init__(self, rgis):
     QObject.__init__(self)
-    addInfo(rgis, "\n<b>Running Load max WSEL from HEC-RAS</b>...\n")
     self.rgis = rgis
+    self.rgis.addInfo("\n<b>Running Load max WSEL from HEC-RAS</b>...\n")
     self.res = None
     try:
       import h5py
     except:
-      addInfo(rgis, "\n\nQGIS couldn't import h5py Python package and doesn't know how to read HEC-RAS result file (HDF). Check your h5py package installation!")
+      self.rgis.addInfo("\n\nQGIS couldn't import h5py Python package and doesn't know how to read HEC-RAS result file (HDF). Check your h5py package installation!")
       QMessageBox.warning(rgis, "Load WSEL from HDF", "QGIS couldn't import h5py Python package and doesn't know how to read HEC-RAS result file (HDF). Check your h5py package installation!")
       self.finished.emit(None)
       return
@@ -48,14 +47,14 @@ class WorkerRasImportRasData(QObject):
     lastHecrasDir = s.value("rivergis/lastHecRasDir", "")
     prjFilename = QFileDialog.getOpenFileName(rgis, 'Open HEC-RAS Project', directory=lastHecrasDir, filter='HEC-RAS Project Files (*.prj)')
     if not prjFilename:
-      addInfo(rgis, "  Loading max WSEL cancelled.")
+      self.rgis.addInfo("  Loading max WSEL cancelled.")
       self.finished.emit(None)
       return
     s.setValue("rivergis/lastHecRasDir", dirname(prjFilename))
     self.prj = HecrasProject(prjFilename)
     # check if there is a result file
     if not self.prj.planHdfFiles:
-      addInfo(rgis, "  Project \"%s\" has no HDF result file. Run some computations and try again.\n" % self.prj.title)
+      self.rgis.addInfo("  Project \"%s\" has no HDF result file. Run some computations and try again.\n" % self.prj.title)
       self.finished.emit(self.res)
       return
 
@@ -70,7 +69,7 @@ class WorkerRasImportRasData(QObject):
     # show plans dialog
     dlg.exec_()
 
-    addInfo(rgis, "  Reading results from file:\n  %s" % rgis.curHdfFile)
+    self.rgis.addInfo("  Reading results from file:\n  %s" % rgis.curHdfFile)
     self.curPlan = HecrasPlan(self.prj, rgis.curHdfFile[-7:-4])
     self.curPlan.checkHasResults()
     self.hdf = h5py.File(rgis.curHdfFile,'r')
@@ -119,7 +118,7 @@ class WorkerRasImportRasData(QObject):
         wselFile = open("%s/wselMax.csv" % self.hdfDirname, "w")
         wselFile.write(t)
         wselFile.close()
-        addInfo(self.rgis, "  Loading maximum WSEL to a temporary layer...")
+        self.rgis.addInfo("  Loading maximum WSEL to a temporary layer...")
 
         vrt = '''<OGRVRTDataSource>
             <OGRVRTLayer name="wselMax">
@@ -138,7 +137,7 @@ class WorkerRasImportRasData(QObject):
         self.res = QgsVectorLayer("%s/wselMax.vrt" % self.hdfDirname, "max WSEL", "ogr")
         self.res = "%s/wselMax.vrt" % self.hdfDirname
 
-        addInfo(self.rgis, "  Done!\n  Review and save the results.\n\n")
+        self.rgis.addInfo("  Done!\n  Review and save the results.\n\n")
 
       except Exception, e:
         # forward the exception upstream

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from subprocess import call
+from os.path import expanduser, join, abspath, basename
+import uuid
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import *
-
-from subprocess import call
-from os.path import expanduser, join, dirname, abspath, basename, isfile
-import uuid
 import processing
-from miscFunctions import *
+from ui.ui_rasFloodplainDelineation import *
 
-from ui_rasFloodplainDelineation import *
 
 class DlgRasFloodplainDelineation(QDialog):
   def __init__(self, rgis):
@@ -52,7 +51,7 @@ class DlgRasFloodplainDelineation(QDialog):
     call(["mkdir", workDirName], shell=True)
     call(["mkdir", shpDir], shell=True)
 
-    addInfo(self.rgis,"Creating tiles...")
+    self.rgis.addInfo("Creating tiles...")
 
     pExt = self.wselLayer.extent()
     xmin = pExt.xMinimum()
@@ -79,7 +78,7 @@ class DlgRasFloodplainDelineation(QDialog):
     feats = siatkaLayer.getFeatures()
     nFeats = siatkaLayer.featureCount()
 
-    addInfo(self.rgis,"Preparing data for tiles...")
+    self.rgis.addInfo("Preparing data for tiles...")
 
     for i, feat in enumerate(feats):
       fid = feat['grid_id']
@@ -93,7 +92,7 @@ class DlgRasFloodplainDelineation(QDialog):
       wsel = processing.runalg("gdalogr:cliprasterbyextent",self.wselLayer,"none",sBufExt,"",None)
       tiles.append([fid, s1['OUTPUT_LAYER'], dtm['OUTPUT'], wsel['OUTPUT']])
 
-    addInfo(self.rgis,"Calculating depths and ranges...")
+    self.rgis.addInfo("Calculating depths and ranges...")
 
     for i, tile in enumerate(tiles):
       siatka = abspath(tile[1])
@@ -111,8 +110,8 @@ class DlgRasFloodplainDelineation(QDialog):
       ranges.append(shpName)
 
 
-    addInfo(self.rgis,"\n\nDepths clipped and range polygons created!\n")
-    addInfo(self.rgis,"Temporary results saved to:\n%s" % workDirName)
+    self.rgis.addInfo("\n\nDepths clipped and range polygons created!\n")
+    self.rgis.addInfo("Temporary results saved to:\n%s" % workDirName)
 
     depthTilesFilename = join(workDirName, 'depth_tiles.txt')
     depthVrtFile = join(workDirName, 'depth_tiles.vrt')
@@ -120,7 +119,7 @@ class DlgRasFloodplainDelineation(QDialog):
     depthTilesFile.write(depths)
     depthTilesFile.close()
 
-    addInfo(self.rgis,"Stitching depths and ranges")
+    self.rgis.addInfo("Stitching depths and ranges")
 
     call(["gdalbuildvrt", "-input_file_list", depthTilesFilename, depthVrtFile])
     depthVrt = processing.getObject( depthVrtFile )
@@ -168,3 +167,15 @@ class DlgRasFloodplainDelineation(QDialog):
     curInd = self.ui.cboWsel.currentIndex()
     lid = self.ui.cboWsel.itemData(curInd)
     self.wselLayer = self.rgis.mapRegistry.mapLayer(lid)
+
+  def getLayerExtent(self, layer, buf=0, hecras=0):
+    pExt = layer.extent()
+    xmin = pExt.xMinimum()
+    xmax = pExt.xMaximum()
+    ymin = pExt.yMinimum()
+    ymax = pExt.yMaximum()
+    if hecras:
+      pExtStr = '%.2f, %.2f, %.2f, %.2f' % (xmin-buf, xmax+buf, ymax+buf, ymin-buf)
+    else:
+      pExtStr = '%.2f, %.2f, %.2f, %.2f' % (xmin-buf, xmax+buf, ymin-buf, ymax+buf)
+    return pExtStr

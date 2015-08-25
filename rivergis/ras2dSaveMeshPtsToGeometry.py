@@ -11,8 +11,6 @@ from os.path import dirname, isfile
 import psycopg2
 import psycopg2.extras
 
-from miscFunctions import *
-
 def ras2dSaveMeshPtsToGeometry(rgis,geoFileName=None):
   """Saves mesh points from current schema and table 'mesh_pts' to HEC-RAS geometry file"""
   if not geoFileName:
@@ -24,7 +22,7 @@ def ras2dSaveMeshPtsToGeometry(rgis,geoFileName=None):
     s.setValue("rivergis/lastGeoDir", dirname(geoFileName))
 
   cur = rgis.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-  addInfo(rgis, "Saving mesh to HEC-RAS geometry file...")
+  rgis.addInfo("Saving mesh to HEC-RAS geometry file...")
 
   # get mesh points extent
   qry = 'select ST_XMin(ST_collect(geom)) as xmin, ST_XMax(ST_collect(geom)) as xmax,ST_YMin(ST_collect(geom)) as ymin, ST_YMax(ST_collect(geom)) as ymax from %s.mesh_pts;' % rgis.schema
@@ -97,7 +95,7 @@ def ras2dSaveMeshPtsToGeometry(rgis,geoFileName=None):
   geoFile.write(geo)
   geoFile.close()
 
-  addInfo(rgis, 'Mesh points saved to HEC-RAS geometry file.\n')
+  rgis.addInfo('Mesh points saved to HEC-RAS geometry file.\n')
 
 
 def createNewGeometry(filename, extent):

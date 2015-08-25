@@ -19,7 +19,6 @@ email                : rpasiok@gmail.com
  ***************************************************************************/
 """
 
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
@@ -28,24 +27,11 @@ from qgis.utils import *
 from qgis.gui import QgsMessageBar
 from dlg_importRiverFromIsokp import *
 
-from subprocess import call
-from os.path import expanduser, join, dirname, abspath, basename, isfile
-import psycopg2
-import psycopg2.extras
-import time
-import uuid
-from math import sqrt, pow, atan2, pi, floor
-import processing
-from miscFunctions import *
-
-debug = 1
-
-
 def importRiverFromIsokp(rgis):
-  addInfo(rgis, '\n<b>Running Import River Data From ISOKP Database</b>' )
+  rgis.addInfo('\n<b>Running Import River Data From ISOKP Database</b>' )
   db = rgis.tree.currentDatabase()
   if db is None:
-    addInfo(rgis, "No database selected or you are not connected to it.")
+    rgis.addInfo(rgis, "No database selected or you are not connected to it.")
     return
 
   layers = DlgImportRiverFromIsokp(rgis)

@@ -19,22 +19,15 @@ email                : rpasiok@gmail.com
  ***************************************************************************/
 """
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-from qgis.gui import QgsMessageBar
-from qgis.utils import showPluginHelp
-
 import psycopg2
 import psycopg2.extras
 
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 import processing
-from _ui_rivergis import Ui_RiverGIS
-
-from hecras1dFunctions import *
-from isokpFunctions import *
+from ui._ui_rivergis import Ui_RiverGIS
+from import_export import *
 from pg_functions import *
-
 from rasImportRasData import WorkerRasImportRasData
 
 
@@ -119,6 +112,9 @@ class RiverGIS(QMainWindow):
   def showRGisHelp(self):
     self.showHelp('index.html')
 
+  def addInfo(self, text):
+    self.ui.textEdit.append(text)
+
   def updateDefaultCrs(self):
     self.crs = self.ui.crsWidget.crs()
     addInfo(self, '\nDefault CRS changed to: %s\n' % self.crs.authid() )
@@ -199,7 +195,6 @@ class RiverGIS(QMainWindow):
   # 1D HEC-RAS Geometry Functions
 
   def rasCreateRASLayers(self):
-    addInfo(self, '\n<b>Creating HEC-RAS 1D Layers as PostGIS tables.</b>' )
     from dlg_rasCreateRasLayers import DlgCreateRasLayers
     dlg = DlgCreateRasLayers(self)
     dlg.exec_()
@@ -225,7 +220,7 @@ class RiverGIS(QMainWindow):
 
 
   def rasSaveMeshPtsToHecrasGeo(self):
-    from ras2dSaveMeshPtsToGeometry import ras2dSaveMeshPtsToGeometry, createNewGeometry
+    from ras2dSaveMeshPtsToGeometry import ras2dSaveMeshPtsToGeometry
     ras2dSaveMeshPtsToGeometry(self)
 
 

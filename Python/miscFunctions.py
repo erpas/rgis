@@ -19,19 +19,6 @@ email                : rpasiok@gmail.com
  ***************************************************************************/
 """
 
-import psycopg2
-import psycopg2.extras
-
-def addInfo(rgis, text):
-    rgis.ui.textEdit.append(text)
-
-def mikeName(text):
-  """Removes diacritics from the string, replaceses spaces with underscore"""
-  a = text.decode('utf-8').replace(u'\u0141', "L").replace(u'\u0142', "l")
-  b = a.replace(" ", "_")
-  textAscii = unicodedata.normalize("NFKD", b).encode('ascii', 'ignore')
-  return textAscii
-
 def getListSlicesBetween(l,s1,s2,withLast):
   r"""getListSlicesBetween -- from list of strings l gets slices between pair of items starting from s1 and s2.
   Slices will contain the ending item starting from s2 if argument withLast is set to True.
