@@ -2,7 +2,7 @@ __author__ = 'ldebek'
 
 import psycopg2
 import sys
-import hecobjects
+from hecobjects import *
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI
 
 class RiverDatabase(object):
@@ -80,7 +80,10 @@ class RiverDatabase(object):
         :param obj: Instance of geometry object
         """
         key = obj.name
-        self.objects_register[key] = obj
+        if key not in self.objects_register:
+            self.objects_register[key] = obj
+        else:
+            print('Object already exists inside RiverGIS registry.')
 
     def crete_hecobject(self, hecobject, schema, srid):
         """
@@ -99,7 +102,17 @@ class RiverDatabase(object):
             self.register(obj)
         else:
             pass
-        return obj.name
+        return obj
+
+    def process_hecobject(self, hecobject, pg_method, schema, srid):
+        hecobject.SCHEMA = schema
+        hecobject.SRID = srid
+        obj = hecobject()
+        method = getattr(obj, pg_method)
+        qry = method()
+        print(qry)
+        self.run_sql(qry)
+        self.register(obj)
 
     def import_hecobject(self, sdf):
         """
@@ -123,9 +136,10 @@ class RiverDatabase(object):
 if __name__ == '__main__':
     baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
     baza.connect_pg()
-    print(baza.con)
-    nazwa_obiektu = baza.crete_hecobject(hecobjects.StreamCenterline3D, 'public', 2180)
+
+    baza.crete_hecobject(StreamCenterline3D, 'public', 2180)
+    baza.process_hecobject(StreamCenterline, 'pg_from_to_node', 'public', 2180)
+    baza.process_hecobject(StreamCenterline, 'pg_lengths_stations', 'public', 2180)
     print(baza.objects_register)
-    print(baza.objects_register[nazwa_obiektu])
+
     baza.disconnect_pg()
-    print(baza.con)

@@ -17,8 +17,8 @@ class HecRasObject(object):
     def build_table(self):
         qry = ['id serial PRIMARY KEY', 'geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         qry += [' '.join(field) for field in self.attrs]
-        tab_sql = 'CREATE TABLE {0}."{1}"(\n\t{2});'.format(self.schema, self.name, ',\n\t'.join(qry))
-        return tab_sql
+        qry = 'CREATE TABLE {0}."{1}"(\n\t{2});'.format(self.schema, self.name, ',\n\t'.join(qry))
+        return qry
 
 
 class StreamCenterline(HecRasObject):
@@ -39,6 +39,84 @@ class StreamCenterline(HecRasObject):
             ('"FromSta"', 'real'),
             ('"ToSta"', 'real')]
 
+    def pg_from_to_node(self):
+        qry = '''
+CREATE OR REPLACE FUNCTION from_to_node ()
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM "StreamCenterline";
+    r "StreamCenterline"%ROWTYPE;
+    start_geom geometry;
+    end_geom geometry;
+    start_node integer := 0;
+    end_node integer := 0;
+    nr integer := 0;
+BEGIN
+DROP TABLE IF EXISTS "NodesTable";
+CREATE TABLE "NodesTable"(
+    geom geometry(POINT, 2180),
+    "NodeID" integer,
+    "X" real,
+    "Y" real);
+FOR r in c LOOP
+    start_geom := ST_StartPoint(r.geom);
+    end_geom := ST_EndPoint(r.geom);
+    IF (SELECT exists (SELECT 1 FROM "NodesTable" WHERE geom = start_geom LIMIT 1)) THEN
+        start_node := (SELECT "NodeID" FROM "NodesTable" WHERE geom = start_geom LIMIT 1);
+    ELSE
+        nr := nr + 1;
+        start_node := nr;
+        INSERT INTO "NodesTable" VALUES (start_geom, nr, ST_X(start_geom), ST_Y(start_geom));
+    END IF;
+    IF (SELECT exists (SELECT 1 FROM "NodesTable" WHERE geom = end_geom LIMIT 1)) THEN
+        end_node := (SELECT "NodeID" FROM "NodesTable" WHERE geom = end_geom LIMIT 1);
+    ELSE
+        nr := nr + 1;
+        end_node := nr;
+        INSERT INTO "NodesTable" VALUES (end_geom, nr, ST_X(end_geom), ST_Y(end_geom));
+    END IF;
+    UPDATE "StreamCenterline" SET
+    "FromNode" = start_node,
+    "ToNode" = end_node
+    WHERE CURRENT OF c;
+END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+
+SELECT from_to_node ();
+DROP FUNCTION IF EXISTS from_to_node ()
+'''
+        return qry
+
+    def pg_lengths_stations(self):
+        qry = '''
+
+CREATE OR REPLACE VIEW pnts1 AS
+SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
+FROM "StreamCenterline"
+UNION ALL
+SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
+FROM "StreamCenterline";
+
+CREATE OR REPLACE VIEW pnts2 AS
+SELECT "RiverCode", geom
+FROM pnts1
+GROUP BY "RiverCode", geom
+HAVING COUNT(geom) = 1;
+
+DROP TABLE IF EXISTS "Endpoints";
+SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) INTO "Endpoints"
+FROM pnts1, pnts2
+WHERE pnts1."RiverCode" = pnts2."RiverCode" AND pnts1.geom = pnts2.geom AND pnts1.typ_punktu = 'end';
+
+DROP VIEW pnts1 CASCADE;
+
+SELECT * FROM "StreamCenterline"
+WHERE "StreamCenterline"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "Endpoints"))
+'''
+        return qry
 
 class BankLines(HecRasObject):
     """
