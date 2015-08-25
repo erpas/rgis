@@ -64,7 +64,7 @@ class RiverDatabase(object):
             print(e)
             sys.exit(1)
 
-    def chack_if_exists(self, obj):
+    def check_if_exists(self, obj):
         """
         Checking if geometry object exists in database.
         :param obj: Instance of geometry object
@@ -85,7 +85,7 @@ class RiverDatabase(object):
         else:
             print('Object already exists inside RiverGIS registry.')
 
-    def crete_hecobject(self, hecobject, schema, srid):
+    def create_hecobject(self, hecobject, schema, srid):
         """
         Creating table templates inside PostGIS database.
         :param hecobject: HEC-RAS class object
@@ -95,7 +95,7 @@ class RiverDatabase(object):
         hecobject.SCHEMA = schema
         hecobject.SRID = srid
         obj = hecobject()
-        if self.chack_if_exists(obj) is False:
+        if self.check_if_exists(obj) is False:
             qry = obj.build_table()
             print(qry)
             self.run_sql(qry)
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
     baza.connect_pg()
 
-    baza.crete_hecobject(StreamCenterline3D, 'public', 2180)
+    baza.create_hecobject(StreamCenterline3D, 'public', 2180)
     baza.process_hecobject(StreamCenterline, 'pg_from_to_node', 'public', 2180)
     baza.process_hecobject(StreamCenterline, 'pg_lengths_stations', 'public', 2180)
     print(baza.objects_register)
