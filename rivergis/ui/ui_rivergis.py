@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
+# Form implementation generated from reading ui file 'ui_rivergis.ui'
 #
-# Created: Mon Aug 31 20:27:24 2015
+# Created: Fri Aug 21 09:20:15 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!

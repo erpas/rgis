@@ -209,6 +209,19 @@ class RiverGIS(QMainWindow):
     dlg.exec_()
 
 
+  def rasImportDataIntoRASDatabaseTables(self):
+    from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
+    self.addInfo('\n<b>Running Import Data Into PostGIS Database</b>' )
+    if self.curConnName is None:
+      self.addInfo("No database selected or you are not connected to it.")
+      return
+
+    importData = DlgImportDataIntoRasTables(self)
+    importData.exec_()
+
+  def rasTopology1D(self):
+    pass
+
   # 2D HEC-RAS Geometry Functions
 
   def rasCreate2dArea(self):
