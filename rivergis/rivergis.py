@@ -19,16 +19,18 @@ email                : rpasiok@gmail.com
  ***************************************************************************/
 """
 
-import psycopg2
-import psycopg2.extras
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from qgis.core import *
+from qgis.utils import *
+
+import psycopg2
+import psycopg2.extras
 import processing
 from ui._ui_rivergis import Ui_RiverGIS
-from import_export import *
+
 from pg_functions import *
-from rasImportRasData import WorkerRasImportRasData
+
 
 
 class RiverGIS(QMainWindow):
@@ -48,9 +50,16 @@ class RiverGIS(QMainWindow):
     self.statusBar = QStatusBar(self)
     self.setStatusBar(self.statusBar)
 
-    # MENU
+    # MENU Actions
+
+    # DB
     self.ui.actionRefreshConnections.triggered.connect(self.connChanged)
     self.ui.actionImportRiverFromIsokp.triggered.connect(self.importRiverIsokp)
+    # RAS Geometry
+    # 1D
+    self.ui.actionImportDataIntoRASDatabaseTables.triggered.connect(self.rasImportDataIntoRASDatabaseTables)
+    self.ui.actionRASTopology1D.triggered.connect(self.rasTopology1D)
+    # 2D
     self.ui.actionRASCreate2dArea.triggered.connect(self.rasCreate2dArea)
     self.ui.actionRASPreview2DMesh.triggered.connect(self.rasPreview2DMesh)
     self.ui.actionRASSaveMeshPointsToHECRASGeometry.triggered.connect(self.rasSaveMeshPtsToHecrasGeo)
@@ -117,7 +126,7 @@ class RiverGIS(QMainWindow):
 
   def updateDefaultCrs(self):
     self.crs = self.ui.crsWidget.crs()
-    addInfo(self, '\nDefault CRS changed to: %s\n' % self.crs.authid() )
+    self.addInfo('\nDefault CRS changed to: %s\n' % self.crs.authid() )
 
   # Database Functions
 
@@ -183,9 +192,9 @@ class RiverGIS(QMainWindow):
 
   def importRiverIsokp(self):
     from dlg_importRiverFromIsokp import DlgImportRiverFromIsokp
-    addInfo(self, '\n<b>Running Import River Data From ISOKP Database</b>' )
+    self.addInfo('\n<b>Running Import River Data From ISOKP Database</b>' )
     if self.curConnName is None:
-      addInfo(self, "No database selected or you are not connected to it.")
+      self.addInfo("No database selected or you are not connected to it.")
       return
 
     importData = DlgImportRiverFromIsokp(self)
@@ -200,6 +209,19 @@ class RiverGIS(QMainWindow):
     dlg.exec_()
 
 
+  def rasImportDataIntoRASDatabaseTables(self):
+    from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
+    self.addInfo('\n<b>Running Import Data Into PostGIS Database</b>' )
+    if self.curConnName is None:
+      self.addInfo("No database selected or you are not connected to it.")
+      return
+
+    importData = DlgImportDataIntoRasTables(self)
+    importData.exec_()
+
+  def rasTopology1D(self):
+    pass
+
   # 2D HEC-RAS Geometry Functions
 
   def rasCreate2dArea(self):
@@ -209,7 +231,7 @@ class RiverGIS(QMainWindow):
       return
     else:
       from dlg_ras2dAreaMesh import DlgRasCreate2dFlowAreas
-      addInfo(self, '<br><b>Running Create 2D Flow Areas</b>' )
+      self.addInfo('<br><b>Running Create 2D Flow Areas</b>' )
       dlg = DlgRasCreate2dFlowAreas(self)
       dlg.exec_()
 
@@ -227,6 +249,7 @@ class RiverGIS(QMainWindow):
   # RAS Mapping function
 
   def rasImportRasDataStart(self):
+    from rasImportRasData import WorkerRasImportRasData
     messageBar = self.iface.messageBar().createMessage('Loading max water surface elevation...', )
     progressBar = QProgressBar()
     progressBar.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
@@ -256,7 +279,7 @@ class RiverGIS(QMainWindow):
         # processing.load(res.dataProvider().dataSourceUri(), 'WSEL_temp_points')
         processing.load(res, 'WSEL_temp_points')
       else:
-        addInfo(self, 'Loading max WSEL failed or was cancelled, check the log...')
+        self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
       self.iface.messageBar().popWidget(self.messageBar)
       self.workerWselHecRas.deleteLater()
       self.threadWselHecRas.quit()
@@ -265,17 +288,17 @@ class RiverGIS(QMainWindow):
 
   def rasWaterSurfaceGeneration(self):
     from dlg_rasWaterSurfaceGeneration import DlgRasWaterSurfaceGeneration
-    addInfo(self, '<br><b>Running Create Water Surface Raster</b>' )
+    self.addInfo('<br><b>Running Create Water Surface Raster</b>' )
     dlg = DlgRasWaterSurfaceGeneration(self)
     dlg.exec_()
 
   def loadWselError(self, e, exception_string):
-    addInfo(self, 'Thread loading WSEL raised an exception:{}'.format(exception_string))
+    self.addInfo('Thread loading WSEL raised an exception:{}'.format(exception_string))
     QgsMessageLog.logMessage('Thread loading WSEL raised an exception:{}\n'.format(exception_string), level=QgsMessageLog.CRITICAL)
     
   def rasFloodplainDelineation(self):
     from dlg_rasFloodplainDelineation import DlgRasFloodplainDelineation
-    addInfo(self, '\n<b>Running floodplain delineation.</b>' )
+    self.addInfo('\n<b>Running floodplain delineation.</b>' )
     dialog = DlgRasFloodplainDelineation(self)
     dialog.exec_()
 

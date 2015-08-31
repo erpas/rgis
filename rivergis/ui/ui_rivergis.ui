@@ -17,7 +17,7 @@
    <string>RiverGIS</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="resources.qrc">
+   <iconset>
     <normaloff>:/rivergis/icons/rivergis.svg</normaloff>:/rivergis/icons/rivergis.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -178,6 +178,7 @@
      <addaction name="actionRASStreamCenterlineAll"/>
     </widget>
     <addaction name="actionRASCreateRASLayers"/>
+    <addaction name="actionImportDataIntoRASDatabaseTables"/>
     <addaction name="menuStreamCenterlineAttributes"/>
     <addaction name="menuXS_Cut_Line_Attributes"/>
     <addaction name="actionRASManningsNValues"/>
@@ -206,7 +207,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionCreate2dAreaPerimeter">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/2darea_perimeter.svg</normaloff>:/rivergis/icons/2darea_perimeter.svg</iconset>
    </property>
    <property name="text">
@@ -218,7 +219,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/correctLateralWeir.svg</normaloff>:/rivergis/icons/correctLateralWeir.svg</iconset>
    </property>
    <property name="text">
@@ -227,7 +228,7 @@
   </action>
   <action name="actionRASCreate2dArea">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/2darea.svg</normaloff>:/rivergis/icons/2darea.svg</iconset>
    </property>
    <property name="text">
@@ -246,7 +247,7 @@
   </action>
   <action name="actionLoad_2D_WSEL_from_HDF">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
    </property>
    <property name="text">
@@ -258,7 +259,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/createWselRaster.svg</normaloff>:/rivergis/icons/createWselRaster.svg</iconset>
    </property>
    <property name="text">
@@ -267,7 +268,7 @@
   </action>
   <action name="actionImportRiverFromIsokp">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/importFromIsok.svg</normaloff>:/rivergis/icons/importFromIsok.svg</iconset>
    </property>
    <property name="text">
@@ -276,7 +277,7 @@
   </action>
   <action name="actionRefreshConnections">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/action_refresh.png</normaloff>:/rivergis/icons/action_refresh.png</iconset>
    </property>
    <property name="text">
@@ -285,7 +286,7 @@
   </action>
   <action name="actionRASFloodplainDelineation">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/createDepthsAndRange.svg</normaloff>:/rivergis/icons/createDepthsAndRange.svg</iconset>
    </property>
    <property name="text">
@@ -299,7 +300,7 @@
   </action>
   <action name="actionRASImportRasData">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
    </property>
    <property name="text">
@@ -313,7 +314,7 @@
   </action>
   <action name="actionRASSaveMeshPointsToHECRASGeometry">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</iconset>
    </property>
    <property name="text">
@@ -398,6 +399,11 @@
     <string>All</string>
    </property>
   </action>
+  <action name="actionImportDataIntoRASDatabaseTables">
+   <property name="text">
+    <string>Import Data Into RAS Database Tables</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -410,7 +416,7 @@
   <tabstop>textEdit</tabstop>
  </tabstops>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../resources.qrc"/>
  </resources>
  <connections/>
 </ui>
