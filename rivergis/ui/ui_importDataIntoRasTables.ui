@@ -24,7 +24,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="riversCbo"/>
+      <widget class="QComboBox" name="cboRivers"/>
      </item>
      <item>
       <widget class="QLabel" name="label_2">
@@ -34,7 +34,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="xsCbo"/>
+      <widget class="QComboBox" name="cboXs"/>
      </item>
      <item>
       <widget class="QLabel" name="label_3">
@@ -44,7 +44,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="leveesCbo"/>
+      <widget class="QComboBox" name="cboLevees"/>
      </item>
      <item>
       <widget class="QLabel" name="label_4">
@@ -54,7 +54,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="banksCbo"/>
+      <widget class="QComboBox" name="cboBanks"/>
      </item>
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">

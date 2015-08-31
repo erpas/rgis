@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_importDataIntoRasTables.ui'
 #
-# Created: Tue Aug 25 11:05:16 2015
+# Created: Mon Aug 31 21:44:35 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -34,27 +34,27 @@ class Ui_importDataIntoRasTables(object):
         self.label = QtGui.QLabel(importDataIntoRasTables)
         self.label.setObjectName(_fromUtf8("label"))
         self.verticalLayout.addWidget(self.label)
-        self.riversCbo = QtGui.QComboBox(importDataIntoRasTables)
-        self.riversCbo.setObjectName(_fromUtf8("riversCbo"))
-        self.verticalLayout.addWidget(self.riversCbo)
+        self.cboRivers = QtGui.QComboBox(importDataIntoRasTables)
+        self.cboRivers.setObjectName(_fromUtf8("cboRivers"))
+        self.verticalLayout.addWidget(self.cboRivers)
         self.label_2 = QtGui.QLabel(importDataIntoRasTables)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.verticalLayout.addWidget(self.label_2)
-        self.xsCbo = QtGui.QComboBox(importDataIntoRasTables)
-        self.xsCbo.setObjectName(_fromUtf8("xsCbo"))
-        self.verticalLayout.addWidget(self.xsCbo)
+        self.cboXs = QtGui.QComboBox(importDataIntoRasTables)
+        self.cboXs.setObjectName(_fromUtf8("cboXs"))
+        self.verticalLayout.addWidget(self.cboXs)
         self.label_3 = QtGui.QLabel(importDataIntoRasTables)
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.verticalLayout.addWidget(self.label_3)
-        self.leveesCbo = QtGui.QComboBox(importDataIntoRasTables)
-        self.leveesCbo.setObjectName(_fromUtf8("leveesCbo"))
-        self.verticalLayout.addWidget(self.leveesCbo)
+        self.cboLevees = QtGui.QComboBox(importDataIntoRasTables)
+        self.cboLevees.setObjectName(_fromUtf8("cboLevees"))
+        self.verticalLayout.addWidget(self.cboLevees)
         self.label_4 = QtGui.QLabel(importDataIntoRasTables)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.verticalLayout.addWidget(self.label_4)
-        self.banksCbo = QtGui.QComboBox(importDataIntoRasTables)
-        self.banksCbo.setObjectName(_fromUtf8("banksCbo"))
-        self.verticalLayout.addWidget(self.banksCbo)
+        self.cboBanks = QtGui.QComboBox(importDataIntoRasTables)
+        self.cboBanks.setObjectName(_fromUtf8("cboBanks"))
+        self.verticalLayout.addWidget(self.cboBanks)
         self.buttonBox = QtGui.QDialogButtonBox(importDataIntoRasTables)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))

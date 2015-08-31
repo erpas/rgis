@@ -45,6 +45,8 @@ class RiverGIS(QMainWindow):
     self.iface = iface
     self.mapRegistry = QgsMapLayerRegistry.instance()
     self.rivergisPath = os.path.dirname(__file__)
+    self.curConnName = None
+    self.schema = None
 
     # create status bar
     self.statusBar = QStatusBar(self)
@@ -161,7 +163,7 @@ class RiverGIS(QMainWindow):
     if self.sslmode:
       self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
     self.conn = psycopg2.connect(self.connParams)
-    addInfo(self,'Current DB connection is: %s' % self.curConnName)
+    self.addInfo('Current DB connection is: %s' % self.curConnName)
 
     # refresh schemas combo
     schemaName = self.ui.schemasCbo.currentText()
@@ -186,7 +188,7 @@ class RiverGIS(QMainWindow):
   def schemaChanged(self):
     if not self.ui.schemasCbo.currentText() == '':
       self.schema = self.ui.schemasCbo.currentText()
-      addInfo(self,'Current DB schema is: %s' % self.schema)
+      self.addInfo('Current DB schema is: %s' % self.schema)
 
 
 
@@ -210,10 +212,13 @@ class RiverGIS(QMainWindow):
 
 
   def rasImportDataIntoRASDatabaseTables(self):
+    '''
+    Imports chosen layers into PostGIS database.
+    '''
     from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
-    self.addInfo('\n<b>Running Import Data Into PostGIS Database</b>' )
-    if self.curConnName is None:
-      self.addInfo("No database selected or you are not connected to it.")
+    self.addInfo("<br><br><b>Import data into RAS PostGIS tables...</b>")
+    if not self.curConnName or not self.schema:
+      self.addInfo("No PostGIS database or schema selected. Choose a connection and schema.")
       return
 
     importData = DlgImportDataIntoRasTables(self)
@@ -250,25 +255,14 @@ class RiverGIS(QMainWindow):
 
   def rasImportRasDataStart(self):
     from rasImportRasData import WorkerRasImportRasData
-    messageBar = self.iface.messageBar().createMessage('Loading max water surface elevation...', )
-    progressBar = QProgressBar()
-    progressBar.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
-    cancelButton = QPushButton()
-    cancelButton.setText('Cancel')
-    messageBar.layout().addWidget(progressBar)
-    messageBar.layout().addWidget(cancelButton)
-    self.iface.messageBar().pushWidget(messageBar, self.iface.messageBar().INFO)
-    self.messageBar = messageBar
     self.workerWselHecRas = WorkerRasImportRasData(self)
-    cancelButton.clicked.connect(self.workerWselHecRas.kill)
+
 
     thread = QThread()
     self.workerWselHecRas.moveToThread(thread)
     self.workerWselHecRas.finished.connect(self.rasImportRasDataFinish)
     self.workerWselHecRas.error.connect(self.loadWselError)
-    self.workerWselHecRas.progress.connect(progressBar.setValue)
     thread.started.connect(self.workerWselHecRas.run)
-
     thread.start()
     self.threadWselHecRas = thread
 
@@ -280,11 +274,15 @@ class RiverGIS(QMainWindow):
         processing.load(res, 'WSEL_temp_points')
       else:
         self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
-      self.iface.messageBar().popWidget(self.messageBar)
+
       self.workerWselHecRas.deleteLater()
       self.threadWselHecRas.quit()
       self.threadWselHecRas.wait()
       self.threadWselHecRas.deleteLater()
+
+  def loadWselError(self, e, exception_string):
+    self.addInfo('Thread loading WSEL raised an exception:{}'.format(exception_string))
+    QgsMessageLog.logMessage('Thread loading WSEL raised an exception:{}\n'.format(exception_string), level=QgsMessageLog.CRITICAL)
 
   def rasWaterSurfaceGeneration(self):
     from dlg_rasWaterSurfaceGeneration import DlgRasWaterSurfaceGeneration
@@ -292,10 +290,6 @@ class RiverGIS(QMainWindow):
     dlg = DlgRasWaterSurfaceGeneration(self)
     dlg.exec_()
 
-  def loadWselError(self, e, exception_string):
-    self.addInfo('Thread loading WSEL raised an exception:{}'.format(exception_string))
-    QgsMessageLog.logMessage('Thread loading WSEL raised an exception:{}\n'.format(exception_string), level=QgsMessageLog.CRITICAL)
-    
   def rasFloodplainDelineation(self):
     from dlg_rasFloodplainDelineation import DlgRasFloodplainDelineation
     self.addInfo('\n<b>Running floodplain delineation.</b>' )
@@ -304,7 +298,6 @@ class RiverGIS(QMainWindow):
 
   def about(self):
     self.showHelp('index.html')
-
 
   def registerAction(self, action, menuName, callback=None):
     pass
