@@ -9,12 +9,12 @@ CREATE TABLE raf_manning2.przekroje_inter (hydroid int, n_value varchar, lucode 
 -- Intersect warstw uzytkowania z przekrojami i upload wynikow do wczesniej stworzonej tabeli --
 ------------------------------------------------------------------------------------------------
 
-CREATE VIEW temp_tab AS
-
-SELECT mann.hydroid, mann.n_value,mann.lucode, ST_AsText((ST_Dump(mann.geom)).geom) AS geom
-FROM 
-	(SELECT ST_AsText(ST_Intersection(uzytkowanie.geom, xscutlines.geom)) 
-		AS geom,lucode,n_value, hydroid
+WITH
+  temp_tab AS
+    SELECT
+    	mann.hydroid, mann.n_value,mann.lucode, ST_AsText((ST_Dump(mann.geom)).geom) AS geom
+    FROM
+			(SELECT ST_AsText(ST_Intersection(uzytkowanie.geom, xscutlines.geom)) AS geom,lucode,n_value, hydroid
 		FROM raf_manning2.uzytkowanie, raf_manning2.xscutlines) 
 AS mann 
 WHERE geom <> 'GEOMETRYCOLLECTION EMPTY'

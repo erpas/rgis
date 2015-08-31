@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_rivergis.ui'
+# Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Fri Aug 21 09:20:15 2015
+# Created: Mon Aug 31 20:27:24 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -181,6 +181,8 @@ class Ui_RiverGIS(object):
         self.actionRASXSElevations.setObjectName(_fromUtf8("actionRASXSElevations"))
         self.actionRASXSAll = QtGui.QAction(RiverGIS)
         self.actionRASXSAll.setObjectName(_fromUtf8("actionRASXSAll"))
+        self.actionImportDataIntoRASDatabaseTables = QtGui.QAction(RiverGIS)
+        self.actionImportDataIntoRASDatabaseTables.setObjectName(_fromUtf8("actionImportDataIntoRASDatabaseTables"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuRASMapping.addAction(self.actionRASImportRasData)
         self.menuRASMapping.addSeparator()
@@ -201,6 +203,7 @@ class Ui_RiverGIS(object):
         self.menuStreamCenterlineAttributes.addSeparator()
         self.menuStreamCenterlineAttributes.addAction(self.actionRASStreamCenterlineAll)
         self.menu_Geometry.addAction(self.actionRASCreateRASLayers)
+        self.menu_Geometry.addAction(self.actionImportDataIntoRASDatabaseTables)
         self.menu_Geometry.addAction(self.menuStreamCenterlineAttributes.menuAction())
         self.menu_Geometry.addAction(self.menuXS_Cut_Line_Attributes.menuAction())
         self.menu_Geometry.addAction(self.actionRASManningsNValues)
@@ -263,5 +266,7 @@ class Ui_RiverGIS(object):
         self.actionRASXSDownstreamReachLengths.setText(_translate("RiverGIS", "Downstream Reach Lengths", None))
         self.actionRASXSElevations.setText(_translate("RiverGIS", "Elevations", None))
         self.actionRASXSAll.setText(_translate("RiverGIS", "All", None))
+        self.actionImportDataIntoRASDatabaseTables.setText(_translate("RiverGIS", "Import Data Into RAS Database Tables", None))
 
 from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
+import resources_rc
