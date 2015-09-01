@@ -27,7 +27,19 @@ class DlgImportDataIntoRasTables(QDialog):
 
   def populateCbos(self):
     self.ui.cboRivers.clear()
-    rivers = []
+    self.ui.cboXs.clear()
+    self.ui.cboLevees.clear()
+    self.ui.cboBanks.clear()
+    self.ui.cboIneffective.clear()
+    self.ui.cboObstructions.clear()
+    self.ui.cboFlowPaths.clear()
+    self.ui.cboRivers.addItem("")
+    self.ui.cboXs.addItem("")
+    self.ui.cboLevees.addItem("")
+    self.ui.cboBanks.addItem("")
+    self.ui.cboIneffective.addItem("")
+    self.ui.cboObstructions.addItem("")
+    self.ui.cboFlowPaths.addItem("")
     for layerId, layer in self.rgis.mapRegistry.mapLayers().iteritems():
       if layer.type() == 0 and layer.geometryType() == 0: # vector and points
         pass
@@ -36,8 +48,10 @@ class DlgImportDataIntoRasTables(QDialog):
         self.ui.cboXs.addItem(layer.name(), layerId)
         self.ui.cboLevees.addItem(layer.name(), layerId)
         self.ui.cboBanks.addItem(layer.name(), layerId)
+        self.ui.cboFlowPaths.addItem(layer.name(), layerId)
       if layer.type() == 0 and layer.geometryType() == 2: # vector and polygons
-        pass
+        self.ui.cboIneffective.addItem(layer.name(), layerId)
+        self.ui.cboObstructions.addItem(layer.name(), layerId)
       if layer.type() == 1: # it's a raster
         pass
 
