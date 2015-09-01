@@ -17,7 +17,7 @@
    <string>RiverGIS</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../resources.qrc">
     <normaloff>:/rivergis/icons/rivergis.svg</normaloff>:/rivergis/icons/rivergis.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -159,7 +159,7 @@
      </property>
      <addaction name="actionRASXSRiverReachNames"/>
      <addaction name="actionRASXSStationing"/>
-     <addaction name="actionRASXSBank_Stations"/>
+     <addaction name="actionRASXSBankStations"/>
      <addaction name="actionRASXSDownstreamReachLengths"/>
      <addaction name="separator"/>
      <addaction name="actionRASXSElevations"/>
@@ -177,14 +177,23 @@
      <addaction name="separator"/>
      <addaction name="actionRASStreamCenterlineAll"/>
     </widget>
+    <widget class="QMenu" name="menuUtilities">
+     <property name="title">
+      <string>Utilities</string>
+     </property>
+     <addaction name="actionRASFlipXSDirection"/>
+    </widget>
     <addaction name="actionRASCreateRASLayers"/>
     <addaction name="actionImportDataIntoRASDatabaseTables"/>
     <addaction name="menuStreamCenterlineAttributes"/>
     <addaction name="menuXS_Cut_Line_Attributes"/>
     <addaction name="actionRASManningsNValues"/>
+    <addaction name="actionRASLevees"/>
+    <addaction name="actionRASIneffectiveFlowAreas"/>
+    <addaction name="actionRASBlockedObstructions"/>
+    <addaction name="menuUtilities"/>
     <addaction name="separator"/>
     <addaction name="actionRASExport1DRASData"/>
-    <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="actionRASCreate2dArea"/>
     <addaction name="actionRASPreview2DMesh"/>
@@ -207,7 +216,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionCreate2dAreaPerimeter">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/2darea_perimeter.svg</normaloff>:/rivergis/icons/2darea_perimeter.svg</iconset>
    </property>
    <property name="text">
@@ -219,7 +228,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/correctLateralWeir.svg</normaloff>:/rivergis/icons/correctLateralWeir.svg</iconset>
    </property>
    <property name="text">
@@ -228,7 +237,7 @@
   </action>
   <action name="actionRASCreate2dArea">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/2darea.svg</normaloff>:/rivergis/icons/2darea.svg</iconset>
    </property>
    <property name="text">
@@ -247,7 +256,7 @@
   </action>
   <action name="actionLoad_2D_WSEL_from_HDF">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
    </property>
    <property name="text">
@@ -259,7 +268,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/createWselRaster.svg</normaloff>:/rivergis/icons/createWselRaster.svg</iconset>
    </property>
    <property name="text">
@@ -268,7 +277,7 @@
   </action>
   <action name="actionImportRiverFromIsokp">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/importFromIsok.svg</normaloff>:/rivergis/icons/importFromIsok.svg</iconset>
    </property>
    <property name="text">
@@ -277,7 +286,7 @@
   </action>
   <action name="actionRefreshConnections">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/action_refresh.png</normaloff>:/rivergis/icons/action_refresh.png</iconset>
    </property>
    <property name="text">
@@ -286,7 +295,7 @@
   </action>
   <action name="actionRASFloodplainDelineation">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/createDepthsAndRange.svg</normaloff>:/rivergis/icons/createDepthsAndRange.svg</iconset>
    </property>
    <property name="text">
@@ -300,7 +309,7 @@
   </action>
   <action name="actionRASImportRasData">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
    </property>
    <property name="text">
@@ -314,7 +323,7 @@
   </action>
   <action name="actionRASSaveMeshPointsToHECRASGeometry">
    <property name="icon">
-    <iconset>
+    <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</iconset>
    </property>
    <property name="text">
@@ -379,7 +388,7 @@
     <string>Stationing</string>
    </property>
   </action>
-  <action name="actionRASXSBank_Stations">
+  <action name="actionRASXSBankStations">
    <property name="text">
     <string>Bank Stations</string>
    </property>
@@ -402,6 +411,26 @@
   <action name="actionImportDataIntoRASDatabaseTables">
    <property name="text">
     <string>Import Data Into RAS Database Tables</string>
+   </property>
+  </action>
+  <action name="actionRASLevees">
+   <property name="text">
+    <string>Levees</string>
+   </property>
+  </action>
+  <action name="actionRASIneffectiveFlowAreas">
+   <property name="text">
+    <string>Ineffective Flow Areas</string>
+   </property>
+  </action>
+  <action name="actionRASBlockedObstructions">
+   <property name="text">
+    <string>Blocked Obstructions</string>
+   </property>
+  </action>
+  <action name="actionRASFlipXSDirection">
+   <property name="text">
+    <string>Flip Cross Sections</string>
    </property>
   </action>
  </widget>

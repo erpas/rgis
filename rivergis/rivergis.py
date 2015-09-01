@@ -61,6 +61,21 @@ class RiverGIS(QMainWindow):
     # 1D
     self.ui.actionImportDataIntoRASDatabaseTables.triggered.connect(self.rasImportDataIntoRASDatabaseTables)
     self.ui.actionRASTopology1D.triggered.connect(self.rasTopology1D)
+    self.ui.actionRASLengthsStations.triggered.connect(self.rasLengthsStations)
+    self.ui.actionRASCenterlineElevations.triggered.connect(self.rasCenterlineElevations)
+    self.ui.actionRASStreamCenterlineAll.triggered.connect(self.rasStreamCenterlineAll)
+    self.ui.actionRASXSRiverReachNames.triggered.connect(self.rasXSRiverReachNames)
+    self.ui.actionRASXSStationing.triggered.connect(self.rasXSStationing)
+    self.ui.actionRASXSBankStations.triggered.connect(self.rasXSBankStations)
+    self.ui.actionRASXSDownstreamReachLengths.triggered.connect(self.rasXSDownstreamReachLengths)
+    self.ui.actionRASXSElevations.triggered.connect(self.rasXSElevations)
+    self.ui.actionRASXSAll.triggered.connect(self.rasXSAll)
+    self.ui.actionRASManningsNValues.triggered.connect(self.rasManningsNValues)
+    self.ui.actionRASLevees.triggered.connect(self.rasLevees)
+    self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.rasIneffectiveFlowAreas)
+    self.ui.actionRASBlockedObstructions.triggered.connect(self.rasBlockedObstructions)
+    self.ui.actionRASFlipXSDirection.triggered.connect(self.rasFlipXSDirection)
+    self.ui.actionRASExport1DRASData.triggered.connect(self.rasExport1DRasData)
     # 2D
     self.ui.actionRASCreate2dArea.triggered.connect(self.rasCreate2dArea)
     self.ui.actionRASPreview2DMesh.triggered.connect(self.rasPreview2DMesh)
@@ -102,6 +117,7 @@ class RiverGIS(QMainWindow):
 
     # set project CRS as a default projection
     self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
+    self.updateDefaultCrs()
 
   def closeEvent(self, e):
     self.unregisterAllActions()
@@ -128,7 +144,7 @@ class RiverGIS(QMainWindow):
 
   def updateDefaultCrs(self):
     self.crs = self.ui.crsWidget.crs()
-    self.addInfo('\nDefault CRS changed to: %s\n' % self.crs.authid() )
+    self.addInfo('\nDefault CRS is: %s\n' % self.crs.authid() )
 
   # Database Functions
 
@@ -227,11 +243,55 @@ class RiverGIS(QMainWindow):
   def rasTopology1D(self):
     pass
 
+  def rasLengthsStations(self):
+    pass
+
+  def rasCenterlineElevations(self):
+    pass
+
+  def rasStreamCenterlineAll(self):
+    pass
+
+  def rasXSRiverReachNames(self):
+    pass
+
+  def rasXSStationing(self):
+    pass
+
+  def rasXSBankStations(self):
+    pass
+
+  def rasXSDownstreamReachLengths(self):
+    pass
+
+  def rasXSElevations(self):
+    pass
+
+  def rasXSAll(self):
+    pass
+
+  def rasManningsNValues(self):
+    pass
+
+  def rasLevees(self):
+    pass
+
+  def rasIneffectiveFlowAreas(self):
+    pass
+
+  def rasBlockedObstructions(self):
+    pass
+
+  def rasFlipXSDirection(self):
+    pass
+
+  def rasExport1DRasData(self):
+    pass
+
   # 2D HEC-RAS Geometry Functions
 
   def rasCreate2dArea(self):
-    db = self.curConnName
-    if db is '':
+    if self.curConnName is '' or self.schema is '':
       QMessageBox.warning(None, "2D Area", "Please, choose a connection and schema.")
       return
     else:
@@ -242,6 +302,9 @@ class RiverGIS(QMainWindow):
 
 
   def rasPreview2DMesh(self):
+    if self.curConnName is '' or self.schema is '':
+      QMessageBox.warning(None, "Preview 2D Area", "Please, choose a connection and schema.")
+      return
     from ras2dPreviewMesh import ras2dPreviewMesh
     ras2dPreviewMesh(self)
 

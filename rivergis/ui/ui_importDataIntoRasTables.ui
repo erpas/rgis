@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>344</width>
-    <height>223</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,6 +55,36 @@
      </item>
      <item>
       <widget class="QComboBox" name="cboBanks"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Ineffective Flow Areas</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cboIneffective"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Blocked Obstructions</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cboObstructions"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Flow Paths Centerlines </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cboFlowPaths"/>
      </item>
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
