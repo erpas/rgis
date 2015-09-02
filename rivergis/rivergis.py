@@ -241,34 +241,44 @@ class RiverGIS(QMainWindow):
     importData.exec_()
 
   def rasTopology1D(self):
-    pass
+    from ras1dFunctions import ras1dTopology
+    ras1dTopology(self)
 
   def rasLengthsStations(self):
-    pass
+    from ras1dFunctions import ras1dLengthsStations
+    ras1dLengthsStations(self)
 
   def rasCenterlineElevations(self):
-    pass
+    from ras1dFunctions import ras1dCenterlineElevations
+    ras1dCenterlineElevations(self)
 
   def rasStreamCenterlineAll(self):
-    pass
+    from ras1dFunctions import ras1dStreamCenterlineAll
+    ras1dStreamCenterlineAll(self)
 
   def rasXSRiverReachNames(self):
-    pass
+    from ras1dFunctions import ras1dXSRiverReachNames
+    ras1dXSRiverReachNames(self)
 
   def rasXSStationing(self):
-    pass
+    from ras1dFunctions import ras1dXSStationing
+    ras1dXSStationing(self)
 
   def rasXSBankStations(self):
-    pass
+    from ras1dFunctions import ras1dXSBankStations
+    ras1dXSBankStations(self)
 
   def rasXSDownstreamReachLengths(self):
-    pass
+    from ras1dFunctions import ras1dXSDownstreamLengths
+    ras1dXSDownstreamLengths(self)
 
   def rasXSElevations(self):
-    pass
+    from ras1dFunctions import ras1dXSElevations
+    ras1dXSElevations(self)
 
   def rasXSAll(self):
-    pass
+    from ras1dFunctions import ras1dXSAll
+    ras1dXSAll(self)
 
   def rasManningsNValues(self):
     pass
