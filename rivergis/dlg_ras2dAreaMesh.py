@@ -18,6 +18,9 @@ from ras2dSaveMeshPtsToGeometry import *
 
 
 class DlgRasCreate2dFlowAreas(QDialog):
+  '''
+  Dialog for creating 2d Flow Areas.
+  '''
   def __init__(self, rgis):
     QDialog.__init__(self)
     self.ui = Ui_AreaMesh()
