@@ -20,6 +20,7 @@ Table of contents:
    loadWselFromHdf
    createWSELRaster
    api
+   typicalWorkflowRas1d
 
 
 

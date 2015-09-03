@@ -1,18 +1,26 @@
 .. _stepbystep1d:
 
+=================================================
 Step by step tutorial: Create HEC-RAS 1D Geometry
--------------------------------------------------------
+=================================================
 
-Required data: 
+--------------------------------------
+1. Create source geometry of the model
+--------------------------------------
 
-1. River Centerlines (polylines)
+* Create empty river database tables for 1d HEC-RAS model or
+* Import the model geometry from existing layers loaded into a QGIS project
+
+Required data of the model geometry:
+
+1. River centerlines (polylines)
 
 2. Cross-sections (polylines)
 
 3. DTM, digital terrain model --- a raster layer
 
 
-Optional data:
+Optional geometry data:
 
 4. Channel Bank lines
 
@@ -27,9 +35,7 @@ Optional data:
 9. Land cover --- a polygon layer. HEC-RAS will use it to calculate mesh cells roughness.
 
 
----------------------------------------------------------
-Step 1. Create/load required data
----------------------------------------------------------
+
 .. note::
 
   QGIS User Manual `Loading raster data <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_raster/supported_data.html>`_ and `Loading vector data in QGIS <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_vector/supported_data.html>`_ is an excellent start point for QGIS beginners.
