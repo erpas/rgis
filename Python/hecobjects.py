@@ -42,20 +42,20 @@ class StreamCenterline(HecRasObject):
 
     def pg_from_to_node(self):
         qry = '''
-CREATE OR REPLACE FUNCTION from_to_node ()
+CREATE OR REPLACE FUNCTION "{0}".from_to_node ()
     RETURNS VOID AS
 $BODY$
 DECLARE
-    c cursor FOR SELECT * FROM "StreamCenterline";
-    r "StreamCenterline"%ROWTYPE;
+    c cursor FOR SELECT * FROM "{0}"."StreamCenterline";
+    r "{0}"."StreamCenterline"%ROWTYPE;
     start_geom geometry;
     end_geom geometry;
     start_node integer := 0;
     end_node integer := 0;
     nr integer := 0;
 BEGIN
-DROP TABLE IF EXISTS "NodesTable";
-CREATE TABLE "NodesTable"(
+DROP TABLE IF EXISTS "{0}"."NodesTable";
+CREATE TABLE "{0}"."NodesTable"(
     geom geometry(POINT, 2180),
     "NodeID" integer,
     "X" real,
@@ -63,21 +63,21 @@ CREATE TABLE "NodesTable"(
 FOR r in c LOOP
     start_geom := ST_StartPoint(r.geom);
     end_geom := ST_EndPoint(r.geom);
-    IF (SELECT exists (SELECT 1 FROM "NodesTable" WHERE geom = start_geom LIMIT 1)) THEN
-        start_node := (SELECT "NodeID" FROM "NodesTable" WHERE geom = start_geom LIMIT 1);
+    IF (SELECT exists (SELECT 1 FROM "{0}"."NodesTable" WHERE geom = start_geom LIMIT 1)) THEN
+        start_node := (SELECT "NodeID" FROM "{0}"."NodesTable" WHERE geom = start_geom LIMIT 1);
     ELSE
         nr := nr + 1;
         start_node := nr;
-        INSERT INTO "NodesTable" VALUES (start_geom, nr, ST_X(start_geom), ST_Y(start_geom));
+        INSERT INTO "{0}"."NodesTable" VALUES (start_geom, nr, ST_X(start_geom), ST_Y(start_geom));
     END IF;
-    IF (SELECT exists (SELECT 1 FROM "NodesTable" WHERE geom = end_geom LIMIT 1)) THEN
-        end_node := (SELECT "NodeID" FROM "NodesTable" WHERE geom = end_geom LIMIT 1);
+    IF (SELECT exists (SELECT 1 FROM "{0}"."NodesTable" WHERE geom = end_geom LIMIT 1)) THEN
+        end_node := (SELECT "NodeID" FROM "{0}"."NodesTable" WHERE geom = end_geom LIMIT 1);
     ELSE
         nr := nr + 1;
         end_node := nr;
-        INSERT INTO "NodesTable" VALUES (end_geom, nr, ST_X(end_geom), ST_Y(end_geom));
+        INSERT INTO "{0}"."NodesTable" VALUES (end_geom, nr, ST_X(end_geom), ST_Y(end_geom));
     END IF;
-    UPDATE "StreamCenterline" SET
+    UPDATE "{0}"."StreamCenterline" SET
     "FromNode" = start_node,
     "ToNode" = end_node
     WHERE CURRENT OF c;
@@ -86,36 +86,38 @@ END;
 $BODY$
     LANGUAGE plpgsql;
 
-SELECT from_to_node ();
-DROP FUNCTION IF EXISTS from_to_node ()
+SELECT "{0}".from_to_node ();
+DROP FUNCTION IF EXISTS "{0}".from_to_node ()
 '''
+        qry = qry.format(self.schema)
         return qry
 
     def pg_lengths_stations(self):
         qry = '''
-CREATE OR REPLACE VIEW pnts1 AS
+CREATE OR REPLACE VIEW "{0}".pnts1 AS
 SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
-FROM "StreamCenterline"
+FROM "{0}"."StreamCenterline"
 UNION ALL
 SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
-FROM "StreamCenterline";
+FROM "{0}"."StreamCenterline";
 
-CREATE OR REPLACE VIEW pnts2 AS
+CREATE OR REPLACE VIEW "{0}".pnts2 AS
 SELECT "RiverCode", geom
-FROM pnts1
+FROM "{0}".pnts1
 GROUP BY "RiverCode", geom
 HAVING COUNT(geom) = 1;
 
-DROP TABLE IF EXISTS "Endpoints";
-SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) INTO "Endpoints"
-FROM pnts1, pnts2
+DROP TABLE IF EXISTS "{0}"."Endpoints";
+SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) INTO "{0}"."Endpoints"
+FROM "{0}".pnts1, "{0}".pnts2
 WHERE pnts1."RiverCode" = pnts2."RiverCode" AND pnts1.geom = pnts2.geom AND pnts1.typ_punktu = 'end';
 
-DROP VIEW pnts1 CASCADE;
+DROP VIEW "{0}".pnts1 CASCADE;
 
-SELECT * FROM "StreamCenterline"
-WHERE "StreamCenterline"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "Endpoints"))
+SELECT * FROM "{0}"."StreamCenterline"
+WHERE "StreamCenterline"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "{0}"."Endpoints"))
 '''
+        qry = qry.format(self.schema)
         return qry
 
 
