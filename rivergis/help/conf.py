@@ -21,7 +21,10 @@ import imp
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+# sys.path.insert(0, "C:/OSGeo4W/apps/qgis-dev/python")
+sys.path.insert(0, "C:/OSGeo4W/apps/qgis-dev/python/plugins")
+sys.path.insert(0, os.path.abspath(".."))
+
 
 # -- General configuration ------------------------------------------------
 
@@ -31,7 +34,7 @@ import imp
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-# extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -200,7 +203,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'RiverGIS.tex', u'RiverGIS Documentation',
-   u'Radoslaw Pasiok', 'manual'),
+   u'RiverGIS Group', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -230,7 +233,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'rivergis', u'RiverGIS Documentation',
-     [u'Radoslaw Pasiok'], 1)
+     [u'RiverGIS Group'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -244,7 +247,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'RiverGIS', u'RiverGIS Documentation',
-   u'Radoslaw Pasiok', 'RiverGIS', 'One line description of project.',
+   u'RiverGIS Group', 'RiverGIS', 'One line description of project.',
    'Miscellaneous'),
 ]
 

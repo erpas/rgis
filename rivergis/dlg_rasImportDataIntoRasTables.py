@@ -12,42 +12,55 @@ from ui.ui_importDataIntoRasTables import *
 
 
 class DlgImportDataIntoRasTables(QDialog):
-  def __init__(self, parent=None):
-    QDialog.__init__(self, parent)
+  def __init__(self, rgis):
+    QDialog.__init__(self)
     self.ui = Ui_importDataIntoRasTables()
     self.ui.setupUi(self)
-    self.rgis = parent
-
+    self.rgis = rgis
     QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.accept)
-    QObject.connect(self.ui.buttonBox, SIGNAL("rejected()"), self.reject)
+    QObject.connect(self.ui.buttonBox, SIGNAL("rejected()"), self.rejectDlg)
     # QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
-
     self.populateCbos()
-    self.riv_id = None
 
   def displayHelp(self):
     pass
 
   def populateCbos(self):
     self.ui.cboRivers.clear()
-    rivers = []
-    if not self.mydb:
-      return
-    cur = self.mydb.cursor()
-    qry = "SELECT * FROM river_data"
-    cur.execute(qry)
-    data = cur.fetchall()
-    for row in data:
-      rivers.append([row[0], row[1], row[2], row[3]] )
-    del cur
+    self.ui.cboXs.clear()
+    self.ui.cboLevees.clear()
+    self.ui.cboBanks.clear()
+    self.ui.cboIneffective.clear()
+    self.ui.cboObstructions.clear()
+    self.ui.cboFlowPaths.clear()
+    self.ui.cboRivers.addItem("")
+    self.ui.cboXs.addItem("")
+    self.ui.cboLevees.addItem("")
+    self.ui.cboBanks.addItem("")
+    self.ui.cboIneffective.addItem("")
+    self.ui.cboObstructions.addItem("")
+    self.ui.cboFlowPaths.addItem("")
+    for layerId, layer in self.rgis.mapRegistry.mapLayers().iteritems():
+      if layer.type() == 0 and layer.geometryType() == 0: # vector and points
+        pass
+      if layer.type() == 0 and layer.geometryType() == 1: # vector and polylines
+        self.ui.cboRivers.addItem(layer.name(), layerId)
+        self.ui.cboXs.addItem(layer.name(), layerId)
+        self.ui.cboLevees.addItem(layer.name(), layerId)
+        self.ui.cboBanks.addItem(layer.name(), layerId)
+        self.ui.cboFlowPaths.addItem(layer.name(), layerId)
+      if layer.type() == 0 and layer.geometryType() == 2: # vector and polygons
+        self.ui.cboIneffective.addItem(layer.name(), layerId)
+        self.ui.cboObstructions.addItem(layer.name(), layerId)
+      if layer.type() == 1: # it's a raster
+        pass
 
-    for riv in rivers:
-      self.ui.cboRivers.addItem(riv[1], riv)
-
+  def rejectDlg(self):
+    self.rgis.addInfo("  Importing data cancelled.")
+    self.reject()
 
   def accept(self):
     QApplication.setOverrideCursor(Qt.WaitCursor)
-    self.rgis.addInfo("<b>Importing data into RAS PostGIS tables...</b>")
 
     # TODO: insert the code
 

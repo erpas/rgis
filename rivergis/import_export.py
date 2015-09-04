@@ -25,9 +25,10 @@ from qgis.core import *
 from qgis.utils import *
 
 from qgis.gui import QgsMessageBar
-from dlg_importRiverFromIsokp import *
+
 
 def importRiverFromIsokp(rgis):
+  from dlg_importRiverFromIsokp import *
   rgis.addInfo('\n<b>Running Import River Data From ISOKP Database</b>' )
   db = rgis.tree.currentDatabase()
   if db is None:

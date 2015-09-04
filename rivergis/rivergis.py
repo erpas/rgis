@@ -19,16 +19,18 @@ email                : rpasiok@gmail.com
  ***************************************************************************/
 """
 
-import psycopg2
-import psycopg2.extras
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from qgis.core import *
+from qgis.utils import *
+
+import psycopg2
+import psycopg2.extras
 import processing
 from ui._ui_rivergis import Ui_RiverGIS
-from import_export import *
+
 from pg_functions import *
-from rasImportRasData import WorkerRasImportRasData
+
 
 
 class RiverGIS(QMainWindow):
@@ -43,14 +45,38 @@ class RiverGIS(QMainWindow):
     self.iface = iface
     self.mapRegistry = QgsMapLayerRegistry.instance()
     self.rivergisPath = os.path.dirname(__file__)
+    self.curConnName = None
+    self.schema = None
 
     # create status bar
     self.statusBar = QStatusBar(self)
     self.setStatusBar(self.statusBar)
 
-    # MENU
+    # MENU Actions
+
+    # DB
     self.ui.actionRefreshConnections.triggered.connect(self.connChanged)
     self.ui.actionImportRiverFromIsokp.triggered.connect(self.importRiverIsokp)
+    # RAS Geometry
+    # 1D
+    self.ui.actionImportDataIntoRASDatabaseTables.triggered.connect(self.rasImportDataIntoRASDatabaseTables)
+    self.ui.actionRASTopology1D.triggered.connect(self.rasTopology1D)
+    self.ui.actionRASLengthsStations.triggered.connect(self.rasLengthsStations)
+    self.ui.actionRASCenterlineElevations.triggered.connect(self.rasCenterlineElevations)
+    self.ui.actionRASStreamCenterlineAll.triggered.connect(self.rasStreamCenterlineAll)
+    self.ui.actionRASXSRiverReachNames.triggered.connect(self.rasXSRiverReachNames)
+    self.ui.actionRASXSStationing.triggered.connect(self.rasXSStationing)
+    self.ui.actionRASXSBankStations.triggered.connect(self.rasXSBankStations)
+    self.ui.actionRASXSDownstreamReachLengths.triggered.connect(self.rasXSDownstreamReachLengths)
+    self.ui.actionRASXSElevations.triggered.connect(self.rasXSElevations)
+    self.ui.actionRASXSAll.triggered.connect(self.rasXSAll)
+    self.ui.actionRASManningsNValues.triggered.connect(self.rasManningsNValues)
+    self.ui.actionRASLevees.triggered.connect(self.rasLevees)
+    self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.rasIneffectiveFlowAreas)
+    self.ui.actionRASBlockedObstructions.triggered.connect(self.rasBlockedObstructions)
+    self.ui.actionRASFlipXSDirection.triggered.connect(self.rasFlipXSDirection)
+    self.ui.actionRASExport1DRASData.triggered.connect(self.rasExport1DRasData)
+    # 2D
     self.ui.actionRASCreate2dArea.triggered.connect(self.rasCreate2dArea)
     self.ui.actionRASPreview2DMesh.triggered.connect(self.rasPreview2DMesh)
     self.ui.actionRASSaveMeshPointsToHECRASGeometry.triggered.connect(self.rasSaveMeshPtsToHecrasGeo)
@@ -91,6 +117,7 @@ class RiverGIS(QMainWindow):
 
     # set project CRS as a default projection
     self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
+    self.updateDefaultCrs()
 
   def closeEvent(self, e):
     self.unregisterAllActions()
@@ -117,7 +144,7 @@ class RiverGIS(QMainWindow):
 
   def updateDefaultCrs(self):
     self.crs = self.ui.crsWidget.crs()
-    addInfo(self, '\nDefault CRS changed to: %s\n' % self.crs.authid() )
+    self.addInfo('\nDefault CRS is: %s\n' % self.crs.authid() )
 
   # Database Functions
 
@@ -152,7 +179,7 @@ class RiverGIS(QMainWindow):
     if self.sslmode:
       self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
     self.conn = psycopg2.connect(self.connParams)
-    addInfo(self,'Current DB connection is: %s' % self.curConnName)
+    self.addInfo('Current DB connection is: %s' % self.curConnName)
 
     # refresh schemas combo
     schemaName = self.ui.schemasCbo.currentText()
@@ -177,15 +204,15 @@ class RiverGIS(QMainWindow):
   def schemaChanged(self):
     if not self.ui.schemasCbo.currentText() == '':
       self.schema = self.ui.schemasCbo.currentText()
-      addInfo(self,'Current DB schema is: %s' % self.schema)
+      self.addInfo('Current DB schema is: %s' % self.schema)
 
 
 
   def importRiverIsokp(self):
     from dlg_importRiverFromIsokp import DlgImportRiverFromIsokp
-    addInfo(self, '\n<b>Running Import River Data From ISOKP Database</b>' )
+    self.addInfo('\n<b>Running Import River Data From ISOKP Database</b>' )
     if self.curConnName is None:
-      addInfo(self, "No database selected or you are not connected to it.")
+      self.addInfo("No database selected or you are not connected to it.")
       return
 
     importData = DlgImportRiverFromIsokp(self)
@@ -200,21 +227,94 @@ class RiverGIS(QMainWindow):
     dlg.exec_()
 
 
+  def rasImportDataIntoRASDatabaseTables(self):
+    '''
+    Imports chosen layers into PostGIS database.
+    '''
+    from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
+    self.addInfo("<br><br><b>Import data into RAS PostGIS tables...</b>")
+    if not self.curConnName or not self.schema:
+      self.addInfo("No PostGIS database or schema selected. Choose a connection and schema.")
+      return
+
+    importData = DlgImportDataIntoRasTables(self)
+    importData.exec_()
+
+  def rasTopology1D(self):
+    from ras1dFunctions import ras1dTopology
+    ras1dTopology(self)
+
+  def rasLengthsStations(self):
+    from ras1dFunctions import ras1dLengthsStations
+    ras1dLengthsStations(self)
+
+  def rasCenterlineElevations(self):
+    from ras1dFunctions import ras1dCenterlineElevations
+    ras1dCenterlineElevations(self)
+
+  def rasStreamCenterlineAll(self):
+    from ras1dFunctions import ras1dStreamCenterlineAll
+    ras1dStreamCenterlineAll(self)
+
+  def rasXSRiverReachNames(self):
+    from ras1dFunctions import ras1dXSRiverReachNames
+    ras1dXSRiverReachNames(self)
+
+  def rasXSStationing(self):
+    from ras1dFunctions import ras1dXSStationing
+    ras1dXSStationing(self)
+
+  def rasXSBankStations(self):
+    from ras1dFunctions import ras1dXSBankStations
+    ras1dXSBankStations(self)
+
+  def rasXSDownstreamReachLengths(self):
+    from ras1dFunctions import ras1dXSDownstreamLengths
+    ras1dXSDownstreamLengths(self)
+
+  def rasXSElevations(self):
+    from ras1dFunctions import ras1dXSElevations
+    ras1dXSElevations(self)
+
+  def rasXSAll(self):
+    from ras1dFunctions import ras1dXSAll
+    ras1dXSAll(self)
+
+  def rasManningsNValues(self):
+    pass
+
+  def rasLevees(self):
+    pass
+
+  def rasIneffectiveFlowAreas(self):
+    pass
+
+  def rasBlockedObstructions(self):
+    pass
+
+  def rasFlipXSDirection(self):
+    pass
+
+  def rasExport1DRasData(self):
+    pass
+
   # 2D HEC-RAS Geometry Functions
 
   def rasCreate2dArea(self):
-    db = self.curConnName
-    if db is '':
+    if self.curConnName is '' or self.schema is '':
       QMessageBox.warning(None, "2D Area", "Please, choose a connection and schema.")
       return
     else:
       from dlg_ras2dAreaMesh import DlgRasCreate2dFlowAreas
-      addInfo(self, '<br><b>Running Create 2D Flow Areas</b>' )
+      self.addInfo('<br><b>Running Create 2D Flow Areas</b>' )
       dlg = DlgRasCreate2dFlowAreas(self)
       dlg.exec_()
 
 
   def rasPreview2DMesh(self):
+    if self.curConnName is '' or self.schema is '':
+      QMessageBox.warning(None, "Preview 2D Area", "Please, choose a connection and schema.")
+      return
     from ras2dPreviewMesh import ras2dPreviewMesh
     ras2dPreviewMesh(self)
 
@@ -227,25 +327,15 @@ class RiverGIS(QMainWindow):
   # RAS Mapping function
 
   def rasImportRasDataStart(self):
-    messageBar = self.iface.messageBar().createMessage('Loading max water surface elevation...', )
-    progressBar = QProgressBar()
-    progressBar.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
-    cancelButton = QPushButton()
-    cancelButton.setText('Cancel')
-    messageBar.layout().addWidget(progressBar)
-    messageBar.layout().addWidget(cancelButton)
-    self.iface.messageBar().pushWidget(messageBar, self.iface.messageBar().INFO)
-    self.messageBar = messageBar
+    from rasImportRasData import WorkerRasImportRasData
     self.workerWselHecRas = WorkerRasImportRasData(self)
-    cancelButton.clicked.connect(self.workerWselHecRas.kill)
+
 
     thread = QThread()
     self.workerWselHecRas.moveToThread(thread)
     self.workerWselHecRas.finished.connect(self.rasImportRasDataFinish)
     self.workerWselHecRas.error.connect(self.loadWselError)
-    self.workerWselHecRas.progress.connect(progressBar.setValue)
     thread.started.connect(self.workerWselHecRas.run)
-
     thread.start()
     self.threadWselHecRas = thread
 
@@ -256,32 +346,31 @@ class RiverGIS(QMainWindow):
         # processing.load(res.dataProvider().dataSourceUri(), 'WSEL_temp_points')
         processing.load(res, 'WSEL_temp_points')
       else:
-        addInfo(self, 'Loading max WSEL failed or was cancelled, check the log...')
-      self.iface.messageBar().popWidget(self.messageBar)
+        self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
+
       self.workerWselHecRas.deleteLater()
       self.threadWselHecRas.quit()
       self.threadWselHecRas.wait()
       self.threadWselHecRas.deleteLater()
 
+  def loadWselError(self, e, exception_string):
+    self.addInfo('Thread loading WSEL raised an exception:{}'.format(exception_string))
+    QgsMessageLog.logMessage('Thread loading WSEL raised an exception:{}\n'.format(exception_string), level=QgsMessageLog.CRITICAL)
+
   def rasWaterSurfaceGeneration(self):
     from dlg_rasWaterSurfaceGeneration import DlgRasWaterSurfaceGeneration
-    addInfo(self, '<br><b>Running Create Water Surface Raster</b>' )
+    self.addInfo('<br><b>Running Create Water Surface Raster</b>' )
     dlg = DlgRasWaterSurfaceGeneration(self)
     dlg.exec_()
 
-  def loadWselError(self, e, exception_string):
-    addInfo(self, 'Thread loading WSEL raised an exception:{}'.format(exception_string))
-    QgsMessageLog.logMessage('Thread loading WSEL raised an exception:{}\n'.format(exception_string), level=QgsMessageLog.CRITICAL)
-    
   def rasFloodplainDelineation(self):
     from dlg_rasFloodplainDelineation import DlgRasFloodplainDelineation
-    addInfo(self, '\n<b>Running floodplain delineation.</b>' )
+    self.addInfo('\n<b>Running floodplain delineation.</b>' )
     dialog = DlgRasFloodplainDelineation(self)
     dialog.exec_()
 
   def about(self):
     self.showHelp('index.html')
-
 
   def registerAction(self, action, menuName, callback=None):
     pass

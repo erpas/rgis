@@ -14,10 +14,14 @@ Table of contents:
    :maxdepth: 2
    
    install_req
+   stepByStep1d
    stepByStep2d
    create2darea
    loadWselFromHdf
    createWSELRaster
+   api
+   typicalWorkflowRas1d
+
 
 
 -------------------

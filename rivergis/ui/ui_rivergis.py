@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_rivergis.ui'
+# Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Fri Aug 21 09:20:15 2015
+# Created: Wed Sep 02 10:41:42 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -86,6 +86,8 @@ class Ui_RiverGIS(object):
         self.menuXS_Cut_Line_Attributes.setObjectName(_fromUtf8("menuXS_Cut_Line_Attributes"))
         self.menuStreamCenterlineAttributes = QtGui.QMenu(self.menu_Geometry)
         self.menuStreamCenterlineAttributes.setObjectName(_fromUtf8("menuStreamCenterlineAttributes"))
+        self.menuUtilities = QtGui.QMenu(self.menu_Geometry)
+        self.menuUtilities.setObjectName(_fromUtf8("menuUtilities"))
         self.menuDB = QtGui.QMenu(self.menubar)
         self.menuDB.setObjectName(_fromUtf8("menuDB"))
         RiverGIS.setMenuBar(self.menubar)
@@ -173,14 +175,24 @@ class Ui_RiverGIS(object):
         self.actionRASXSRiverReachNames.setObjectName(_fromUtf8("actionRASXSRiverReachNames"))
         self.actionRASXSStationing = QtGui.QAction(RiverGIS)
         self.actionRASXSStationing.setObjectName(_fromUtf8("actionRASXSStationing"))
-        self.actionRASXSBank_Stations = QtGui.QAction(RiverGIS)
-        self.actionRASXSBank_Stations.setObjectName(_fromUtf8("actionRASXSBank_Stations"))
+        self.actionRASXSBankStations = QtGui.QAction(RiverGIS)
+        self.actionRASXSBankStations.setObjectName(_fromUtf8("actionRASXSBankStations"))
         self.actionRASXSDownstreamReachLengths = QtGui.QAction(RiverGIS)
         self.actionRASXSDownstreamReachLengths.setObjectName(_fromUtf8("actionRASXSDownstreamReachLengths"))
         self.actionRASXSElevations = QtGui.QAction(RiverGIS)
         self.actionRASXSElevations.setObjectName(_fromUtf8("actionRASXSElevations"))
         self.actionRASXSAll = QtGui.QAction(RiverGIS)
         self.actionRASXSAll.setObjectName(_fromUtf8("actionRASXSAll"))
+        self.actionImportDataIntoRASDatabaseTables = QtGui.QAction(RiverGIS)
+        self.actionImportDataIntoRASDatabaseTables.setObjectName(_fromUtf8("actionImportDataIntoRASDatabaseTables"))
+        self.actionRASLevees = QtGui.QAction(RiverGIS)
+        self.actionRASLevees.setObjectName(_fromUtf8("actionRASLevees"))
+        self.actionRASIneffectiveFlowAreas = QtGui.QAction(RiverGIS)
+        self.actionRASIneffectiveFlowAreas.setObjectName(_fromUtf8("actionRASIneffectiveFlowAreas"))
+        self.actionRASBlockedObstructions = QtGui.QAction(RiverGIS)
+        self.actionRASBlockedObstructions.setObjectName(_fromUtf8("actionRASBlockedObstructions"))
+        self.actionRASFlipXSDirection = QtGui.QAction(RiverGIS)
+        self.actionRASFlipXSDirection.setObjectName(_fromUtf8("actionRASFlipXSDirection"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuRASMapping.addAction(self.actionRASImportRasData)
         self.menuRASMapping.addSeparator()
@@ -188,7 +200,7 @@ class Ui_RiverGIS(object):
         self.menuRASMapping.addAction(self.actionRASFloodplainDelineation)
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSRiverReachNames)
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSStationing)
-        self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSBank_Stations)
+        self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSBankStations)
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSDownstreamReachLengths)
         self.menuXS_Cut_Line_Attributes.addSeparator()
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSElevations)
@@ -200,13 +212,18 @@ class Ui_RiverGIS(object):
         self.menuStreamCenterlineAttributes.addAction(self.actionRASCenterlineElevations)
         self.menuStreamCenterlineAttributes.addSeparator()
         self.menuStreamCenterlineAttributes.addAction(self.actionRASStreamCenterlineAll)
+        self.menuUtilities.addAction(self.actionRASFlipXSDirection)
         self.menu_Geometry.addAction(self.actionRASCreateRASLayers)
+        self.menu_Geometry.addAction(self.actionImportDataIntoRASDatabaseTables)
         self.menu_Geometry.addAction(self.menuStreamCenterlineAttributes.menuAction())
         self.menu_Geometry.addAction(self.menuXS_Cut_Line_Attributes.menuAction())
         self.menu_Geometry.addAction(self.actionRASManningsNValues)
+        self.menu_Geometry.addAction(self.actionRASLevees)
+        self.menu_Geometry.addAction(self.actionRASIneffectiveFlowAreas)
+        self.menu_Geometry.addAction(self.actionRASBlockedObstructions)
+        self.menu_Geometry.addAction(self.menuUtilities.menuAction())
         self.menu_Geometry.addSeparator()
         self.menu_Geometry.addAction(self.actionRASExport1DRASData)
-        self.menu_Geometry.addSeparator()
         self.menu_Geometry.addSeparator()
         self.menu_Geometry.addAction(self.actionRASCreate2dArea)
         self.menu_Geometry.addAction(self.actionRASPreview2DMesh)
@@ -233,6 +250,7 @@ class Ui_RiverGIS(object):
         self.menu_Geometry.setTitle(_translate("RiverGIS", "RAS Geometry", None))
         self.menuXS_Cut_Line_Attributes.setTitle(_translate("RiverGIS", "XS Cut Line Attributes", None))
         self.menuStreamCenterlineAttributes.setTitle(_translate("RiverGIS", "Stream Centerline Attributes", None))
+        self.menuUtilities.setTitle(_translate("RiverGIS", "Utilities", None))
         self.menuDB.setTitle(_translate("RiverGIS", "Database", None))
         self.actionCreate2dAreaPerimeter.setText(_translate("RiverGIS", "2D Area (Perimeter)", None))
         self.actionRASCorrectLateralWeirs.setText(_translate("RiverGIS", "Correct Lateral Weirs", None))
@@ -259,9 +277,15 @@ class Ui_RiverGIS(object):
         self.actionRASStreamCenterlineAll.setText(_translate("RiverGIS", "All", None))
         self.actionRASXSRiverReachNames.setText(_translate("RiverGIS", "River/Reach Names", None))
         self.actionRASXSStationing.setText(_translate("RiverGIS", "Stationing", None))
-        self.actionRASXSBank_Stations.setText(_translate("RiverGIS", "Bank Stations", None))
+        self.actionRASXSBankStations.setText(_translate("RiverGIS", "Bank Stations", None))
         self.actionRASXSDownstreamReachLengths.setText(_translate("RiverGIS", "Downstream Reach Lengths", None))
         self.actionRASXSElevations.setText(_translate("RiverGIS", "Elevations", None))
         self.actionRASXSAll.setText(_translate("RiverGIS", "All", None))
+        self.actionImportDataIntoRASDatabaseTables.setText(_translate("RiverGIS", "Import Data Into RAS Database Tables", None))
+        self.actionRASLevees.setText(_translate("RiverGIS", "Levees", None))
+        self.actionRASIneffectiveFlowAreas.setText(_translate("RiverGIS", "Ineffective Flow Areas", None))
+        self.actionRASBlockedObstructions.setText(_translate("RiverGIS", "Blocked Obstructions", None))
+        self.actionRASFlipXSDirection.setText(_translate("RiverGIS", "Flip Cross Sections", None))
 
 from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
+import resources_rc

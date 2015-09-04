@@ -34,7 +34,7 @@ class WorkerRasImportRasData(QObject):
   def __init__(self, rgis):
     QObject.__init__(self)
     self.rgis = rgis
-    self.rgis.addInfo("\n<b>Running Load max WSEL from HEC-RAS</b>...\n")
+    self.rgis.addInfo("<br><br><b>Running Load max WSEL from HEC-RAS</b>...\n")
     self.res = None
     try:
       import h5py
@@ -69,12 +69,26 @@ class WorkerRasImportRasData(QObject):
     # show plans dialog
     dlg.exec_()
 
+    messageBar = self.rgis.iface.messageBar().createMessage('Loading max water surface elevation...', )
+    progressBar = QProgressBar()
+    progressBar.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+    cancelButton = QPushButton()
+    cancelButton.setText('Cancel')
+    cancelButton.clicked.connect(self.kill)
+    messageBar.layout().addWidget(progressBar)
+    messageBar.layout().addWidget(cancelButton)
+    self.rgis.iface.messageBar().pushWidget(messageBar, self.rgis.iface.messageBar().INFO)
+    self.messageBar = messageBar
+    self.progress.connect(progressBar.setValue)
+
     self.rgis.addInfo("  Reading results from file:\n  %s" % rgis.curHdfFile)
     self.curPlan = HecrasPlan(self.prj, rgis.curHdfFile[-7:-4])
     self.curPlan.checkHasResults()
     self.hdf = h5py.File(rgis.curHdfFile,'r')
     self.hdfDirname = dirname(rgis.curHdfFile)
     self.killed = False
+
+
 
 
   def run(self):
@@ -136,17 +150,18 @@ class WorkerRasImportRasData(QObject):
         #self.res = processing.runalg("gdalogr:convertformat","%s/wselMax.vrt" % self.hdfDirname,0,"",None)
         self.res = QgsVectorLayer("%s/wselMax.vrt" % self.hdfDirname, "max WSEL", "ogr")
         self.res = "%s/wselMax.vrt" % self.hdfDirname
-
         self.rgis.addInfo("  Done!\n  Review and save the results.\n\n")
+        self.rgis.iface.messageBar().popWidget(self.messageBar)
 
       except Exception, e:
         # forward the exception upstream
         self.error.emit(e, traceback.format_exc())
+        self.rgis.iface.messageBar().popWidget(self.messageBar)
 
       self.finished.emit(self.res)
 
     else: # 1D case
-
+      # TODO: code for loading 1D HEC-RAS results
       pass
 
   def kill(self):
@@ -155,6 +170,7 @@ class WorkerRasImportRasData(QObject):
   finished = pyqtSignal(object)
   error = pyqtSignal(Exception, basestring)
   progress = pyqtSignal(float)
+
 
 
 

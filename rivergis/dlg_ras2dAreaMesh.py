@@ -18,6 +18,9 @@ from ras2dSaveMeshPtsToGeometry import *
 
 
 class DlgRasCreate2dFlowAreas(QDialog):
+  '''
+  Dialog for creating 2d Flow Areas.
+  '''
   def __init__(self, rgis):
     QDialog.__init__(self)
     self.ui = Ui_AreaMesh()
@@ -73,7 +76,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       self.rgis.addInfo('\n\n<b>Running 2D Area</b> (%s, %s, %s, %s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr, structures.name(), structMeshSizeAlongAttr, structMeshSizeAcrossAttr) )
     else:
       self.rgis.addInfo('\n\n<b>Running 2D Area</b> (%s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr) )
-
+    QApplication.setOverrideCursor(Qt.WaitCursor)
     uid = str(uuid.uuid4())
     workDirName = join(expanduser("~"), "qgis_processing_temp", uid)
     call(["mkdir", join(expanduser("~"), "qgis_processing_temp")], shell=True)
@@ -376,6 +379,9 @@ class DlgRasCreate2dFlowAreas(QDialog):
 
     if geoFileName:
       ras2dSaveMeshPtsToGeometry(self.rgis, geoFileName)
+
+    QApplication.setOverrideCursor(Qt.ArrowCursor)
+    QDialog.accept(self)
 
 
 
