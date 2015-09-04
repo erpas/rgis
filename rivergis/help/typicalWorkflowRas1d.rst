@@ -43,8 +43,15 @@ Absolutnie konieczne jest włożenie geometrii do 2 tabel:
 Topologia sieci
 ---------------
 
-* wypełnienie tabeli ``Nodes`` (NodesTable), punktów początku i końca rzeki z nadanym identyfikatorem
+* wypełnienie tabeli ``NodesTable``, punktów początku (FromNode) i końca rzeki (ToNode) z nadanym identyfikatorem
 * nadać stacje początkom i końcom odcinków rzek --- należy przypomnieć użytkownikowi, że trzeba to zrobić z palca?
+
+Tabela ``NodesTable`` (point)::
+
+    ('"NodeId"', "serial primary key"),
+    ('"X"', "double precision"), -- wspólrzędna geodezyjna x
+    ('"Y"', "double precision") -- wspólrzędna geodezyjna y
+
 
 Dane przekrojów poprzecznych
 ----------------------------
@@ -68,18 +75,20 @@ Próbkowanie DEM w przekroju
 
 W `Issues pisałem <http://sr101537.imgw.ad:81/rpasiok/rgroup/issues/12>`_  o próbkowaniu DEMa wzdłuż przekroju i że jest to jedna z kosztowniejszych czasowo analiz, więc warto byłoby zachować jej wynik w tabeli. Zaproponowałem następującą strukturę::
 
-    PtId bigserial primary key, -- id punktu
-    XsecId integer, -- identyfikator przekroju, do którego punkt należy
-    Station double precision, -- odległość punktu od początku przekroju [m]
-    Elevation double precision, -- wysokość [mnpm]
-    CoverCode text, -- kod pokrycia terenu
-    SrcId integer, -- kod źródła danych (gid)
-    Notes text, -- miejsce na inne uwagi
-    geom geometry(Point, SRID) -- położenie punktu we współrzędnych geodezyjnych
+    ('"PtId"', 'bigserial primary key'), -- id punktu
+    ('"XsecId"', 'integer'), -- identyfikator przekroju, do którego punkt należy
+    ('"Station"', 'double precision'), -- odległość punktu od początku przekroju [m]
+    ('"Elevation"', 'double precision'), -- wysokość [mnpm]
+    ('"CoverCode"', 'text'), -- kod pokrycia terenu
+    ('"SrcId"', 'integer'), -- kod źródła danych (gid)
+    ('"Notes"', 'text'), -- miejsce na inne uwagi
+    ('"geom"', 'geometry(Point, SRID)') -- położenie punktu we współrzędnych geodezyjnych
 
-Proponuję, aby gęstość próbkowania rastra DEM przyjąć jako równą rozdzielczości DEMa. Dla dużych rzek będziemy mieli wówczas mnóstwo punktów w każdym przekroju i należałoby pomyśleć o odfiltrowaniu punktów nieznaczących (zob. `Issues <http://sr101537.imgw.ad:81/rpasiok/rgroup/issues/16>`_). Jest kwestia, kiedy to robić. Ja skłaniam się do tego, aby robić to od razu po próbkowaniu DEMa, ale wiąże się z tym kilka dalszych spraw.
+Proponuję, aby gęstość próbkowania rastra DEM przyjąć jako równą rozdzielczości DEM. Dla dużych rzek będziemy mieli wówczas mnóstwo punktów w każdym przekroju i należałoby pomyśleć o odfiltrowaniu punktów nieznaczących (zob. `Issues <http://sr101537.imgw.ad:81/rpasiok/rgroup/issues/16>`_). Jest kwestia, kiedy to robić. Ja skłaniam się do tego, aby robić to od razu po próbkowaniu DEMa, ale wiąże się z tym kilka dalszych spraw.
 
-Po odfiltorwaniu punktów nieznaczących może się okazać, że wyleciał nam np. punkt brzegu. Nie wszystkie elementy przekroju muszą byc przypisane do konkretnego istniejącego punktu przekroju, ale brzegi akurat muszą (w Mike'u jest podobnie: marker stawiamy w punkcie przekroju). Poza tym, użytkownik zawsze może zmienić położenie linii brzegu po wykonaniu innych analiz i wówczas musimy mieć możliwość dołożenia do przekroju punktu w określonym x (Station) - jego wysokość byłaby interpolowana na podstawie sąsiadów.
+Sprawdziłem możliwości importu do HEC-RAS większej ilości punktów niż 500. Próba się powiodła i jest możliwość filtrowania przekrojów później w samych HEC-RASie. Możemy się zastanowić, czy chcemy wyposażyć wtyczkę w filtrowanie czy nie.
+
+Jeśli będziemy filtrować, to po odfiltrowaniu punktów nieznaczących może się okazać, że wyleciał nam np. punkt brzegu. Nie wszystkie elementy przekroju muszą byc przypisane do konkretnego istniejącego punktu przekroju, ale brzegi akurat muszą (w Mike'u jest podobnie: marker stawiamy w punkcie przekroju). Poza tym, użytkownik zawsze może zmienić położenie linii brzegu po wykonaniu innych analiz i wówczas musimy mieć możliwość dołożenia do przekroju punktu w określonym x (Station) - jego wysokość byłaby interpolowana na podstawie sąsiadów.
 
 Oto tabela danych przekroju z informacją, czy muszą być umieszczone w istniejącym punkcie:
 
@@ -91,7 +100,6 @@ wał/marker 1 i 3        nie                 tak
 zmiana Manninga         tak                 tak
 pole jałowe             nie                 brak odpowiednika
 przeszkoda              nie                 brak odpowiednika
-
 ==================      ==============      ==================
 
 
@@ -113,7 +121,13 @@ Mamy dwa typy przeszkód:
 * normalne: podajemy strone po której znajduje się przeszkoda, do (od) jakiej odległości x przekrój jest zablokowany i do jakiej wysokości (górny rysunek)
 * multiple: podajemy dowolną ilość bloków opisanych: xstart, xend i wysokość (dolny rysunek)
 
-Proponuję przecinać poligony przeszkód przekrojami i wypełniać następującą tabelę ``BlockedObstructions``
+Proponuję przecinać poligony przeszkód przekrojami i wypełniać następującą tabelę ``BlockedPositions`` (bez geometrii)
+
+    ('"id"', "serial primary key"),
+    ('"XsecId"', "integer"), -- którego przekroju dotyczy
+    ('"BegFrac"', "double precision"), -- frakcja długosci przekroju dla początku przeszkody
+    ('"EndFrac"', "double precision"), -- frakcja końca przeszkody
+    ('"Elevation"', "double precision"), -- wysokość przeszkody (rzędna npm)
 
 
 Ineffective Flow Areas
@@ -124,3 +138,32 @@ Podobnie jak w przypadku blocked obstructions mamy dwa typy pól jałowego przep
 * normalne: podajemy strone po której znajduje się pole jałowe, do (od) jakiej odległości x przekrój jest jałowy i do jakiej wysokości
 * multiple: podajemy dowolną ilość bloków opisanych: xstart, xend i wysokość
 
+Tabela pól jałowych ``IneffectivePositions`` (bez geometrii)::
+
+    ('"id"', "serial primary key"),
+    ('"XsecId"', "integer"), -- którego przekroju dotyczy
+    ('"BegFrac"', "double precision"), -- frakcja długosci przekroju dla początku pola
+    ('"EndFrac"', "double precision"), -- frakcja końca pola
+    ('"Elevation"', "double precision"), -- wysokość pola (rzędna npm)
+
+
+Manning's n
+***********
+
+Tabela zmian użytkowania i szorstkości ``Manning`` (bez geometrii)::
+
+    ('"id"', "serial primary key"),
+    ('"XsecId"', "integer"), -- którego przekroju dotyczy
+    ('"Fraction"', "double precision"), -- frakcja długosci przekroju dla początku pola
+    ('"N_Value"', "double precision"), -- współczynnik Manninga
+
+
+Wały
+****
+
+Tabela wałów ``LeveePositions`` (bez geometrii)::
+
+    ('"LeveeId"', "serial primary key"),
+    ('"XsecId"', "integer"), -- którego przekroju dotyczy
+    ('"Fraction"', "double precision"), -- frakcja długosci przekroju dla początku pola
+    ('"Elevation"', "double precision"), -- wysokość wału
