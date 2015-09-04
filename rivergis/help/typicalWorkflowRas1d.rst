@@ -14,55 +14,113 @@ Dalej będzie po polsku, bo to tylko dla nas:
 
 Absolutnie konieczne jest włożenie geometrii do 2 tabel:
 
-* ``riverCenterlines`` (linestring) (a może zwyczajnie ``rivers``?)::
+* ``RiverCenterlines`` (linestring) (a może zwyczajnie ``rivers``?)::
 
-    ("rivid", "serial primary key"), -- proponuję zastapić hydroid identyfikatorem rzeki
-    ("rivercode", "text"), -- wymagany z palca
-    ("reachcode", "text"), -- wymagany z palca
-    ("fromnode", "integer"),
-    ("tonode", "integer"),
-    ("reachlen", "double precision"), -- długość odcinka
-    ("fromsta", "double precision"), -- kilometraż początku: wymagany z palca
-    ("tosta", "double precision"), -- km końca: z palca
-    ("notes", "text")
+    ('"RiverId"', "serial primary key"), -- proponuję zastapić hydroid identyfikatorem rzeki
+    ('"RiverCode"', "text"), -- wymagany z palca
+    ('"ReachCode"', "text"), -- wymagany z palca
+    ('"FromNode"', "integer"),
+    ('"ToNode"', "integer"),
+    ('"ReachLen"', "double precision"), -- długość odcinka
+    ('"FromSta"', "double precision"), -- kilometraż początku: wymagany z palca
+    ('"ToSta"', "double precision"), -- km końca: z palca
+    ('"Notes"', "text")
 
-* ``xscutlines`` (linestring)::
+* ``XsCutlines`` (linestring)::
 
-    ("xsid", "serial primary key"), -- proponuję zastapię hydroid identyfikatorem przekroju
-    ("rivid", "integer"),
-    ("station", "double precision"),
-    ("leftbank", "double precision"),
-    ("rightbank", "double precision"),
-    ("leftlen", "double precision"),
-    ("chanlen", "double precision"),
-    ("rightlen", "double precision"),
-    ("name", "text"),
-    ("description", "text")
+    ('"XsecId"', "serial primary key"), -- proponuję zastapię hydroid identyfikatorem przekroju
+    ('"RiverId"', "integer"),
+    ('"Station"', "double precision"), -- kilometraż przekroju
+    ('"LeftBank"', "double precision"),
+    ('"RightBank"', "double precision"),
+    ('"LeftLen"', "double precision"),
+    ('"ChanLen"', "double precision"),
+    ('"RightLen"', "double precision"),
+    ('"Name"', "text"),
+    ('"Description"', "text")
 
 
 Topologia sieci
 ---------------
 
-* wypełnienie tabeli ``nodes`` (NodesTable) --- punktu początku i końca rzeki z nadanym identyfikatorem
-* nadać stacje początkom i końcm odcinków rzek --- z palca?
+* wypełnienie tabeli ``Nodes`` (NodesTable), punktów początku i końca rzeki z nadanym identyfikatorem
+* nadać stacje początkom i końcom odcinków rzek --- należy przypomnieć użytkownikowi, że trzeba to zrobić z palca?
 
 Dane przekrojów poprzecznych
 ----------------------------
 
-Następnie wypełniamy atrybuty tabeli ``xscutlines``:
+Następnie wypełniamy atrybuty tabeli ``XsCutlines``:
 
-* ``rivid`` poleceniem ``River/Reach Names`` --- z warunku przecięcia się linii rzeki z przekrojem
-* ``station`` poleceniem ``Stationing``::
+* ``RiverId`` poleceniem ``River/Reach Names`` --- z warunku przecięcia się linii rzeki z przekrojem
+* ``Station`` poleceniem ``Stationing``::
 
-    stationing = fromsta + m * reachlen
+    Station = FromSta + m * ReachLen
 
     gdzie:
-    m = frakcja długości odcinka rzeki w punkcie przecięcia z xscutline
+    m = frakcja długości odcinka rzeki w punkcie przecięcia z XsCutline
 
-* ``leftbank``, ``rightbank`` poleceniem ``Bank Stations`` - znajdujemy punkty przecięcia xscutline z  liniami brzegów i odczytujemy ich odpowiadające im frakcje odległości wzdłuż xscutline
+* ``LeftBank``, ``RightBank`` poleceniem ``Bank Stations`` - znajdujemy punkty przecięcia XsCutline z  liniami brzegów i odczytujemy odpowiadające im frakcje odległości wzdłuż XsCutline
 
-* ``leftlen``, ``chanlen``, ``rightlen`` poleceniem ``Downstream Reach Lengths``. Znaleźć xsid przekroju poniżej. Obliczyć frakcje punktów przecięcia przekroju i odpowiednich linii przepływu i na ich podstawie obliczyć odległości między przekrojami
+* ``LeftLen``, ``ChanLen``, ``RightLen`` poleceniem ``Downstream Reach Lengths``. Znaleźć ``XsecId`` przekroju poniżej. Obliczyć frakcje punktów przecięcia przekroju i odpowiednich linii przepływu i na ich podstawie obliczyć odległości między przekrojami
+
+Próbkowanie DEM w przekroju
+***************************
+
+W `Issues pisałem <http://sr101537.imgw.ad:81/rpasiok/rgroup/issues/12>`_  o próbkowaniu DEMa wzdłuż przekroju i że jest to jedna z kosztowniejszych czasowo analiz, więc warto byłoby zachować jej wynik w tabeli. Zaproponowałem następującą strukturę::
+
+    PtId bigserial primary key, -- id punktu
+    XsecId integer, -- identyfikator przekroju, do którego punkt należy
+    Station double precision, -- odległość punktu od początku przekroju [m]
+    Elevation double precision, -- wysokość [mnpm]
+    CoverCode text, -- kod pokrycia terenu
+    SrcId integer, -- kod źródła danych (gid)
+    Notes text, -- miejsce na inne uwagi
+    geom geometry(Point, SRID) -- położenie punktu we współrzędnych geodezyjnych
+
+Proponuję, aby gęstość próbkowania rastra DEM przyjąć jako równą rozdzielczości DEMa. Dla dużych rzek będziemy mieli wówczas mnóstwo punktów w każdym przekroju i należałoby pomyśleć o odfiltrowaniu punktów nieznaczących (zob. `Issues <http://sr101537.imgw.ad:81/rpasiok/rgroup/issues/16>`_). Jest kwestia, kiedy to robić. Ja skłaniam się do tego, aby robić to od razu po próbkowaniu DEMa, ale wiąże się z tym kilka dalszych spraw.
+
+Po odfiltorwaniu punktów nieznaczących może się okazać, że wyleciał nam np. punkt brzegu. Nie wszystkie elementy przekroju muszą byc przypisane do konkretnego istniejącego punktu przekroju, ale brzegi akurat muszą (w Mike'u jest podobnie: marker stawiamy w punkcie przekroju). Poza tym, użytkownik zawsze może zmienić położenie linii brzegu po wykonaniu innych analiz i wówczas musimy mieć możliwość dołożenia do przekroju punktu w określonym x (Station) - jego wysokość byłaby interpolowana na podstawie sąsiadów.
+
+Oto tabela danych przekroju z informacją, czy muszą być umieszczone w istniejącym punkcie:
+
+==================      ==============      ==================
+rodzaj danych           HEC-RAS wymaga      Mike wymaga
+==================      ==============      ==================
+brzeg/marker 4 i 5      tak                 tak
+wał/marker 1 i 3        nie                 tak
+zmiana Manninga         tak                 tak
+pole jałowe             nie                 brak odpowiednika
+przeszkoda              nie                 brak odpowiednika
+
+==================      ==============      ==================
 
 
 
+Inne dane geometryczne
+----------------------
+
+Blocked Obstructions
+********************
+
+.. figure:: img/temp_normal_blocked_obstructions.png
+   :align: right
+
+.. figure:: img/temp_multiple_blocked_obstructions.png
+   :align: right
+
+Mamy dwa typy przeszkód:
+
+* normalne: podajemy strone po której znajduje się przeszkoda, do (od) jakiej odległości x przekrój jest zablokowany i do jakiej wysokości (górny rysunek)
+* multiple: podajemy dowolną ilość bloków opisanych: xstart, xend i wysokość (dolny rysunek)
+
+Proponuję przecinać poligony przeszkód przekrojami i wypełniać następującą tabelę ``BlockedObstructions``
+
+
+Ineffective Flow Areas
+**********************
+
+Podobnie jak w przypadku blocked obstructions mamy dwa typy pól jałowego przepływu, czyli takich obszarów, które są zalewane, ale prędkość przepływu wzdłuż głównego kierunku przepływu jest zbliżona do zera:
+
+* normalne: podajemy strone po której znajduje się pole jałowe, do (od) jakiej odległości x przekrój jest jałowy i do jakiej wysokości
+* multiple: podajemy dowolną ilość bloków opisanych: xstart, xend i wysokość
 
