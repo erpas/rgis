@@ -12,11 +12,13 @@ class RiverDatabase(object):
     def __init__(self, dbname, host, port, user, password):
         """
         Constructor for databse object
-        :param dbname: Name of the database
-        :param host: Host of the databse
-        :param port: Port of the database
-        :param user: User login
-        :param password: Password for user
+
+        Args:
+            dbname (str): Name of the database
+            host (str): Host of the database
+            port (str): Port of the database
+            user (str): User login
+            password (str): Password for user
         """
         self.dbname = dbname
         self.host = host
@@ -51,7 +53,9 @@ class RiverDatabase(object):
     def run_query(self, qry):
         """
         Running PostgreSQL queries.
-        :param qry: Query for database
+
+        Args:
+            qry (str): Query for database
         """
         try:
             cur = self.con.cursor()
@@ -68,7 +72,9 @@ class RiverDatabase(object):
     def register(self, obj):
         """
         Registering object in database as dictionary entry.
-        :param obj: Instance of geometry object
+
+        Args:
+            obj: Instance of a hydrodynamic model object class
         """
         key = obj.name
         if key not in self.objects_register:
@@ -79,11 +85,15 @@ class RiverDatabase(object):
     def process_hecobject(self, hecobject, pg_method, schema, srid):
         """
         Creating and processing tables inside PostGIS database.
-        :param hecobject: HEC-RAS class object
-        :param pg_method: String representation of method that will be called on the hecobject class
-        :param schema: Schema where tables will be created or processed
-        :param srid: A Spatial Reference System Identifier
-        :return: Instance of HEC-RAS class object
+
+        Args:
+            hecobject (class): HEC-RAS class object
+            pg_method (str): String representation of method that will be called on the hecobject class
+            schema (str): Schema where tables will be created or processed
+            srid (int): A Spatial Reference System Identifier
+
+        Returns:
+            obj: Instance of HEC-RAS class object
         """
         hecobject.SCHEMA = schema
         hecobject.SRID = srid
@@ -98,21 +108,27 @@ class RiverDatabase(object):
     def import_hecobject(self, sdf):
         """
         Importing geometry objects from HEC-RAS SDF file to PostGIS database.
-        :param sdf: SDF file
+
+        Args:
+            sdf (str): path to SDF file
         """
         pass
 
-    def exists(self, hecobject):
+    def exists(self, hydroclass):
         """
-        Checking if geometry object exists in database.
-        :param hecobject: HEC-RAS class object
+        Checking if hydrodynamic model object exists in database.
+
+        Args:
+            hydroclass (class): hydrodynamic model class object
         """
         pass
 
     def add_to_view(self, obj):
         """
-        Adding PostGIS table to QGIS view.
-        :param obj: Instance of geometry object
+        Adding PostGIS table as QGIS layer.
+
+        Args:
+            obj: Instance of a hydrodynamic model object class
         """
         self.uri = QgsDataSourceURI()
         self.uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
