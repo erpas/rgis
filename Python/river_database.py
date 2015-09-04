@@ -12,11 +12,13 @@ class RiverDatabase(object):
     def __init__(self, dbname, host, port, user, password):
         """
         Constructor for databse object
-        :param dbname: Name of the database
-        :param host: Host of the databse
-        :param port: Port of the database
-        :param user: User login
-        :param password: Password for user
+
+        Args:
+            dbname (str): Name of the database
+            host (str): Host of the databse
+            port (str): Port of the database
+            user (str): User login
+            password (str): Password for user
         """
         self.dbname = dbname
         self.host = host
