@@ -4,8 +4,8 @@
 Typical Workflow: Create 1d HEC-RAS Geometry Model
 --------------------------------------------------
 
-1. Create source geometry of the model:
----------------------------------------
+Utworzenie bądź import geometrii źródłowej
+------------------------------------------
 
 * Create empty river database tables for 1d HEC-RAS model or
 * Import the model geometry from existing layers loaded into a QGIS project
@@ -39,6 +39,7 @@ Absolutnie konieczne jest włożenie geometrii do 2 tabel:
     ('"Name"', "text"),
     ('"Description"', "text")
 
+Inne dane są opcjonalne.
 
 Topologia sieci
 ---------------
