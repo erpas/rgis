@@ -4,8 +4,6 @@
 Typical Workflow: Create 1d HEC-RAS Geometry Model
 --------------------------------------------------
 
-1. Create source geometry of the model:
----------------------------------------
 
 Utworzenie tabel i geometrii źródłowej
 --------------------------------------
@@ -56,7 +54,7 @@ Tabela ``NodesTable`` (point)::
     ('"X"', "double precision"), -- wspólrzędna geodezyjna x
     ('"Y"', "double precision") -- wspólrzędna geodezyjna y
 
-.. _workflow_xsections:
+.. _workflowRas1d_xsections:
 
 Podstawowe dane przekrojów poprzecznych
 ---------------------------------------
@@ -71,11 +69,21 @@ Następnie wypełniamy atrybuty tabeli ``XsCutlines``:
     gdzie:
     m = frakcja długości odcinka rzeki w punkcie przecięcia z XsCutline
 
-* ``LeftBank``, ``RightBank`` poleceniem ``Bank Stations`` - znajdujemy punkty przecięcia XsCutline z  liniami brzegów i odczytujemy odpowiadające im frakcje odległości wzdłuż XsCutline
+* ``LeftBank``, ``RightBank`` poleceniem ``Bank Stations`` - znajdujemy punkty przecięcia XsCutline z  liniami brzegów i odczytujemy odpowiadające im frakcje odległości wzdłuż XsCutline. Tabela przebiegu linii brzegowych ``BankLines`` ma postać::
 
-* ``LeftLen``, ``ChanLen``, ``RightLen`` poleceniem ``Downstream Reach Lengths``. Znaleźć ``XsecId`` przekroju poniżej. Obliczyć frakcje punktów przecięcia przekroju i odpowiednich linii przepływu i na ich podstawie obliczyć odległości między przekrojami
+    ('"BankId"', 'serial primary key'), -- id brzegu
+    ('"Type"', 'text'), -- typ brzegu: lewy lub prawy
+    ('geom', 'geometry(Linestring,SRID)'), -- geometria
 
-.. _workflow_dem:
+
+* ``LeftLen``, ``ChanLen``, ``RightLen`` poleceniem ``Downstream Reach Lengths``. Znaleźć ``XsecId`` przekroju poniżej. Obliczyć frakcje punktów przecięcia przekroju i odpowiednich linii przepływu i na ich podstawie obliczyć odległości między przekrojami. Tabela linii przepływu wzdłuż trzech części przekroju ma postać::
+
+    ('"PathId"', 'serial primary key'), -- id linii przepływu
+    ('"Type"', 'text'), -- część przekroju: 'L', 'R' lub 'Ch'
+    ('geom', 'geometry(Linestring,SRID)'), -- geometria
+
+
+.. _workflowRas1d_dem:
 
 Próbkowanie DEM w przekroju
 ***************************
@@ -114,7 +122,7 @@ przeszkoda              nie                 brak odpowiednika
 Inne opcjonalne dane przekrojów
 -------------------------------
 
-.. _workflow_blocked:
+.. _workflowRas1d_blocked:
 
 Blocked Obstructions
 ********************
@@ -146,7 +154,7 @@ Proponuję przecinać poligony przeszkód przekrojami i wypełniać następując
     ('"EndFrac"', "double precision"), -- frakcja końca przeszkody
     ('"Elevation"', "double precision"), -- wysokość przeszkody (rzędna npm)
 
-.. _workflow_ineffective:
+.. _workflowRas1d_ineffective:
 
 Ineffective Flow Areas
 **********************
@@ -173,7 +181,7 @@ Tabela pól jałowych ``IneffectivePositions`` (bez geometrii)::
 
 Tabelę tę wypełniamy sprawdzając przecięcia przekrojów i pól jałowych.
 
-.. _workflow_levees:
+.. _workflowRas1d_levees:
 
 Wały
 ****
@@ -187,7 +195,7 @@ Tabela wałów ``LeveePositions`` (bez geometrii)::
 
 Tabelę wypałniamy znajdując punkty przecięcia linii wałów z przekrojami. Można się zastanowić, czy warto zapisywać w osobnej tabeli punkty wałów (LeveePoints). Moim zdaniem nie ma takiej potrzeby.
 
-.. _workflow_manning:
+.. _workflowRas1d_manning:
 
 Manning's n
 ***********
