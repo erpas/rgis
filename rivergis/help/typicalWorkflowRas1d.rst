@@ -213,7 +213,29 @@ Uwaga na marginesie: Szkoda, że nie możemy przekazać do HEC-RAS (ani do Mike'
 Eksport danych do formatu RAS Export
 ------------------------------------
 Potrzebujemy metody na wyciąganie danych o konkretnych obiektach bazy, aby można je było przetworzyc na stringa w formacie RAS GIS Import (HEC-RAS User's Manual str. 755, B-3).
-Proponuję zacząć od obiektów nadrzednych, jakimi są odcinki rzek, potem przejść do przekrojów a na koniec do obiektów hydrotechnicznych (mostów, przelewów itd).
+Proponuję zacząć od obiektów nadrzędnych, jakimi są odcinki rzek, potem przejść do przekrojów a na koniec do obiektów hydrotechnicznych (mostów, przelewów itd).
 
 W pliku ``Python/old_ras_methods.py`` zawarłem kod, jakiego używałem do tworzenia stringów w formacie RAS GIS Export w jednym ze skryptów ArcPy. To jest bardzo stare i nieudolne, ale ilustruje, jeden ze sposobów, w jaki można to zrobić.
-Pewnie pogadamy w tej sprawie na żywo albo jeszcze zdążę coś na ten temat napisać.
+
+Napiszę krótko, jak to robiłem, a Wy dajcie mi znać, jak to zrobić lepiej :-)
+
+W tej wczesnej wersji, opartej zresztą na SpatiaLite, główną klasą wtyczki była klasa ``rasGis``, która miała szereg metod do parsowania pliku w formacie RAS GIS Import i tworzenia na tej podstawie plików network i rawdata Mike'a 11. Nie pamiętam już do jakiego stopnia wkładałem to do bazy SpatiaLite, ale chyba to pomijałem, bo ten skrypt miał służyć do konwersji geometrii HEC-RAS do Mike'a i nie zależało mi na karmieniu bazy.
+
+Tworzyłem obiekty klas ``reach``, ``centerLinePoint``, ``xSection``, ``cutLinePoint`` i ``surfaceLinePoint``. Poniżej definicja klasy ``reach``:
+
+.. literalinclude:: ../../Python/old_ras_methods.py
+    :pyobject: reach
+
+AAA
+
+
+    class reach:
+      def __init__(self,streamId,reachId,fromPt,toPt,centerLine=[]):
+        self.streamId = streamId
+        self.reachId = reachId
+        self.fromPt = fromPt
+        self.toPt = toPt
+        self.centerLine = centerLine
+
+
+
