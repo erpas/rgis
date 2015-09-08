@@ -209,3 +209,11 @@ Tabela zmian użytkowania i szorstkości ``Manning`` (bez geometrii)::
 
 Uwaga na marginesie: Szkoda, że nie możemy przekazać do HEC-RAS (ani do Mike'a) informacji o samym pokryciu i dopiero tam przypisać danemu pokryciu wpsółczynnik szorstkości. Może coś zmieni się w przyszłości, ale teraz do obu programów obliczeniowych wprowadzamy konkretne wartości wsp. Manninga *n* (lub Stricklera *M* w Mike'u).
 
+
+Eksport danych do formatu RAS Export
+------------------------------------
+Potrzebujemy metody na wyciąganie danych o konkretnych obiektach bazy, aby można je było przetworzyc na stringa w formacie RAS GIS Import (HEC-RAS User's Manual str. 755, B-3).
+Proponuję zacząć od obiektów nadrzednych, jakimi są odcinki rzek, potem przejść do przekrojów a na koniec do obiektów hydrotechnicznych (mostów, przelewów itd).
+
+W pliku ``Python/old_ras_methods.py`` zawarłem kod, jakiego używałem do tworzenia stringów w formacie RAS GIS Export w jednym ze skryptów ArcPy. To jest bardzo stare i nieudolne, ale ilustruje, jeden ze sposobów, w jaki można to zrobić.
+Pewnie pogadamy w tej sprawie na żywo albo jeszcze zdążę coś na ten temat napisać.
