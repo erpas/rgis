@@ -16,7 +16,7 @@ class HecRasObject(object):
 
     def pg_create_table(self):
         schema_name = '"{0}"."{1}"'.format(self.schema, self.name)
-        qry = ['id serial PRIMARY KEY', 'geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
+        qry = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         qry += [' '.join(field) for field in self.attrs]
         qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});'.format(schema_name, schema_name, ',\n\t'.join(qry))
         return qry
@@ -31,14 +31,14 @@ class StreamCenterline(HecRasObject):
         self.hdf_dataset = u'River Centerlines'
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"HydroID"', 'decimal'),
-            ('"RiverCode"', 'varchar(16)'),
-            ('"ReachCode"', 'varchar(16)'),
-            ('"FromNode"', 'numeric'),
-            ('"ToNode"', 'numeric'),
-            ('"ArcLength"', 'real'),
-            ('"FromSta"', 'real'),
-            ('"ToSta"', 'real')]
+            ('"RiverID"', 'serial primary key'),
+            ('"RiverCode"', 'text'),
+            ('"ReachCode"', 'text'),
+            ('"FromNode"', 'integer'),
+            ('"ToNode"', 'integer'),
+            ('"ArcLength"', 'double precision'),
+            ('"FromSta"', 'double precision'),
+            ('"ToSta"', 'double precision')]
 
     def pg_from_to_node(self):
         qry = '''
@@ -57,9 +57,9 @@ BEGIN
 DROP TABLE IF EXISTS "{0}"."NodesTable";
 CREATE TABLE "{0}"."NodesTable"(
     geom geometry(POINT, 2180),
-    "NodeID" integer,
-    "X" real,
-    "Y" real);
+    "NodeID" serial primary key,
+    "X" double precision,
+    "Y" double precision);
 FOR r in c LOOP
     start_geom := ST_StartPoint(r.geom);
     end_geom := ST_EndPoint(r.geom);
@@ -121,6 +121,27 @@ WHERE "StreamCenterline"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM 
         return qry
 
 
+class XSCutLines(HecRasObject):
+    """
+    Geometry and table.
+    """
+    def __init__(self):
+        super(XSCutLines, self).__init__()
+        self.hdf_dataset = u'Cross Sections'
+        self.geom_type = 'LINESTRING'
+        self.attrs = [
+            ('"XsecID"', 'serial primary key'),
+            ('"Station"', 'double precision'),
+            ('"RiverCode"', 'text'),
+            ('"ReachCode"', 'text'),
+            ('"LeftBank"', 'double precision'),
+            ('"RightBank"', 'double precision'),
+            ('"Llength"', 'double precision'),
+            ('"ChLength"', 'double precision'),
+            ('"Rlength"', 'double precision'),
+            ('"NodeName"', 'text')]
+
+
 class BankLines(HecRasObject):
     """
     Geometry and table.
@@ -129,7 +150,7 @@ class BankLines(HecRasObject):
         super(BankLines, self).__init__()
         self.hdf_dataset = u'River Bank Lines'
         self.geom_type = 'LINESTRING'
-        self.attrs = [('"HydroID"', 'decimal')]
+        self.attrs = [('"BankID"', 'serial primary key')]
 
 
 class BankPoints(HecRasObject):
@@ -140,7 +161,7 @@ class BankPoints(HecRasObject):
         super(BankPoints, self).__init__()
         self.hdf_dataset = u'River Bank Lines'
         self.geom_type = 'POINT'
-        self.attrs = [('"HydroID"', 'decimal')]
+        self.attrs = [('"BankID"', 'serial primary key')]
 
 
 class Flowpaths(HecRasObject):
@@ -153,28 +174,7 @@ class Flowpaths(HecRasObject):
         super(Flowpaths, self).__init__()
         self.hdf_dataset = None
         self.geom_type = 'LINESTRING'
-        self.attrs = [('"LineType"', 'varchar(7)')]
-
-
-class XSCutLines(HecRasObject):
-    """
-    Geometry and table.
-    """
-    def __init__(self):
-        super(XSCutLines, self).__init__()
-        self.hdf_dataset = u'Cross Sections'
-        self.geom_type = 'LINESTRING'
-        self.attrs = [
-            ('"HydroID"', 'decimal'),
-            ('"Station"', 'real'),
-            ('"RiverCode"', 'varchar(16)'),
-            ('"ReachCode"', 'varchar(16)'),
-            ('"LeftBank"', 'real'),
-            ('"RightBank"', 'real'),
-            ('"Llength"', 'real'),
-            ('"ChLength"', 'real'),
-            ('"Rlength"', 'real'),
-            ('"NodeName"', 'varchar(32)')]
+        self.attrs = [('"LineType"', 'text')]
 
 
 class Bridges(HecRasObject):
@@ -183,13 +183,13 @@ class Bridges(HecRasObject):
         self.hdf_dataset = u'Structures'
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"HydroID"', 'decimal'),
-            ('"RiverCode"', 'varchar(16)'),
-            ('"ReachCode"', 'varchar(16)'),
-            ('"Station"', 'real'),
-            ('"USDistance"', 'real'),
-            ('"TopWidth"', 'real'),
-            ('"NodeName"', 'varchar(32)')]
+            ('"BridgeID"', 'serial primary key'),
+            ('"RiverCode"', 'text'),
+            ('"ReachCode"', 'text'),
+            ('"Station"', 'double precision'),
+            ('"USDistance"', 'double precision'),
+            ('"TopWidth"', 'double precision'),
+            ('"NodeName"', 'text')]
 
 
 class IneffAreas(HecRasObject):
@@ -197,7 +197,7 @@ class IneffAreas(HecRasObject):
         super(IneffAreas, self).__init__()
         self.hdf_dataset = None
         self.geom_type = 'POLYGON'
-        self.attrs = [('"HydroID"', 'decimal')]
+        self.attrs = [('""IneffID"', 'serial primary key')]
 
 
 class BlockedObs(HecRasObject):
@@ -205,7 +205,7 @@ class BlockedObs(HecRasObject):
         super(BlockedObs, self).__init__()
         self.hdf_dataset = None
         self.geom_type = 'POLYGON'
-        self.attrs = [('"HydroID"', 'decimal')]
+        self.attrs = [('"BlockID"', 'serial primary key')]
 
 
 class LanduseAreas(HecRasObject):
@@ -214,8 +214,8 @@ class LanduseAreas(HecRasObject):
         self.hdf_dataset = None
         self.geom_type = 'MULTIPOLYGON'
         self.attrs = [
-            ('"LUCode"', 'varchar(32)'),
-            ('"N_Value"', 'real')]
+            ('"LUCode"', 'text'),
+            ('"N_Value"', 'double precision')]
 
 
 class LeveeAlignment(HecRasObject):
@@ -223,7 +223,7 @@ class LeveeAlignment(HecRasObject):
         super(LeveeAlignment, self).__init__()
         self.hdf_dataset = None
         self.geom_type = 'LINESTRING'
-        self.attrs = [('"HydroID"', 'decimal')]
+        self.attrs = [('"LeveeID"', 'serial primary key')]
 
 
 class LeveePoints(HecRasObject):
@@ -232,9 +232,9 @@ class LeveePoints(HecRasObject):
         self.hdf_dataset = None
         self.geom_type = 'POINTS'
         self.attrs = [
-            ('"LeveeID"', 'decimal'),
-            ('"Station"', 'decimal'),
-            ('"Elevation"', 'decimal')]
+            ('"LeveeID"', 'serial primary key'),
+            ('"Station"', 'integer'),
+            ('"Elevation"', 'integer')]
 
 
 class InlineStructures(HecRasObject):
@@ -243,13 +243,13 @@ class InlineStructures(HecRasObject):
         self.hdf_dataset = u'Structures'
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"HydroID"', 'decimal'),
-            ('"RiverCode"', 'varchar(16)'),
-            ('"ReachCode"', 'varchar(16)'),
-            ('"Station"', 'real'),
-            ('"USDistance"', 'real'),
-            ('"TopWidth"', 'real'),
-            ('"NodeName"', 'varchar(32)')]
+            ('"InlineStrID"', 'serial primary key'),
+            ('"RiverCode"', 'text'),
+            ('"ReachCode"', 'text'),
+            ('"Station"', 'double precision'),
+            ('"USDistance"', 'double precision'),
+            ('"TopWidth"', 'double precision'),
+            ('"NodeName"', 'text')]
 
 
 class LateralStructures(HecRasObject):
@@ -258,13 +258,13 @@ class LateralStructures(HecRasObject):
         self.hdf_dataset = u'Structures'
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"HydroID"', 'decimal'),
-            ('"RiverCode"', 'varchar(16)'),
-            ('"ReachCode"', 'varchar(16)'),
-            ('"Station"', 'real'),
-            ('"USDistance"', 'real'),
-            ('"TopWidth"', 'real'),
-            ('"NodeName"', 'varchar(32)')]
+            ('"LateralStrID"', 'serial primary key'),
+            ('"RiverCode"', 'text'),
+            ('"ReachCode"', 'text'),
+            ('"Station"', 'double precision'),
+            ('"USDistance"', 'double precision'),
+            ('"TopWidth"', 'double precision'),
+            ('"NodeName"', 'text')]
 
 
 class StorageAreas(HecRasObject):
@@ -273,10 +273,10 @@ class StorageAreas(HecRasObject):
         self.hdf_dataset = None
         self.geom_type = 'POLYGON'
         self.attrs = [
-            ('"HydroID"', 'decimal'),
-            ('"MaxElev"', 'real'),
-            ('"MinElev"', 'real'),
-            ('"UserElev"', 'real')]
+            ('"StorageID"', 'serial primary key'),
+            ('"MaxElev"', 'double precision'),
+            ('"MinElev"', 'double precision'),
+            ('"UserElev"', 'double precision')]
 
 
 class SAConnections(HecRasObject):
@@ -285,10 +285,10 @@ class SAConnections(HecRasObject):
         self.hdf_dataset = None
         self.geom_type = 'POLYGON'
         self.attrs = [
-            ('"HydroID"', 'decimal'),
-            ('"USSA"', 'decimal'),
-            ('"DSSA"', 'decimal'),
-            ('"TopWidth"', 'real')]
+            ('"SAconID"', 'serial primary key'),
+            ('"USSA"', 'integer'),
+            ('"DSSA"', 'integer'),
+            ('"TopWidth"', 'double precision')]
 
 
 class StreamCenterline3D(StreamCenterline):
