@@ -148,7 +148,7 @@ WHERE
 -- poniewaz rzeki rysujemy od zrodel do ujscia, to ToSta
 -- jest stacja ujscia
 
-UPDATE 
+UPDATE
   start."StreamCenterlines" as riv
 SET
   "FromSta" = ST_Length(riv.geom),
@@ -180,7 +180,7 @@ WHERE
 
 -- nadaj przekrojom kolejny numer na odcinku idac od gory
 
-WITH orderedXsecs as ( -- przekroje ponumerowane od góry do dołu i pogrupowane po rzekach
+WITH orderedXsecs as (
   SELECT
     "XsecId",
     "RiverId",
@@ -200,11 +200,37 @@ UPDATE start."XsCutlines" as xs
 
 -- brzegi rzeki (banks) - w Mike'u 11 markery 4 i 5
 
-  -- TODO
+WITH bankpts as (
+  SELECT
+    xs."XsecId" as "XsecId",
+    ST_LineLocatePoint(xs.geom, ST_Intersection(xs.geom, bl.geom)) as "Fraction"
+  FROM
+    start."BankLines" as bl,
+    start."XsCutlines" as xs
+  WHERE
+    xs.geom && bl.geom AND
+    ST_Intersects(xs.geom, bl.geom)
+)
+UPDATE start."XsCutlines" as xs
+SET
+  "LeftBank" = minmax."minFrac",
+  "RightBank" = minmax."maxFrac"
+FROM
+  (
+  SELECT
+    "XsecId",
+    min("Fraction") as "minFrac",
+    max("Fraction") as "maxFrac"
+  FROM
+    bankpts as bp
+  GROUP BY "XsecId"
+  ) minmax
+WHERE
+  xs."XsecId" = minmax."XsecId";
 
 
 
--- odleglosci wzdluz dróg przepływu
+-- odleglosci wzdluż dróg przepływu
 
 -- tworze tabele kilometrazu wzdluz 3 drog przeplywu
 DROP TABLE start."FlowpathStations";
@@ -218,6 +244,7 @@ CREATE TABLE start."FlowpathStations" (
   "RightSta" double precision
 );
 
+-- wkladam do tabeli wszystkie przekroje z ich identyfikatorami
 INSERT INTO start."FlowpathStations"
   ("XsecId", "RiverId", "Nr")
 SELECT
