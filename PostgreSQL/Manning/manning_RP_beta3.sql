@@ -1,3 +1,4 @@
+----
 -- tabela przekrojow
 CREATE TABLE radek.xscutlines
 (
