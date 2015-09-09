@@ -118,6 +118,11 @@ VALUES
 
 -- NodesTable
 -- Tabela wypełniana za pomocą funkcji from_to_node
+
+-- Linie rzek rysujemy zgodnie z kierunkiem przeplywu. To samo dotyczy drog przepływu Flowpaths.
+-- Dzieki temu FromNode zawsze jest na gorze odcinka, a ToNode przy ujsciu.
+--
+
 DROP TABLE IF EXISTS start."NodesTable";
 
 CREATE TABLE start."NodesTable"
@@ -151,7 +156,7 @@ WHERE
 UPDATE
   start."StreamCenterlines" as riv
 SET
-  "FromSta" = ST_Length(riv.geom),
+  "FromSta" = ST_Length(riv.geom), -- zrób na odwrót zeby bylo zgodnie z GeoRAS
   "ToSta" = 0
 WHERE
   riv."FromSta" is NULL;
