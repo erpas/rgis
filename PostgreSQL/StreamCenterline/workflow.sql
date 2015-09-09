@@ -2,7 +2,7 @@
 
 CREATE TABLE start."StreamCenterlines"
 (
-  "RiverId" serial primary key,
+  "ReachId" serial primary key,
   "RiverCode" text,
   "ReachCode" text,
   "FromNode" integer,
@@ -35,7 +35,7 @@ DROP TABLE start."XsCutlines";
 CREATE TABLE start."XsCutlines"
 (
   "XsecId" serial primary key,
-  "RiverId" integer,
+  "ReachId" integer,
   "Station" double precision,
   "Nr" integer,
   "LeftBank" double precision,
@@ -121,24 +121,26 @@ VALUES
 
 -- Linie rzek rysujemy zgodnie z kierunkiem przeplywu. To samo dotyczy drog przepływu Flowpaths.
 -- Dzieki temu FromNode zawsze jest na gorze odcinka, a ToNode przy ujsciu.
+
+-- NodesTable jest tworzona przez funkcję from_to_node() Lukasza
+
+-- DROP TABLE IF EXISTS start."NodesTable";
 --
-
-DROP TABLE IF EXISTS start."NodesTable";
-
-CREATE TABLE start."NodesTable"
-(
-  "NodeId" serial primary key,
-  "X" double precision,
-  "Y" double precision
-  );
+-- CREATE TABLE start."NodesTable"
+-- (
+--   "NodeId" serial primary key,
+--   "X" double precision,
+--   "Y" double precision
+--   );
 
 
 
--- Nadanie RiverId przekrojom
+
+-- Nadanie ReachId przekrojom
 
 UPDATE start."XsCutlines" as xs
 SET 
-  "RiverId" = riv."RiverId"
+  "ReachId" = riv."ReachId"
 FROM
   start."StreamCenterlines" as riv
 WHERE
@@ -153,18 +155,21 @@ WHERE
 -- poniewaz rzeki rysujemy od zrodel do ujscia, to ToSta
 -- jest stacja ujscia
 
-UPDATE
-  start."StreamCenterlines" as riv
-SET
-  "FromSta" = ST_Length(riv.geom), -- zrób na odwrót zeby bylo zgodnie z GeoRAS
-  "ToSta" = 0
-WHERE
-  riv."FromSta" is NULL;
+-- Poniższy kod zostawiam jako archiwum.
+-- Do ustalenia stacji konców odcinkow służy funkcja lengths_stations() Lukasza
+
+-- UPDATE
+--   start."StreamCenterlines" as riv
+-- SET
+--   "FromSta" = 0,
+--   "ToSta" = ST_Length(riv.geom)
+-- WHERE
+--   riv."FromSta" is NULL;
 
 WITH xspts as (
   SELECT 
     xs."XsecId" as "XsecId",
-    riv."RiverId" as "RiverId",
+    riv."ReachId" as "ReachId",
     ST_LineLocatePoint(riv.geom, ST_Intersection(xs.geom, riv.geom)) as "Fraction"
   FROM
     start."StreamCenterlines" as riv,
@@ -180,24 +185,26 @@ FROM
   xspts,
   start."StreamCenterlines" as riv
 WHERE
-  xspts."RiverId" = riv."RiverId" AND
+  xspts."ReachId" = riv."ReachId" AND
   xspts."XsecId" = xs."XsecId";
 
 -- nadaj przekrojom kolejny numer na odcinku idac od gory
 
 WITH orderedXsecs as (
-  SELECT
+SELECT
     "XsecId",
-    "RiverId",
-    rank() OVER (PARTITION BY "RiverId" ORDER BY "Station" ASC) as rank
+    xs."ReachId",
+    rank() OVER (PARTITION BY "RiverCode" ORDER BY "Station" ASC) as rank
   FROM
-    start."XsCutlines"
+    start."XsCutlines" as xs
+  LEFT JOIN
+    start."StreamCenterlines" sc ON  sc."ReachId" = xs."ReachId"
 )
-UPDATE start."XsCutlines" as xs
+UPDATE start."XsCutlines" xs
   SET
     "Nr" = rank
   FROM
-    orderedXsecs as ox
+    orderedXsecs ox
   WHERE
     xs."XsecId" = ox."XsecId";
 
@@ -242,7 +249,7 @@ DROP TABLE start."FlowpathStations";
 
 CREATE TABLE start."FlowpathStations" (
   "XsecId" integer primary key,
-  "RiverId" integer,
+  "ReachId" integer,
   "Nr" integer,
   "LeftSta" double precision,
   "ChanSta" double precision,
@@ -251,10 +258,10 @@ CREATE TABLE start."FlowpathStations" (
 
 -- wkladam do tabeli wszystkie przekroje z ich identyfikatorami
 INSERT INTO start."FlowpathStations"
-  ("XsecId", "RiverId", "Nr")
+  ("XsecId", "ReachId", "Nr")
 SELECT
   "XsecId",
-  "RiverId",
+  "ReachId",
   "Nr"
 FROM
   start."XsCutlines";
@@ -347,8 +354,8 @@ FROM
   start."FlowpathStations" as nfs
 WHERE
   xs."Nr" > 1 AND
-  xs."RiverId" = fs."RiverId" AND
-  fs."RiverId" = nfs."RiverId" AND
+  xs."ReachId" = fs."ReachId" AND
+  fs."ReachId" = nfs."ReachId" AND
   xs."XsecId" = fs."XsecId" AND
   xs."Nr" = fs."Nr" AND
   xs."Nr" = nfs."Nr" + 1;
