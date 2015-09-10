@@ -29,7 +29,9 @@ VALUES
     ('Doplyw A', 'górna część', ST_GeomFromText('LINESTRING(325014 392216,324887 392383,324772 392378,324711 392493,324673 392635,324577 392731,324539 392790)',2180)),
     ('Doplyw B', 'testowy', ST_GeomFromText('LINESTRING(325337 393195,325222 393136,325022 393082,324831 393049,324709 393021,324645 392964,324589 392858,324539 392790)',2180));
 
+
 -- XsCutline Table
+
 DROP TABLE start."XsCutlines";
 
 CREATE TABLE start."XsCutlines"
@@ -481,8 +483,8 @@ VALUES
 
 -- tabela punktow zmiany szorstkosci
 
-DROP TABLE IF EXISTS start.pkty_zmiany_manninga;
-create table start.pkty_zmiany_manninga (
+DROP TABLE IF EXISTS start."Manning";
+create table start."Manning" (
     gid bigserial primary key,
     "XsecId" integer,
     "Fraction" double precision, -- wzgledne polozenie na linii przekroju
@@ -491,8 +493,8 @@ create table start.pkty_zmiany_manninga (
 	geom geometry(point, 2180) -- geometria
 );
 
-CREATE INDEX sidx_pkty_zmiany_geom ON
-    start.pkty_zmiany_manninga
+CREATE INDEX sidx_luchangelocations_geom ON
+    start."Manning"
 USING gist (geom);
 
 
@@ -503,7 +505,7 @@ SELECT
     (ST_Dump(ST_Boundary(geom))).geom
 FROM start."LandUse"
 )
-insert into start.pkty_zmiany_manninga
+insert into start."Manning"
     ("XsecId", geom)
 select distinct
     xs."XsecId", -- zeby wiedziec na jakim przekroju lezy punkt
@@ -516,7 +518,7 @@ where
 
 
 -- dodaj do pktow zmiany poczatki przekrojow
-insert into start.pkty_zmiany_manninga
+insert into start."Manning"
     ("XsecId", geom)
 select
     xs."XsecId",
@@ -528,7 +530,7 @@ from
 -- ustal polozenie pktow zmiany wzdluz przekrojow
 
 update
-    start.pkty_zmiany_manninga as p
+    start."Manning" as p
 set
     "Fraction" = ST_LineLocatePoint(xs.geom, p.geom)
 from
@@ -540,7 +542,7 @@ where
 -- probkuj kod uzytkowania z poligonow
 
 update
-    start.pkty_zmiany_manninga as p
+    start."Manning" as p
 set
     "LUCode" = u."LUCode",
     "NValue" = u."NValue"
