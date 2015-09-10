@@ -28,7 +28,7 @@ class RiverDatabase(object):
         self.con = None
         self.uri = None
         self.vlayer = None
-        self.objects_register = {}
+        self.register = {}
         self.queries = {}
 
     def connect_pg(self):
@@ -69,7 +69,7 @@ class RiverDatabase(object):
             print(e)
             sys.exit(1)
 
-    def register(self, obj):
+    def register_object(self, obj):
         """
         Registering object in database as dictionary entry.
 
@@ -77,8 +77,8 @@ class RiverDatabase(object):
             obj: Instance of a hydrodynamic model object class
         """
         key = obj.name
-        if key not in self.objects_register:
-            self.objects_register[key] = obj
+        if key not in self.register:
+            self.register[key] = obj
         else:
             print('Object already exists inside RiverGIS registry.')
 
@@ -101,7 +101,7 @@ class RiverDatabase(object):
         method = getattr(obj, pg_method)
         qry = method()
         self.run_query(qry)
-        self.register(obj)
+        self.register_object(obj)
         self.queries[method.__name__] = qry
         return obj
 
@@ -147,6 +147,6 @@ if __name__ == '__main__':
     for qry in baza.queries:
         print(qry)
         print(baza.queries[qry])
-    print(baza.objects_register)
+    print(baza.register)
 
     baza.disconnect_pg()

@@ -309,3 +309,4 @@ $BODY$
 
 SELECT from_to_node ()
 ------------------------------------------------------------------------------------------------------------------------
+--SELECT "RiverCode", ST_Accum(ST_StartPoint(geom)) ||  ST_Accum(ST_EndPoint(geom)) AS punkty_skrajne FROM "StreamCenterlines" GROUP BY "RiverCode"
