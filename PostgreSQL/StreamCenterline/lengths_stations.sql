@@ -1,13 +1,13 @@
-﻿--SELECT "RiverCode", ST_Accum(ST_StartPoint(geom)) ||  ST_Accum(ST_EndPoint(geom)) AS punkty_skrajne FROM "StreamCenterline" GROUP BY "RiverCode"
+﻿--SELECT "RiverCode", ST_Accum(ST_StartPoint(geom)) ||  ST_Accum(ST_EndPoint(geom)) AS punkty_skrajne FROM "StreamCenterlines" GROUP BY "RiverCode"
 --DROP VIEW tmp2;
 --DROP VIEW tmp1;
 
 CREATE TABLE tmp1 AS
 SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
-FROM "StreamCenterline"
+FROM "StreamCenterlines"
 UNION ALL
 SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
-FROM "StreamCenterline";
+FROM "StreamCenterlines";
 
 CREATE TABLE tmp2 AS
 SELECT "RiverCode", geom
