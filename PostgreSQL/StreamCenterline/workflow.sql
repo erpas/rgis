@@ -2,7 +2,7 @@
 
 CREATE TABLE start."StreamCenterlines"
 (
-  "RiverId" serial primary key,
+  "ReachId" serial primary key,
   "RiverCode" text,
   "ReachCode" text,
   "FromNode" integer,
@@ -35,7 +35,7 @@ DROP TABLE start."XsCutlines";
 CREATE TABLE start."XsCutlines"
 (
   "XsecId" serial primary key,
-  "RiverId" integer,
+  "ReachId" integer,
   "Station" double precision,
   "Nr" integer,
   "LeftBank" double precision,
@@ -121,24 +121,71 @@ VALUES
 
 -- Linie rzek rysujemy zgodnie z kierunkiem przeplywu. To samo dotyczy drog przepływu Flowpaths.
 -- Dzieki temu FromNode zawsze jest na gorze odcinka, a ToNode przy ujsciu.
+
+-- NodesTable jest tworzona przez funkcję from_to_node() Lukasza
+
+-- DROP TABLE IF EXISTS start."NodesTable";
 --
+-- CREATE TABLE start."NodesTable"
+-- (
+--   "NodeId" serial primary key,
+--   "X" double precision,
+--   "Y" double precision
+--   );
 
-DROP TABLE IF EXISTS start."NodesTable";
+CREATE OR REPLACE FUNCTION "start".from_to_node ()
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM "start"."StreamCenterlines";
+    r "start"."StreamCenterlines"%ROWTYPE;
+    start_geom geometry;
+    end_geom geometry;
+    start_node integer := 0;
+    end_node integer := 0;
+    nr integer := 0;
+BEGIN
+DROP TABLE IF EXISTS "start"."NodesTable";
+CREATE TABLE "start"."NodesTable"(
+    geom geometry(POINT, 2180),
+    "NodeID" serial primary key,
+    "X" double precision,
+    "Y" double precision);
+FOR r in c LOOP
+    start_geom := ST_StartPoint(r.geom);
+    end_geom := ST_EndPoint(r.geom);
+    IF (SELECT exists (SELECT 1 FROM "start"."NodesTable" WHERE geom = start_geom LIMIT 1)) THEN
+        start_node := (SELECT "NodeID" FROM "start"."NodesTable" WHERE geom = start_geom LIMIT 1);
+    ELSE
+        nr := nr + 1;
+        start_node := nr;
+        INSERT INTO "start"."NodesTable" VALUES (start_geom, nr, ST_X(start_geom), ST_Y(start_geom));
+    END IF;
+    IF (SELECT exists (SELECT 1 FROM "start"."NodesTable" WHERE geom = end_geom LIMIT 1)) THEN
+        end_node := (SELECT "NodeID" FROM "start"."NodesTable" WHERE geom = end_geom LIMIT 1);
+    ELSE
+        nr := nr + 1;
+        end_node := nr;
+        INSERT INTO "start"."NodesTable" VALUES (end_geom, nr, ST_X(end_geom), ST_Y(end_geom));
+    END IF;
+    UPDATE "start"."StreamCenterlines" SET
+    "FromNode" = start_node,
+    "ToNode" = end_node
+    WHERE CURRENT OF c;
+END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
 
-CREATE TABLE start."NodesTable"
-(
-  "NodeId" serial primary key,
-  "X" double precision,
-  "Y" double precision
-  );
+SELECT "start".from_to_node ();
+DROP FUNCTION IF EXISTS "start".from_to_node ();
 
 
-
--- Nadanie RiverId przekrojom
+-- Nadanie ReachId przekrojom
 
 UPDATE start."XsCutlines" as xs
 SET 
-  "RiverId" = riv."RiverId"
+  "ReachId" = riv."ReachId"
 FROM
   start."StreamCenterlines" as riv
 WHERE
@@ -153,18 +200,44 @@ WHERE
 -- poniewaz rzeki rysujemy od zrodel do ujscia, to ToSta
 -- jest stacja ujscia
 
-UPDATE
-  start."StreamCenterlines" as riv
-SET
-  "FromSta" = ST_Length(riv.geom), -- zrób na odwrót zeby bylo zgodnie z GeoRAS
-  "ToSta" = 0
-WHERE
-  riv."FromSta" is NULL;
+-- Poniższy kod zostawiam jako archiwum.
+-- Do ustalenia stacji konców odcinkow służy funkcja lengths_stations() Lukasza
+
+-- UPDATE
+--   start."StreamCenterlines" as riv
+-- SET
+--   "FromSta" = 0,
+--   "ToSta" = ST_Length(riv.geom)
+-- WHERE
+--   riv."FromSta" is NULL;
+
+CREATE OR REPLACE VIEW "start".pnts1 AS
+SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
+FROM "start"."StreamCenterlines"
+UNION ALL
+SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
+FROM "start"."StreamCenterlines";
+
+CREATE OR REPLACE VIEW "start".pnts2 AS
+SELECT "RiverCode", geom
+FROM "start".pnts1
+GROUP BY "RiverCode", geom
+HAVING COUNT(geom) = 1;
+
+DROP TABLE IF EXISTS "start"."Endpoints";
+SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) INTO "start"."Endpoints"
+FROM "start".pnts1, "start".pnts2
+WHERE pnts1."RiverCode" = pnts2."RiverCode" AND pnts1.geom = pnts2.geom AND pnts1.typ_punktu = 'end';
+
+DROP VIEW "start".pnts1 CASCADE;
+
+-- SELECT * FROM "start"."StreamCenterlines"
+-- WHERE "StreamCenterlines"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "start"."Endpoints"));
 
 WITH xspts as (
   SELECT 
     xs."XsecId" as "XsecId",
-    riv."RiverId" as "RiverId",
+    riv."ReachId" as "ReachId",
     ST_LineLocatePoint(riv.geom, ST_Intersection(xs.geom, riv.geom)) as "Fraction"
   FROM
     start."StreamCenterlines" as riv,
@@ -180,24 +253,26 @@ FROM
   xspts,
   start."StreamCenterlines" as riv
 WHERE
-  xspts."RiverId" = riv."RiverId" AND
+  xspts."ReachId" = riv."ReachId" AND
   xspts."XsecId" = xs."XsecId";
 
 -- nadaj przekrojom kolejny numer na odcinku idac od gory
 
 WITH orderedXsecs as (
-  SELECT
+SELECT
     "XsecId",
-    "RiverId",
-    rank() OVER (PARTITION BY "RiverId" ORDER BY "Station" ASC) as rank
+    xs."ReachId",
+    rank() OVER (PARTITION BY "RiverCode" ORDER BY "Station" ASC) as rank
   FROM
-    start."XsCutlines"
+    start."XsCutlines" as xs
+  LEFT JOIN
+    start."StreamCenterlines" sc ON  sc."ReachId" = xs."ReachId"
 )
-UPDATE start."XsCutlines" as xs
+UPDATE start."XsCutlines" xs
   SET
     "Nr" = rank
   FROM
-    orderedXsecs as ox
+    orderedXsecs ox
   WHERE
     xs."XsecId" = ox."XsecId";
 
@@ -242,7 +317,7 @@ DROP TABLE start."FlowpathStations";
 
 CREATE TABLE start."FlowpathStations" (
   "XsecId" integer primary key,
-  "RiverId" integer,
+  "RiverCode" text,
   "Nr" integer,
   "LeftSta" double precision,
   "ChanSta" double precision,
@@ -251,13 +326,14 @@ CREATE TABLE start."FlowpathStations" (
 
 -- wkladam do tabeli wszystkie przekroje z ich identyfikatorami
 INSERT INTO start."FlowpathStations"
-  ("XsecId", "RiverId", "Nr")
+  ("XsecId", "RiverCode", "Nr")
 SELECT
-  "XsecId",
-  "RiverId",
-  "Nr"
+  xs."XsecId",
+  sc."RiverCode",
+  xs."Nr"
 FROM
-  start."XsCutlines";
+  start."XsCutlines" as xs
+  LEFT JOIN start."StreamCenterlines" as sc ON xs."ReachId" = sc."ReachId";
 
 -- nadaje przekrojom kilometraz wzdluz linii typu Channel
 
@@ -337,18 +413,28 @@ WHERE
 
 -- wlasciwe obliczenie odleglosci wzdluz drog przeplywu
 
+WITH xsdata AS (
+SELECT
+  x."XsecId",
+  s."RiverCode"
+FROM
+  start."XsCutlines" as x
+  LEFT JOIN start."StreamCenterlines" as s ON x."ReachId" = s."ReachId"
+)
 UPDATE start."XsCutlines" as xs
 SET
   "LeftLen" = nfs."LeftSta" - fs."LeftSta",
   "ChanLen" = nfs."ChanSta" - fs."ChanSta",
   "RightLen" = nfs."RightSta" - fs."RightSta"
 FROM
+  xsdata,
   start."FlowpathStations" as fs,
   start."FlowpathStations" as nfs
 WHERE
   xs."Nr" > 1 AND
-  xs."RiverId" = fs."RiverId" AND
-  fs."RiverId" = nfs."RiverId" AND
+  xs."XsecId" = xsdata."XsecId" AND
+  xsdata."RiverCode" = fs."RiverCode" AND
+  fs."RiverCode" = nfs."RiverCode" AND
   xs."XsecId" = fs."XsecId" AND
   xs."Nr" = fs."Nr" AND
   xs."Nr" = nfs."Nr" + 1;
