@@ -31,7 +31,7 @@ class StreamCenterlines(HecRasObject):
         self.hdf_dataset = u'River Centerlines'
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"RiverID"', 'serial primary key'),
+            ('"ReachID"', 'serial primary key'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
             ('"FromNode"', 'integer'),
@@ -85,7 +85,7 @@ END LOOP;
 END;
 $BODY$
     LANGUAGE plpgsql;
-
+------------------------------------------------------------------------------------------------------------------------
 SELECT "{0}".from_to_node ();
 DROP FUNCTION IF EXISTS "{0}".from_to_node ()
 '''
@@ -114,6 +114,42 @@ WHERE tmp1."RiverCode" = tmp2."RiverCode" AND tmp1.geom = tmp2.geom AND tmp1.typ
 
 DROP TABLE "{0}".tmp1;
 DROP TABLE "{0}".tmp2;
+------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION "{0}".from_to_stations ()
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM "{0}"."Endpoints";
+    r "{0}"."Endpoints"%ROWTYPE;
+    river text;
+    tonode_id integer;
+    fromnode_id integer;
+    length double precision;
+    fromsta double precision;
+    tosta double precision;
+BEGIN
+FOR r in c LOOP
+    river := r."RiverCode";
+    tonode_id := r."NodeID";
+    fromsta := 0;
+    tosta := 0;
+    FOR i in 1..(SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
+        SELECT "FromNode", ST_Length(geom) INTO fromnode_id, length FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+        tosta := fromsta + length;
+        UPDATE "{0}"."StreamCenterlines" SET
+        "FromSta" = fromsta,
+        "ToSta" = tosta
+        WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+        tonode_id = fromnode_id;
+        fromsta := tosta;
+    END LOOP;
+END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+------------------------------------------------------------------------------------------------------------------------
+SELECT "{0}".from_to_stations ();
+DROP FUNCTION IF EXISTS "{0}".from_to_stations ()
 '''
         qry = qry.format(self.schema, self.srid)
         return qry
@@ -302,19 +338,3 @@ class XSCutLines3D(XSCutLines):
 class Bridges3D(Bridges):
     def __init__(self):
         super(Bridges3D, self).__init__()
-
-
-"""
-class Junctions(HecRasObject):
-
-    Only table.
-    StreamCenterline and XSCutLines objects must exist.
-    Length calculated based on the nearest XSCutLines chainages.
-
-    def __init__(self, stream_centerline, cross_sections):
-        super(Junctions, self).__init__()
-"""
-
-
-class CommonMethods(object):
-    pass
