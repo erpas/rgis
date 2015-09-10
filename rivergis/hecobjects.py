@@ -60,7 +60,7 @@ CREATE TABLE "{0}"."NodesTable"(
     "NodeID" serial primary key,
     "X" double precision,
     "Y" double precision);
-FOR r in c LOOP
+FOR r IN c LOOP
     start_geom := ST_StartPoint(r.geom);
     end_geom := ST_EndPoint(r.geom);
     IF (SELECT exists (SELECT 1 FROM "{0}"."NodesTable" WHERE geom = start_geom LIMIT 1)) THEN
@@ -124,18 +124,18 @@ DECLARE
     river text;
     tonode_id integer;
     fromnode_id integer;
-    length double precision;
     fromsta double precision;
     tosta double precision;
+    len double precision;
 BEGIN
-FOR r in c LOOP
+FOR r IN c LOOP
     river := r."RiverCode";
     tonode_id := r."NodeID";
     fromsta := 0;
     tosta := 0;
     FOR i in 1..(SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
-        SELECT "FromNode", ST_Length(geom) INTO fromnode_id, length FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
-        tosta := fromsta + length;
+        SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+        tosta := fromsta + len;
         UPDATE "{0}"."StreamCenterlines" SET
         "FromSta" = fromsta,
         "ToSta" = tosta

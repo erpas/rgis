@@ -16,7 +16,7 @@ CREATE TABLE "NodesTable"(
     "NodeID" integer,
     "X" real,
     "Y" real);
-FOR r in c LOOP
+FOR r IN c LOOP
     start_geom := ST_StartPoint(r.geom);
     end_geom := ST_EndPoint(r.geom);
     IF (SELECT exists (SELECT 1 FROM "NodesTable" WHERE geom = start_geom LIMIT 1)) THEN
