@@ -141,9 +141,9 @@ if __name__ == '__main__':
     baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
     baza.connect_pg()
 
-    baza.process_hecobject(StreamCenterline3D, 'pg_create_table', 'public', 2180)
-    baza.process_hecobject(StreamCenterline, 'pg_from_to_node', 'public', 2180)
-    baza.process_hecobject(StreamCenterline, 'pg_lengths_stations', 'public', 2180)
+    baza.process_hecobject(StreamCenterlines3D, 'pg_create_table', 'public', 2180)
+    baza.process_hecobject(StreamCenterlines, 'pg_from_to_node', 'public', 2180)
+    baza.process_hecobject(StreamCenterlines, 'pg_lengths_stations', 'public', 2180)
     for qry in baza.queries:
         print(qry)
         print(baza.queries[qry])

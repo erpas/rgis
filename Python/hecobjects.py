@@ -22,12 +22,12 @@ class HecRasObject(object):
         return qry
 
 
-class StreamCenterline(HecRasObject):
+class StreamCenterlines(HecRasObject):
     """
     Geometry and table.
     """
     def __init__(self):
-        super(StreamCenterline, self).__init__()
+        super(StreamCenterlines, self).__init__()
         self.hdf_dataset = u'River Centerlines'
         self.geom_type = 'LINESTRING'
         self.attrs = [
@@ -46,8 +46,8 @@ CREATE OR REPLACE FUNCTION "{0}".from_to_node ()
     RETURNS VOID AS
 $BODY$
 DECLARE
-    c cursor FOR SELECT * FROM "{0}"."StreamCenterline";
-    r "{0}"."StreamCenterline"%ROWTYPE;
+    c cursor FOR SELECT * FROM "{0}"."StreamCenterlines";
+    r "{0}"."StreamCenterlines"%ROWTYPE;
     start_geom geometry;
     end_geom geometry;
     start_node integer := 0;
@@ -56,7 +56,7 @@ DECLARE
 BEGIN
 DROP TABLE IF EXISTS "{0}"."NodesTable";
 CREATE TABLE "{0}"."NodesTable"(
-    geom geometry(POINT, 2180),
+    geom geometry(POINT, {1}),
     "NodeID" serial primary key,
     "X" double precision,
     "Y" double precision);
@@ -77,7 +77,7 @@ FOR r in c LOOP
         end_node := nr;
         INSERT INTO "{0}"."NodesTable" VALUES (end_geom, nr, ST_X(end_geom), ST_Y(end_geom));
     END IF;
-    UPDATE "{0}"."StreamCenterline" SET
+    UPDATE "{0}"."StreamCenterlines" SET
     "FromNode" = start_node,
     "ToNode" = end_node
     WHERE CURRENT OF c;
@@ -89,35 +89,33 @@ $BODY$
 SELECT "{0}".from_to_node ();
 DROP FUNCTION IF EXISTS "{0}".from_to_node ()
 '''
-        qry = qry.format(self.schema)
+        qry = qry.format(self.schema, self.srid)
         return qry
 
     def pg_lengths_stations(self):
         qry = '''
-CREATE OR REPLACE VIEW "{0}".pnts1 AS
+CREATE TABLE "{0}".tmp1 AS
 SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
-FROM "{0}"."StreamCenterline"
+FROM "{0}"."StreamCenterlines"
 UNION ALL
 SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
-FROM "{0}"."StreamCenterline";
+FROM "{0}"."StreamCenterlines";
 
-CREATE OR REPLACE VIEW "{0}".pnts2 AS
+CREATE TABLE "{0}".tmp2 AS
 SELECT "RiverCode", geom
-FROM "{0}".pnts1
+FROM "{0}".tmp1
 GROUP BY "RiverCode", geom
 HAVING COUNT(geom) = 1;
 
 DROP TABLE IF EXISTS "{0}"."Endpoints";
-SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) INTO "{0}"."Endpoints"
-FROM "{0}".pnts1, "{0}".pnts2
-WHERE pnts1."RiverCode" = pnts2."RiverCode" AND pnts1.geom = pnts2.geom AND pnts1.typ_punktu = 'end';
+SELECT tmp1.geom::geometry(POINT, {1}), tmp1."RiverCode", tmp1."ReachCode", "NodesTable"."NodeID" INTO "{0}"."Endpoints"
+FROM "{0}".tmp1, "{0}".tmp2, "{0}"."NodesTable"
+WHERE tmp1."RiverCode" = tmp2."RiverCode" AND tmp1.geom = tmp2.geom AND tmp1.typ_punktu = 'end' AND tmp1.geom = "NodesTable".geom;
 
-DROP VIEW "{0}".pnts1 CASCADE;
-
-SELECT * FROM "{0}"."StreamCenterline"
-WHERE "StreamCenterline"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "{0}"."Endpoints"))
+DROP TABLE "{0}".tmp1;
+DROP TABLE "{0}".tmp2;
 '''
-        qry = qry.format(self.schema)
+        qry = qry.format(self.schema, self.srid)
         return qry
 
 
@@ -291,9 +289,9 @@ class SAConnections(HecRasObject):
             ('"TopWidth"', 'double precision')]
 
 
-class StreamCenterline3D(StreamCenterline):
+class StreamCenterlines3D(StreamCenterlines):
     def __init__(self):
-        super(StreamCenterline3D, self).__init__()
+        super(StreamCenterlines3D, self).__init__()
 
 
 class XSCutLines3D(XSCutLines):
