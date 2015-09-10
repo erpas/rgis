@@ -133,7 +133,52 @@ VALUES
 --   "Y" double precision
 --   );
 
+CREATE OR REPLACE FUNCTION "start".from_to_node ()
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM "start"."StreamCenterlines";
+    r "start"."StreamCenterlines"%ROWTYPE;
+    start_geom geometry;
+    end_geom geometry;
+    start_node integer := 0;
+    end_node integer := 0;
+    nr integer := 0;
+BEGIN
+DROP TABLE IF EXISTS "start"."NodesTable";
+CREATE TABLE "start"."NodesTable"(
+    geom geometry(POINT, 2180),
+    "NodeID" serial primary key,
+    "X" double precision,
+    "Y" double precision);
+FOR r in c LOOP
+    start_geom := ST_StartPoint(r.geom);
+    end_geom := ST_EndPoint(r.geom);
+    IF (SELECT exists (SELECT 1 FROM "start"."NodesTable" WHERE geom = start_geom LIMIT 1)) THEN
+        start_node := (SELECT "NodeID" FROM "start"."NodesTable" WHERE geom = start_geom LIMIT 1);
+    ELSE
+        nr := nr + 1;
+        start_node := nr;
+        INSERT INTO "start"."NodesTable" VALUES (start_geom, nr, ST_X(start_geom), ST_Y(start_geom));
+    END IF;
+    IF (SELECT exists (SELECT 1 FROM "start"."NodesTable" WHERE geom = end_geom LIMIT 1)) THEN
+        end_node := (SELECT "NodeID" FROM "start"."NodesTable" WHERE geom = end_geom LIMIT 1);
+    ELSE
+        nr := nr + 1;
+        end_node := nr;
+        INSERT INTO "start"."NodesTable" VALUES (end_geom, nr, ST_X(end_geom), ST_Y(end_geom));
+    END IF;
+    UPDATE "start"."StreamCenterlines" SET
+    "FromNode" = start_node,
+    "ToNode" = end_node
+    WHERE CURRENT OF c;
+END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
 
+SELECT "start".from_to_node ();
+DROP FUNCTION IF EXISTS "start".from_to_node ();
 
 
 -- Nadanie ReachId przekrojom
@@ -165,6 +210,29 @@ WHERE
 --   "ToSta" = ST_Length(riv.geom)
 -- WHERE
 --   riv."FromSta" is NULL;
+
+CREATE OR REPLACE VIEW "start".pnts1 AS
+SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
+FROM "start"."StreamCenterlines"
+UNION ALL
+SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
+FROM "start"."StreamCenterlines";
+
+CREATE OR REPLACE VIEW "start".pnts2 AS
+SELECT "RiverCode", geom
+FROM "start".pnts1
+GROUP BY "RiverCode", geom
+HAVING COUNT(geom) = 1;
+
+DROP TABLE IF EXISTS "start"."Endpoints";
+SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) INTO "start"."Endpoints"
+FROM "start".pnts1, "start".pnts2
+WHERE pnts1."RiverCode" = pnts2."RiverCode" AND pnts1.geom = pnts2.geom AND pnts1.typ_punktu = 'end';
+
+DROP VIEW "start".pnts1 CASCADE;
+
+-- SELECT * FROM "start"."StreamCenterlines"
+-- WHERE "StreamCenterlines"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "start"."Endpoints"));
 
 WITH xspts as (
   SELECT 
@@ -249,7 +317,7 @@ DROP TABLE start."FlowpathStations";
 
 CREATE TABLE start."FlowpathStations" (
   "XsecId" integer primary key,
-  "ReachId" integer,
+  "RiverCode" text,
   "Nr" integer,
   "LeftSta" double precision,
   "ChanSta" double precision,
@@ -258,13 +326,14 @@ CREATE TABLE start."FlowpathStations" (
 
 -- wkladam do tabeli wszystkie przekroje z ich identyfikatorami
 INSERT INTO start."FlowpathStations"
-  ("XsecId", "ReachId", "Nr")
+  ("XsecId", "RiverCode", "Nr")
 SELECT
-  "XsecId",
-  "ReachId",
-  "Nr"
+  xs."XsecId",
+  sc."RiverCode",
+  xs."Nr"
 FROM
-  start."XsCutlines";
+  start."XsCutlines" as xs
+  LEFT JOIN start."StreamCenterlines" as sc ON xs."ReachId" = sc."ReachId";
 
 -- nadaje przekrojom kilometraz wzdluz linii typu Channel
 
@@ -344,18 +413,28 @@ WHERE
 
 -- wlasciwe obliczenie odleglosci wzdluz drog przeplywu
 
+WITH xsdata AS (
+SELECT
+  x."XsecId",
+  s."RiverCode"
+FROM
+  start."XsCutlines" as x
+  LEFT JOIN start."StreamCenterlines" as s ON x."ReachId" = s."ReachId"
+)
 UPDATE start."XsCutlines" as xs
 SET
   "LeftLen" = nfs."LeftSta" - fs."LeftSta",
   "ChanLen" = nfs."ChanSta" - fs."ChanSta",
   "RightLen" = nfs."RightSta" - fs."RightSta"
 FROM
+  xsdata,
   start."FlowpathStations" as fs,
   start."FlowpathStations" as nfs
 WHERE
   xs."Nr" > 1 AND
-  xs."ReachId" = fs."ReachId" AND
-  fs."ReachId" = nfs."ReachId" AND
+  xs."XsecId" = xsdata."XsecId" AND
+  xsdata."RiverCode" = fs."RiverCode" AND
+  fs."RiverCode" = nfs."RiverCode" AND
   xs."XsecId" = fs."XsecId" AND
   xs."Nr" = fs."Nr" AND
   xs."Nr" = nfs."Nr" + 1;
