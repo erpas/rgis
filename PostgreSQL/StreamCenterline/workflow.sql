@@ -449,3 +449,110 @@ SET
 WHERE
   xs."Nr" = 1;
 
+
+
+-- współczynniki szorstkości Manninga
+
+DROP TABLE IF EXISTS start."LandUse";
+
+CREATE TABLE start."LandUse"
+(
+  gid serial primary key,
+  "LUCode" character varying(32),
+  "NValue" double precision,
+  geom geometry(Polygon,2180) -- UWAGA: geometria prosta a NIE multi
+);
+
+CREATE INDEX sidx_landuse_geom ON
+    start."LandUse"
+USING gist (geom);
+
+-- dodaj jakies obiekty do powyzszych tabel i uruchom zapytania ponizej
+
+INSERT INTO
+  start."LandUse" ("LUCode", "NValue", geom)
+VALUES
+  ('a', 0.01, ST_GeomFromText('POLYGON((323284 393262,323271 392115,324238 392126,324090 393255,323284 393262))',2180)),
+  ('b', 0.02, ST_GeomFromText('POLYGON((324090 393255,324275 393270,324403 392149,324238 392126,324090 393255))',2180)),
+  ('c', 0.03, ST_GeomFromText('POLYGON((324275 393270,324433 393279,324462 392776,324530 392165,324403 392149,324275 393270))',2180)),
+  ('d', 0.04, ST_GeomFromText('POLYGON((324433 393279,324786 393283,324787 393080,324532 392777,324462 392776,324433 393279))',2180)),
+  ('e', 0.05, ST_GeomFromText('POLYGON((324815 392196,324530 392165,324462 392776,324532 392777,324687 392593,324815 392196))',2180)),
+  ('f', 0.06, ST_GeomFromText('POLYGON((324532 392777,324787 393080,324786 393283,325222 392320,324815 392196,324687 392593,324532 392777))',2180));
+
+-- tabela punktow zmiany szorstkosci
+
+DROP TABLE IF EXISTS start.pkty_zmiany_manninga;
+create table start.pkty_zmiany_manninga (
+    gid bigserial primary key,
+    "XsecId" integer,
+    "Fraction" double precision, -- wzgledne polozenie na linii przekroju
+    "LUCode" text, -- kod pokrycia
+    "NValue" double precision, -- wsp szorstkosci
+	geom geometry(point, 2180) -- geometria
+);
+
+CREATE INDEX sidx_pkty_zmiany_geom ON
+    start.pkty_zmiany_manninga
+USING gist (geom);
+
+
+-- znajdz punkty zmiany szorstkosci
+
+with linie_z_poligonow as ( -- tymczasowe granice poligonow uzytkowania
+SELECT
+    (ST_Dump(ST_Boundary(geom))).geom
+FROM start."LandUse"
+)
+insert into start.pkty_zmiany_manninga
+    ("XsecId", geom)
+select distinct
+    xs."XsecId", -- zeby wiedziec na jakim przekroju lezy punkt
+    (ST_Dump(ST_Intersection(l.geom, xs.geom))).geom as geom
+from
+    linie_z_poligonow l,
+    start."XsCutlines" xs
+where
+    l.geom && xs.geom;
+
+
+-- dodaj do pktow zmiany poczatki przekrojow
+insert into start.pkty_zmiany_manninga
+    ("XsecId", geom)
+select
+    xs."XsecId",
+    ST_LineInterpolatePoint(xs.geom, 0.0)
+from
+    start."XsCutlines" xs;
+
+
+-- ustal polozenie pktow zmiany wzdluz przekrojow
+
+update
+    start.pkty_zmiany_manninga as p
+set
+    "Fraction" = ST_LineLocatePoint(xs.geom, p.geom)
+from
+    start."XsCutlines" as xs
+where
+    xs."XsecId" = p."XsecId";
+
+
+-- probkuj kod uzytkowania z poligonow
+
+update
+    start.pkty_zmiany_manninga as p
+set
+    "LUCode" = u."LUCode",
+    "NValue" = u."NValue"
+from
+    start."LandUse" as u,
+    start."XsCutlines" as xs
+where
+    xs."XsecId" = p."XsecId" AND
+    ST_LineInterpolatePoint(xs.geom, p."Fraction"+0.001) && u.geom AND
+    ST_Intersects(ST_LineInterpolatePoint(xs.geom, p."Fraction"+0.001), u.geom);
+
+
+
+
+

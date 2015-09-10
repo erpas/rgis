@@ -1,6 +1,6 @@
 
 -- tabela przekrojow
-CREATE TABLE radek.xscutlines
+CREATE TABLE start.xscutlines
 (
   gid serial NOT NULL,
   hydroid integer,
@@ -9,27 +9,26 @@ CREATE TABLE radek.xscutlines
 );
 
 CREATE INDEX sidx_xscutlines_geom ON
-    radek.xscutlines
+    start.xscutlines
 USING gist (geom);
 
 -- tabela uzytkowania
-CREATE TABLE radek.uzytkowanie
+CREATE TABLE start.uzytkowanie
 (
-  gid serial NOT NULL,
+  gid serial primary key,
   lucode character varying(32),
   n_value double precision,
   geom geometry(Polygon,2180), -- UWAGA: geometria prosta a NIE multi
-  CONSTRAINT uzytkowanie_pkey PRIMARY KEY (gid)
 );
 
 CREATE INDEX sidx_uzytkowanie_geom ON
-    radek.uzytkowanie
+    start.uzytkowanie
 USING gist (geom);
 
 -- dodaj jakies obiekty do powyzszych tabel i uruchom zapytania ponizej
 
 -- tabela punktow zmiany szorstkosci
-create table radek.pkty_zmiany (
+create table start.pkty_zmiany (
     gid bigserial primary key,
     xs_hid integer,
     m double precision, -- wzgledne polozenie na linii przekroju
@@ -39,7 +38,7 @@ create table radek.pkty_zmiany (
 );
 
 CREATE INDEX sidx_pkty_zmiany_geom ON
-    radek.pkty_zmiany
+    start.pkty_zmiany
 USING gist (geom);
 
 
@@ -48,38 +47,38 @@ USING gist (geom);
 with linie_z_poligonow as ( -- tymczasowe granice poligonow uzytkowania
 SELECT
     (ST_Dump(ST_Boundary(geom))).geom
-FROM radek.uzytkowanie
+FROM start.uzytkowanie
 )
-insert into radek.pkty_zmiany
+insert into start.pkty_zmiany
     (xs_hid, geom)
 select distinct
     xs.hydroid, -- zeby wiedziec na jakim przekroju lezy punkt
     (ST_Dump(ST_Intersection(l.geom, xs.geom))).geom as geom
 from
     linie_z_poligonow l,
-    radek.xscutlines xs
+    start.xscutlines xs
 where
     l.geom && xs.geom;
 
 
 -- dodaj do pktow zmiany poczatki przekrojow
-insert into radek.pkty_zmiany
+insert into start.pkty_zmiany
     (xs_hid, geom)
 select
     xs.hydroid,
     ST_LineInterpolatePoint(xs.geom, 0.0)
 from
-    radek.xscutlines xs;
+    start.xscutlines xs;
 
 
 -- ustal polozenie pktow zmiany wzdluz przekrojow
 
 update
-    radek.pkty_zmiany as p
+    start.pkty_zmiany as p
 set
     m = ST_LineLocatePoint(xs.geom, p.geom) + 0.001
 from
-    radek.xscutlines as xs
+    start.xscutlines as xs
 where
     xs.hydroid = p.xs_hid;
 
@@ -87,11 +86,11 @@ where
 -- probkuj kod uzytkowania z poligonow
 
 update
-    radek.pkty_zmiany as p
+    start.pkty_zmiany as p
 set
     code = u.lucode
 from
-    radek.uzytkowanie as u
+    start.uzytkowanie as u
 where
     p.geom && u.geom and
     ST_Intersects(p.geom, u.geom);
