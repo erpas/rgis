@@ -138,6 +138,7 @@ class RiverDatabase(object):
 
 
 if __name__ == '__main__':
+
     baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
     baza.connect_pg()
 

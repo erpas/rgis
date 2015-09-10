@@ -18,7 +18,7 @@ class HecRasObject(object):
         schema_name = '"{0}"."{1}"'.format(self.schema, self.name)
         qry = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         qry += [' '.join(field) for field in self.attrs]
-        qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n    {2});'.format(schema_name, schema_name, ',\n    '.join(qry))
+        qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});'.format(schema_name, schema_name, ',\n\t'.join(qry))
         return qry
 
 
