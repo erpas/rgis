@@ -31,14 +31,15 @@ class StreamCenterlines(HecRasObject):
         self.hdf_dataset = u'River Centerlines'
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"ReachID"', 'serial primary key'),
+            ('"ReachId"', 'serial primary key'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
             ('"FromNode"', 'integer'),
             ('"ToNode"', 'integer'),
-            ('"ArcLength"', 'double precision'),
+            ('"ReachLen"', 'double precision'),
             ('"FromSta"', 'double precision'),
-            ('"ToSta"', 'double precision')]
+            ('"ToSta"', 'double precision'),
+            ('"Notes"', 'text')]
 
     def pg_from_to_node(self):
         qry = '''

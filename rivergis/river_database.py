@@ -136,6 +136,12 @@ class RiverDatabase(object):
         self.vlayer = QgsVectorLayer(self.uri.uri(), obj.name, 'postgres')
         QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
 
+    def getRasGisImportHeader(self):
+        """
+        Return header of RAS GIS Import file.
+        """
+        pass
+
 
 if __name__ == '__main__':
 

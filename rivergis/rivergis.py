@@ -28,6 +28,8 @@ import psycopg2
 import psycopg2.extras
 import processing
 from ui._ui_rivergis import Ui_RiverGIS
+from hecobjects import *
+from river_database import *
 
 from pg_functions import *
 
