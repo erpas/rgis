@@ -65,7 +65,7 @@ class RiverDatabase(object):
             if self.con:
                 self.con.rollback()
             else:
-                pass
+                print('There is no opened connection! Use "connect_pg" method before running query.')
             print(e)
             sys.exit(1)
 
