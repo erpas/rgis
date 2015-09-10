@@ -58,16 +58,21 @@ class RiverDatabase(object):
             qry (str): Query for database
         """
         try:
-            cur = self.con.cursor()
-            cur.execute(qry)
-            self.con.commit()
-        except Exception, e:
             if self.con:
-                self.con.rollback()
+                cur = self.con.cursor()
+                cur.execute(qry)
+                self.con.commit()
+                result = True
             else:
+                result = False
                 print('There is no opened connection! Use "connect_pg" method before running query.')
+        except Exception, e:
+            self.con.rollback()
+            result = False
             print(e)
             sys.exit(1)
+        finally:
+            return result
 
     def register_object(self, obj):
         """
@@ -100,10 +105,13 @@ class RiverDatabase(object):
         obj = hecobject()
         method = getattr(obj, pg_method)
         qry = method()
-        self.run_query(qry)
-        self.register_object(obj)
-        self.queries[method.__name__] = qry
-        return obj
+        result = self.run_query(qry)
+        if result is True:
+            self.register_object(obj)
+            self.queries[method.__name__] = qry
+            return obj
+        else:
+            print('Process aborted!')
 
     def import_hecobject(self, sdf):
         """
