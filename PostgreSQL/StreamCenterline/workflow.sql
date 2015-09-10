@@ -192,24 +192,8 @@ WHERE
   xs.geom && riv.geom AND
   ST_Intersects(xs.geom, riv.geom);
 
--- Nadanie stacji (kilometraza) przekrojom
 
--- UWAGA: Pola FromSta i ToSta rzek nie moga byc puste!
--- trzeba sprawdzic i jesli sa puste, nalezy je uzupelnic na 
--- podstawie faktyczne dlugosci rzeki, przyjmuja ToSta = 0
--- poniewaz rzeki rysujemy od zrodel do ujscia, to ToSta
--- jest stacja ujscia
-
--- Poniższy kod zostawiam jako archiwum.
--- Do ustalenia stacji konców odcinkow służy funkcja lengths_stations() Lukasza
-
--- UPDATE
---   start."StreamCenterlines" as riv
--- SET
---   "FromSta" = 0,
---   "ToSta" = ST_Length(riv.geom)
--- WHERE
---   riv."FromSta" is NULL;
+-- utworzenie tabeli Endpoints
 
 CREATE OR REPLACE VIEW "start".pnts1 AS
 SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
@@ -229,10 +213,19 @@ SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) I
 FROM "start".pnts1, "start".pnts2
 WHERE pnts1."RiverCode" = pnts2."RiverCode" AND pnts1.geom = pnts2.geom AND pnts1.typ_punktu = 'end';
 
-DROP VIEW "start".pnts1 CASCADE;
+drop view start.pnts2;
+drop view start.pnts1;
 
 -- SELECT * FROM "start"."StreamCenterlines"
 -- WHERE "StreamCenterlines"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "start"."Endpoints"));
+
+
+-- nadanie stacji końcom odcinków
+
+-- TODO
+
+
+-- Nadanie stacji (kilometraza) przekrojom
 
 WITH xspts as (
   SELECT 
@@ -257,6 +250,8 @@ WHERE
   xspts."XsecId" = xs."XsecId";
 
 -- nadaj przekrojom kolejny numer na odcinku idac od gory
+-- numery będą potrzebne do określenia kolejności przekrojów
+-- przy ustalaniu odległości między przekrojami wzdłuż dróg przepływu
 
 WITH orderedXsecs as (
 SELECT
@@ -335,6 +330,7 @@ FROM
   start."XsCutlines" as xs
   LEFT JOIN start."StreamCenterlines" as sc ON xs."ReachId" = sc."ReachId";
 
+
 -- nadaje przekrojom kilometraz wzdluz linii typu Channel
 
 WITH xspts as (
@@ -358,6 +354,7 @@ FROM
   xspts
 WHERE
   xspts."XsecId" = flowSta."XsecId";
+
 
 -- nadaje przekrojom kilometraz wzdluz linii typu Left
 
@@ -383,6 +380,7 @@ FROM
 WHERE
   xspts."XsecId" = flowSta."XsecId";
 
+
 -- nadaje przekrojom kilometraz wzdluz linii typu Right
 
 WITH xspts as (
@@ -406,6 +404,7 @@ FROM
   xspts
 WHERE
   xspts."XsecId" = flowSta."XsecId";
+
 
 -- teraz trzeba sprawdzić czy wszystkie drogi przepływu przecinaja przekroje
 -- jesli nie, to w tablicy "FlowpathStations" są braki i trzeba zmienic przebieg "Flowpaths"
@@ -438,6 +437,7 @@ WHERE
   xs."XsecId" = fs."XsecId" AND
   xs."Nr" = fs."Nr" AND
   xs."Nr" = nfs."Nr" + 1;
+
 
 -- nadaj zerowe odleglosci ostatnim przekrojom na odcinkach rzek (przy ujsciu)
 
