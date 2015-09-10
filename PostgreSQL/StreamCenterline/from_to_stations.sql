@@ -12,9 +12,9 @@ BEGIN
 FOR r in c LOOP
     river := r."RiverCode";
     tosta := ST_Length(r.geom);
-    FOR i in 1... COUNT(SELECT * FROM "SreamCenterLine" WHERE "StreamCenterline"."ReachCode" = river) LOOP
+    FOR i in 1... COUNT(SELECT * FROM "SreamCenterLines" WHERE "StreamCenterlines"."ReachCode" = river) LOOP
     
-    UPDATE "StreamCenterline" SET
+    UPDATE "StreamCenterlines" SET
     "FromSta" = fromsta,
     "ToSta" = tosta
     WHERE CURRENT OF c;
