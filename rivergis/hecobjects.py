@@ -141,7 +141,7 @@ FOR r IN c LOOP
         "FromSta" = fromsta,
         "ToSta" = tosta
         WHERE "RiverCode" = river AND "ToNode" = tonode_id;
-        tonode_id = fromnode_id;
+        tonode_id := fromnode_id;
         fromsta := tosta;
     END LOOP;
 END LOOP;
