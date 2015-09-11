@@ -57,6 +57,7 @@ class RiverDatabase(object):
         Args:
             qry (str): Query for database
         """
+        result = False
         try:
             if self.con:
                 cur = self.con.cursor()
@@ -64,11 +65,9 @@ class RiverDatabase(object):
                 self.con.commit()
                 result = True
             else:
-                result = False
                 print('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
             self.con.rollback()
-            result = False
             print(e)
             sys.exit(1)
         finally:
