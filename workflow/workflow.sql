@@ -1,8 +1,8 @@
-﻿DROP TABLE start."StreamCenterlines";
+﻿DROP TABLE IF EXISTS start."StreamCenterlines";
 
 CREATE TABLE start."StreamCenterlines"
 (
-  "ReachId" serial primary key,
+  "ReachID" serial primary key,
   "RiverCode" text,
   "ReachCode" text,
   "FromNode" integer,
@@ -32,12 +32,12 @@ VALUES
 
 -- XsCutline Table
 
-DROP TABLE start."XsCutlines";
+DROP TABLE IF EXISTS start."XSCutLines";
 
-CREATE TABLE start."XsCutlines"
+CREATE TABLE start."XSCutLines"
 (
-  "XsecId" serial primary key,
-  "ReachId" integer,
+  "XsecID" serial primary key,
+  "ReachID" integer,
   "Station" double precision,
   "Nr" integer,
   "LeftBank" double precision,
@@ -50,15 +50,15 @@ CREATE TABLE start."XsCutlines"
   geom geometry(LineString,2180)
 );
 
-CREATE INDEX "sidx_XsCutlines_geom"
-  ON start."XsCutlines"
+CREATE INDEX "sidx_XSCutLines_geom"
+  ON start."XSCutLines"
   USING gist
   (geom);
 
 -- utwórz kilka przykładowych obiektów XsCutline
 
 INSERT INTO
-  start."XsCutlines" (geom)
+  start."XSCutLines" (geom)
 VALUES
   (ST_GeomFromText('LINESTRING(323889 393184,324455 393217)', 2180)),
   (ST_GeomFromText('LINESTRING(323325 392863,324468 392966)', 2180)),
@@ -74,39 +74,38 @@ VALUES
 
 
 -- Linie brzegów (BankLines)
-DROP TABLE start."BankLines";
+DROP TABLE IF EXISTS start."BankLines";
 
 CREATE TABLE start."BankLines"
 (
-  "BankId" SERIAL PRIMARY KEY,
-  "Type"   TEXT,
+  "BankID" SERIAL PRIMARY KEY,
   geom     GEOMETRY(LINESTRING, 2180)
 );
 
 INSERT INTO
-  start."BankLines" ("Type", geom)
+  start."BankLines" (geom)
 VALUES
-  ('Right', ST_GeomFromText('LINESTRING(324453 392252,324342 392419,324238 392509,324130 392620,324057 392812,324039 393021,324057 393226)', 2180)),
-  ('Left', ST_GeomFromText('LINESTRING(324307 392227,324165 392387,324092 392485,324008 392586,323918 392808,323900 393021,323911 393233)', 2180)),
-  ('Left', ST_GeomFromText('LINESTRING(324972 392245,324888 392312,324821 392340,324744 392373,324707 392434,324671 392532,324605 392652,324551 392700,324527 392737,324480 392756,324422 392753)', 2180)),
-  ('Right', ST_GeomFromText('LINESTRING(325005 392300,324908 392396,324788 392443,324728 392558,324688 392650,324622 392728,324579 392770,324546 392799,324500 392810,324415 392814)', 2180)),
-  ('Left', ST_GeomFromText('LINESTRING(324584 392817,324754 392991,324841 393007)', 2180)),
-  ('Right', ST_GeomFromText('LINESTRING(324817 393121,324690 393068,324549 392923,324530 392845)', 2180));
+  (ST_GeomFromText('LINESTRING(324453 392252,324342 392419,324238 392509,324130 392620,324057 392812,324039 393021,324057 393226)', 2180)),
+  (ST_GeomFromText('LINESTRING(324307 392227,324165 392387,324092 392485,324008 392586,323918 392808,323900 393021,323911 393233)', 2180)),
+  (ST_GeomFromText('LINESTRING(324972 392245,324888 392312,324821 392340,324744 392373,324707 392434,324671 392532,324605 392652,324551 392700,324527 392737,324480 392756,324422 392753)', 2180)),
+  (ST_GeomFromText('LINESTRING(325005 392300,324908 392396,324788 392443,324728 392558,324688 392650,324622 392728,324579 392770,324546 392799,324500 392810,324415 392814)', 2180)),
+  (ST_GeomFromText('LINESTRING(324584 392817,324754 392991,324841 393007)', 2180)),
+  (ST_GeomFromText('LINESTRING(324817 393121,324690 393068,324549 392923,324530 392845)', 2180));
 
 
 -- drogi przepływu (flow paths)
-DROP TABLE start."Flowpaths";
+DROP TABLE IF EXISTS start."Flowpaths";
 
 CREATE TABLE start."Flowpaths"
 (
-  "PathId" SERIAL PRIMARY KEY,
-  "Type"   TEXT,
+  "PathID" SERIAL PRIMARY KEY,
+  "LineType"   TEXT,
   geom     GEOMETRY(LINESTRING, 2180)
 );
 
 -- dodanie przykładowych dróg przepływu
 INSERT INTO
-  start."Flowpaths" ("Type", geom)
+  start."Flowpaths" ("LineType", geom)
 VALUES
   ('Channel', ST_GeomFromText('LINESTRING(324411 392195.305535,324239 392416,324058 392628,324006 392795,323997 392993,323992 393221)', 2180)),
 ('Channel', ST_GeomFromText('LINESTRING(325337 393195,325222 393136,325022 393082,324831 393049,324709 393021,324645 392964,324589 392858,324539 392790)', 2180)),
@@ -183,11 +182,11 @@ SELECT "start".from_to_node ();
 DROP FUNCTION IF EXISTS "start".from_to_node ();
 
 
--- Nadanie ReachId przekrojom
+-- Nadanie ReachID przekrojom
 
-UPDATE start."XsCutlines" as xs
+UPDATE start."XSCutLines" as xs
 SET 
-  "ReachId" = riv."ReachId"
+  "ReachID" = riv."ReachID"
 FROM
   start."StreamCenterlines" as riv
 WHERE
@@ -224,32 +223,86 @@ drop view start.pnts1;
 
 -- nadanie stacji końcom odcinków
 
--- TODO
+CREATE TABLE start.tmp1 AS
+SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
+FROM start."StreamCenterlines"
+UNION ALL
+SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
+FROM start."StreamCenterlines";
 
+CREATE TABLE start.tmp2 AS
+SELECT "RiverCode", geom
+FROM start.tmp1
+GROUP BY "RiverCode", geom
+HAVING COUNT(geom) = 1;
+
+DROP TABLE IF EXISTS start."Endpoints";
+SELECT tmp1.geom::geometry(POINT, 2180), tmp1."RiverCode", tmp1."ReachCode", "NodesTable"."NodeID" INTO start."Endpoints"
+FROM start.tmp1, start.tmp2, start."NodesTable"
+WHERE tmp1."RiverCode" = tmp2."RiverCode" AND tmp1.geom = tmp2.geom AND tmp1.typ_punktu = 'end' AND tmp1.geom = "NodesTable".geom;
+
+DROP TABLE IF EXISTS start.tmp1;
+DROP TABLE IF EXISTS start.tmp2;
+------------------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION start.from_to_stations ()
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM start."Endpoints";
+    r start."Endpoints"%ROWTYPE;
+    river text;
+    tonode_id integer;
+    fromnode_id integer;
+    fromsta double precision;
+    tosta double precision;
+    len double precision;
+BEGIN
+FOR r IN c LOOP
+    river := r."RiverCode";
+    tonode_id := r."NodeID";
+    fromsta := 0;
+    tosta := 0;
+    FOR i in 1..(SELECT COUNT(*) FROM start."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
+        SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM start."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+        tosta := fromsta + len;
+        UPDATE start."StreamCenterlines" SET
+        "FromSta" = fromsta,
+        "ToSta" = tosta
+        WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+        tonode_id = fromnode_id;
+        fromsta := tosta;
+    END LOOP;
+END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+------------------------------------------------------------------------------------------------------------------------
+SELECT start.from_to_stations ();
+DROP FUNCTION IF EXISTS start.from_to_stations ();
 
 -- Nadanie stacji (kilometraza) przekrojom
 
 WITH xspts as (
   SELECT 
-    xs."XsecId" as "XsecId",
-    riv."ReachId" as "ReachId",
+    xs."XsecID" as "XsecID",
+    riv."ReachID" as "ReachID",
     ST_LineLocatePoint(riv.geom, ST_Intersection(xs.geom, riv.geom)) as "Fraction"
   FROM
     start."StreamCenterlines" as riv,
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
   WHERE
     xs.geom && riv.geom AND
     ST_Intersects(xs.geom, riv.geom)
 )
-UPDATE start."XsCutlines" as xs
+UPDATE start."XSCutLines" as xs
 SET
   "Station" = riv."FromSta" + xspts."Fraction" * (riv."ToSta" - riv."FromSta")
 FROM
   xspts,
   start."StreamCenterlines" as riv
 WHERE
-  xspts."ReachId" = riv."ReachId" AND
-  xspts."XsecId" = xs."XsecId";
+  xspts."ReachID" = riv."ReachID" AND
+  xspts."XsecID" = xs."XsecID";
 
 -- nadaj przekrojom kolejny numer na odcinku idac od gory
 -- numery będą potrzebne do określenia kolejności przekrojów
@@ -257,21 +310,21 @@ WHERE
 
 WITH orderedXsecs as (
 SELECT
-    "XsecId",
-    xs."ReachId",
+    "XsecID",
+    xs."ReachID",
     rank() OVER (PARTITION BY "RiverCode" ORDER BY "Station" ASC) as rank
   FROM
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
   LEFT JOIN
-    start."StreamCenterlines" sc ON  sc."ReachId" = xs."ReachId"
+    start."StreamCenterlines" sc ON  sc."ReachID" = xs."ReachID"
 )
-UPDATE start."XsCutlines" xs
+UPDATE start."XSCutLines" xs
   SET
     "Nr" = rank
   FROM
     orderedXsecs ox
   WHERE
-    xs."XsecId" = ox."XsecId";
+    xs."XsecID" = ox."XsecID";
 
 
 
@@ -279,41 +332,41 @@ UPDATE start."XsCutlines" xs
 
 WITH bankpts as (
   SELECT
-    xs."XsecId" as "XsecId",
+    xs."XsecID" as "XsecID",
     ST_LineLocatePoint(xs.geom, ST_Intersection(xs.geom, bl.geom)) as "Fraction"
   FROM
     start."BankLines" as bl,
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
   WHERE
     xs.geom && bl.geom AND
     ST_Intersects(xs.geom, bl.geom)
 )
-UPDATE start."XsCutlines" as xs
+UPDATE start."XSCutLines" as xs
 SET
   "LeftBank" = minmax."minFrac",
   "RightBank" = minmax."maxFrac"
 FROM
   (
   SELECT
-    "XsecId",
+    "XsecID",
     min("Fraction") as "minFrac",
     max("Fraction") as "maxFrac"
   FROM
     bankpts as bp
-  GROUP BY "XsecId"
+  GROUP BY "XsecID"
   ) minmax
 WHERE
-  xs."XsecId" = minmax."XsecId";
+  xs."XsecID" = minmax."XsecID";
 
 
 
 -- odleglosci wzdluż dróg przepływu
 
 -- tworze tabele kilometrazu wzdluz 3 drog przeplywu
-DROP TABLE start."FlowpathStations";
+DROP TABLE IF EXISTS start."FlowpathStations";
 
 CREATE TABLE start."FlowpathStations" (
-  "XsecId" integer primary key,
+  "XsecID" integer primary key,
   "RiverCode" text,
   "Nr" integer,
   "LeftSta" double precision,
@@ -323,29 +376,29 @@ CREATE TABLE start."FlowpathStations" (
 
 -- wkladam do tabeli wszystkie przekroje z ich identyfikatorami
 INSERT INTO start."FlowpathStations"
-  ("XsecId", "RiverCode", "Nr")
+  ("XsecID", "RiverCode", "Nr")
 SELECT
-  xs."XsecId",
+  xs."XsecID",
   sc."RiverCode",
   xs."Nr"
 FROM
-  start."XsCutlines" as xs
-  LEFT JOIN start."StreamCenterlines" as sc ON xs."ReachId" = sc."ReachId";
+  start."XSCutLines" as xs
+  LEFT JOIN start."StreamCenterlines" as sc ON xs."ReachID" = sc."ReachID";
 
 
 -- nadaje przekrojom kilometraz wzdluz linii typu Channel
 
 WITH xspts as (
   SELECT
-    xs."XsecId" as "XsecId",
-    path."Type" as "Type",
+    xs."XsecID" as "XsecID",
+    path."LineType" as "LineType",
     ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom))
       * ST_Length(path.geom) as "Station"
   FROM
     start."Flowpaths" as path,
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
   WHERE
-    path."Type" = 'Channel' AND
+    path."LineType" = 'Channel' AND
     xs.geom && path.geom AND
     ST_Intersects(xs.geom, path.geom)
 )
@@ -355,22 +408,22 @@ SET
 FROM
   xspts
 WHERE
-  xspts."XsecId" = flowSta."XsecId";
+  xspts."XsecID" = flowSta."XsecID";
 
 
 -- nadaje przekrojom kilometraz wzdluz linii typu Left
 
 WITH xspts as (
   SELECT
-    xs."XsecId" as "XsecId",
-    path."Type" as "Type",
+    xs."XsecID" as "XsecID",
+    path."LineType" as "LineType",
     ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom))
       * ST_Length(path.geom) as "Station"
   FROM
     start."Flowpaths" as path,
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
   WHERE
-    path."Type" = 'Left' AND
+    path."LineType" = 'Left' AND
     xs.geom && path.geom AND
     ST_Intersects(xs.geom, path.geom)
 )
@@ -380,22 +433,22 @@ SET
 FROM
   xspts
 WHERE
-  xspts."XsecId" = flowSta."XsecId";
+  xspts."XsecID" = flowSta."XsecID";
 
 
 -- nadaje przekrojom kilometraz wzdluz linii typu Right
 
 WITH xspts as (
   SELECT
-    xs."XsecId" as "XsecId",
-    path."Type" as "Type",
+    xs."XsecID" as "XsecID",
+    path."LineType" as "LineType",
     ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom))
       * ST_Length(path.geom) as "Station"
   FROM
     start."Flowpaths" as path,
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
   WHERE
-    path."Type" = 'Right' AND
+    path."LineType" = 'Right' AND
     xs.geom && path.geom AND
     ST_Intersects(xs.geom, path.geom)
 )
@@ -405,7 +458,7 @@ SET
 FROM
   xspts
 WHERE
-  xspts."XsecId" = flowSta."XsecId";
+  xspts."XsecID" = flowSta."XsecID";
 
 
 -- teraz trzeba sprawdzić czy wszystkie drogi przepływu przecinaja przekroje
@@ -416,34 +469,34 @@ WHERE
 
 WITH xsdata AS (
 SELECT
-  x."XsecId",
+  x."XsecID",
   s."RiverCode"
 FROM
-  start."XsCutlines" as x
-  LEFT JOIN start."StreamCenterlines" as s ON x."ReachId" = s."ReachId"
+  start."XSCutLines" as x
+  LEFT JOIN start."StreamCenterlines" as s ON x."ReachID" = s."ReachID"
 )
-UPDATE start."XsCutlines" as xs
+UPDATE start."XSCutLines" as xs
 SET
-  "LeftLen" = nfs."LeftSta" - fs."LeftSta",
-  "ChanLen" = nfs."ChanSta" - fs."ChanSta",
-  "RightLen" = nfs."RightSta" - fs."RightSta"
+  "LeftLen" = abs(nfs."LeftSta" - fs."LeftSta"),
+  "ChanLen" = abs(nfs."ChanSta" - fs."ChanSta"),
+  "RightLen" = abs(nfs."RightSta" - fs."RightSta")
 FROM
   xsdata,
   start."FlowpathStations" as fs,
   start."FlowpathStations" as nfs
 WHERE
   xs."Nr" > 1 AND
-  xs."XsecId" = xsdata."XsecId" AND
+  xs."XsecID" = xsdata."XsecID" AND
   xsdata."RiverCode" = fs."RiverCode" AND
   fs."RiverCode" = nfs."RiverCode" AND
-  xs."XsecId" = fs."XsecId" AND
+  xs."XsecID" = fs."XsecID" AND
   xs."Nr" = fs."Nr" AND
   xs."Nr" = nfs."Nr" + 1;
 
 
 -- nadaj zerowe odleglosci ostatnim przekrojom na odcinkach rzek (przy ujsciu)
 
-UPDATE start."XsCutlines" as xs
+UPDATE start."XSCutLines" as xs
 SET
   "LeftLen" = 0,
   "ChanLen" = 0,
@@ -459,9 +512,9 @@ DROP TABLE IF EXISTS start."LandUse";
 
 CREATE TABLE start."LandUse"
 (
-  gid serial primary key,
+  "LUseID" serial primary key,
   "LUCode" character varying(32),
-  "NValue" double precision,
+  "N_Value" double precision,
   geom geometry(Polygon,2180) -- UWAGA: geometria prosta a NIE multi
 );
 
@@ -472,7 +525,7 @@ USING gist (geom);
 -- dodaj jakies obiekty do powyzszych tabel i uruchom zapytania ponizej
 
 INSERT INTO
-  start."LandUse" ("LUCode", "NValue", geom)
+  start."LandUse" ("LUCode", "N_Value", geom)
 VALUES
   ('a', 0.01, ST_GeomFromText('POLYGON((323284 393262,323271 392115,324238 392126,324090 393255,323284 393262))',2180)),
   ('b', 0.02, ST_GeomFromText('POLYGON((324090 393255,324275 393270,324403 392149,324238 392126,324090 393255))',2180)),
@@ -485,11 +538,11 @@ VALUES
 
 DROP TABLE IF EXISTS start."Manning";
 create table start."Manning" (
-    gid bigserial primary key,
-    "XsecId" integer,
+    "MannID" bigserial primary key,
+    "XsecID" integer,
     "Fraction" double precision, -- wzgledne polozenie na linii przekroju
     "LUCode" text, -- kod pokrycia
-    "NValue" double precision, -- wsp szorstkosci
+    "N_Value" double precision, -- wsp szorstkosci
 	geom geometry(point, 2180) -- geometria
 );
 
@@ -506,25 +559,25 @@ SELECT
 FROM start."LandUse"
 )
 insert into start."Manning"
-    ("XsecId", geom)
+    ("XsecID", geom)
 select distinct
-    xs."XsecId", -- zeby wiedziec na jakim przekroju lezy punkt
+    xs."XsecID", -- zeby wiedziec na jakim przekroju lezy punkt
     (ST_Dump(ST_Intersection(l.geom, xs.geom))).geom as geom
 from
     linie_z_poligonow l,
-    start."XsCutlines" xs
+    start."XSCutLines" xs
 where
     l.geom && xs.geom;
 
 
 -- dodaj do pktow zmiany poczatki przekrojow
 insert into start."Manning"
-    ("XsecId", geom)
+    ("XsecID", geom)
 select
-    xs."XsecId",
+    xs."XsecID",
     ST_LineInterpolatePoint(xs.geom, 0.0)
 from
-    start."XsCutlines" xs;
+    start."XSCutLines" xs;
 
 
 -- ustal polozenie pktow zmiany wzdluz przekrojow
@@ -534,9 +587,9 @@ update
 set
     "Fraction" = ST_LineLocatePoint(xs.geom, p.geom)
 from
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
 where
-    xs."XsecId" = p."XsecId";
+    xs."XsecID" = p."XsecID";
 
 
 -- probkuj kod uzytkowania z poligonow
@@ -545,12 +598,12 @@ update
     start."Manning" as p
 set
     "LUCode" = u."LUCode",
-    "NValue" = u."NValue"
+    "N_Value" = u."N_Value"
 from
     start."LandUse" as u,
-    start."XsCutlines" as xs
+    start."XSCutLines" as xs
 where
-    xs."XsecId" = p."XsecId" AND
+    xs."XsecID" = p."XsecID" AND
     ST_LineInterpolatePoint(xs.geom, p."Fraction"+0.001) && u.geom AND
     ST_Intersects(ST_LineInterpolatePoint(xs.geom, p."Fraction"+0.001), u.geom);
 
