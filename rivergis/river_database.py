@@ -9,6 +9,9 @@ class RiverDatabase(object):
     """
     Class for PostgreSQL database and hydrodynamic models handling.
     """
+    SCHEMA = None
+    SRID = None
+
     def __init__(self, dbname, host, port, user, password):
         """
         Constructor for databse object
@@ -87,7 +90,7 @@ class RiverDatabase(object):
         else:
             print('Object already exists inside RiverGIS registry.')
 
-    def process_hecobject(self, hecobject, pg_method, schema, srid):
+    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None):
         """
         Creating and processing tables inside PostGIS database.
 
@@ -100,8 +103,14 @@ class RiverDatabase(object):
         Returns:
             obj: Instance of HEC-RAS class object
         """
-        hecobject.SCHEMA = schema
-        hecobject.SRID = srid
+        if schema is None:
+            hecobject.SCHEMA = self.SCHEMA
+        else:
+            hecobject.SCHEMA = schema
+        if srid is None:
+            hecobject.SRID = self.SRID
+        else:
+            hecobject.SRID = srid
         obj = hecobject()
         method = getattr(obj, pg_method)
         qry = method()
@@ -153,11 +162,16 @@ class RiverDatabase(object):
 
 if __name__ == '__main__':
     baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
+
+    baza.SCHEMA = 'public'
+    baza.SRID = 2180
+
     baza.connect_pg()
 
-    baza.process_hecobject(StreamCenterlines3D, 'pg_create_table', 'public', 2180)
-    baza.process_hecobject(StreamCenterlines, 'pg_from_to_node', 'public', 2180)
-    baza.process_hecobject(StreamCenterlines, 'pg_lengths_stations', 'public', 2180)
+    baza.process_hecobject(StreamCenterlines3D, 'pg_create_table')
+    baza.process_hecobject(StreamCenterlines, 'pg_from_to_node')
+    baza.process_hecobject(StreamCenterlines, 'pg_lengths_stations')
+
     for qry in baza.queries:
         print(qry)
         print(baza.queries[qry])
