@@ -47,6 +47,7 @@ class RiverDatabase(object):
         """
         if self.con:
             self.con.close()
+            self.con = None
         else:
             print('There is no opened connection!')
 
