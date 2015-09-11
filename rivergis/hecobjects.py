@@ -31,7 +31,7 @@ class StreamCenterlines(HecRasObject):
         self.hdf_dataset = u'River Centerlines'
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"ReachId"', 'serial primary key'),
+            ('"ReachID"', 'serial primary key'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
             ('"FromNode"', 'integer'),
