@@ -1,3 +1,9 @@
+# UWAGA: W QGIS zaznacz warstwe z przebiegiem rzeki !
+# Warstwa oprócz geometrii może miec wypełnione wszystkie
+# pozostałe atrybuty.
+
+s = iface.activeLayer()
+
 from rivergis import river_database as rdb
 baza = rdb.RiverDatabase('rivergis', 'localhost', '5432', 'postgres', 'pass')
 baza.SCHEMA = 'start'
@@ -16,3 +22,6 @@ baza.add_to_view(bl)
 baza.add_to_view(la)
 baza.add_to_view(fp)
 baza.add_to_view(lu)
+
+baza.insert_layer(s, sc)
+iface.mapCanvas().refresh()
