@@ -4,7 +4,6 @@ WHERE ST_Intersects(a.geom,b.geom);
 
 
 
-
 SELECT DISTINCT (ST_Dump(ST_Intersection(a.geom,b.geom))).geom AS geom,b."RiverCode", b."ReachCode", b."BridgeID"  INTO mosty.pkt
 FROM mosty."StreamCenterlines" AS a, mosty."Bridges" as b;
 ALTER TABLE mosty.pkt
