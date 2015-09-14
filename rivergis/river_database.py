@@ -3,8 +3,6 @@
 __author__ = 'ldebek'
 
 import psycopg2
-import sys
-from hecobjects import *
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL
 
 
@@ -20,6 +18,7 @@ class RiverDatabase(object):
         Constructor for databse object
 
         Args:
+            rgis (instance): Instance of rivergis
             dbname (str): Name of the database
             host (str): Host of the database
             port (str): Port of the database
@@ -41,11 +40,15 @@ class RiverDatabase(object):
         """
         Method for setting up PostgreSQL connection object as RiverDatabase class instance attribute.
         """
+        msg = None
         try:
             self.con = psycopg2.connect(database=self.dbname, host=self.host, port=self.port, user=self.user, password=self.password)
+            msg = 'Connection established.'
         except Exception, e:
-            print(e)
-            sys.exit(1)
+            msg = e
+        finally:
+            print(msg)
+            return msg
 
     def disconnect_pg(self):
         """
@@ -80,9 +83,25 @@ class RiverDatabase(object):
         except Exception, e:
             self.con.rollback()
             print(e)
-            sys.exit(1)
         finally:
             return result
+
+    def list_tables(self, schema=None):
+        """
+        Listing tables in schema.
+
+        Args:
+            schema (str): Schema where tables will be created or processed
+        Returns:
+            tabs (list): List of tuples with table names in schema
+        """
+        if schema is None:
+            SCHEMA = self.SCHEMA
+        else:
+            SCHEMA = schema
+        qry = 'SELECT table_name FROM information_schema.tables WHERE table_schema = \'{0}\''.format(SCHEMA)
+        tabs = self.run_query(qry, True)
+        return tabs
 
     def register_object(self, obj):
         """
@@ -95,7 +114,25 @@ class RiverDatabase(object):
         if key not in self.register:
             self.register[key] = obj
         else:
-            print('Object already exists inside RiverGIS registry.')
+            print('{0} already exists inside RiverGIS registry.'.format(key))
+
+    def register_existing(self, hydro_module, schema=None):
+        """
+        Registering hydrodynamic model objects which exists in schema.
+
+        Args:
+            hydro_module (module): hydrodynamic model module
+            schema (str): Schema where tables will be created or processed
+        """
+        tabs = self.list_tables(schema)
+        for tab in tabs:
+            tab_name = tab[0]
+            if tab_name in dir(hydro_module):
+                hydro_object = getattr(hydro_module, tab_name)
+                obj = hydro_object()
+                self.register_object(obj)
+            else:
+                pass
 
     def process_hecobject(self, hecobject, pg_method, schema=None, srid=None):
         """
@@ -135,15 +172,6 @@ class RiverDatabase(object):
 
         Args:
             sdf (str): path to SDF file
-        """
-        pass
-
-    def exists(self, hydroclass):
-        """
-        Checking if hydrodynamic model object exists in database.
-
-        Args:
-            hydroclass (class): hydrodynamic model class object
         """
         pass
 
@@ -253,16 +281,17 @@ class RiverDatabase(object):
 
 
 if __name__ == '__main__':
+    import hecobjects as heco
     baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
 
     baza.SCHEMA = 'public'
     baza.SRID = 2180
 
     baza.connect_pg()
-
-    baza.process_hecobject(StreamCenterlines3D, 'pg_create_table')
-    baza.process_hecobject(StreamCenterlines, 'pg_from_to_node')
-    baza.process_hecobject(StreamCenterlines, 'pg_lengths_stations')
+    baza.register_existing(heco)
+    baza.process_hecobject(heco.StreamCenterlines3D, 'pg_create_table')
+    baza.process_hecobject(heco.StreamCenterlines, 'pg_from_to_node')
+    baza.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations')
 
     for qry in baza.queries:
         print(qry)

@@ -1,42 +1,25 @@
--- stworzenie tabeli dla warstwy z mostami
+-- RiverCode and RiverReach update from StreamCenterline layer
+UPDATE mosty."Bridges" AS a
+SET "RiverCode" = b."RiverCode" , "ReachCode" = b."ReachCode"
+	FROM mosty."StreamCenterlines" AS b
+    WHERE  a.geom && b.geom AND ST_Intersects(a.geom,b.geom);
 
-CREATE TABLE mosty.bridges ("HydroID" int, "River" varchar, "Reach" varchar, "Station" float, "USDistance" float, "TopWidth" float, "NodeName" varchar, geom geometry);
+-- generating of points needed for bridges Stationing calculation
+SELECT DISTINCT (ST_Dump(ST_Intersection(a.geom,b.geom))).geom AS geom,b."RiverCode", b."ReachCode", b."BridgeID"
+	INTO mosty.pkt
+		FROM mosty."StreamCenterlines" AS a, mosty."Bridges" as b
+		WHERE a.geom && b.geom;
 
-ALTER TABLE mosty.bridges
-	ALTER COLUMN geom TYPE geometry(LINESTRING,2180)
-	USING ST_SetSRID(geom,2180);
+-- calculation of bridges Stationing
+SELECT b."BridgeID", b."RiverCode",b."ReachCode", (a."ToSta" - a."FromSta")*(1-ST_Line_Locate_Point(a.geom,b.geom)) AS "Station"
+	INTO mosty.lokalizacja
+		FROM mosty."StreamCenterlines" AS a, mosty.pkt AS b
+        WHERE a."ReachCode" = b."ReachCode"
+        ORDER BY "ReachCode", "Station" ;
 
-CREATE INDEX idx_bridges
- 	ON mosty.bridges
- 	 	USING gist(geom);
-
-UPDATE mosty.bridges AS a
-SET "River" = rivercode , "Reach" = reachcode FROM mosty.river AS b
-WHERE ST_Intersects(a.geom,b.geom);
-
-
--- UPDATE mosty.bridges AS a
--- SET "River" = "RiverCode" , "Reach" = "ReachCode" FROM mosty."StreamCenterlines" as b
--- WHERE ST_Intersects(a.geom,b.geom);
-
--- UPDATE mosty.bridges AS a
--- SET "Station" = ST_Line_Locate_Point(b.geom,) FROM mosty.river as b
--- WHERE ST_Intersects(a.geom,b.geom);
-
--- Create or replace view mosty.punkty as
-
--- select distinct (ST_Dump(ST_Intersection(a.geom,b.geom))).geom as geom,b."River", a."ReachCode"  into mosty.pkt From mosty."StreamCenterlines" as a, mosty.bridges as b;
--- ALTER TABLE mosty.pkt
--- 	ALTER COLUMN geom TYPE geometry(POINT,2180)
--- 	USING ST_SetSRID(geom,2180);
-
--- select "Shape_Leng","HydroID","RiverCode","ReachCode","FromNode","ToNode","ArcLength","FromSta","ToSta",(ST_Dump(geom)).geom as geom into mosty.riverd From mosty."StreamCenterlines" ;
--- ALTER TABLE mosty.riverd
--- 	ALTER COLUMN geom TYPE geometry(LINESTRING,2180)
--- 	USING ST_SetSRID(geom,2180);
-
--- Create or replace view mosty.lokalizacja as
--- Select a."RiverCode",a."ReachCode", (a."ToSta" - a."FromSta")*(1-ST_Line_Locate_Point(a.geom,b.geom)) as "Station" From mosty.riverd as a, mosty.pkt as b WHERE a."ReachCode" = b."ReachCode" ORDER BY "ReachCode", "Station" ;
-
--- select * from mosty.lokalizacja
-
+-- update of Bridges layer by Stationing values
+UPDATE mosty."Bridges" AS a
+SET "Station" = b."Station"
+	FROM mosty.lokalizacja as b
+    WHERE a."BridgeID" = b."BridgeID";
+DROP TABLE mosty.pkt, mosty.lokalizacja;

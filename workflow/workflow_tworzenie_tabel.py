@@ -5,18 +5,18 @@
 s = iface.activeLayer()
 
 from rivergis import river_database as rdb
-baza = rdb.RiverDatabase('rivergis', 'sr101538', '5432', 'postgres', 'password')
+from rivergis import hecobjects as heco
+baza = rdb.RiverDatabase('rivergis', 'localhost', '5432', 'postgres', 'pass')
 baza.SCHEMA = 'start'
 baza.SRID = 2180
 baza.connect_pg()
-baza.create_pg_fun_create_st_index_if_not_exists()
-
-sc = baza.process_hecobject(rdb.StreamCenterlines, 'pg_create_table')
-xs = baza.process_hecobject(rdb.XSCutLines, 'pg_create_table')
-bl = baza.process_hecobject(rdb.BankLines, 'pg_create_table')
-la = baza.process_hecobject(rdb.LeveeAlignment, 'pg_create_table')
-fp = baza.process_hecobject(rdb.Flowpaths, 'pg_create_table')
-lu = baza.process_hecobject(rdb.LanduseAreas, 'pg_create_table')
+baza.register_existing(heco)
+sc = baza.process_hecobject(heco.StreamCenterlines, 'pg_create_table')
+xs = baza.process_hecobject(heco.XSCutLines, 'pg_create_table')
+bl = baza.process_hecobject(heco.BankLines, 'pg_create_table')
+la = baza.process_hecobject(heco.LeveeAlignment, 'pg_create_table')
+fp = baza.process_hecobject(heco.Flowpaths, 'pg_create_table')
+lu = baza.process_hecobject(heco.LanduseAreas, 'pg_create_table')
 
 baza.add_to_view(sc)
 baza.add_to_view(xs)
