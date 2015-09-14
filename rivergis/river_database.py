@@ -5,6 +5,7 @@ import sys
 from hecobjects import *
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL
 
+
 class RiverDatabase(object):
     """
     Class for PostgreSQL database and hydrodynamic models handling.
@@ -54,20 +55,24 @@ class RiverDatabase(object):
         else:
             print('Can\'t disconnect. There is no opened connection!')
 
-    def run_query(self, qry):
+    def run_query(self, qry, fetch=False):
         """
         Running PostgreSQL queries.
 
         Args:
             qry (str): Query for database
+            fetch (bool): Flag for returning result from query
         """
-        result = False
+        result = None
         try:
             if self.con:
                 cur = self.con.cursor()
                 cur.execute(qry)
+                if fetch is True:
+                    result = cur.fetchall
+                else:
+                    result = []
                 self.con.commit()
-                result = True
             else:
                 print('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
@@ -115,7 +120,7 @@ class RiverDatabase(object):
         method = getattr(obj, pg_method)
         qry = method()
         result = self.run_query(qry)
-        if result is True:
+        if result is not None:
             self.register_object(obj)
             self.queries[method.__name__] = qry
             return obj
@@ -178,39 +183,37 @@ class RiverDatabase(object):
 
         # get the layer's features
         features = layer.getFeatures()
-
         # get the layer's field name list
-        layerFields = []
-        for attr in layer.pendingFields():
-            layerFields.append(attr.name())
-
-        attrs_to_import = [] # list of fields that will be imported
+        layer_fields = layer.dataProvider().fields().toList()
 
         # check if the layer has attributes to import
-        for field in hecobject.attrs[1:]: # get all fields except the ID
-            if field[0].strip('\"') in layerFields:
+        # get all fields except the ID
+        attrs_to_import = []
+        for field in hecobject.attrs[1:]:
+            if field[0].strip('"') in layer_fields:
                 attrs_to_import.append(field)
 
         # create SQL for inserting the layer into PG database
-        schTable = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
-        attrsNames = ['{0}'.format(attr[0]) for attr in attrs_to_import]
-        qry = 'INSERT INTO {0} \n\t({1}, geom) \nVALUES\n\t'.format(schTable, ', '.join(attrsNames))
-        featsDef = [] # list of attributes' data
+        schema_name = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
+        attrs_names = ['{0}'.format(attr[0]) for attr in attrs_to_import]
+        qry = 'INSERT INTO {0} \n\t({1}, geom) \nVALUES\n\t'.format(schema_name, ', '.join(attrs_names))
+        # list of attributes data
+        feats_def = []
         for feat in features:
-            vals = [] # list of field values of the current feature
-            geomWkt = feat.geometry().exportToWkt()
+            # list of field values of the current feature
+            vals = []
+            geom_wkt = feat.geometry().exportToWkt()
             for attr in attrs_to_import:
-                val = feat.attribute(attr[0].strip('\"'))
+                val = feat.attribute(attr[0].strip('"'))
                 if not val == NULL:
                     vals.append('\'{0}\'::{1}'.format(val, attr[1]))
                 else:
                     vals.append('NULL')
-            vals.append('ST_GeomFromText(\'{0}\', {1})'.format(geomWkt, SRID))
-            featsDef.append('({0})'.format(', '.join(vals)))
-        qry += '{0};'.format(',\n\t'.join(featsDef))
+            vals.append('ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID))
+            feats_def.append('({0})'.format(', '.join(vals)))
+        qry += '{0};'.format(',\n\t'.join(feats_def))
 
         self.run_query(qry)
-
 
     def get_ras_gis_import_header(self):
         """
