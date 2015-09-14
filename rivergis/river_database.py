@@ -80,7 +80,6 @@ class RiverDatabase(object):
         except Exception, e:
             self.con.rollback()
             print(e)
-            sys.exit(1)
         finally:
             return result
 
