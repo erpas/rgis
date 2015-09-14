@@ -189,7 +189,7 @@ class RiverGIS(QMainWindow):
             self.addInfo("Closing connection to old river database.")
             self.rdb.disconnect_pg()
             self.rdb = None
-        self.rdb = rivdb.RiverDatabase(self.database, self.host, self.port, self.user, self.passwd)
+        self.rdb = rivdb.RiverDatabase(self.iface, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SCHEMA = 'start'
         self.rdb.SRID = int(self.crs.postgisSrid())
         # self.rdb.connect_pg()

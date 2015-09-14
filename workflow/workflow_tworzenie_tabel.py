@@ -6,7 +6,7 @@ s = iface.activeLayer()
 
 from rivergis import river_database as rdb
 from rivergis import hecobjects as heco
-baza = rdb.RiverDatabase('rivergis', 'localhost', '5432', 'postgres', 'pass')
+baza = rdb.RiverDatabase(iface, 'rivergis', 'localhost', '5432', 'postgres', 'pass')
 baza.SCHEMA = 'start'
 baza.SRID = 2180
 baza.connect_pg()

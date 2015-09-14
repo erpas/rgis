@@ -4,6 +4,7 @@ __author__ = 'ldebek'
 
 import psycopg2
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL
+from qgis.gui import QgsMessageBar
 
 
 class RiverDatabase(object):
@@ -13,18 +14,19 @@ class RiverDatabase(object):
     SCHEMA = None
     SRID = None
 
-    def __init__(self, dbname, host, port, user, password):
+    def __init__(self, iface, dbname, host, port, user, password):
         """
         Constructor for databse object
 
         Args:
-            rgis (instance): Instance of rivergis
+            iface (QgsInterface instance): Instance of QGIS interface
             dbname (str): Name of the database
             host (str): Host of the database
             port (str): Port of the database
             user (str): User login
             password (str): Password for user
         """
+        self.iface = iface
         self.dbname = dbname
         self.host = host
         self.port = port
@@ -45,10 +47,10 @@ class RiverDatabase(object):
             self.con = psycopg2.connect(database=self.dbname, host=self.host, port=self.port, user=self.user, password=self.password)
             msg = 'Connection established.'
         except Exception, e:
-            msg = e
-        finally:
-            print(msg)
-            return msg
+            self.iface.messageBar().pushMessage("Error", "Can't connect to PostGIS database. Check connection details!", level=QgsMessageBar.CRITICAL, duration=10)
+        # finally:
+        #     print(msg)
+        #     return msg
 
     def disconnect_pg(self):
         """
