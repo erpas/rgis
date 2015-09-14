@@ -1,16 +1,22 @@
-# UWAGA: W QGIS odpal wtyczkę RiverGIS i zaznacz warstwe z przebiegiem rzeki !
-# Warstwa oprócz geometrii może miec wypełnione wszystkie pozostałe atrybuty.
-
-rgis = qgis.utils.plugins['rivergis'].dlg
-s = iface.activeLayer()
+# -*- coding: utf-8 -*-
 
 from rivergis import river_database as rdb
 from rivergis import hecobjects as heco
+
+# UWAGA: W QGIS odpal wtyczkę RiverGIS i zaznacz warstwe z przebiegiem rzeki !
+# Warstwa oprócz geometrii może miec wypełnione wszystkie pozostałe atrybuty.
+
+# odwołanie do wtyczki
+rgis = qgis.utils.plugins['rivergis'].dlg
+# biezaca warstwa do importu
+s = iface.activeLayer()
+
+# utworzenie bazy
 baza = rdb.RiverDatabase(rgis, 'rivergis', 'localhost', '5432', 'postgres', 'pass')
 baza.SCHEMA = 'start'
 baza.SRID = 2180
 baza.connect_pg()
-
+# utworzenie w bazie funkcji tworzacej indeks przestrzenny, jesli nie istnieje
 baza.create_pg_fun_create_st_index_if_not_exists()
 
 baza.register_existing(heco)
@@ -30,3 +36,6 @@ baza.add_to_view(lu)
 
 baza.insert_layer(s, sc)
 iface.mapCanvas().refresh()
+
+
+

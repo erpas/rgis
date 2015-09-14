@@ -24,7 +24,6 @@ class HecRasObject(object):
         qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(
           schema_name, schema_name, ',\n\t'.join(attrs))
         qry += 'SELECT create_st_index_if_not_exists(\'{0}\', \'{1}\');'.format(self.schema, self.name)
-        print qry
         return qry
 
 

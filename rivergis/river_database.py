@@ -137,6 +137,27 @@ class RiverDatabase(object):
                 hydro_object = getattr(hydro_module, tab_name)
                 obj = hydro_object()
                 self.register_object(obj)
+                print 'registered {0}'.format(obj.name)
+            else:
+                pass
+
+    def load_existing(self, hydro_module, schema=None):
+        """
+        Load hydrodynamic model objects existing in schema.
+
+        Args:
+            hydro_module (module): hydrodynamic model module
+            schema (str): Schema where tables will be created or processed
+        """
+        tabs = self.list_tables(schema)
+        for tab in tabs:
+            tab_name = tab[0]
+            if tab_name in dir(hydro_module):
+                hydro_object = getattr(hydro_module, tab_name)
+                obj = hydro_object()
+                # TODO: jak zaladowac wszystkie zarejestrowane tabele do QGISa?
+                self.add_to_view(obj)
+                print 'added to view {0}'.format(obj.name)
             else:
                 pass
 
@@ -221,12 +242,13 @@ class RiverDatabase(object):
         features = layer.getFeatures()
         # get the layer's field name list
         layer_fields = layer.dataProvider().fields().toList()
+        layer_fields_names = ['{0}'.format(f.name()) for f in layer_fields]
 
         # check if the layer has attributes to import
         # get all fields except the ID
         attrs_to_import = []
         for field in hecobject.attrs[1:]:
-            if field[0].strip('"') in layer_fields:
+            if field[0].strip('\"') in layer_fields_names:
                 attrs_to_import.append(field)
 
         # create SQL for inserting the layer into PG database

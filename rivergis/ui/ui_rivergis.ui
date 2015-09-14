@@ -183,8 +183,9 @@
      </property>
      <addaction name="actionRASFlipXSDirection"/>
     </widget>
-    <addaction name="actionRASCreateRASLayers"/>
-    <addaction name="actionImportDataIntoRASDatabaseTables"/>
+    <addaction name="actionRASCreateRdbTables"/>
+    <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
+    <addaction name="actionRASImportLayersIntoRdbTables"/>
     <addaction name="menuStreamCenterlineAttributes"/>
     <addaction name="menuXS_Cut_Line_Attributes"/>
     <addaction name="actionRASManningsNValues"/>
@@ -338,9 +339,9 @@
     <string>Preview 2D Mesh</string>
    </property>
   </action>
-  <action name="actionRASCreateRASLayers">
+  <action name="actionRASCreateRdbTables">
    <property name="text">
-    <string>Create RAS Layers and Tables</string>
+    <string>Create River Database Tables</string>
    </property>
   </action>
   <action name="actionRASManningsNValues">
@@ -408,9 +409,9 @@
     <string>All</string>
    </property>
   </action>
-  <action name="actionImportDataIntoRASDatabaseTables">
+  <action name="actionRASImportLayersIntoRdbTables">
    <property name="text">
-    <string>Import Data Into RAS Database Tables</string>
+    <string>Import Layers Into River Database Tables</string>
    </property>
   </action>
   <action name="actionRASLevees">
@@ -431,6 +432,11 @@
   <action name="actionRASFlipXSDirection">
    <property name="text">
     <string>Flip Cross Sections</string>
+   </property>
+  </action>
+  <action name="actionRASLoadRdbTablesIntoQGIS">
+   <property name="text">
+    <string>Load River Database Tables Into QGIS</string>
    </property>
   </action>
  </widget>

@@ -27,6 +27,7 @@ from qgis.utils import *
 import processing # TODO: try to not use the processing
 from ui._ui_rivergis import Ui_RiverGIS
 import river_database as rivdb
+import hecobjects as heco
 
 
 class RiverGIS(QMainWindow):
@@ -56,7 +57,9 @@ class RiverGIS(QMainWindow):
         self.ui.actionImportRiverFromIsokp.triggered.connect(self.importRiverIsokp)
         # RAS Geometry
         # 1D
-        self.ui.actionImportDataIntoRASDatabaseTables.triggered.connect(self.rasImportDataIntoRASDatabaseTables)
+        self.ui.actionRASCreateRdbTables.triggered.connect(self.rasCreateRdbTables)
+        self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
+        self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
         self.ui.actionRASTopology1D.triggered.connect(self.rasTopology1D)
         self.ui.actionRASLengthsStations.triggered.connect(self.rasLengthsStations)
         self.ui.actionRASCenterlineElevations.triggered.connect(self.rasCenterlineElevations)
@@ -77,7 +80,6 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASCreate2dArea.triggered.connect(self.rasCreate2dArea)
         self.ui.actionRASPreview2DMesh.triggered.connect(self.rasPreview2DMesh)
         self.ui.actionRASSaveMeshPointsToHECRASGeometry.triggered.connect(self.rasSaveMeshPtsToHecrasGeo)
-        self.ui.actionRASCreateRASLayers.triggered.connect(self.rasCreateRASLayers)
         self.ui.actionRASImportRasData.triggered.connect(self.rasImportRasDataStart)
         self.ui.actionRASWaterSurfaceGeneration.triggered.connect(self.rasWaterSurfaceGeneration)
         self.ui.actionRASFloodplainDelineation.triggered.connect(self.rasFloodplainDelineation)
@@ -193,6 +195,7 @@ class RiverGIS(QMainWindow):
         self.rdb.SRID = int(self.crs.postgisSrid())
         self.rdb.connect_pg()
         self.rdb.create_pg_fun_create_st_index_if_not_exists()
+        self.rdb.register_existing(heco)
         self.addInfo('Created connection to river database: {0}@{1}'.format( \
             self.rdb.dbname, self.rdb.host))
 
@@ -231,18 +234,20 @@ class RiverGIS(QMainWindow):
 
     # 1D HEC-RAS Geometry Functions
 
-    def rasCreateRASLayers(self):
+    def rasCreateRdbTables(self):
         from dlg_rasCreateRasLayers import DlgCreateRasLayers
         dlg = DlgCreateRasLayers(self)
         dlg.exec_()
 
+    def rasLoadRdbTablesIntoQGIS(self):
+        self.rdb.load_existing(heco)
 
-    def rasImportDataIntoRASDatabaseTables(self):
+    def rasImportLayersIntoRdbTables(self):
         '''
         Imports chosen layers into PostGIS database.
         '''
         from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
-        self.addInfo("<br><br><b>Import data into RAS PostGIS tables...</b>")
+        self.addInfo("<br><b>Import data into RAS PostGIS tables...</b>")
         if not self.curConnName or not self.schema:
             self.addInfo("No PostGIS database or schema selected. Choose a connection and schema.")
             return

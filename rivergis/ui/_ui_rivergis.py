@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Tue Sep 01 22:29:19 2015
+# Created: Mon Sep 14 23:33:53 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -157,8 +157,8 @@ class Ui_RiverGIS(object):
         self.actionRASPreview2DMesh = QtGui.QAction(RiverGIS)
         self.actionRASPreview2DMesh.setEnabled(True)
         self.actionRASPreview2DMesh.setObjectName(_fromUtf8("actionRASPreview2DMesh"))
-        self.actionRASCreateRASLayers = QtGui.QAction(RiverGIS)
-        self.actionRASCreateRASLayers.setObjectName(_fromUtf8("actionRASCreateRASLayers"))
+        self.actionRASCreateRdbTables = QtGui.QAction(RiverGIS)
+        self.actionRASCreateRdbTables.setObjectName(_fromUtf8("actionRASCreateRdbTables"))
         self.actionRASManningsNValues = QtGui.QAction(RiverGIS)
         self.actionRASManningsNValues.setObjectName(_fromUtf8("actionRASManningsNValues"))
         self.actionRASExport1DRASData = QtGui.QAction(RiverGIS)
@@ -185,8 +185,8 @@ class Ui_RiverGIS(object):
         self.actionRASXSElevations.setObjectName(_fromUtf8("actionRASXSElevations"))
         self.actionRASXSAll = QtGui.QAction(RiverGIS)
         self.actionRASXSAll.setObjectName(_fromUtf8("actionRASXSAll"))
-        self.actionImportDataIntoRASDatabaseTables = QtGui.QAction(RiverGIS)
-        self.actionImportDataIntoRASDatabaseTables.setObjectName(_fromUtf8("actionImportDataIntoRASDatabaseTables"))
+        self.actionRASImportLayersIntoRdbTables = QtGui.QAction(RiverGIS)
+        self.actionRASImportLayersIntoRdbTables.setObjectName(_fromUtf8("actionRASImportLayersIntoRdbTables"))
         self.actionRASLevees = QtGui.QAction(RiverGIS)
         self.actionRASLevees.setObjectName(_fromUtf8("actionRASLevees"))
         self.actionRASIneffectiveFlowAreas = QtGui.QAction(RiverGIS)
@@ -195,6 +195,8 @@ class Ui_RiverGIS(object):
         self.actionRASBlockedObstructions.setObjectName(_fromUtf8("actionRASBlockedObstructions"))
         self.actionRASFlipXSDirection = QtGui.QAction(RiverGIS)
         self.actionRASFlipXSDirection.setObjectName(_fromUtf8("actionRASFlipXSDirection"))
+        self.actionRASLoadRdbTablesIntoQGIS = QtGui.QAction(RiverGIS)
+        self.actionRASLoadRdbTablesIntoQGIS.setObjectName(_fromUtf8("actionRASLoadRdbTablesIntoQGIS"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuRASMapping.addAction(self.actionRASImportRasData)
         self.menuRASMapping.addSeparator()
@@ -215,8 +217,9 @@ class Ui_RiverGIS(object):
         self.menuStreamCenterlineAttributes.addSeparator()
         self.menuStreamCenterlineAttributes.addAction(self.actionRASStreamCenterlineAll)
         self.menuUtilities.addAction(self.actionRASFlipXSDirection)
-        self.menu_Geometry.addAction(self.actionRASCreateRASLayers)
-        self.menu_Geometry.addAction(self.actionImportDataIntoRASDatabaseTables)
+        self.menu_Geometry.addAction(self.actionRASCreateRdbTables)
+        self.menu_Geometry.addAction(self.actionRASLoadRdbTablesIntoQGIS)
+        self.menu_Geometry.addAction(self.actionRASImportLayersIntoRdbTables)
         self.menu_Geometry.addAction(self.menuStreamCenterlineAttributes.menuAction())
         self.menu_Geometry.addAction(self.menuXS_Cut_Line_Attributes.menuAction())
         self.menu_Geometry.addAction(self.actionRASManningsNValues)
@@ -269,7 +272,7 @@ class Ui_RiverGIS(object):
         self.actionCreate_1d_PostGIS_Tables.setText(_translate("RiverGIS", "Create 1D PostGIS Tables", None))
         self.actionRASSaveMeshPointsToHECRASGeometry.setText(_translate("RiverGIS", "Save mesh points to HEC-RAS geometry file", None))
         self.actionRASPreview2DMesh.setText(_translate("RiverGIS", "Preview 2D Mesh", None))
-        self.actionRASCreateRASLayers.setText(_translate("RiverGIS", "Create RAS Layers and Tables", None))
+        self.actionRASCreateRdbTables.setText(_translate("RiverGIS", "Create River Database Tables", None))
         self.actionRASManningsNValues.setText(_translate("RiverGIS", "Extract Manning\'s n Values", None))
         self.actionRASExport1DRASData.setText(_translate("RiverGIS", "Export 1D RAS Data", None))
         self.actionRASTopology1D.setText(_translate("RiverGIS", "Topology", None))
@@ -283,9 +286,10 @@ class Ui_RiverGIS(object):
         self.actionRASXSDownstreamReachLengths.setText(_translate("RiverGIS", "Downstream Reach Lengths", None))
         self.actionRASXSElevations.setText(_translate("RiverGIS", "Elevations", None))
         self.actionRASXSAll.setText(_translate("RiverGIS", "All", None))
-        self.actionImportDataIntoRASDatabaseTables.setText(_translate("RiverGIS", "Import Data Into RAS Database Tables", None))
+        self.actionRASImportLayersIntoRdbTables.setText(_translate("RiverGIS", "Import Layers Into River Database Tables", None))
         self.actionRASLevees.setText(_translate("RiverGIS", "Levees", None))
         self.actionRASIneffectiveFlowAreas.setText(_translate("RiverGIS", "Ineffective Flow Areas", None))
         self.actionRASBlockedObstructions.setText(_translate("RiverGIS", "Blocked Obstructions", None))
         self.actionRASFlipXSDirection.setText(_translate("RiverGIS", "Flip Cross Sections", None))
+        self.actionRASLoadRdbTablesIntoQGIS.setText(_translate("RiverGIS", "Load River Database Tables Into QGIS", None))
 
