@@ -1,7 +1,6 @@
 __author__ = 'ldebek'
 
 import psycopg2
-import sys
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL
 
 
@@ -38,11 +37,15 @@ class RiverDatabase(object):
         """
         Method for setting up PostgreSQL connection object as RiverDatabase class instance attribute.
         """
+        msg = None
         try:
             self.con = psycopg2.connect(database=self.dbname, host=self.host, port=self.port, user=self.user, password=self.password)
+            msg = 'Connection established.'
         except Exception, e:
-            print(e)
-            sys.exit(1)
+            msg = e
+        finally:
+            print(msg)
+            return msg
 
     def disconnect_pg(self):
         """
