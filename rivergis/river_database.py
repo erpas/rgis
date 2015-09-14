@@ -69,7 +69,7 @@ class RiverDatabase(object):
                 cur = self.con.cursor()
                 cur.execute(qry)
                 if fetch is True:
-                    result = cur.fetchall
+                    result = cur.fetchall()
                 else:
                     result = []
                 self.con.commit()
