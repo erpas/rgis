@@ -1,15 +1,18 @@
-# UWAGA: W QGIS zaznacz warstwe z przebiegiem rzeki !
-# Warstwa oprócz geometrii może miec wypełnione wszystkie
-# pozostałe atrybuty.
+# UWAGA: W QGIS odpal wtyczkę RiverGIS i zaznacz warstwe z przebiegiem rzeki !
+# Warstwa oprócz geometrii może miec wypełnione wszystkie pozostałe atrybuty.
 
+rgis = qgis.utils.plugins['rivergis'].dlg
 s = iface.activeLayer()
 
 from rivergis import river_database as rdb
 from rivergis import hecobjects as heco
-baza = rdb.RiverDatabase(iface, 'rivergis', 'localhost', '5432', 'postgres', 'pass')
+baza = rdb.RiverDatabase(rgis, 'rivergis', 'localhost', '5432', 'postgres', 'pass')
 baza.SCHEMA = 'start'
 baza.SRID = 2180
 baza.connect_pg()
+
+baza.create_pg_fun_create_st_index_if_not_exists()
+
 baza.register_existing(heco)
 sc = baza.process_hecobject(heco.StreamCenterlines, 'pg_create_table')
 xs = baza.process_hecobject(heco.XSCutLines, 'pg_create_table')

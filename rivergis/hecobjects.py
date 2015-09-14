@@ -19,10 +19,10 @@ class HecRasObject(object):
 
     def pg_create_table(self):
         schema_name = '"{0}"."{1}"'.format(self.schema, self.name)
-        qry = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
-        qry += [' '.join(field) for field in self.attrs]
+        attrs = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
+        attrs += [' '.join(field) for field in self.attrs]
         qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(
-          schema_name, schema_name, ',\n\t'.join(qry))
+          schema_name, schema_name, ',\n\t'.join(attrs))
         qry += 'SELECT create_st_index_if_not_exists(\'{0}\', \'{1}\');'.format(self.schema, self.name)
         print qry
         return qry
@@ -238,7 +238,7 @@ class IneffAreas(HecRasObject):
         super(IneffAreas, self).__init__()
         self.hdf_dataset = None
         self.geom_type = 'POLYGON'
-        self.attrs = [('""IneffID"', 'serial primary key'),
+        self.attrs = [('"IneffID"', 'serial primary key'),
             ('"Elevation"', 'double precision')]
 
 
@@ -257,6 +257,7 @@ class LanduseAreas(HecRasObject):
         self.hdf_dataset = None
         self.geom_type = 'MULTIPOLYGON'
         self.attrs = [
+            ('"LUID"', 'serial primary key'),
             ('"LUCode"', 'text'),
             ('"N_Value"', 'double precision')]
 

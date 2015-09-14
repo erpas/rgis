@@ -24,18 +24,18 @@ class DlgCreateRasLayers(QDialog):
         self.ui.allChbox.toggled.connect(self.allChboxToggled)
 
         self.checkBoxes = [
-            (self.ui.bankLinesChbox, rivdb.BankLines),
-            (self.ui.blockedChbox, rivdb.BlockedObs),
-            (self.ui.bridgesChbox, rivdb.Bridges),
-            (self.ui.flowPathChbox, rivdb.Flowpaths),
-            (self.ui.ineffectiveChbox, rivdb.IneffAreas),
-            (self.ui.inlineStructChbox, rivdb.InlineStructures),
-            (self.ui.streamChbox, rivdb.StreamCenterlines),
-            (self.ui.landuseChbox, rivdb.LanduseAreas),
-            (self.ui.lateralStructChbox, rivdb.LateralStructures),
-            (self.ui.leveeChbox, rivdb.LeveeAlignment),
-            (self.ui.storageAreasChbox, rivdb.StorageAreas),
-            (self.ui.xsCutLinesChbox, rivdb.XSCutLines)
+            (self.ui.bankLinesChbox, heco.BankLines),
+            (self.ui.blockedChbox, heco.BlockedObs),
+            (self.ui.bridgesChbox, heco.Bridges),
+            (self.ui.flowPathChbox, heco.Flowpaths),
+            (self.ui.ineffectiveChbox, heco.IneffAreas),
+            (self.ui.inlineStructChbox, heco.InlineStructures),
+            (self.ui.streamChbox, heco.StreamCenterlines),
+            (self.ui.landuseChbox, heco.LanduseAreas),
+            (self.ui.lateralStructChbox, heco.LateralStructures),
+            (self.ui.leveeChbox, heco.LeveeAlignment),
+            (self.ui.storageAreasChbox, heco.StorageAreas),
+            (self.ui.xsCutLinesChbox, heco.XSCutLines)
         ]
 
 
@@ -65,5 +65,5 @@ class DlgCreateRasLayers(QDialog):
 
     def allChboxToggled(self):
         checked = self.ui.allChbox.isChecked()
-        for chbox in self.checkBoxes:
+        for chbox, hecobj_class in self.checkBoxes:
             chbox.setChecked(checked)

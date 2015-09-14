@@ -24,8 +24,6 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.utils import *
 
-# import psycopg2
-# import psycopg2.extras
 import processing # TODO: try to not use the processing
 from ui._ui_rivergis import Ui_RiverGIS
 import river_database as rivdb
@@ -174,34 +172,33 @@ class RiverGIS(QMainWindow):
         self.database = s.value('database')
         self.user = s.value('username')
         self.passwd = s.value('password')
-        self.sslmode = s.value('sslmode')
-        self.connParams = "host='%s' port='%s' dbname='%s' user='%s' password='%s'" % \
-                                 (self.host,self.port,self.database,self.user,self.passwd)
-        sslmodesList = [0,'disable', 'allow', 'prefer', 'require']
-        if self.sslmode:
-            self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
+        # self.sslmode = s.value('sslmode')
+        # self.connParams = "host='%s' port='%s' dbname='%s' user='%s' password='%s'" % \
+        #                          (self.host,self.port,self.database,self.user,self.passwd)
+        # sslmodesList = [0,'disable', 'allow', 'prefer', 'require']
+        # if self.sslmode:
+        #     self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
         # self.conn = psycopg2.connect(self.connParams)
         # self.addInfo('Current DB connection is: %s' % self.curConnName)
 
-        # create a new river database
-        print self.connParams
+        # close any existing connection to river database
         if self.rdb:
-            self.addInfo("Closing connection to old river database.")
+            self.addInfo("Closing existing connection to {0}@{1} river database".format( \
+                self.rdb.dbname, self.rdb.host))
             self.rdb.disconnect_pg()
             self.rdb = None
-        self.rdb = rivdb.RiverDatabase(self.iface, self.database, self.host, self.port, self.user, self.passwd)
+        # create a new connection to river database
+        self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SCHEMA = 'start'
         self.rdb.SRID = int(self.crs.postgisSrid())
-        # self.rdb.connect_pg()
-        # self.rdb.create_pg_fun_create_st_index_if_not_exists()
-        self.addInfo('\nStarted new river database: {0}@{1}'.format(self.database, self.host))
+        self.rdb.connect_pg()
+        self.rdb.create_pg_fun_create_st_index_if_not_exists()
+        self.addInfo('Created connection to river database: {0}@{1}'.format( \
+            self.rdb.dbname, self.rdb.host))
 
         # refresh schemas combo
         schemaName = self.ui.schemasCbo.currentText()
-
-        # cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        qry = u"SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_' AND nspname != 'information_schema' ORDER BY nspname"
-
+        qry = "SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_' AND nspname != 'information_schema' ORDER BY nspname"
         schemas = self.rdb.run_query(qry,fetch=True)
         self.ui.schemasCbo.clear()
         self.ui.schemasCbo.addItem('')
@@ -211,10 +208,6 @@ class RiverGIS(QMainWindow):
         if schemaExists:
             self.ui.schemasCbo.setCurrentIndex(schemaExists)
         self.schemaChanged()
-
-        # create or update PG functions
-        # createAllPgFunctions(self)
-
 
 
     def schemaChanged(self):

@@ -14,7 +14,7 @@ class RiverDatabase(object):
     SCHEMA = None
     SRID = None
 
-    def __init__(self, iface, dbname, host, port, user, password):
+    def __init__(self, rgis, dbname, host, port, user, password):
         """
         Constructor for databse object
 
@@ -26,7 +26,7 @@ class RiverDatabase(object):
             user (str): User login
             password (str): Password for user
         """
-        self.iface = iface
+        self.rgis = rgis
         self.dbname = dbname
         self.host = host
         self.port = port
@@ -44,13 +44,16 @@ class RiverDatabase(object):
         """
         msg = None
         try:
-            self.con = psycopg2.connect(database=self.dbname, host=self.host, port=self.port, user=self.user, password=self.password)
+            # connection parameters using the dsn
+            # http://initd.org/psycopg/docs/module.html#psycopg2.connect
+            connParams = "dbname={0} host={1} port={2} user={3} password={4}".format(self.dbname, self.host, self.port, self.user, self.password)
+            self.con = psycopg2.connect(connParams)
             msg = 'Connection established.'
         except Exception, e:
-            self.iface.messageBar().pushMessage("Error", "Can't connect to PostGIS database. Check connection details!", level=QgsMessageBar.CRITICAL, duration=10)
-        # finally:
-        #     print(msg)
-        #     return msg
+            self.rgis.iface.messageBar().pushMessage("Error", 'Can\'t connect to PostGIS database. Check connection details!', level=QgsMessageBar.CRITICAL, duration=10)
+        finally:
+            print(msg)
+            return msg
 
     def disconnect_pg(self):
         """
@@ -60,7 +63,7 @@ class RiverDatabase(object):
             self.con.close()
             self.con = None
         else:
-            print('Can\'t disconnect. There is no opened connection!')
+            print("Can not disconnect. There is no opened connection!")
 
     def run_query(self, qry, fetch=False):
         """
@@ -75,11 +78,12 @@ class RiverDatabase(object):
             if self.con:
                 cur = self.con.cursor()
                 cur.execute(qry)
+                self.con.commit()
                 if fetch is True:
                     result = cur.fetchall()
                 else:
                     result = []
-                self.con.commit()
+
             else:
                 print('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:

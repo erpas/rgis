@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_importDataIntoRasTables.ui'
 #
-# Created: Mon Sep 07 17:45:23 2015
+# Created: Mon Sep 14 18:08:51 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,9 +45,9 @@ class Ui_importDataIntoRasTables(object):
         self.label_2 = QtGui.QLabel(importDataIntoRasTables)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.verticalLayout.addWidget(self.label_2)
-        self.cboXs = QtGui.QComboBox(importDataIntoRasTables)
-        self.cboXs.setObjectName(_fromUtf8("cboXs"))
-        self.verticalLayout.addWidget(self.cboXs)
+        self.cboXsecs = QtGui.QComboBox(importDataIntoRasTables)
+        self.cboXsecs.setObjectName(_fromUtf8("cboXsecs"))
+        self.verticalLayout.addWidget(self.cboXsecs)
         self.label_4 = QtGui.QLabel(importDataIntoRasTables)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.verticalLayout.addWidget(self.label_4)
