@@ -4,7 +4,7 @@ SET "RiverCode" = b."RiverCode" , "ReachCode" = b."ReachCode"
 	FROM mosty."StreamCenterlines" AS b
     WHERE  a.geom && b.geom AND ST_Intersects(a.geom,b.geom);
 
--- generating of point needed for bridges Stationing calculation
+-- generating of points needed for bridges Stationing calculation
 SELECT DISTINCT (ST_Dump(ST_Intersection(a.geom,b.geom))).geom AS geom,b."RiverCode", b."ReachCode", b."BridgeID"
 	INTO mosty.pkt
 		FROM mosty."StreamCenterlines" AS a, mosty."Bridges" as b
