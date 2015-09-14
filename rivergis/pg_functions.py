@@ -34,7 +34,7 @@ def createPgFunctionCreateIndexIfNotExists(rgis):
   DECLARE
     full_index_name varchar;
   BEGIN
-  full_index_name = t_name || '_' || 'geom_idx';
+  full_index_name = schema || '_' || t_name || '_' || 'geom_idx';
   IF NOT EXISTS (
       SELECT 1
       FROM   pg_class c
@@ -43,7 +43,7 @@ def createPgFunctionCreateIndexIfNotExists(rgis):
       AND    n.nspname = schema
       ) THEN
 
-      execute 'CREATE INDEX ' || full_index_name || ' ON ' || schema || '.' || t_name || ' USING GIST (geom)';
+      execute 'CREATE INDEX ' || full_index_name || ' ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
   END IF;
   END
   $$

@@ -24,15 +24,11 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.utils import *
 
-import psycopg2
-import psycopg2.extras
-import processing
+# import psycopg2
+# import psycopg2.extras
+import processing # TODO: try to not use the processing
 from ui._ui_rivergis import Ui_RiverGIS
-from hecobjects import *
-from river_database import *
-
-from pg_functions import *
-
+import river_database as rivdb
 
 
 class RiverGIS(QMainWindow):
@@ -108,7 +104,8 @@ class RiverGIS(QMainWindow):
         # Some info
         self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>For some operations RiverGIS needs a <b>connection to a PostGIS database</b>. Please, choose a connection and schema from the above combo boxes.<br>')
         self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br><br>')
-        self.ui.textEdit.append('<b>Loading HEC-RAS 2D results</b> requires a h5py Python package ( http://www.h5py.org ).<br><br>')
+        self.ui.textEdit.append('<b>Loading HEC-RAS 2D results</b> requires a h5py Python package ( http://www.h5py.org ).')
+        self.ui.textEdit.append('<br>--------------------------------------------------------------')
 
         # restore the window state
         settings = QSettings()
@@ -149,7 +146,7 @@ class RiverGIS(QMainWindow):
         self.crs = self.ui.crsWidget.crs()
         if self.rdb:
             self.rdb.SRID = int(self.crs.postgisSrid())
-        self.addInfo('\nDefault CRS is: %s\n' % self.crs.authid() )
+        self.addInfo('\nDefault CRS is: %s' % self.crs.authid() )
 
     # Database Functions
 
@@ -187,21 +184,17 @@ class RiverGIS(QMainWindow):
         # self.addInfo('Current DB connection is: %s' % self.curConnName)
 
         # create a new river database
+        print self.connParams
         if self.rdb:
+            self.addInfo("Closing connection to old river database.")
             self.rdb.disconnect_pg()
             self.rdb = None
-        self.rdb = RiverDatabase(self.database, self.host, self.port, self.user, self.passwd)
+        self.rdb = rivdb.RiverDatabase(self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SCHEMA = 'start'
         self.rdb.SRID = int(self.crs.postgisSrid())
-        print 'SRID', self.rdb.SRID
-        print "host='{0}' port='{1}' dbname='{2}' user='{3}'".format(self.host,self.port,self.database,self.user)
-        print self.rdb.SCHEMA, self.rdb.SRID
-
-        # TODO: this crashes QGIS
-        self.rdb.connect_pg()
-
+        # self.rdb.connect_pg()
+        # self.rdb.create_pg_fun_create_st_index_if_not_exists()
         self.addInfo('\nStarted new river database: {0}@{1}'.format(self.database, self.host))
-
 
         # refresh schemas combo
         schemaName = self.ui.schemasCbo.currentText()
@@ -209,17 +202,15 @@ class RiverGIS(QMainWindow):
         # cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         qry = u"SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_' AND nspname != 'information_schema' ORDER BY nspname"
 
-        schemas = self.rdb.run_query(qry)
-
-        print schemas
-        # self.ui.schemasCbo.clear()
-        # self.ui.schemasCbo.addItem('')
-        # for schema in schemas:
-        #     self.ui.schemasCbo.addItem(schema[0])
-        # schemaExists = self.ui.schemasCbo.findText(schemaName)
-        # if schemaExists:
-        #     self.ui.schemasCbo.setCurrentIndex(schemaExists)
-        # self.schemaChanged()
+        schemas = self.rdb.run_query(qry,fetch=True)
+        self.ui.schemasCbo.clear()
+        self.ui.schemasCbo.addItem('')
+        for schema in schemas:
+            self.ui.schemasCbo.addItem(schema[0])
+        schemaExists = self.ui.schemasCbo.findText(schemaName)
+        if schemaExists:
+            self.ui.schemasCbo.setCurrentIndex(schemaExists)
+        self.schemaChanged()
 
         # create or update PG functions
         # createAllPgFunctions(self)

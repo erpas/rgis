@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __author__ = 'ldebek'
 
 import psycopg2
@@ -196,7 +198,9 @@ class RiverDatabase(object):
         # create SQL for inserting the layer into PG database
         schema_name = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
         attrs_names = ['{0}'.format(attr[0]) for attr in attrs_to_import]
-        qry = 'INSERT INTO {0} \n\t({1}, geom) \nVALUES\n\t'.format(schema_name, ', '.join(attrs_names))
+        qry = 'INSERT INTO {0} \n\t({1}'.format(schema_name, ', '.join(attrs_names))
+        qry += ', ' if attrs_names else ''
+        qry += 'geom) \nVALUES\n\t'
         # list of attributes data
         feats_def = []
         for feat in features:
@@ -213,6 +217,32 @@ class RiverDatabase(object):
             feats_def.append('({0})'.format(', '.join(vals)))
         qry += '{0};'.format(',\n\t'.join(feats_def))
 
+        self.run_query(qry)
+
+    def create_pg_fun_create_st_index_if_not_exists(self):
+        """
+        Create PostgreSQL function create_st_index_if_not_exists(schema, table).
+        The function checks if a spatial index exists for the table - if not, it is created.
+        """
+        qry = '''CREATE OR REPLACE FUNCTION create_st_index_if_not_exists
+          (schema text, t_name text) RETURNS void AS $$
+        DECLARE
+          full_index_name varchar;
+        BEGIN
+        full_index_name = schema || '_' || t_name || '_' || 'geom_idx';
+        IF NOT EXISTS (
+            SELECT 1
+            FROM   pg_class c
+            JOIN   pg_namespace n ON n.oid = c.relnamespace
+            WHERE  c.relname = full_index_name
+            AND    n.nspname = schema
+            ) THEN
+
+            execute 'CREATE INDEX ' || full_index_name || ' ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
+        END IF;
+        END
+        $$
+        LANGUAGE plpgsql VOLATILE;'''
         self.run_query(qry)
 
     def get_ras_gis_import_header(self):
