@@ -16,6 +16,7 @@ class RiverDatabase(object):
         Constructor for databse object
 
         Args:
+            rgis (instance): Instance of rivergis
             dbname (str): Name of the database
             host (str): Host of the database
             port (str): Port of the database
