@@ -183,27 +183,8 @@ class RiverGIS(QMainWindow):
         sslmodesList = [0,'disable', 'allow', 'prefer', 'require']
         if self.sslmode:
             self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
-        self.conn = psycopg2.connect(self.connParams)
-        self.addInfo('Current DB connection is: %s' % self.curConnName)
-
-        # refresh schemas combo
-        schemaName = self.ui.schemasCbo.currentText()
-
-        cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        qry = u"SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_' AND nspname != 'information_schema' ORDER BY nspname"
-        cur.execute(qry)
-        schemas = cur.fetchall()
-        self.ui.schemasCbo.clear()
-        self.ui.schemasCbo.addItem('')
-        for schema in schemas:
-            self.ui.schemasCbo.addItem(schema[0])
-        schemaExists = self.ui.schemasCbo.findText(schemaName)
-        if schemaExists:
-            self.ui.schemasCbo.setCurrentIndex(schemaExists)
-        self.schemaChanged()
-
-        # create or update PG functions
-        createAllPgFunctions(self)
+        # self.conn = psycopg2.connect(self.connParams)
+        # self.addInfo('Current DB connection is: %s' % self.curConnName)
 
         # create a new river database
         if self.rdb:
@@ -213,13 +194,36 @@ class RiverGIS(QMainWindow):
         self.rdb.SCHEMA = 'start'
         self.rdb.SRID = int(self.crs.postgisSrid())
         print 'SRID', self.rdb.SRID
-        print "host='{0}' port='{1}' dbname='{2}' user='{3}' password='{4}'".format(self.host,self.port,self.database,self.user,self.passwd)
+        print "host='{0}' port='{1}' dbname='{2}' user='{3}'".format(self.host,self.port,self.database,self.user)
         print self.rdb.SCHEMA, self.rdb.SRID
 
         # TODO: this crashes QGIS
         self.rdb.connect_pg()
 
         self.addInfo('\nStarted new river database: {0}@{1}'.format(self.database, self.host))
+
+
+        # refresh schemas combo
+        schemaName = self.ui.schemasCbo.currentText()
+
+        # cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        qry = u"SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_' AND nspname != 'information_schema' ORDER BY nspname"
+
+        schemas = self.rdb.run_query(qry)
+
+        print schemas
+        # self.ui.schemasCbo.clear()
+        # self.ui.schemasCbo.addItem('')
+        # for schema in schemas:
+        #     self.ui.schemasCbo.addItem(schema[0])
+        # schemaExists = self.ui.schemasCbo.findText(schemaName)
+        # if schemaExists:
+        #     self.ui.schemasCbo.setCurrentIndex(schemaExists)
+        # self.schemaChanged()
+
+        # create or update PG functions
+        # createAllPgFunctions(self)
+
 
 
     def schemaChanged(self):

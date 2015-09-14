@@ -40,7 +40,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="cboXs"/>
+      <widget class="QComboBox" name="cboXsecs"/>
      </item>
      <item>
       <widget class="QLabel" name="label_4">
