@@ -5,7 +5,7 @@ __author__ = 'ldebek'
 import psycopg2
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL
 from qgis.gui import QgsMessageBar
-
+from os.path import join
 
 class RiverDatabase(object):
     """
@@ -213,7 +213,10 @@ class RiverDatabase(object):
         self.uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
         self.uri.setDataSource(obj.schema, obj.name, 'geom')
         self.vlayer = QgsVectorLayer(self.uri.uri(), obj.name, 'postgres')
-        QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
+        mapLayer = QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
+        styleFile = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(obj.name))
+        mapLayer.loadNamedStyle(styleFile)
+
 
     def insert_layer(self, layer, hecobject, schema=None, srid=None):
         """

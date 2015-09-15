@@ -47,10 +47,10 @@ class DlgImportDataIntoRasTables(QDialog):
 
         if self.banksLayer:
             # TODO: import warstwy banksLayer do PG
-
-            if not self.ui.cboBanklineType.currentText() == '': # Bank type (side) specified
-                # TODO: kod uwzgledniajacy atrybut typu (strony) brzegu
-                pass
+            pass
+            # if not self.ui.cboBanklineType.currentText() == '': # Bank type (side) specified
+            #     # TODO: kod uwzgledniajacy atrybut typu (strony) brzegu
+            #     pass
 
         if self.flowpathsLayer:
             # TODO: import warstwy linii przeplywow do PG

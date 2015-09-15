@@ -2,14 +2,12 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Sep 14 23:33:53 2015
+# Created: Tue Sep 15 08:17:35 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-from qgis.gui import QgsProjectionSelectionWidget
-from ..resources_rc import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -293,3 +291,5 @@ class Ui_RiverGIS(object):
         self.actionRASFlipXSDirection.setText(_translate("RiverGIS", "Flip Cross Sections", None))
         self.actionRASLoadRdbTablesIntoQGIS.setText(_translate("RiverGIS", "Load River Database Tables Into QGIS", None))
 
+from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
+import resources_rc
