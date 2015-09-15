@@ -46,11 +46,12 @@ class RiverDatabase(object):
         try:
             # connection parameters using the dsn
             # http://initd.org/psycopg/docs/module.html#psycopg2.connect
-            connParams = "dbname={0} host={1} port={2} user={3} password={4}".format(self.dbname, self.host, self.port, self.user, self.password)
+            connParams = 'dbname={0} host={1} port={2} user={3} password={4}'.format(self.dbname, self.host, self.port, self.user, self.password)
             self.con = psycopg2.connect(connParams)
             msg = 'Connection established.'
         except Exception, e:
             self.rgis.iface.messageBar().pushMessage("Error", 'Can\'t connect to PostGIS database. Check connection details!', level=QgsMessageBar.CRITICAL, duration=10)
+            msg = e
         finally:
             print(msg)
             return msg
@@ -83,7 +84,6 @@ class RiverDatabase(object):
                     result = cur.fetchall()
                 else:
                     result = []
-
             else:
                 print('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
@@ -141,25 +141,12 @@ class RiverDatabase(object):
             else:
                 pass
 
-    def load_existing(self, hydro_module, schema=None):
+    def load_registered(self):
         """
-        Load hydrodynamic model objects existing in schema.
-
-        Args:
-            hydro_module (module): hydrodynamic model module
-            schema (str): Schema where tables will be created or processed
+        Load hydrodynamic model objects from register.
         """
-        tabs = self.list_tables(schema)
-        for tab in tabs:
-            tab_name = tab[0]
-            if tab_name in dir(hydro_module):
-                hydro_object = getattr(hydro_module, tab_name)
-                obj = hydro_object()
-                # TODO: jak zaladowac wszystkie zarejestrowane tabele do QGISa?
-                self.add_to_view(obj)
-                print 'added to view {0}'.format(obj.name)
-            else:
-                pass
+        for k in sorted(self.register.keys()):
+            self.add_to_view(self.register[k])
 
     def process_hecobject(self, hecobject, pg_method, schema=None, srid=None):
         """
@@ -278,12 +265,13 @@ class RiverDatabase(object):
 
         self.run_query(qry)
 
-    def create_pg_fun_create_st_index_if_not_exists(self):
+    def create_spatial_index(self):
         """
         Create PostgreSQL function create_st_index_if_not_exists(schema, table).
         The function checks if a spatial index exists for the table - if not, it is created.
         """
-        qry = '''CREATE OR REPLACE FUNCTION create_st_index_if_not_exists
+        qry = '''
+        CREATE OR REPLACE FUNCTION create_st_index_if_not_exists
           (schema text, t_name text) RETURNS void AS $$
         DECLARE
           full_index_name varchar;
@@ -301,7 +289,8 @@ class RiverDatabase(object):
         END IF;
         END
         $$
-        LANGUAGE plpgsql VOLATILE;'''
+        LANGUAGE plpgsql VOLATILE
+        '''
         self.run_query(qry)
 
     def get_ras_gis_import_header(self):
