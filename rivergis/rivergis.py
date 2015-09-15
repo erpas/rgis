@@ -194,8 +194,7 @@ class RiverGIS(QMainWindow):
         self.rdb.SCHEMA = 'start'
         self.rdb.SRID = int(self.crs.postgisSrid())
         self.rdb.connect_pg()
-        self.rdb.create_pg_fun_create_st_index_if_not_exists()
-        self.rdb.register_existing(heco)
+        self.rdb.create_spatial_index()
         self.addInfo('Created connection to river database: {0}@{1}'.format( \
             self.rdb.dbname, self.rdb.host))
 
@@ -240,7 +239,8 @@ class RiverGIS(QMainWindow):
         dlg.exec_()
 
     def rasLoadRdbTablesIntoQGIS(self):
-        self.rdb.load_existing(heco)
+        self.rdb.register_existing(heco)
+        self.rdb.load_registered()
 
     def rasImportLayersIntoRdbTables(self):
         '''
