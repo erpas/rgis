@@ -214,7 +214,11 @@ class RiverDatabase(object):
         self.vlayer = QgsVectorLayer(self.uri.uri(), obj.name, 'postgres')
         mapLayer = QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
         styleFile = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(obj.name))
-        mapLayer.loadNamedStyle(styleFile)
+        print styleFile
+        try:
+            mapLayer.loadNamedStyle(styleFile)
+        except:
+            self.rgis.addInfo('Could not find style: {0}'.format(styleFile))
 
 
     def insert_layer(self, layer, hecobject, schema=None, srid=None):

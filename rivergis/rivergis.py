@@ -218,6 +218,10 @@ class RiverGIS(QMainWindow):
             self.addInfo('Current DB schema is: %s' % self.schema)
             # change river database parameters
             self.rdb.SCHEMA = self.schema
+            reg = [self.rdb.register[k] for k in sorted(self.rdb.register.keys())]
+            self.addInfo('Objects registered in the database:\n{0}'.format( \
+            '\n'.join(reg)))
+            self.rdb.load_registered()
 
 
     def importRiverIsokp(self):

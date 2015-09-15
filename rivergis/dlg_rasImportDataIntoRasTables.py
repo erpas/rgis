@@ -42,8 +42,10 @@ class DlgImportDataIntoRasTables(QDialog):
                 self.rgis.rdb.register['StreamCenterlines'])
 
         if not self.ui.cboXsecs.currentText() == '':
-              # TODO: import warstwy przekrojow do PG
-              pass
+            curInd = self.ui.cboXsecs.currentIndex()
+            lid = self.ui.cboXsecs.itemData(curInd)
+            xsLayer = self.rgis.mapRegistry.mapLayer(lid)
+            self.rgis.rdb.insert_layer(xsLayer, self.rgis.rdb.register['XSCutLines'])
 
         if self.banksLayer:
             # TODO: import warstwy banksLayer do PG
