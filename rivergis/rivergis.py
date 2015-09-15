@@ -221,6 +221,7 @@ class RiverGIS(QMainWindow):
             reg = [self.rdb.register[k] for k in sorted(self.rdb.register.keys())]
             self.addInfo('Objects registered in the database:\n{0}'.format( \
             '\n'.join(reg)))
+            self.rdb.register_existing(heco)
             self.rdb.load_registered()
 
 

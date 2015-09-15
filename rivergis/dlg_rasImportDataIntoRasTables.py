@@ -33,42 +33,55 @@ class DlgImportDataIntoRasTables(QDialog):
 
     def accept(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
-
+        imported = []
         if not self.ui.cboStreamCenterlines.currentText() == '':
             curInd = self.ui.cboStreamCenterlines.currentIndex()
             lid = self.ui.cboStreamCenterlines.itemData(curInd)
             streamCenterlinesLayer = self.rgis.mapRegistry.mapLayer(lid)
             self.rgis.rdb.insert_layer(streamCenterlinesLayer, \
                 self.rgis.rdb.register['StreamCenterlines'])
+            imported.append('Stream Centerlines')
 
         if not self.ui.cboXsecs.currentText() == '':
             curInd = self.ui.cboXsecs.currentIndex()
             lid = self.ui.cboXsecs.itemData(curInd)
             xsLayer = self.rgis.mapRegistry.mapLayer(lid)
             self.rgis.rdb.insert_layer(xsLayer, self.rgis.rdb.register['XSCutLines'])
+            imported.append('XSCutlines')
 
-        if self.banksLayer:
-            # TODO: import warstwy banksLayer do PG
-            pass
-            # if not self.ui.cboBanklineType.currentText() == '': # Bank type (side) specified
-            #     # TODO: kod uwzgledniajacy atrybut typu (strony) brzegu
-            #     pass
+        if not self.ui.cboBanks.currentText() == '':
+            curInd = self.ui.cboBanks.currentIndex()
+            lid = self.ui.cboBanks.itemData(curInd)
+            banksLayer = self.rgis.mapRegistry.mapLayer(lid)
+            self.rgis.rdb.insert_layer(banksLayer, self.rgis.rdb.register['BankLines'])
+            imported.append('Banks')
 
-        if self.flowpathsLayer:
-            # TODO: import warstwy linii przeplywow do PG
+        if not self.ui.cboFlowPaths.currentText() == '':
+            curInd = self.ui.cboFlowPaths.currentIndex()
+            lid = self.ui.cboFlowPaths.itemData(curInd)
+            pathsLayer = self.rgis.mapRegistry.mapLayer(lid)
+            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'])
+            imported.append('Flowpaths')
 
-            if not self.ui.cboFlowpathType.currentText() == '': # Bank type (side) specified
+            if not self.ui.cboFlowpathType.currentText() == '': # Flowpath type specified
                 # TODO: kod uwzgledniajacy atrybut typu linii
                 pass
 
         if not self.ui.cboLevees.currentText() == '':
-                # TODO: import warstwy walow do PG
-                pass
+            curInd = self.ui.cboLevees.currentIndex()
+            lid = self.ui.cboLevees.itemData(curInd)
+            pathsLayer = self.rgis.mapRegistry.mapLayer(lid)
+            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'])
+            imported.append('Levee Alignment')
 
-        if self.ineffectiveLayer:
-            # TODO: import warstwy pol jalowego przeplywu do PG
+        if not self.ui.cboIneffective.currentText() == '':
+            curInd = self.ui.cboIneffective.currentIndex()
+            lid = self.ui.cboIneffective.itemData(curInd)
+            ineffLayer = self.rgis.mapRegistry.mapLayer(lid)
+            self.rgis.rdb.insert_layer(ineffLayer, self.rgis.rdb.register['Ineffective Areas'])
+            imported.append('Levee Alignment')
 
-            if not self.ui.cboFlowpathType.currentText() == '': # Bank type (side) specified
+            if not self.ui.cboIneffElev.currentText() == '': # Bank type (side) specified
                 # TODO: kod uwzgledniajacy atrybut wysokosci pola jalowego
                 pass
 
@@ -79,7 +92,7 @@ class DlgImportDataIntoRasTables(QDialog):
                 # TODO: kod uwzgledniajacy atrybut wysokosci przeszkody
                 pass
 
-        self.rgis.addInfo("    Import completed.")
+        self.rgis.addInfo("  Imported layers:\n{0}".format('\n'.join(imported)))
         self.rgis.iface.mapCanvas().refresh()
         QApplication.setOverrideCursor(Qt.ArrowCursor)
         QDialog.accept(self)

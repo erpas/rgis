@@ -214,7 +214,6 @@ class RiverDatabase(object):
         self.vlayer = QgsVectorLayer(self.uri.uri(), obj.name, 'postgres')
         mapLayer = QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
         styleFile = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(obj.name))
-        print styleFile
         try:
             mapLayer.loadNamedStyle(styleFile)
         except:
