@@ -11,8 +11,8 @@ class RiverDatabase(object):
     """
     Class for PostgreSQL database and hydrodynamic models handling.
     """
-    SCHEMA = None
-    SRID = None
+    SCHEMA = 'start'
+    SRID = 2180
 
     def __init__(self, rgis, dbname, host, port, user, password):
         """
@@ -46,8 +46,8 @@ class RiverDatabase(object):
         try:
             # connection parameters using the dsn
             # http://initd.org/psycopg/docs/module.html#psycopg2.connect
-            connParams = 'dbname={0} host={1} port={2} user={3} password={4}'.format(self.dbname, self.host, self.port, self.user, self.password)
-            self.con = psycopg2.connect(connParams)
+            conn_params = 'dbname={0} host={1} port={2} user={3} password={4}'.format(self.dbname, self.host, self.port, self.user, self.password)
+            self.con = psycopg2.connect(conn_params)
             msg = 'Connection established.'
         except Exception, e:
             self.rgis.iface.messageBar().pushMessage("Error", 'Can\'t connect to PostGIS database. Check connection details!', level=QgsMessageBar.CRITICAL, duration=10)
@@ -65,6 +65,24 @@ class RiverDatabase(object):
             self.con = None
         else:
             print("Can not disconnect. There is no opened connection!")
+
+    def setup_hydro_object(self, hydro_object, schema=None, srid=None):
+        """
+        Setting SCHEMA and SRID on hydro object.
+
+        Args:
+            hydro_object (class): Hydro object class
+            schema (str): Schema where tables will be created or processed
+            srid (int): A Spatial Reference System Identifier
+        """
+        if schema is None:
+            hydro_object.SCHEMA = self.SCHEMA
+        else:
+            hydro_object.SCHEMA = schema
+        if srid is None:
+            hydro_object.SRID = self.SRID
+        else:
+            hydro_object.SRID = srid
 
     def run_query(self, qry, fetch=False):
         """
@@ -122,7 +140,7 @@ class RiverDatabase(object):
         else:
             print('{0} already exists inside RiverGIS registry.'.format(key))
 
-    def register_existing(self, hydro_module, schema=None):
+    def register_existing(self, hydro_module, schema=None, srid=None):
         """
         Registering hydrodynamic model objects which exists in schema.
 
@@ -135,6 +153,7 @@ class RiverDatabase(object):
             tab_name = tab[0]
             if tab_name in dir(hydro_module):
                 hydro_object = getattr(hydro_module, tab_name)
+                self.setup_hydro_object(hydro_object, schema, srid)
                 obj = hydro_object()
                 self.register_object(obj)
                 print 'registered {0}'.format(obj.name)
@@ -161,14 +180,7 @@ class RiverDatabase(object):
         Returns:
             obj: Instance of HEC-RAS class object
         """
-        if schema is None:
-            hecobject.SCHEMA = self.SCHEMA
-        else:
-            hecobject.SCHEMA = schema
-        if srid is None:
-            hecobject.SRID = self.SRID
-        else:
-            hecobject.SRID = srid
+        self.setup_hydro_object(hecobject, schema, srid)
         obj = hecobject()
         method = getattr(obj, pg_method)
         qry = method()
