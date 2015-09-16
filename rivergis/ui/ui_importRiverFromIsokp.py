@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_importRiverFromIsokp.ui'
+# Form implementation generated from reading ui file 'ui/ui_importRiverFromIsokp.ui'
 #
-# Created: Thu Mar 19 19:32:14 2015
+# Created: Wed Sep 16 14:27:19 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
