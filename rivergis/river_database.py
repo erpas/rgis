@@ -64,7 +64,7 @@ class RiverDatabase(object):
             self.con.close()
             self.con = None
         else:
-            print("Can not disconnect. There is no opened connection!")
+            print('Can not disconnect. There is no opened connection!')
 
     def setup_hydro_object(self, hydro_object, schema=None, srid=None):
         """
@@ -156,7 +156,7 @@ class RiverDatabase(object):
                 self.setup_hydro_object(hydro_object, schema, srid)
                 obj = hydro_object()
                 self.register_object(obj)
-                print 'registered {0}'.format(obj.name)
+                print('{0} registered'.format(obj.name))
             else:
                 pass
 
@@ -212,13 +212,12 @@ class RiverDatabase(object):
         self.uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
         self.uri.setDataSource(obj.schema, obj.name, 'geom')
         self.vlayer = QgsVectorLayer(self.uri.uri(), obj.name, 'postgres')
-        mapLayer = QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
-        styleFile = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(obj.name))
+        map_layer = QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
+        style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(obj.name))
         try:
-            mapLayer.loadNamedStyle(styleFile)
+            map_layer.loadNamedStyle(style_file)
         except:
-            self.rgis.addInfo('Could not find style: {0}'.format(styleFile))
-
+            self.rgis.addInfo('Could not find style: {0}'.format(style_file))
 
     def insert_layer(self, layer, hecobject, schema=None, srid=None):
         """
