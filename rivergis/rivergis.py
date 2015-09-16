@@ -46,6 +46,8 @@ class RiverGIS(QMainWindow):
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
 
+        self.DEBUG = 1
+
         # create status bar
         self.statusBar = QStatusBar(self)
         self.setStatusBar(self.statusBar)
@@ -218,12 +220,12 @@ class RiverGIS(QMainWindow):
             self.addInfo('Current DB schema is: %s' % self.schema)
             # change river database parameters
             self.rdb.SCHEMA = self.schema
-            reg = [self.rdb.register[k] for k in sorted(self.rdb.register.keys())]
-            self.addInfo('Objects registered in the database:\n{0}'.format( \
-            '\n'.join(reg)))
             self.rdb.register_existing(heco)
-            self.rdb.load_registered()
-
+            # self.rdb.load_registered()
+            reg = [self.rdb.register[k].name for k in sorted(self.rdb.register.keys())]
+            self.addInfo('Objects registered in the database:\n  {0}'.format( \
+            '\n  '.join(reg)))
+            self.addInfo('You can load them now using RAS Geometry > Load River Database Tables Into QGIS')
 
     def importRiverIsokp(self):
         from dlg_importRiverFromIsokp import DlgImportRiverFromIsokp

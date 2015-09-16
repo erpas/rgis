@@ -220,10 +220,11 @@ class RiverDatabase(object):
             self.rgis.addInfo('Could not find style: {0}'.format(styleFile))
 
 
-    def insert_layer(self, layer, hecobject, schema=None, srid=None):
+    def insert_layer(self, layer, hecobject, schema=None, srid=None, attrMap=None):
         """
         Insert a vector layer's features into a PostGIS table of a hecras object.
-        It checks source layer's attribute names and compares them to column names of a target table.
+        If an attribute map attrMap is specified, only the mapped attributes are imported. If attrMap
+        is None, it checks source layer's attribute names and compares them to column names of a target table.
         If the attribute has a corresponding name in target table then it is copied into table table.
 
         It can be used to copy hecobject table from one schema to another.
@@ -233,8 +234,8 @@ class RiverDatabase(object):
             hecobject (class): target HEC-RAS class object
             schema (str): a target schema
             srid (int): a Spatial Reference System Identifier
+            attrMap(dict): attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}
         """
-        # TODO: first check if the target table is in editing mode in QGIS
 
         if schema is None:
             SCHEMA = self.SCHEMA
@@ -249,37 +250,76 @@ class RiverDatabase(object):
         features = layer.getFeatures()
         # get the layer's field name list
         layer_fields = layer.dataProvider().fields().toList()
-        layer_fields_names = ['{0}'.format(f.name()) for f in layer_fields]
+        field_names = ['{0}'.format(f.name()) for f in layer_fields]
+
+        if self.rgis.DEBUG:
+            if attrMap:
+                am = ['{0} - {1}'.format(key, value) for key, value in attrMap.iteritems()]
+                info = '  attrMap:\n    '
+                info += '\n    {0}'.join(am)
+                self.rgis.addInfo(info)
+
+        imp_attrs = [] # list of imported attributes tuples (target_attr, src_attr, attr_type)
 
         # check if the layer has attributes to import
         # get all fields except the ID
-        attrs_to_import = []
-        for field in hecobject.attrs[1:]:
-            if field[0].strip('\"') in layer_fields_names:
-                attrs_to_import.append(field)
+        for attr in hecobject.attrs[1:]:
+            attr_name = attr[0].strip('"')
+            if attrMap:
+                if attr_name in attrMap.keys():
+                    imp_attrs.append([attr[0], attrMap[attr_name], attr[1]])
+            else:
+                if attr_name in field_names:
+                    imp_attrs.append([attr[0], attr[0], attr[1]]) # target and source fields are the same
+
+        if self.rgis.DEBUG:
+            self.rgis.addInfo('Importing {0}'.format(hecobject.name))
+            for i in imp_attrs:
+              self.rgis.addInfo('  {0} as {1} with type {2}'.format(i[0], i[1], i[2]))
 
         # create SQL for inserting the layer into PG database
         schema_name = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
-        attrs_names = ['{0}'.format(attr[0]) for attr in attrs_to_import]
+        attrs_names = ['{0}'.format(attr[0]) for attr in imp_attrs]
         qry = 'INSERT INTO {0} \n\t({1}'.format(schema_name, ', '.join(attrs_names))
         qry += ', ' if attrs_names else ''
         qry += 'geom) \nVALUES\n\t'
         # list of attributes data
         feats_def = []
         for feat in features:
-            # list of field values of the current feature
-            vals = []
+            vals = [] # field values of the feature
             geom_wkt = feat.geometry().exportToWkt()
-            for attr in attrs_to_import:
-                val = feat.attribute(attr[0].strip('"'))
+
+            # Geometry types check:
+            # is target geometry of type multi?
+            targetIsMulti = hecobject.geom_type.startswith('MULTI')
+            # is source layer geom multi?
+            srcIsMulti = feat.geometry().isMultipart()
+
+            if not targetIsMulti and srcIsMulti:
+                self.rgis.addInfo('WARNING: Source geometry is of type MULTI but the target is a {0} --- skipping the layer.'.format(hecobject.geom_type))
+                qry = ''
+                return
+
+            elif targetIsMulti and not srcIsMulti:
+                self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'\
+                                  .format(hecobject.geom_type))
+                self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI.')
+                geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, SRID)
+
+            else: # src and target types are the same
+                geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID)
+
+            for attr in imp_attrs:
+                val = feat.attribute(attr[1].strip('"'))
                 if not val == NULL:
-                    vals.append('\'{0}\'::{1}'.format(val, attr[1]))
+                    vals.append('\'{0}\'::{1}'.format(val, attr[2]))
                 else:
                     vals.append('NULL')
-            vals.append('ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID))
+            vals.append(geometry)
             feats_def.append('({0})'.format(', '.join(vals)))
         qry += '{0};'.format(',\n\t'.join(feats_def))
-
+        if self.rgis.DEBUG:
+            self.rgis.addInfo(qry)
         self.run_query(qry)
 
     def create_spatial_index(self):

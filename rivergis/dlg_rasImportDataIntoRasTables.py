@@ -19,80 +19,93 @@ class DlgImportDataIntoRasTables(QDialog):
         self.rgis = rgis
         self.ui.buttonBox.accepted.connect(self.accept)
         self.ui.buttonBox.rejected.connect(self.rejectDlg)
-        self.ui.cboBanks.currentIndexChanged.connect(self.cboBanksLayerChanged)
         self.ui.cboFlowPaths.currentIndexChanged.connect(self.cboFlowpathsLayerChanged)
         self.ui.cboIneffective.currentIndexChanged.connect(self.cboIneffectiveLayerChanged)
         self.ui.cboObstructions.currentIndexChanged.connect(self.cboObstructionsLayerChanged)
+        self.ui.cboLanduse.currentIndexChanged.connect(self.cboLanduseLayerChanged)
         # QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
         self.populateCbos()
-        self.banksLayer = None
         self.flowpathsLayer = None
         self.ineffectiveLayer = None
         self.obstructionsLayer = None
+        self.landuseLayer = None
 
 
     def accept(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
-        imported = []
+        importInfo = []
+
         if not self.ui.cboStreamCenterlines.currentText() == '':
             curInd = self.ui.cboStreamCenterlines.currentIndex()
             lid = self.ui.cboStreamCenterlines.itemData(curInd)
             streamCenterlinesLayer = self.rgis.mapRegistry.mapLayer(lid)
             self.rgis.rdb.insert_layer(streamCenterlinesLayer, \
                 self.rgis.rdb.register['StreamCenterlines'])
-            imported.append('Stream Centerlines')
+            importInfo.append('Stream Centerlines')
 
         if not self.ui.cboXsecs.currentText() == '':
             curInd = self.ui.cboXsecs.currentIndex()
             lid = self.ui.cboXsecs.itemData(curInd)
             xsLayer = self.rgis.mapRegistry.mapLayer(lid)
             self.rgis.rdb.insert_layer(xsLayer, self.rgis.rdb.register['XSCutLines'])
-            imported.append('XSCutlines')
+            importInfo.append('XSCutlines')
 
         if not self.ui.cboBanks.currentText() == '':
             curInd = self.ui.cboBanks.currentIndex()
             lid = self.ui.cboBanks.itemData(curInd)
             banksLayer = self.rgis.mapRegistry.mapLayer(lid)
             self.rgis.rdb.insert_layer(banksLayer, self.rgis.rdb.register['BankLines'])
-            imported.append('Banks')
+            importInfo.append('Banks')
 
         if not self.ui.cboFlowPaths.currentText() == '':
+            attrMapFlowpaths = {}
             curInd = self.ui.cboFlowPaths.currentIndex()
             lid = self.ui.cboFlowPaths.itemData(curInd)
             pathsLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'])
-            imported.append('Flowpaths')
-
-            if not self.ui.cboFlowpathType.currentText() == '': # Flowpath type specified
-                # TODO: kod uwzgledniajacy atrybut typu linii
-                pass
+            if not self.ui.cboFlowpathType.currentText() == '':
+                attrMapFlowpaths['LineType'] = self.ui.cboFlowpathType.currentText()
+            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'], attrMap=attrMapFlowpaths)
+            importInfo.append('Flowpaths')
 
         if not self.ui.cboLevees.currentText() == '':
             curInd = self.ui.cboLevees.currentIndex()
             lid = self.ui.cboLevees.itemData(curInd)
             pathsLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'])
-            imported.append('Levee Alignment')
+            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['LeveeAlignment'])
+            importInfo.append('Levee Alignment')
 
         if not self.ui.cboIneffective.currentText() == '':
+            attrMapIneff = {}
             curInd = self.ui.cboIneffective.currentIndex()
             lid = self.ui.cboIneffective.itemData(curInd)
             ineffLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(ineffLayer, self.rgis.rdb.register['Ineffective Areas'])
-            imported.append('Levee Alignment')
+            if not self.ui.cboIneffElev.currentText() == '':
+                attrMapIneff['Elevation'] = self.ui.cboIneffElev.currentText()
+            self.rgis.rdb.insert_layer(ineffLayer, self.rgis.rdb.register['IneffAreas'], attrMap=attrMapIneff)
+            importInfo.append('Ineffective Areas')
 
-            if not self.ui.cboIneffElev.currentText() == '': # Bank type (side) specified
-                # TODO: kod uwzgledniajacy atrybut wysokosci pola jalowego
-                pass
+        if not self.ui.cboObstructions.currentText() == '':
+            attrMapObs = {}
+            curInd = self.ui.cboObstructions.currentIndex()
+            lid = self.ui.cboObstructions.itemData(curInd)
+            obsLayer = self.rgis.mapRegistry.mapLayer(lid)
+            if not self.ui.cboIneffElev.currentText() == '':
+                attrMapObs['Elevation'] = self.ui.cboObstructionsElev.currentText()
+            self.rgis.rdb.insert_layer(obsLayer, self.rgis.rdb.register['BlockedObs'], attrMap=attrMapObs)
+            importInfo.append('Blocked Obstructions')
 
-        if self.obstructionsLayer:
-            # TODO: import warstwy przeszkod do PG
+        if not self.ui.cboLanduse.currentText() == '':
+            attrMapLU = {}
+            curInd = self.ui.cboLanduse.currentIndex()
+            lid = self.ui.cboLanduse.itemData(curInd)
+            landuseLayer = self.rgis.mapRegistry.mapLayer(lid)
+            if not self.ui.cboLandCodeAttr.currentText() == '':
+                attrMapLU['LUCode'] = self.ui.cboLandCodeAttr.currentText()
+                attrMapLU['N_Value'] = self.ui.cboManningAttr.currentText()
+            self.rgis.rdb.insert_layer(landuseLayer, self.rgis.rdb.register['LanduseAreas'], attrMap=attrMapLU)
+            importInfo.append('Landuse Areas')
 
-            if not self.ui.cboObstructionsElev.currentText() == '': # Bank type (side) specified
-                # TODO: kod uwzgledniajacy atrybut wysokosci przeszkody
-                pass
-
-        self.rgis.addInfo("  Imported layers:\n{0}".format('\n'.join(imported)))
+        self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(importInfo)))
         self.rgis.iface.mapCanvas().refresh()
         QApplication.setOverrideCursor(Qt.ArrowCursor)
         QDialog.accept(self)
@@ -106,18 +119,32 @@ class DlgImportDataIntoRasTables(QDialog):
     def populateCbos(self):
         self.ui.cboStreamCenterlines.clear()
         self.ui.cboXsecs.clear()
-        self.ui.cboLevees.clear()
         self.ui.cboBanks.clear()
-        self.ui.cboIneffective.clear()
-        self.ui.cboObstructions.clear()
         self.ui.cboFlowPaths.clear()
-        self.ui.cboStreamCenterlines.addItem("")
-        self.ui.cboXsecs.addItem("")
-        self.ui.cboLevees.addItem("")
-        self.ui.cboBanks.addItem("")
-        self.ui.cboIneffective.addItem("")
-        self.ui.cboObstructions.addItem("")
-        self.ui.cboFlowPaths.addItem("")
+        self.ui.cboFlowpathType.clear()
+        self.ui.cboLevees.clear()
+        self.ui.cboIneffective.clear()
+        self.ui.cboIneffElev.clear()
+        self.ui.cboObstructions.clear()
+        self.ui.cboObstructionsElev.clear()
+        self.ui.cboLanduse.clear()
+        self.ui.cboLandCodeAttr.clear()
+        self.ui.cboManningAttr.clear()
+
+        self.ui.cboStreamCenterlines.addItem('')
+        self.ui.cboXsecs.addItem('')
+        self.ui.cboBanks.addItem('')
+        self.ui.cboFlowPaths.addItem('')
+        self.ui.cboFlowpathType.addItem('')
+        self.ui.cboLevees.addItem('')
+        self.ui.cboIneffective.addItem('')
+        self.ui.cboIneffElev.addItem('')
+        self.ui.cboObstructions.addItem('')
+        self.ui.cboObstructionsElev.addItem('')
+        self.ui.cboLanduse.addItem('')
+        self.ui.cboLandCodeAttr.addItem('')
+        self.ui.cboManningAttr.addItem('')
+
         for layerId, layer in sorted(self.rgis.mapRegistry.mapLayers().iteritems()):
             if layer.type() == 0 and layer.geometryType() == 0: # vector and points
                 pass
@@ -130,33 +157,15 @@ class DlgImportDataIntoRasTables(QDialog):
             if layer.type() == 0 and layer.geometryType() == 2: # vector and polygons
                 self.ui.cboIneffective.addItem(layer.name(), layerId)
                 self.ui.cboObstructions.addItem(layer.name(), layerId)
+                self.ui.cboLanduse.addItem(layer.name(), layerId)
             if layer.type() == 1: # it's a raster
                 pass
 
 
-    def updateBanksAttrs(self):
-        if self.banksLayer:
-            if self.banksLayer.featureCount():
-                self.ui.cboBanklineType.clear()
-                self.ui.cboBanklineType.addItem("")
-                attrs = self.banksLayer.pendingFields()
-                typeIdx = 0
-                for i, attr in enumerate(attrs):
-                    self.ui.cboBanklineType.addItem(attr.name())
-                    # check if there is 'cellsize' attr
-                    if attr.name() == 'type' or attr.name() == 'typ':
-                        typeIdx = i + 1
-                self.ui.cboBanklineType.setCurrentIndex(typeIdx)
-
-
-    def cboBanksLayerChanged(self):
-        curInd = self.ui.cboBanks.currentIndex()
-        lid = self.ui.cboBanks.itemData(curInd)
-        self.banksLayer = self.rgis.mapRegistry.mapLayer(lid)
-        self.updateBanksAttrs()
-
-
-    def updateFlowpathsAttrs(self):
+    def cboFlowpathsLayerChanged(self):
+        curInd = self.ui.cboFlowPaths.currentIndex()
+        lid = self.ui.cboFlowPaths.itemData(curInd)
+        self.flowpathsLayer = self.rgis.mapRegistry.mapLayer(lid)
         if self.flowpathsLayer:
             if self.flowpathsLayer.featureCount():
                 self.ui.cboFlowpathType.clear()
@@ -165,19 +174,15 @@ class DlgImportDataIntoRasTables(QDialog):
                 typeIdx = 0
                 for i, attr in enumerate(attrs):
                     self.ui.cboFlowpathType.addItem(attr.name())
-                    if attr.name().lower() == 'type' or attr.name().lower() == 'typ':
+                    if attr.name().lower() == 'linetype' or attr.name().lower() == 'type':
                         typeIdx = i + 1
                 self.ui.cboFlowpathType.setCurrentIndex(typeIdx)
 
 
-    def cboFlowpathsLayerChanged(self):
-        curInd = self.ui.cboFlowPaths.currentIndex()
-        lid = self.ui.cboFlowPaths.itemData(curInd)
-        self.flowpathsLayer = self.rgis.mapRegistry.mapLayer(lid)
-        self.updateFlowpathsAttrs()
-
-
-    def updateIneffectiveAttrs(self):
+    def cboIneffectiveLayerChanged(self):
+        curInd = self.ui.cboIneffective.currentIndex()
+        lid = self.ui.cboIneffective.itemData(curInd)
+        self.ineffectiveLayer = self.rgis.mapRegistry.mapLayer(lid)
         if self.ineffectiveLayer:
             if self.ineffectiveLayer.featureCount():
                 self.ui.cboIneffElev.clear()
@@ -191,14 +196,10 @@ class DlgImportDataIntoRasTables(QDialog):
                 self.ui.cboIneffElev.setCurrentIndex(typeIdx)
 
 
-    def cboIneffectiveLayerChanged(self):
-        curInd = self.ui.cboIneffective.currentIndex()
-        lid = self.ui.cboIneffective.itemData(curInd)
-        self.ineffectiveLayer = self.rgis.mapRegistry.mapLayer(lid)
-        self.updateIneffectiveAttrs()
-
-
-    def updateObstructionsAttrs(self):
+    def cboObstructionsLayerChanged(self):
+        curInd = self.ui.cboObstructions.currentIndex()
+        lid = self.ui.cboObstructions.itemData(curInd)
+        self.obstructionsLayer = self.rgis.mapRegistry.mapLayer(lid)
         if self.obstructionsLayer:
             if self.obstructionsLayer.featureCount():
                 self.ui.cboObstructionsElev.clear()
@@ -212,15 +213,31 @@ class DlgImportDataIntoRasTables(QDialog):
                 self.ui.cboObstructionsElev.setCurrentIndex(typeIdx)
 
 
-    def cboObstructionsLayerChanged(self):
-        curInd = self.ui.cboObstructions.currentIndex()
-        lid = self.ui.cboObstructions.itemData(curInd)
-        self.obstructionsLayer = self.rgis.mapRegistry.mapLayer(lid)
-        self.updateObstructionsAttrs()
+    def cboLanduseLayerChanged(self):
+        curInd = self.ui.cboLanduse.currentIndex()
+        lid = self.ui.cboLanduse.itemData(curInd)
+        self.landuseLayer = self.rgis.mapRegistry.mapLayer(lid)
+        if self.landuseLayer:
+            if self.landuseLayer.featureCount():
+                self.ui.cboLandCodeAttr.clear()
+                self.ui.cboLandCodeAttr.addItem("")
+                self.ui.cboManningAttr.clear()
+                self.ui.cboManningAttr.addItem("")
+                attrs = self.landuseLayer.pendingFields()
+                codeIdx = mannIdx = 0
+                for i, attr in enumerate(attrs):
+                    self.ui.cboLandCodeAttr.addItem(attr.name())
+                    self.ui.cboManningAttr.addItem(attr.name())
+                    if attr.name().lower() == 'lucode' or attr.name().lower == 'code':
+                        codeIdx = i + 1
+                    if attr.name().lower() == 'n_value' or attr.name().lower() == 'manning':
+                        mannIdx = i + 1
+                self.ui.cboLandCodeAttr.setCurrentIndex(codeIdx)
+                self.ui.cboManningAttr.setCurrentIndex(mannIdx)
 
 
     def rejectDlg(self):
-        self.rgis.addInfo("    Importing data cancelled.")
+        self.rgis.addInfo("  Import cancelled.")
         self.reject()
 
 
