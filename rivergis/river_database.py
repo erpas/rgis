@@ -234,6 +234,8 @@ class RiverDatabase(object):
             schema (str): a target schema
             srid (int): a Spatial Reference System Identifier
         """
+        # TODO: first check if the target table is in editing mode in QGIS
+
         if schema is None:
             SCHEMA = self.SCHEMA
         else:

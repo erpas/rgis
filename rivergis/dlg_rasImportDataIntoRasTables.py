@@ -118,7 +118,7 @@ class DlgImportDataIntoRasTables(QDialog):
         self.ui.cboIneffective.addItem("")
         self.ui.cboObstructions.addItem("")
         self.ui.cboFlowPaths.addItem("")
-        for layerId, layer in self.rgis.mapRegistry.mapLayers().iteritems():
+        for layerId, layer in sorted(self.rgis.mapRegistry.mapLayers().iteritems()):
             if layer.type() == 0 and layer.geometryType() == 0: # vector and points
                 pass
             if layer.type() == 0 and layer.geometryType() == 1: # vector and polylines
