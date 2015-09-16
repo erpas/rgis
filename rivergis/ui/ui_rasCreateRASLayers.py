@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui_rasCreateRASLayers.ui'
+# Form implementation generated from reading ui file 'ui/ui_rasCreateRASLayers.ui'
 #
-# Created: Fri Aug 21 14:36:06 2015
+# Created: Wed Sep 16 14:27:19 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
