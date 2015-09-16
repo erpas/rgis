@@ -46,7 +46,7 @@ class RiverGIS(QMainWindow):
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
 
-        self.DEBUG = 1
+        self.DEBUG = 0
 
         # create status bar
         self.statusBar = QStatusBar(self)
@@ -104,10 +104,10 @@ class RiverGIS(QMainWindow):
         self.ui.schemasCbo.activated.connect(self.schemaChanged)
 
         # Some info
-        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>For some operations RiverGIS needs a <b>connection to a PostGIS database</b>. Please, choose a connection and schema from the above combo boxes.<br>')
-        self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br><br>')
+        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please, start with choosing a <b>connection to a PostGIS database and a schema</b> from the above lists.')
+        self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
         self.ui.textEdit.append('<b>Loading HEC-RAS 2D results</b> requires a h5py Python package ( http://www.h5py.org ).')
-        self.ui.textEdit.append('<br>--------------------------------------------------------------')
+        self.ui.textEdit.append('<br>----------------------------------------------------------------------------')
 
         # restore the window state
         settings = QSettings()
