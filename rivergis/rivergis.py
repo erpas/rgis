@@ -213,7 +213,6 @@ class RiverGIS(QMainWindow):
             self.ui.schemasCbo.setCurrentIndex(schemaExists)
         self.schemaChanged()
 
-
     def schemaChanged(self):
         if not self.ui.schemasCbo.currentText() == '':
             self.schema = self.ui.schemasCbo.currentText()
@@ -236,7 +235,6 @@ class RiverGIS(QMainWindow):
 
         importData = DlgImportRiverFromIsokp(self)
         importData.exec_()
-
 
     # 1D HEC-RAS Geometry Functions
 
@@ -332,7 +330,6 @@ class RiverGIS(QMainWindow):
             dlg = DlgRasCreate2dFlowAreas(self)
             dlg.exec_()
 
-
     def rasPreview2DMesh(self):
         if self.curConnName is '' or self.schema is '':
             QMessageBox.warning(None, "Preview 2D Area", "Please, choose a connection and schema.")
@@ -340,18 +337,15 @@ class RiverGIS(QMainWindow):
         from ras2dPreviewMesh import ras2dPreviewMesh
         ras2dPreviewMesh(self)
 
-
     def rasSaveMeshPtsToHecrasGeo(self):
         from ras2dSaveMeshPtsToGeometry import ras2dSaveMeshPtsToGeometry
         ras2dSaveMeshPtsToGeometry(self)
-
 
     # RAS Mapping function
 
     def rasImportRasDataStart(self):
         from rasImportRasData import WorkerRasImportRasData
         self.workerWselHecRas = WorkerRasImportRasData(self)
-
 
         thread = QThread()
         self.workerWselHecRas.moveToThread(thread)
@@ -360,7 +354,6 @@ class RiverGIS(QMainWindow):
         thread.started.connect(self.workerWselHecRas.run)
         thread.start()
         self.threadWselHecRas = thread
-
 
     def rasImportRasDataFinish(self, res):
             if not res == None:

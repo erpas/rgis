@@ -327,26 +327,26 @@ class RiverDatabase(object):
         The function checks if a spatial index exists for the table - if not, it is created.
         """
         qry = '''
-        CREATE OR REPLACE FUNCTION create_st_index_if_not_exists
-          (schema text, t_name text) RETURNS void AS $$
-        DECLARE
-          full_index_name varchar;
-        BEGIN
-        full_index_name = schema || '_' || t_name || '_' || 'geom_idx';
-        IF NOT EXISTS (
-            SELECT 1
-            FROM   pg_class c
-            JOIN   pg_namespace n ON n.oid = c.relnamespace
-            WHERE  c.relname = full_index_name
-            AND    n.nspname = schema
-            ) THEN
-
-            execute 'CREATE INDEX ' || full_index_name || ' ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
-        END IF;
-        END
-        $$
-        LANGUAGE plpgsql VOLATILE
-        '''
+CREATE OR REPLACE FUNCTION create_spatial_index(schema text, t_name text)
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    full_index_name text;
+BEGIN
+    full_index_name = schema || '_' || t_name || '_' || 'geom_idx';
+    IF NOT EXISTS (
+        SELECT 1
+        FROM   pg_class c
+        JOIN   pg_namespace n ON n.oid = c.relnamespace
+        WHERE  c.relname = full_index_name AND n.nspname = schema
+        )
+    THEN
+        EXECUTE 'CREATE INDEX ' || full_index_name || ' ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
+    END IF;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+'''
         self.run_query(qry)
 
     def get_ras_gis_import_header(self):
