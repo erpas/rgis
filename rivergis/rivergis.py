@@ -245,6 +245,7 @@ class RiverGIS(QMainWindow):
 
     def rasLoadRdbTablesIntoQGIS(self):
         self.rdb.register_existing(heco)
+        self.rdb.refresh_uris()
         self.rdb.load_registered()
 
     def rasImportLayersIntoRdbTables(self):
