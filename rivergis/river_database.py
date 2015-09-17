@@ -3,6 +3,8 @@
 __author__ = 'ldebek'
 
 import psycopg2
+import psycopg2.extras
+
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL
 from qgis.gui import QgsMessageBar
 from os.path import join
@@ -95,13 +97,14 @@ class RiverDatabase(object):
         result = None
         try:
             if self.con:
-                cur = self.con.cursor()
+                # cur = self.con.cursor()
+                cur = self.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
                 cur.execute(qry)
-                self.con.commit()
                 if fetch is True:
                     result = cur.fetchall()
                 else:
                     result = []
+                self.con.commit()
             else:
                 print('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
