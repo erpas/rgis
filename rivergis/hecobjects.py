@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'ldebek'
+__author__ = 'Łukasz Dębek'
 
 
 class HecRasObject(object):

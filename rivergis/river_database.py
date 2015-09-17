@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'ldebek'
+__author__ = 'Łukasz Dębek'
 
 import psycopg2
 import psycopg2.extras
