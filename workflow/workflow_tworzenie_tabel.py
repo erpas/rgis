@@ -36,6 +36,3 @@ baza.add_to_view(lu)
 
 baza.insert_layer(s, sc)
 iface.mapCanvas().refresh()
-
-
-
