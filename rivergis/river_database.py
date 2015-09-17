@@ -350,7 +350,7 @@ BEGIN
         WHERE  c.relname = full_index_name AND n.nspname = schema
         )
     THEN
-        EXECUTE 'CREATE INDEX ' || full_index_name || ' ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
+        EXECUTE 'CREATE INDEX "' || full_index_name || '" ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
     END IF;
 END;
 $BODY$
