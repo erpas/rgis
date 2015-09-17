@@ -64,7 +64,7 @@ class DlgImportDataIntoRasTables(QDialog):
             pathsLayer = self.rgis.mapRegistry.mapLayer(lid)
             if not self.ui.cboFlowpathType.currentText() == '':
                 attrMapFlowpaths['LineType'] = self.ui.cboFlowpathType.currentText()
-            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'], attrMap=attrMapFlowpaths)
+            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'], attr_map=attrMapFlowpaths)
             importInfo.append('Flowpaths')
 
         if not self.ui.cboLevees.currentText() == '':
@@ -81,7 +81,7 @@ class DlgImportDataIntoRasTables(QDialog):
             ineffLayer = self.rgis.mapRegistry.mapLayer(lid)
             if not self.ui.cboIneffElev.currentText() == '':
                 attrMapIneff['Elevation'] = self.ui.cboIneffElev.currentText()
-            self.rgis.rdb.insert_layer(ineffLayer, self.rgis.rdb.register['IneffAreas'], attrMap=attrMapIneff)
+            self.rgis.rdb.insert_layer(ineffLayer, self.rgis.rdb.register['IneffAreas'], attr_map=attrMapIneff)
             importInfo.append('Ineffective Areas')
 
         if not self.ui.cboObstructions.currentText() == '':
@@ -91,7 +91,7 @@ class DlgImportDataIntoRasTables(QDialog):
             obsLayer = self.rgis.mapRegistry.mapLayer(lid)
             if not self.ui.cboIneffElev.currentText() == '':
                 attrMapObs['Elevation'] = self.ui.cboObstructionsElev.currentText()
-            self.rgis.rdb.insert_layer(obsLayer, self.rgis.rdb.register['BlockedObs'], attrMap=attrMapObs)
+            self.rgis.rdb.insert_layer(obsLayer, self.rgis.rdb.register['BlockedObs'], attr_map=attrMapObs)
             importInfo.append('Blocked Obstructions')
 
         if not self.ui.cboLanduse.currentText() == '':
@@ -102,7 +102,7 @@ class DlgImportDataIntoRasTables(QDialog):
             if not self.ui.cboLandCodeAttr.currentText() == '':
                 attrMapLU['LUCode'] = self.ui.cboLandCodeAttr.currentText()
                 attrMapLU['N_Value'] = self.ui.cboManningAttr.currentText()
-            self.rgis.rdb.insert_layer(landuseLayer, self.rgis.rdb.register['LanduseAreas'], attrMap=attrMapLU)
+            self.rgis.rdb.insert_layer(landuseLayer, self.rgis.rdb.register['LanduseAreas'], attr_map=attrMapLU)
             importInfo.append('Landuse Areas')
 
         self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(importInfo)))

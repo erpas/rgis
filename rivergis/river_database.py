@@ -15,6 +15,7 @@ class RiverDatabase(object):
     """
     SCHEMA = 'start'
     SRID = 2180
+    CHECK_URI = True
 
     def __init__(self, rgis, dbname, host, port, user, password):
         """
@@ -35,10 +36,10 @@ class RiverDatabase(object):
         self.user = user
         self.password = password
         self.con = None
-        self.uri = None
-        self.vlayer = None
         self.register = {}
         self.queries = {}
+        self.uris = []
+        self.refresh_uris()
 
     def connect_pg(self):
         """
@@ -47,7 +48,6 @@ class RiverDatabase(object):
         msg = None
         try:
             # connection parameters using the dsn
-            # http://initd.org/psycopg/docs/module.html#psycopg2.connect
             conn_params = 'dbname={0} host={1} port={2} user={3} password={4}'.format(self.dbname, self.host, self.port, self.user, self.password)
             self.con = psycopg2.connect(conn_params)
             msg = 'Connection established.'
@@ -195,32 +195,63 @@ class RiverDatabase(object):
         else:
             print('Process aborted!')
 
-    def import_hecobject(self, sdf):
+    def make_vlayer(self, obj):
         """
-        Importing geometry objects from HEC-RAS SDF file to PostGIS database.
-
-        Args:
-            sdf (str): path to SDF file
-        """
-        pass
-
-    def add_to_view(self, obj):
-        """
-        Adding PostGIS table as QGIS layer.
+        Making layer from PostGIS table.
 
         Args:
             obj: Instance of a hydrodynamic model object class
         """
-        self.uri = QgsDataSourceURI()
-        self.uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
-        self.uri.setDataSource(obj.schema, obj.name, 'geom')
-        self.vlayer = QgsVectorLayer(self.uri.uri(), obj.name, 'postgres')
-        map_layer = QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
-        style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(obj.name))
+        uri = QgsDataSourceURI()
+        uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
+        uri.setDataSource(obj.schema, obj.name, 'geom')
+        vlayer = QgsVectorLayer(uri.uri(), obj.name, 'postgres')
+        return vlayer
+
+    def add_vlayer(self, vlayer):
+        """
+        Handling adding layer process to QGIS view.
+
+        Args:
+            vlayer (QgsVectorLayer): QgsVectorLayer object
+        """
+        map_registry = QgsMapLayerRegistry.instance()
+        map_layer = map_registry.addMapLayer(vlayer)
+        style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
         try:
             map_layer.loadNamedStyle(style_file)
         except:
             self.rgis.addInfo('Could not find style: {0}'.format(style_file))
+
+    def refresh_uris(self):
+        """
+        Setting layers uris list from QgsMapLayerRegistry
+        """
+        # dziala ok w pustym projekcie
+        # przy probie ponownego uruchomienia wywala QGISa
+        # przy uruchomieniu w projekcie z zaladowanymi tabelami zarejestrowanymi w RDB wywala QGISa
+        # wydaje mi sie, ze mozna spprobować uzyc klasy layerTree do sprawdzenia stanu zaladowanych warstw.
+        self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
+
+        if self.rgis.DEBUG:
+            self.rgis.addInfo('Layers sources:\n    {0}'.format('\n    '.join(self.uris)))
+
+    def add_to_view(self, obj):
+        """
+        Handling adding layer process to QGIS view.
+
+        Args:
+            obj: Instance of a hydrodynamic model object class
+        """
+        vlayer = self.make_vlayer(obj)
+        src = vlayer.source()
+        if self.CHECK_URI is True:
+            if src not in self.uris:
+                self.add_vlayer(vlayer)
+            else:
+                pass
+        else:
+            self.add_vlayer(vlayer)
 
     def insert_layer(self, layer, hecobject, schema=None, srid=None, attr_map=None):
         """
