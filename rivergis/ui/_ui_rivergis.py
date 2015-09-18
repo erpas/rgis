@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Sep 14 23:33:53 2015
+# Created: Fri Sep 18 11:10:49 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -158,6 +158,9 @@ class Ui_RiverGIS(object):
         self.actionRASPreview2DMesh.setEnabled(True)
         self.actionRASPreview2DMesh.setObjectName(_fromUtf8("actionRASPreview2DMesh"))
         self.actionRASCreateRdbTables = QtGui.QAction(RiverGIS)
+        icon10 = QtGui.QIcon()
+        icon10.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/createPgTables.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionRASCreateRdbTables.setIcon(icon10)
         self.actionRASCreateRdbTables.setObjectName(_fromUtf8("actionRASCreateRdbTables"))
         self.actionRASManningsNValues = QtGui.QAction(RiverGIS)
         self.actionRASManningsNValues.setObjectName(_fromUtf8("actionRASManningsNValues"))
@@ -186,6 +189,9 @@ class Ui_RiverGIS(object):
         self.actionRASXSAll = QtGui.QAction(RiverGIS)
         self.actionRASXSAll.setObjectName(_fromUtf8("actionRASXSAll"))
         self.actionRASImportLayersIntoRdbTables = QtGui.QAction(RiverGIS)
+        icon11 = QtGui.QIcon()
+        icon11.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/importLayersIntoRdb.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionRASImportLayersIntoRdbTables.setIcon(icon11)
         self.actionRASImportLayersIntoRdbTables.setObjectName(_fromUtf8("actionRASImportLayersIntoRdbTables"))
         self.actionRASLevees = QtGui.QAction(RiverGIS)
         self.actionRASLevees.setObjectName(_fromUtf8("actionRASLevees"))
@@ -196,6 +202,9 @@ class Ui_RiverGIS(object):
         self.actionRASFlipXSDirection = QtGui.QAction(RiverGIS)
         self.actionRASFlipXSDirection.setObjectName(_fromUtf8("actionRASFlipXSDirection"))
         self.actionRASLoadRdbTablesIntoQGIS = QtGui.QAction(RiverGIS)
+        icon12 = QtGui.QIcon()
+        icon12.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/loadRdbTablesIntoQgis.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionRASLoadRdbTablesIntoQGIS.setIcon(icon12)
         self.actionRASLoadRdbTablesIntoQGIS.setObjectName(_fromUtf8("actionRASLoadRdbTablesIntoQGIS"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuRASMapping.addAction(self.actionRASImportRasData)
@@ -292,4 +301,3 @@ class Ui_RiverGIS(object):
         self.actionRASBlockedObstructions.setText(_translate("RiverGIS", "Blocked Obstructions", None))
         self.actionRASFlipXSDirection.setText(_translate("RiverGIS", "Flip Cross Sections", None))
         self.actionRASLoadRdbTablesIntoQGIS.setText(_translate("RiverGIS", "Load River Database Tables Into QGIS", None))
-

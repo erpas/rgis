@@ -45,7 +45,7 @@ class StreamCenterlines(HecRasObject):
             ('"ToSta"', 'double precision'),
             ('"Notes"', 'text')]
 
-    def pg_from_to_node(self):
+    def pg_topology(self):
         qry = '''
 CREATE OR REPLACE FUNCTION "{0}".from_to_node ()
     RETURNS VOID AS
@@ -92,7 +92,6 @@ $BODY$
     LANGUAGE plpgsql;
 ------------------------------------------------------------------------------------------------------------------------
 SELECT "{0}".from_to_node ();
-SELECT
 DROP FUNCTION IF EXISTS "{0}".from_to_node ()
 '''
         qry = qry.format(self.schema, self.srid)
@@ -143,6 +142,7 @@ FOR r IN c LOOP
         SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
         tosta := fromsta + len;
         UPDATE "{0}"."StreamCenterlines" SET
+        "ReachLen" = len,
         "FromSta" = fromsta,
         "ToSta" = tosta
         WHERE "RiverCode" = river AND "ToNode" = tonode_id;
@@ -171,6 +171,7 @@ class XSCutLines(HecRasObject):
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"XsecID"', 'serial primary key'),
+            ('"ReachID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
@@ -181,6 +182,65 @@ class XSCutLines(HecRasObject):
             ('"Rlength"', 'double precision'),
             ('"NodeName"', 'text')]
 
+    def pg_river_reach_names(self):
+        qry = '''
+UPDATE {0}."XSCutLines" AS xs
+SET
+  "ReachID" = riv."ReachID"
+FROM
+  {0}."StreamCenterlines" AS riv
+WHERE
+  xs.geom && riv.geom AND
+  ST_Intersects(xs.geom, riv.geom)
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_stationing(self):
+        qry = '''
+
+WITH xspts AS (
+  SELECT
+    xs."XsecID" AS "XsecID",
+    riv."ReachID" AS "ReachID",
+    ST_LineLocatePoint(riv.geom, ST_Intersection(xs.geom, riv.geom)) AS "Fraction"
+  FROM
+    "{0}"."StreamCenterlines" AS riv,
+    "{0}"."XSCutLines" AS xs
+  WHERE
+    xs.geom && riv.geom AND
+    ST_Intersects(xs.geom, riv.geom)
+)
+UPDATE "{0}"."XSCutLines" AS xs
+SET
+  "Station" = riv."FromSta" + xspts."Fraction" * (riv."ToSta" - riv."FromSta")
+FROM
+  xspts,
+  "{0}"."StreamCenterlines" AS riv
+WHERE
+  xspts."ReachID" = riv."ReachID" AND
+  xspts."XsecID" = xs."XsecID";
+------------------------------------------------------------------------------------------------------------------------
+WITH orderedXsecs AS (
+SELECT
+    "XsecID",
+    xs."ReachID",
+    rank() OVER (PARTITION BY "RiverCode" ORDER BY "Station" ASC) AS rank
+  FROM
+    "{0}"."XSCutLines" AS xs
+  LEFT JOIN
+    "{0}"."StreamCenterlines" sc ON  sc."ReachID" = xs."ReachID"
+)
+UPDATE "{0}"."XSCutLines" xs
+  SET
+    "Nr" = rank
+  FROM
+    orderedXsecs ox
+  WHERE
+    xs."XsecID" = ox."XsecID"
+'''
+        qry = qry.format(self.schema)
+        return qry
 
 class BankLines(HecRasObject):
     """

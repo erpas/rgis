@@ -406,7 +406,7 @@ if __name__ == '__main__':
     baza.connect_pg()
     baza.register_existing(heco)
     baza.process_hecobject(heco.StreamCenterlines3D, 'pg_create_table')
-    baza.process_hecobject(heco.StreamCenterlines, 'pg_from_to_node')
+    baza.process_hecobject(heco.StreamCenterlines, 'pg_topology')
     baza.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations')
 
     for qry in baza.queries:

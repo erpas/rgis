@@ -340,6 +340,10 @@
    </property>
   </action>
   <action name="actionRASCreateRdbTables">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/createPgTables.svg</normaloff>:/rivergis/icons/createPgTables.svg</iconset>
+   </property>
    <property name="text">
     <string>Create River Database Tables</string>
    </property>
@@ -410,6 +414,10 @@
    </property>
   </action>
   <action name="actionRASImportLayersIntoRdbTables">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/importLayersIntoRdb.svg</normaloff>:/rivergis/icons/importLayersIntoRdb.svg</iconset>
+   </property>
    <property name="text">
     <string>Import Layers Into River Database Tables</string>
    </property>
@@ -435,6 +443,10 @@
    </property>
   </action>
   <action name="actionRASLoadRdbTablesIntoQGIS">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/loadRdbTablesIntoQgis.svg</normaloff>:/rivergis/icons/loadRdbTablesIntoQgis.svg</iconset>
+   </property>
    <property name="text">
     <string>Load River Database Tables Into QGIS</string>
    </property>
