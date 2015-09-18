@@ -101,11 +101,15 @@ class RiverGIS(QMainWindow):
         self.ui.ras1dToolBar.addAction(self.ui.actionRASCreateRdbTables )
         self.ui.ras1dToolBar.addAction(self.ui.actionRASLoadRdbTablesIntoQGIS)
         self.ui.ras1dToolBar.addAction(self.ui.actionRASImportLayersIntoRdbTables)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASTopology1D)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASLengthsStations)
 
         # 2D HEC-RAS Toolbar
         self.ui.ras2dToolBar = QToolBar("HEC-RAS 2D Geometry", self)
         self.ui.ras2dToolBar.setObjectName("RAS2D_ToolBar")
         self.ui.ras2dToolBar.addAction(self.ui.actionRASCreate2dArea )
+        self.ui.ras2dToolBar.addAction(self.ui.actionRASPreview2DMesh )
+        self.ui.ras2dToolBar.addAction(self.ui.actionRASSaveMeshPointsToHECRASGeometry )
 
         # HEC-RAS Mapping Toolbar
         self.ui.rasMappingToolBar = QToolBar("HEC-RAS Flood Mapping", self)
@@ -126,13 +130,13 @@ class RiverGIS(QMainWindow):
         # Some info
         self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please, start with choosing a <b>connection to a PostGIS database and a schema</b> from the above lists.')
         self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
-        self.ui.textEdit.append('<b>Loading HEC-RAS 2D results</b> requires a h5py Python package ( http://www.h5py.org ).')
+        self.ui.textEdit.append('Loading HEC-RAS results requires a h5py Python package ( http://www.h5py.org ).')
         self.ui.textEdit.append('<br>----------------------------------------------------------------------------')
 
         # restore the window state
         settings = QSettings()
-        self.restoreGeometry( settings.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ) )
-        self.restoreState( settings.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ) )
+        self.restoreGeometry(settings.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
+        self.restoreState(settings.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
 
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
@@ -146,8 +150,8 @@ class RiverGIS(QMainWindow):
 
         # save the window state
         settings = QSettings()
-        settings.setValue( "/rivergis/mainWindow/windowState", self.saveState() )
-        settings.setValue( "/rivergis/mainWindow/geometry", self.saveGeometry() )
+        settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
+        settings.setValue("/rivergis/mainWindow/geometry", self.saveGeometry())
 
         QMainWindow.closeEvent(self, e)
 
@@ -196,14 +200,6 @@ class RiverGIS(QMainWindow):
         self.database = s.value('database')
         self.user = s.value('username')
         self.passwd = s.value('password')
-        # self.sslmode = s.value('sslmode')
-        # self.connParams = "host='%s' port='%s' dbname='%s' user='%s' password='%s'" % \
-        #                          (self.host,self.port,self.database,self.user,self.passwd)
-        # sslmodesList = [0,'disable', 'allow', 'prefer', 'require']
-        # if self.sslmode:
-        #     self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
-        # self.conn = psycopg2.connect(self.connParams)
-        # self.addInfo('Current DB connection is: %s' % self.curConnName)
 
         # close any existing connection to river database
         if self.rdb:
@@ -211,6 +207,7 @@ class RiverGIS(QMainWindow):
                 self.rdb.dbname, self.rdb.host))
             self.rdb.disconnect_pg()
             self.rdb = None
+
         # create a new connection to river database
         self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SCHEMA = 'start'

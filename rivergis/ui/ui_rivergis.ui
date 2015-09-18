@@ -217,7 +217,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionCreate2dAreaPerimeter">
    <property name="icon">
-    <iconset resource="../resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/2darea_perimeter.svg</normaloff>:/rivergis/icons/2darea_perimeter.svg</iconset>
    </property>
    <property name="text">
@@ -239,7 +239,7 @@
   <action name="actionRASCreate2dArea">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/2darea.svg</normaloff>:/rivergis/icons/2darea.svg</iconset>
+     <normaloff>:/rivergis/icons/ras2dareaCreate.svg</normaloff>:/rivergis/icons/ras2dareaCreate.svg</iconset>
    </property>
    <property name="text">
     <string>Create 2D Flow Areas</string>
@@ -288,7 +288,7 @@
   <action name="actionRefreshConnections">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/action_refresh.png</normaloff>:/rivergis/icons/action_refresh.png</iconset>
+     <normaloff>:/rivergis/icons/refreshConnections.svg</normaloff>:/rivergis/icons/refreshConnections.svg</iconset>
    </property>
    <property name="text">
     <string>Refresh Connections List</string>
@@ -325,7 +325,7 @@
   <action name="actionRASSaveMeshPointsToHECRASGeometry">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</normaloff>:/rivergis/icons/save2dmeshPtsToGeo.svg</iconset>
+     <normaloff>:/rivergis/icons/ras2dareaSaveToGeo.svg</normaloff>:/rivergis/icons/ras2dareaSaveToGeo.svg</iconset>
    </property>
    <property name="text">
     <string>Save mesh points to HEC-RAS geometry file</string>
@@ -334,6 +334,10 @@
   <action name="actionRASPreview2DMesh">
    <property name="enabled">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras2dareaPreview.svg</normaloff>:/rivergis/icons/ras2dareaPreview.svg</iconset>
    </property>
    <property name="text">
     <string>Preview 2D Mesh</string>
@@ -359,8 +363,15 @@
    </property>
   </action>
   <action name="actionRASTopology1D">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dTopology.svg</normaloff>:/rivergis/icons/ras1dTopology.svg</iconset>
+   </property>
    <property name="text">
     <string>Topology</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS Topology</string>
    </property>
   </action>
   <action name="actionAaa">
@@ -369,11 +380,21 @@
    </property>
   </action>
   <action name="actionRASLengthsStations">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dLengthsStations.svg</normaloff>:/rivergis/icons/ras1dLengthsStations.svg</iconset>
+   </property>
    <property name="text">
     <string>Lengths/Stations</string>
    </property>
+   <property name="toolTip">
+    <string>RAS Lengths/Stations</string>
+   </property>
   </action>
   <action name="actionRASCenterlineElevations">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Elevations</string>
    </property>

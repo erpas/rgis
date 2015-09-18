@@ -35,17 +35,10 @@ def ras1dTopology(rgis):
 
 def ras1dLengthsStations(rgis):
     """Calculate river reaches lenght and their endpoints stations"""
-
-    # check if streamlines table is registered
-    # TODO: czy bedziemy rejestrowac tabele Endpoints, NodesTable jako obiekty bazy?
-    # zeby mozna je bylo traktowac jak inne tabele, np.?
-    # ntExist = 'NodesTable' in rgis.rdb.register.keys()
-    schema_tables = rgis.rdb.list_tables()
     ntExist = 'NodesTable' in [t[0] for t in rgis.rdb.list_tables()]
     if not ntExist:
         rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build StreamCenterlines Topology first.<br>Cancelling...')
         return
-
     rgis.addInfo('<br><b>Calculating river reach(es) lenghts and their end stations...</b>')
     if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations'):
         rgis.addInfo('Done.')
@@ -83,8 +76,28 @@ def ras1dXSDownstreamLengths(rgis):
 
 
 def ras1dXSElevations(rgis):
-    """RProbes a DEM to find cross-section vertical shape"""
-    pass
+    """Probes a DEM to find cross-section vertical shape"""
+
+    # Create xsection points table
+    qry = '''
+    DROP TABLE IF EXISTS "{0}"."XSPoints";
+    CREATE TABLE "{0}"."XSPoints" (
+    PtId bigserial primary key,
+    XsecId integer,
+    Station double precision,
+    Elevation double precision,
+    CoverCode text,
+    SrcId integer,
+    Notes text,
+    geom geometry(Point, {1})
+    );
+
+    '''.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
+    rgis.rdb.run_query(qry)
+
+
+
+
 
 
 def ras1dXSAll(rgis):
