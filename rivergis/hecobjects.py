@@ -184,20 +184,63 @@ class XSCutLines(HecRasObject):
 
     def pg_river_reach_names(self):
         qry = '''
-UPDATE {0}."XSCutLines" as xs
+UPDATE {0}."XSCutLines" AS xs
 SET
   "ReachID" = riv."ReachID"
 FROM
-  {0}."StreamCenterlines" as riv
+  {0}."StreamCenterlines" AS riv
 WHERE
   xs.geom && riv.geom AND
-  ST_Intersects(xs.geom, riv.geom);
+  ST_Intersects(xs.geom, riv.geom)
 '''
         qry = qry.format(self.schema)
         return qry
 
     def pg_stationing(self):
-        qry = ''
+        qry = '''
+
+WITH xspts AS (
+  SELECT
+    xs."XsecID" AS "XsecID",
+    riv."ReachID" AS "ReachID",
+    ST_LineLocatePoint(riv.geom, ST_Intersection(xs.geom, riv.geom)) AS "Fraction"
+  FROM
+    "{0}"."StreamCenterlines" AS riv,
+    "{0}"."XSCutLines" AS xs
+  WHERE
+    xs.geom && riv.geom AND
+    ST_Intersects(xs.geom, riv.geom)
+)
+UPDATE "{0}"."XSCutLines" AS xs
+SET
+  "Station" = riv."FromSta" + xspts."Fraction" * (riv."ToSta" - riv."FromSta")
+FROM
+  xspts,
+  "{0}"."StreamCenterlines" AS riv
+WHERE
+  xspts."ReachID" = riv."ReachID" AND
+  xspts."XsecID" = xs."XsecID";
+------------------------------------------------------------------------------------------------------------------------
+WITH orderedXsecs AS (
+SELECT
+    "XsecID",
+    xs."ReachID",
+    rank() OVER (PARTITION BY "RiverCode" ORDER BY "Station" ASC) AS rank
+  FROM
+    "{0}"."XSCutLines" AS xs
+  LEFT JOIN
+    "{0}"."StreamCenterlines" sc ON  sc."ReachID" = xs."ReachID"
+)
+UPDATE "{0}"."XSCutLines" xs
+  SET
+    "Nr" = rank
+  FROM
+    orderedXsecs ox
+  WHERE
+    xs."XsecID" = ox."XsecID"
+'''
+        qry = qry.format(self.schema)
+        return qry
 
 class BankLines(HecRasObject):
     """
