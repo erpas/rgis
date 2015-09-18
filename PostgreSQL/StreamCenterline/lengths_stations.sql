@@ -42,6 +42,7 @@ FOR r IN c LOOP
         SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM "StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
         tosta := fromsta + len;
         UPDATE "StreamCenterlines" SET
+        "ReachLen" = len,
         "FromSta" = fromsta,
         "ToSta" = tosta
         WHERE "RiverCode" = river AND "ToNode" = tonode_id;

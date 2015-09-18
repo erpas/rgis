@@ -9,6 +9,7 @@ from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NUL
 from qgis.gui import QgsMessageBar
 from os.path import join
 
+
 class RiverDatabase(object):
     """
     Class for PostgreSQL database and hydrodynamic models handling.
@@ -227,10 +228,6 @@ class RiverDatabase(object):
         """
         Setting layers uris list from QgsMapLayerRegistry
         """
-        # dziala ok w pustym projekcie
-        # przy probie ponownego uruchomienia wywala QGISa
-        # przy uruchomieniu w projekcie z zaladowanymi tabelami zarejestrowanymi w RDB wywala QGISa
-        # wydaje mi sie, ze mozna spprobować uzyc klasy layerTree do sprawdzenia stanu zaladowanych warstw.
         self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
 
         if self.rgis.DEBUG:
