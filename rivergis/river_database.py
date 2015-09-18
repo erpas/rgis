@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'ldebek'
+__author__ = 'Łukasz Dębek'
 
 import psycopg2
+import psycopg2.extras
+
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL
 from qgis.gui import QgsMessageBar
 from os.path import join
@@ -13,6 +15,7 @@ class RiverDatabase(object):
     """
     SCHEMA = 'start'
     SRID = 2180
+    CHECK_URI = True
 
     def __init__(self, rgis, dbname, host, port, user, password):
         """
@@ -33,10 +36,10 @@ class RiverDatabase(object):
         self.user = user
         self.password = password
         self.con = None
-        self.uri = None
-        self.vlayer = None
         self.register = {}
         self.queries = {}
+        self.uris = []
+        self.refresh_uris()
 
     def connect_pg(self):
         """
@@ -45,7 +48,6 @@ class RiverDatabase(object):
         msg = None
         try:
             # connection parameters using the dsn
-            # http://initd.org/psycopg/docs/module.html#psycopg2.connect
             conn_params = 'dbname={0} host={1} port={2} user={3} password={4}'.format(self.dbname, self.host, self.port, self.user, self.password)
             self.con = psycopg2.connect(conn_params)
             msg = 'Connection established.'
@@ -64,7 +66,7 @@ class RiverDatabase(object):
             self.con.close()
             self.con = None
         else:
-            print("Can not disconnect. There is no opened connection!")
+            print('Can not disconnect. There is no opened connection!')
 
     def setup_hydro_object(self, hydro_object, schema=None, srid=None):
         """
@@ -95,13 +97,14 @@ class RiverDatabase(object):
         result = None
         try:
             if self.con:
-                cur = self.con.cursor()
+                # cur = self.con.cursor()
+                cur = self.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
                 cur.execute(qry)
-                self.con.commit()
                 if fetch is True:
                     result = cur.fetchall()
                 else:
                     result = []
+                self.con.commit()
             else:
                 print('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
@@ -156,7 +159,7 @@ class RiverDatabase(object):
                 self.setup_hydro_object(hydro_object, schema, srid)
                 obj = hydro_object()
                 self.register_object(obj)
-                print 'registered {0}'.format(obj.name)
+                print('{0} registered'.format(obj.name))
             else:
                 pass
 
@@ -192,38 +195,69 @@ class RiverDatabase(object):
         else:
             print('Process aborted!')
 
-    def import_hecobject(self, sdf):
+    def make_vlayer(self, obj):
         """
-        Importing geometry objects from HEC-RAS SDF file to PostGIS database.
-
-        Args:
-            sdf (str): path to SDF file
-        """
-        pass
-
-    def add_to_view(self, obj):
-        """
-        Adding PostGIS table as QGIS layer.
+        Making layer from PostGIS table.
 
         Args:
             obj: Instance of a hydrodynamic model object class
         """
-        self.uri = QgsDataSourceURI()
-        self.uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
-        self.uri.setDataSource(obj.schema, obj.name, 'geom')
-        self.vlayer = QgsVectorLayer(self.uri.uri(), obj.name, 'postgres')
-        mapLayer = QgsMapLayerRegistry.instance().addMapLayer(self.vlayer)
-        styleFile = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(obj.name))
+        uri = QgsDataSourceURI()
+        uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
+        uri.setDataSource(obj.schema, obj.name, 'geom')
+        vlayer = QgsVectorLayer(uri.uri(), obj.name, 'postgres')
+        return vlayer
+
+    def add_vlayer(self, vlayer):
+        """
+        Handling adding layer process to QGIS view.
+
+        Args:
+            vlayer (QgsVectorLayer): QgsVectorLayer object
+        """
+        map_registry = QgsMapLayerRegistry.instance()
+        map_layer = map_registry.addMapLayer(vlayer)
+        style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
         try:
-            mapLayer.loadNamedStyle(styleFile)
+            map_layer.loadNamedStyle(style_file)
         except:
-            self.rgis.addInfo('Could not find style: {0}'.format(styleFile))
+            self.rgis.addInfo('Could not find style: {0}'.format(style_file))
 
+    def refresh_uris(self):
+        """
+        Setting layers uris list from QgsMapLayerRegistry
+        """
+        # dziala ok w pustym projekcie
+        # przy probie ponownego uruchomienia wywala QGISa
+        # przy uruchomieniu w projekcie z zaladowanymi tabelami zarejestrowanymi w RDB wywala QGISa
+        # wydaje mi sie, ze mozna spprobować uzyc klasy layerTree do sprawdzenia stanu zaladowanych warstw.
+        self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
 
-    def insert_layer(self, layer, hecobject, schema=None, srid=None):
+        if self.rgis.DEBUG:
+            self.rgis.addInfo('Layers sources:\n    {0}'.format('\n    '.join(self.uris)))
+
+    def add_to_view(self, obj):
+        """
+        Handling adding layer process to QGIS view.
+
+        Args:
+            obj: Instance of a hydrodynamic model object class
+        """
+        vlayer = self.make_vlayer(obj)
+        src = vlayer.source()
+        if self.CHECK_URI is True:
+            if src not in self.uris:
+                self.add_vlayer(vlayer)
+            else:
+                pass
+        else:
+            self.add_vlayer(vlayer)
+
+    def insert_layer(self, layer, hecobject, schema=None, srid=None, attr_map=None):
         """
         Insert a vector layer's features into a PostGIS table of a hecras object.
-        It checks source layer's attribute names and compares them to column names of a target table.
+        If an attribute map attr_map is specified, only the mapped attributes are imported. If attr_map
+        is None, it checks source layer's attribute names and compares them to column names of a target table.
         If the attribute has a corresponding name in target table then it is copied into table table.
 
         It can be used to copy hecobject table from one schema to another.
@@ -233,8 +267,8 @@ class RiverDatabase(object):
             hecobject (class): target HEC-RAS class object
             schema (str): a target schema
             srid (int): a Spatial Reference System Identifier
+            attr_map(dict): attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}
         """
-        # TODO: first check if the target table is in editing mode in QGIS
 
         if schema is None:
             SCHEMA = self.SCHEMA
@@ -247,39 +281,84 @@ class RiverDatabase(object):
 
         # get the layer's features
         features = layer.getFeatures()
-        # get the layer's field name list
         layer_fields = layer.dataProvider().fields().toList()
-        layer_fields_names = ['{0}'.format(f.name()) for f in layer_fields]
+        field_names = ['{0}'.format(f.name()) for f in layer_fields]
 
+        if self.rgis.DEBUG:
+            if attr_map:
+                am = ['{0} - {1}'.format(key, value) for key, value in attr_map.iteritems()]
+                info = '  attr_map:\n    '
+                info += '\n    {0}'.join(am)
+                self.rgis.addInfo(info)
+            else:
+                pass
+        else:
+            pass
+
+        # list of imported attributes tuples (target_attr, src_attr, attr_type)
         # check if the layer has attributes to import
         # get all fields except the ID
-        attrs_to_import = []
-        for field in hecobject.attrs[1:]:
-            if field[0].strip('\"') in layer_fields_names:
-                attrs_to_import.append(field)
+        imp_attrs = []
+        for attr in hecobject.attrs[1:]:
+            attr_name = attr[0].strip('"')
+            if attr_map:
+                if attr_name in attr_map.keys():
+                    imp_attrs.append([attr[0], attr_map[attr_name], attr[1]])
+                else:
+                    pass
+            else:
+                if attr_name in field_names:
+                    imp_attrs.append([attr[0], attr[0], attr[1]])
+                else:
+                    pass
+
+        if self.rgis.DEBUG:
+            self.rgis.addInfo('Importing {0}'.format(hecobject.name))
+            for i in imp_attrs:
+                self.rgis.addInfo('  {0} as {1} with type {2}'.format(i[0], i[1], i[2]))
+        else:
+            pass
 
         # create SQL for inserting the layer into PG database
         schema_name = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
-        attrs_names = ['{0}'.format(attr[0]) for attr in attrs_to_import]
+        attrs_names = ['{0}'.format(attr[0]) for attr in imp_attrs]
         qry = 'INSERT INTO {0} \n\t({1}'.format(schema_name, ', '.join(attrs_names))
         qry += ', ' if attrs_names else ''
         qry += 'geom) \nVALUES\n\t'
         # list of attributes data
         feats_def = []
         for feat in features:
-            # list of field values of the current feature
+            # field values of the feature
             vals = []
             geom_wkt = feat.geometry().exportToWkt()
-            for attr in attrs_to_import:
-                val = feat.attribute(attr[0].strip('"'))
+            # Geometry types check:
+            # is target geometry of type multi?
+            # is source layer geom multi?
+            target_multi = hecobject.geom_type.startswith('MULTI')
+            src_multi = feat.geometry().isMultipart()
+            if not target_multi and src_multi:
+                self.rgis.addInfo('WARNING: Source geometry is of type MULTI but the target is a {0} --- skipping the layer.'.format(hecobject.geom_type))
+                qry = ''
+            elif target_multi and not src_multi:
+                self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
+                self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI.')
+                geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, SRID)
+            else:
+                geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID)
+
+            for attr in imp_attrs:
+                val = feat.attribute(attr[1].strip('"'))
                 if not val == NULL:
-                    vals.append('\'{0}\'::{1}'.format(val, attr[1]))
+                    vals.append('\'{0}\'::{1}'.format(val, attr[2]))
                 else:
                     vals.append('NULL')
-            vals.append('ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID))
+            vals.append(geometry)
             feats_def.append('({0})'.format(', '.join(vals)))
         qry += '{0};'.format(',\n\t'.join(feats_def))
-
+        if self.rgis.DEBUG:
+            self.rgis.addInfo(qry)
+        else:
+            pass
         self.run_query(qry)
 
     def create_spatial_index(self):
@@ -288,26 +367,26 @@ class RiverDatabase(object):
         The function checks if a spatial index exists for the table - if not, it is created.
         """
         qry = '''
-        CREATE OR REPLACE FUNCTION create_st_index_if_not_exists
-          (schema text, t_name text) RETURNS void AS $$
-        DECLARE
-          full_index_name varchar;
-        BEGIN
-        full_index_name = schema || '_' || t_name || '_' || 'geom_idx';
-        IF NOT EXISTS (
-            SELECT 1
-            FROM   pg_class c
-            JOIN   pg_namespace n ON n.oid = c.relnamespace
-            WHERE  c.relname = full_index_name
-            AND    n.nspname = schema
-            ) THEN
-
-            execute 'CREATE INDEX ' || full_index_name || ' ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
-        END IF;
-        END
-        $$
-        LANGUAGE plpgsql VOLATILE
-        '''
+CREATE OR REPLACE FUNCTION create_spatial_index(schema text, t_name text)
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    full_index_name text;
+BEGIN
+    full_index_name = schema || '_' || t_name || '_' || 'geom_idx';
+    IF NOT EXISTS (
+        SELECT 1
+        FROM   pg_class c
+        JOIN   pg_namespace n ON n.oid = c.relnamespace
+        WHERE  c.relname = full_index_name AND n.nspname = schema
+        )
+    THEN
+        EXECUTE 'CREATE INDEX "' || full_index_name || '" ON "' || schema || '"."' || t_name || '" USING GIST (geom)';
+    END IF;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+'''
         self.run_query(qry)
 
     def get_ras_gis_import_header(self):

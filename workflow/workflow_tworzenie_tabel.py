@@ -17,7 +17,7 @@ baza.SCHEMA = 'start'
 baza.SRID = 2180
 baza.connect_pg()
 # utworzenie w bazie funkcji tworzacej indeks przestrzenny, jesli nie istnieje
-baza.create_pg_fun_create_st_index_if_not_exists()
+baza.create_spatial_index()
 
 baza.register_existing(heco)
 sc = baza.process_hecobject(heco.StreamCenterlines, 'pg_create_table')
@@ -36,6 +36,3 @@ baza.add_to_view(lu)
 
 baza.insert_layer(s, sc)
 iface.mapCanvas().refresh()
-
-
-

@@ -82,7 +82,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     call(["mkdir", join(expanduser("~"), "qgis_processing_temp")], shell=True)
     call(["mkdir", workDirName], shell=True)
 
-    cur = self.rgis.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    # cur = self.rgis.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     self.rgis.addInfo("  Creating tables..." )
 
     # create 2dareas table
@@ -115,19 +115,16 @@ class DlgRasCreate2dFlowAreas(QDialog):
     qry += "select create_st_index_if_not_exists('%s','wyciecie_pkt_org');" % (self.schName)
 
     # time.sleep(0.05)
-    cur.execute(qry)
-    self.rgis.conn.commit()
+    self.rgis.rdb.run_query(qry)
 
-    qry += '''CREATE OR REPLACE FUNCTION makegrid(geometry, float, integer)
+    qry = '''CREATE OR REPLACE FUNCTION makegrid(geometry, float, integer)
     RETURNS geometry AS
     'SELECT ST_Collect(st_setsrid(ST_POINT(x/1000000::float,y/1000000::float),$3)) FROM
       generate_series(floor(st_xmin($1)*1000000)::bigint, ceiling(st_xmax($1)*1000000)::bigint,($2*1000000)::bigint) as x,
       generate_series(floor(st_ymin($1)*1000000)::bigint, ceiling(st_ymax($1)*1000000)::bigint,($2*1000000)::bigint) as y
     where st_intersects($1,st_setsrid(ST_POINT(x/1000000::float,y/1000000::float),$3))'
     LANGUAGE sql;'''
-
-    cur.execute(qry)
-    self.rgis.conn.commit()
+    self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Inserting polygons into 2D areas PostGIS table..." )
 
@@ -148,8 +145,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
 
     qry = qry[:-2] + ';'
 
-    cur.execute(qry)
-    self.rgis.conn.commit()
+    self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating preliminary regular mesh points..." )
 
@@ -168,7 +164,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
        and
        ST_Intersects(pkts.geom, areas2dshrinked.geom));
     ''' % ((self.schName,) * 3)
-    cur.execute(qry)
+    self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Inserting structures into PostGIS table" )
 
@@ -199,8 +195,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
         print qry
         self.rgis.addInfo("\n  Check (or replace) structure lines with wrong geometry and try again.\n\n")
         return
-      cur.execute(qry)
-      self.rgis.conn.commit()
+      self.rgis.rdb.run_query(qry)
 
     # insert breakpoints to database
 
@@ -215,7 +210,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
         qry += "(ST_GeomFromText('POINT( %.4f %.4f )',%i)),\n" % (pt.x(), pt.y(), srid)
 
       qry = qry[:-2] + ';'
-      cur.execute(qry)
+      self.rgis.rdb.run_query(qry)
 
     # find which structure line belongs to which 2d area
     qry = '''
@@ -231,7 +226,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     from ids
     where ids.lgid = l.gid;
     ''' % ((self.schName,) * 3)
-    cur.execute(qry)
+    self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating routes along structure lines..." )
 
@@ -240,8 +235,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     self.rgis.addInfo("  Deleting orignal mesh points near structures..." )
     qry += 'insert into %s.wyciecie_pkt_org (geom) select ST_Buffer(geom, meshrows*cellsizeacross+cellsizealong*0.6, \'endcap=flat join=round\') from %s.struct_lines_m;' % ((self.schName,) * 2)
     qry += 'delete from %s.mesh_pts as p using %s.wyciecie_pkt_org as w where w.geom && p.geom and ST_Intersects(w.geom, p.geom);' % ((self.schName,) * 2)
-    cur.execute(qry)
-    self.rgis.conn.commit()
+    self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating mesh points along structures..." )
 
@@ -262,14 +256,13 @@ class DlgRasCreate2dFlowAreas(QDialog):
       from ids
       where ids.pgid = p.gid;
       ''' % (self.schName, self.schName, breakPtsLocTol, self.schName)
-      cur.execute(qry)
+      self.rgis.rdb.run_query(qry)
 
       # find measures of breakpoints along structure_lines
       # there was a change in the alg name between PostGIS 2.0 and 2.1
       # ST_Line_Locate_Point -> ST_LineLocatePoint
       qry = "select PostGIS_Full_Version() as ver;"
-      cur.execute(qry)
-      postgisVersion = cur.fetchall()[0]['ver'].split('\"')[1][:5]
+      postgisVersion = self.rgis.rdb.run_query(qry, True)[0]['ver'].split('\"')[1][:5]
       pgMajV = int(postgisVersion[:1])
       pgMinV = int(postgisVersion[2:3])
       if pgMajV < 2:
@@ -284,14 +277,13 @@ class DlgRasCreate2dFlowAreas(QDialog):
         %s.struct_lines s
       where p.sid = s.gid;
       ''' % (self.schName, locate, self.schName)
-      cur.execute(qry)
+      self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating aligned mesh points along structures..." )
 
     qry = "SELECT gid, aid, cellsizealong, cellsizeacross, ST_Length(geom) as len, meshrows as rows from %s.struct_lines_m;" % self.schName
-    cur.execute(qry)
 
-    for line in cur.fetchall():
+    for line in self.rgis.rdb.run_query(qry, True):
       odl = float(line['cellsizealong'])
       szer = float(line['cellsizeacross'])
       id = line['gid']
@@ -300,8 +292,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       imax = int(leng/(odl))
 
       qry = "SELECT DISTINCT b.m from %s.breakpoints b, %s.struct_lines s where b.sid = %i;" % (self.schName, self.schName, id)
-      cur.execute(qry)
-      ms = cur.fetchall()
+      ms = self.rgis.rdb.run_query(qry, True)
 
       if not ms: # no breakpoints: create aligned mesh at regular interval = cellsize
         self.rgis.addInfo("  Creating aligned mesh points for structure id=%i" % id )
@@ -310,7 +301,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
           for j in range(0,rows):
             qry = 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, %.2f)) from %s.struct_lines_m where gid = %i;' % (self.schName, odl, dist, j*szer+szer/2, self.schName, id)
             qry += 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, -%.2f)) from %s.struct_lines_m where gid = %i;' % (self.schName, odl, dist, j*szer+szer/2, self.schName, id)
-            cur.execute(qry)
+            self.rgis.rdb.run_query(qry)
 
       else: # create cellfaces at structure breakpoints
         self.rgis.addInfo("  Creating breakpoints for structure id=%i " % id )
@@ -359,9 +350,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
           for j in range(0,rows):
             qry = 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, %.2f)) from  %s.struct_lines_m where gid = %i;\n' % (self.schName, cs_min, m*leng, j*odl+odl/2, self.schName, id)
             qry += 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, -%.2f)) from %s.struct_lines_m where gid = %i;' % (self.schName, cs_min, m*leng, j*odl+odl/2, self.schName, id)
-            cur.execute(qry)
-
-    self.rgis.conn.commit()
+            self.rgis.rdb.run_query(qry)
 
 
     self.rgis.addInfo("  Deleting mesh points located too close to each other or outside the 2D area..." )
@@ -374,8 +363,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       where
         not ST_Contains( ST_Buffer(a.geom,-0.3*a.cellsize), p.geom )
       ;''' % ((self.schName,) * 2)
-    cur.execute(qry)
-    self.rgis.conn.commit()
+    self.rgis.rdb.run_query(qry)
 
     if geoFileName:
       ras2dSaveMeshPtsToGeometry(self.rgis, geoFileName)

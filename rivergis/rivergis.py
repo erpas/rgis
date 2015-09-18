@@ -46,6 +46,8 @@ class RiverGIS(QMainWindow):
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
 
+        self.DEBUG = 1
+
         # create status bar
         self.statusBar = QStatusBar(self)
         self.setStatusBar(self.statusBar)
@@ -102,10 +104,10 @@ class RiverGIS(QMainWindow):
         self.ui.schemasCbo.activated.connect(self.schemaChanged)
 
         # Some info
-        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>For some operations RiverGIS needs a <b>connection to a PostGIS database</b>. Please, choose a connection and schema from the above combo boxes.<br>')
-        self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br><br>')
+        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please, start with choosing a <b>connection to a PostGIS database and a schema</b> from the above lists.')
+        self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
         self.ui.textEdit.append('<b>Loading HEC-RAS 2D results</b> requires a h5py Python package ( http://www.h5py.org ).')
-        self.ui.textEdit.append('<br>--------------------------------------------------------------')
+        self.ui.textEdit.append('<br>----------------------------------------------------------------------------')
 
         # restore the window state
         settings = QSettings()
@@ -211,19 +213,18 @@ class RiverGIS(QMainWindow):
             self.ui.schemasCbo.setCurrentIndex(schemaExists)
         self.schemaChanged()
 
-
     def schemaChanged(self):
         if not self.ui.schemasCbo.currentText() == '':
             self.schema = self.ui.schemasCbo.currentText()
             self.addInfo('Current DB schema is: %s' % self.schema)
             # change river database parameters
             self.rdb.SCHEMA = self.schema
-            reg = [self.rdb.register[k] for k in sorted(self.rdb.register.keys())]
-            self.addInfo('Objects registered in the database:\n{0}'.format( \
-            '\n'.join(reg)))
             self.rdb.register_existing(heco)
-            self.rdb.load_registered()
-
+            # self.rdb.load_registered()
+            reg = [self.rdb.register[k].name for k in sorted(self.rdb.register.keys())]
+            self.addInfo('Objects registered in the database:\n  {0}'.format( \
+            '\n  '.join(reg)))
+            self.addInfo('You can load them now using RAS Geometry > Load River Database Tables Into QGIS')
 
     def importRiverIsokp(self):
         from dlg_importRiverFromIsokp import DlgImportRiverFromIsokp
@@ -235,7 +236,6 @@ class RiverGIS(QMainWindow):
         importData = DlgImportRiverFromIsokp(self)
         importData.exec_()
 
-
     # 1D HEC-RAS Geometry Functions
 
     def rasCreateRdbTables(self):
@@ -245,6 +245,9 @@ class RiverGIS(QMainWindow):
 
     def rasLoadRdbTablesIntoQGIS(self):
         self.rdb.register_existing(heco)
+        self.rdb.refresh_uris()
+        if self.DEBUG:
+            self.addInfo('Layers sources after refresh_uris:\n    {0}'.format('\n    '.join(self.rdb.uris)))
         self.rdb.load_registered()
 
     def rasImportLayersIntoRdbTables(self):
@@ -330,7 +333,6 @@ class RiverGIS(QMainWindow):
             dlg = DlgRasCreate2dFlowAreas(self)
             dlg.exec_()
 
-
     def rasPreview2DMesh(self):
         if self.curConnName is '' or self.schema is '':
             QMessageBox.warning(None, "Preview 2D Area", "Please, choose a connection and schema.")
@@ -338,18 +340,15 @@ class RiverGIS(QMainWindow):
         from ras2dPreviewMesh import ras2dPreviewMesh
         ras2dPreviewMesh(self)
 
-
     def rasSaveMeshPtsToHecrasGeo(self):
         from ras2dSaveMeshPtsToGeometry import ras2dSaveMeshPtsToGeometry
         ras2dSaveMeshPtsToGeometry(self)
-
 
     # RAS Mapping function
 
     def rasImportRasDataStart(self):
         from rasImportRasData import WorkerRasImportRasData
         self.workerWselHecRas = WorkerRasImportRasData(self)
-
 
         thread = QThread()
         self.workerWselHecRas.moveToThread(thread)
@@ -358,7 +357,6 @@ class RiverGIS(QMainWindow):
         thread.started.connect(self.workerWselHecRas.run)
         thread.start()
         self.threadWselHecRas = thread
-
 
     def rasImportRasDataFinish(self, res):
             if not res == None:

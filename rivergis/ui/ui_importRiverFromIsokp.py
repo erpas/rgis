@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_importRiverFromIsokp.ui'
 #
-# Created: Tue Sep 15 08:46:52 2015
+# Created: Wed Sep 16 14:27:19 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'ldebek'
+__author__ = 'Łukasz Dębek'
 
 
 class HecRasObject(object):
@@ -22,7 +22,7 @@ class HecRasObject(object):
         attrs = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         attrs += [' '.join(field) for field in self.attrs]
         qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(schema_name, schema_name, ',\n\t'.join(attrs))
-        qry += 'SELECT create_st_index_if_not_exists(\'{0}\', \'{1}\')'.format(self.schema, self.name)
+        qry += 'SELECT create_spatial_index(\'{0}\', \'{1}\')'.format(self.schema, self.name)
         return qry
 
 
@@ -92,6 +92,7 @@ $BODY$
     LANGUAGE plpgsql;
 ------------------------------------------------------------------------------------------------------------------------
 SELECT "{0}".from_to_node ();
+SELECT
 DROP FUNCTION IF EXISTS "{0}".from_to_node ()
 '''
         qry = qry.format(self.schema, self.srid)
