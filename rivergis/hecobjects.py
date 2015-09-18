@@ -92,7 +92,6 @@ $BODY$
     LANGUAGE plpgsql;
 ------------------------------------------------------------------------------------------------------------------------
 SELECT "{0}".from_to_node ();
-SELECT
 DROP FUNCTION IF EXISTS "{0}".from_to_node ()
 '''
         qry = qry.format(self.schema, self.srid)
