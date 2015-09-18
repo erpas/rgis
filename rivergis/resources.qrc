@@ -1,6 +1,9 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/importLayersIntoRdb.svg</file>
     <file>icons/save2dmeshPtsToGeo.svg</file>
+    <file>icons/createPgTables.svg</file>
+    <file>icons/loadRdbTablesIntoQgis.svg</file>
     <file>icons/loadWselHdf.svg</file>
     <file>icons/createDepthsAndRange.svg</file>
     <file>icons/createWselRaster.svg</file>

@@ -88,16 +88,36 @@ class RiverGIS(QMainWindow):
         self.ui.actionAbout.triggered.connect(self.about)
         self.ui.actionHelpContents.triggered.connect(self.showRGisHelp)
 
-        # toolbar
-        self.ui.toolBar = QToolBar("Default", self)
-        self.ui.toolBar.setObjectName("DB_ToolBar")
-        self.ui.toolBar.addAction( self.ui.actionRefreshConnections )
-        self.ui.toolBar.addAction( self.ui.actionImportRiverFromIsokp )
-        self.ui.toolBar.addAction( self.ui.actionRASCreate2dArea )
-        self.ui.toolBar.addAction( self.ui.actionRASImportRasData )
-        self.ui.toolBar.addAction( self.ui.actionRASWaterSurfaceGeneration )
-        self.ui.toolBar.addAction( self.ui.actionRASFloodplainDelineation )
-        self.addToolBar(self.ui.toolBar)
+        # toolbars
+
+        # River database toolbar
+        self.ui.dbToolBar = QToolBar("River Database", self)
+        self.ui.dbToolBar.setObjectName("Rdb_ToolBar")
+        self.ui.dbToolBar.addAction(self.ui.actionRefreshConnections)
+
+        # 1D HEC-RAS Toolbar
+        self.ui.ras1dToolBar = QToolBar("HEC-RAS 1D Geometry", self)
+        self.ui.ras1dToolBar.setObjectName("RAS1D_ToolBar")
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASCreateRdbTables )
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASLoadRdbTablesIntoQGIS)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASImportLayersIntoRdbTables)
+
+        # 2D HEC-RAS Toolbar
+        self.ui.ras2dToolBar = QToolBar("HEC-RAS 2D Geometry", self)
+        self.ui.ras2dToolBar.setObjectName("RAS2D_ToolBar")
+        self.ui.ras2dToolBar.addAction(self.ui.actionRASCreate2dArea )
+
+        # HEC-RAS Mapping Toolbar
+        self.ui.rasMappingToolBar = QToolBar("HEC-RAS Flood Mapping", self)
+        self.ui.rasMappingToolBar.setObjectName("RASMAP_ToolBar")
+        self.ui.rasMappingToolBar.addAction(self.ui.actionRASImportRasData )
+        self.ui.rasMappingToolBar.addAction(self.ui.actionRASWaterSurfaceGeneration)
+        self.ui.rasMappingToolBar.addAction(self.ui.actionRASFloodplainDelineation)
+
+        self.addToolBar(self.ui.dbToolBar)
+        self.addToolBar(self.ui.ras1dToolBar)
+        self.addToolBar(self.ui.ras2dToolBar)
+        self.addToolBar(self.ui.rasMappingToolBar)
 
         self.ui.crsWidget.crsChanged.connect(self.updateDefaultCrs)
         self.ui.connsCbo.activated.connect(self.connChanged)

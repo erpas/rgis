@@ -185,7 +185,7 @@ DROP FUNCTION IF EXISTS "start".from_to_node ();
 -- Nadanie ReachID przekrojom
 
 UPDATE start."XSCutLines" as xs
-SET 
+SET
   "ReachID" = riv."ReachID"
 FROM
   start."StreamCenterlines" as riv
