@@ -45,7 +45,7 @@ class StreamCenterlines(HecRasObject):
             ('"ToSta"', 'double precision'),
             ('"Notes"', 'text')]
 
-    def pg_from_to_node(self):
+    def pg_topology(self):
         qry = '''
 CREATE OR REPLACE FUNCTION "{0}".from_to_node ()
     RETURNS VOID AS
@@ -171,6 +171,7 @@ class XSCutLines(HecRasObject):
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"XsecID"', 'serial primary key'),
+            ('"ReachID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
@@ -181,6 +182,22 @@ class XSCutLines(HecRasObject):
             ('"Rlength"', 'double precision'),
             ('"NodeName"', 'text')]
 
+    def pg_river_reach_names(self):
+        qry = '''
+UPDATE {0}."XSCutLines" as xs
+SET
+  "ReachID" = riv."ReachID"
+FROM
+  {0}."StreamCenterlines" as riv
+WHERE
+  xs.geom && riv.geom AND
+  ST_Intersects(xs.geom, riv.geom);
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_stationing(self):
+        qry = ''
 
 class BankLines(HecRasObject):
     """

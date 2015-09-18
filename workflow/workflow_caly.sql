@@ -107,7 +107,7 @@ CREATE TABLE start."Flowpaths"
 INSERT INTO
   start."Flowpaths" ("LineType", geom)
 VALUES
-  ('Channel', ST_GeomFromText('LINESTRING(324411 392195.305535,324239 392416,324058 392628,324006 392795,323997 392993,323992 393221)', 2180)),
+('Channel', ST_GeomFromText('LINESTRING(324411 392195.305535,324239 392416,324058 392628,324006 392795,323997 392993,323992 393221)', 2180)),
 ('Channel', ST_GeomFromText('LINESTRING(325337 393195,325222 393136,325022 393082,324831 393049,324709 393021,324645 392964,324589 392858,324539 392790)', 2180)),
 ('Right', ST_GeomFromText('LINESTRING(324487 392297,324288 392787,324238 393068,324219 393243)', 2180)),
 ('Right', ST_GeomFromText('LINESTRING(324798 393101,324662 393052,324589 392965,324558 392885,324535 392841)', 2180)),
@@ -133,7 +133,7 @@ VALUES
 --   "X" double precision,
 --   "Y" double precision
 --   );
-
+------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION "start".from_to_node ()
     RETURNS VOID AS
 $BODY$
@@ -181,75 +181,35 @@ $BODY$
 SELECT "start".from_to_node ();
 DROP FUNCTION IF EXISTS "start".from_to_node ();
 
-
--- Nadanie ReachID przekrojom
-
-UPDATE start."XSCutLines" as xs
-SET 
-  "ReachID" = riv."ReachID"
-FROM
-  start."StreamCenterlines" as riv
-WHERE
-  xs.geom && riv.geom AND
-  ST_Intersects(xs.geom, riv.geom);
-
-
--- utworzenie tabeli Endpoints
-
-CREATE OR REPLACE VIEW "start".pnts1 AS
+------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE "start".tmp1 AS
 SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
 FROM "start"."StreamCenterlines"
 UNION ALL
 SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
 FROM "start"."StreamCenterlines";
 
-CREATE OR REPLACE VIEW "start".pnts2 AS
+CREATE TABLE "start".tmp2 AS
 SELECT "RiverCode", geom
-FROM "start".pnts1
+FROM "start".tmp1
 GROUP BY "RiverCode", geom
 HAVING COUNT(geom) = 1;
 
 DROP TABLE IF EXISTS "start"."Endpoints";
-SELECT pnts1."RiverCode", pnts1."ReachCode", pnts1.geom::geometry(POINT, 2180) INTO "start"."Endpoints"
-FROM "start".pnts1, "start".pnts2
-WHERE pnts1."RiverCode" = pnts2."RiverCode" AND pnts1.geom = pnts2.geom AND pnts1.typ_punktu = 'end';
-
-drop view start.pnts2;
-drop view start.pnts1;
-
--- SELECT * FROM "start"."StreamCenterlines"
--- WHERE "StreamCenterlines"."ReachCode" = ANY((SELECT "Endpoints"."ReachCode" FROM "start"."Endpoints"));
-
-
--- nadanie stacji końcom odcinków
-
-CREATE TABLE start.tmp1 AS
-SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
-FROM start."StreamCenterlines"
-UNION ALL
-SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
-FROM start."StreamCenterlines";
-
-CREATE TABLE start.tmp2 AS
-SELECT "RiverCode", geom
-FROM start.tmp1
-GROUP BY "RiverCode", geom
-HAVING COUNT(geom) = 1;
-
-DROP TABLE IF EXISTS start."Endpoints";
-SELECT tmp1.geom::geometry(POINT, 2180), tmp1."RiverCode", tmp1."ReachCode", "NodesTable"."NodeID" INTO start."Endpoints"
-FROM start.tmp1, start.tmp2, start."NodesTable"
+SELECT tmp1.geom::geometry(POINT, 2180), tmp1."RiverCode", tmp1."ReachCode", "NodesTable"."NodeID" INTO "Endpoints"
+FROM "start".tmp1, "start".tmp2, "start"."NodesTable"
 WHERE tmp1."RiverCode" = tmp2."RiverCode" AND tmp1.geom = tmp2.geom AND tmp1.typ_punktu = 'end' AND tmp1.geom = "NodesTable".geom;
 
-DROP TABLE IF EXISTS start.tmp1;
-DROP TABLE IF EXISTS start.tmp2;
+DROP TABLE "start".tmp1;
+DROP TABLE "start".tmp2;
+
 ------------------------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION start.from_to_stations ()
+CREATE OR REPLACE FUNCTION "start".from_to_stations ()
     RETURNS VOID AS
 $BODY$
 DECLARE
-    c cursor FOR SELECT * FROM start."Endpoints";
-    r start."Endpoints"%ROWTYPE;
+    c cursor FOR SELECT * FROM "start"."Endpoints";
+    r "Endpoints"%ROWTYPE;
     river text;
     tonode_id integer;
     fromnode_id integer;
@@ -262,23 +222,37 @@ FOR r IN c LOOP
     tonode_id := r."NodeID";
     fromsta := 0;
     tosta := 0;
-    FOR i in 1..(SELECT COUNT(*) FROM start."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
-        SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM start."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+    FOR i IN 1..(SELECT COUNT(*) FROM "start"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
+        SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM "start"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
         tosta := fromsta + len;
-        UPDATE start."StreamCenterlines" SET
+        UPDATE "start"."StreamCenterlines" SET
         "FromSta" = fromsta,
         "ToSta" = tosta
         WHERE "RiverCode" = river AND "ToNode" = tonode_id;
-        tonode_id = fromnode_id;
+        tonode_id := fromnode_id;
         fromsta := tosta;
     END LOOP;
 END LOOP;
 END;
 $BODY$
     LANGUAGE plpgsql;
+
+
+SELECT "start".from_to_stations ();
+DROP FUNCTION IF EXISTS "start".from_to_stations ()
 ------------------------------------------------------------------------------------------------------------------------
-SELECT start.from_to_stations ();
-DROP FUNCTION IF EXISTS start.from_to_stations ();
+
+-- Nadanie ReachID przekrojom
+
+UPDATE start."XSCutLines" as xs
+SET
+  "ReachID" = riv."ReachID"
+FROM
+  start."StreamCenterlines" as riv
+WHERE
+  xs.geom && riv.geom AND
+  ST_Intersects(xs.geom, riv.geom);
+
 
 -- Nadanie stacji (kilometraza) przekrojom
 
