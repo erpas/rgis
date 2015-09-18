@@ -92,7 +92,7 @@ $BODY$
     LANGUAGE plpgsql;
 ------------------------------------------------------------------------------------------------------------------------
 SELECT "{0}".from_to_node ();
-DROP FUNCTION IF EXISTS "{0}".from_to_node ()
+DROP FUNCTION IF EXISTS "{0}".from_to_node ();
 '''
         qry = qry.format(self.schema, self.srid)
         return qry
@@ -155,7 +155,7 @@ $BODY$
     LANGUAGE plpgsql;
 ------------------------------------------------------------------------------------------------------------------------
 SELECT "{0}".from_to_stations ();
-DROP FUNCTION IF EXISTS "{0}".from_to_stations ()
+DROP FUNCTION IF EXISTS "{0}".from_to_stations ();
 '''
         qry = qry.format(self.schema, self.srid)
         return qry
@@ -191,7 +191,7 @@ FROM
   {0}."StreamCenterlines" AS riv
 WHERE
   xs.geom && riv.geom AND
-  ST_Intersects(xs.geom, riv.geom)
+  ST_Intersects(xs.geom, riv.geom);
 '''
         qry = qry.format(self.schema)
         return qry
@@ -237,10 +237,172 @@ UPDATE "{0}"."XSCutLines" xs
   FROM
     orderedXsecs ox
   WHERE
-    xs."XsecID" = ox."XsecID"
+    xs."XsecID" = ox."XsecID";
 '''
         qry = qry.format(self.schema)
         return qry
+
+    def pg_bank_stations(self):
+        qry = '''
+WITH bankpts AS (
+  SELECT
+    xs."XsecID" AS "XsecID",
+    ST_LineLocatePoint(xs.geom, ST_Intersection(xs.geom, bl.geom)) AS "Fraction"
+  FROM
+    "{0}"."BankLines" AS bl,
+    "{0}"."XSCutLines" AS xs
+  WHERE
+    xs.geom && bl.geom AND
+    ST_Intersects(xs.geom, bl.geom)
+)
+UPDATE "{0}"."XSCutLines" AS xs
+SET
+  "LeftBank" = minmax."minFrac",
+  "RightBank" = minmax."maxFrac"
+FROM
+  (
+  SELECT
+    "XsecID",
+    min("Fraction") AS "minFrac",
+    max("Fraction") AS "maxFrac"
+  FROM
+    bankpts AS bp
+  GROUP BY "XsecID"
+  ) minmax
+WHERE
+  xs."XsecID" = minmax."XsecID";
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_downstream_reach_names(self):
+        qry = '''
+DROP TABLE IF EXISTS "{0}"."FlowpathStations";
+------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE "{0}"."FlowpathStations" (
+  "XsecID" integer primary key,
+  "RiverCode" text,
+  "Nr" integer,
+  "LeftSta" double precision,
+  "ChanSta" double precision,
+  "RightSta" double precision);
+
+------------------------------------------------------------------------------------------------------------------------
+INSERT INTO "{0}"."FlowpathStations"
+  ("XsecID", "RiverCode", "Nr")
+SELECT
+  xs."XsecID",
+  sc."RiverCode",
+  xs."Nr"
+FROM
+  "{0}"."XSCutLines" AS xs
+  LEFT JOIN "{0}"."StreamCenterlines" AS sc ON xs."ReachID" = sc."ReachID";
+
+------------------------------------------------------------------------------------------------------------------------
+WITH xspts AS (
+  SELECT
+    xs."XsecID" AS "XsecID",
+    path."LineType" AS "LineType",
+    ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom)) * ST_Length(path.geom) AS "Station"
+  FROM
+    "{0}"."Flowpaths" AS path,
+    "{0}"."XSCutLines" AS xs
+  WHERE
+    path."LineType" = 'Channel' AND
+    xs.geom && path.geom AND
+    ST_Intersects(xs.geom, path.geom)
+)
+UPDATE "{0}"."FlowpathStations" AS flowsta
+SET
+  "ChanSta" = xspts."Station"
+FROM
+  xspts
+WHERE
+  xspts."XsecID" = flowsta."XsecID";
+
+------------------------------------------------------------------------------------------------------------------------
+WITH xspts AS (
+  SELECT
+    xs."XsecID" AS "XsecID",
+    path."LineType" AS "LineType",
+    ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom)) * ST_Length(path.geom) AS "Station"
+  FROM
+    "{0}"."Flowpaths" AS path,
+    "{0}"."XSCutLines" AS xs
+  WHERE
+    path."LineType" = 'Left' AND
+    xs.geom && path.geom AND
+    ST_Intersects(xs.geom, path.geom)
+)
+UPDATE "{0}"."FlowpathStations" AS flowsta
+SET
+  "LeftSta" = xspts."Station"
+FROM
+  xspts
+WHERE
+  xspts."XsecID" = flowsta."XsecID";
+
+------------------------------------------------------------------------------------------------------------------------
+WITH xspts AS (
+  SELECT
+    xs."XsecID" AS "XsecID",
+    path."LineType" AS "LineType",
+    ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom)) * ST_Length(path.geom) AS "Station"
+  FROM
+    "{0}"."Flowpaths" AS path,
+    "{0}"."XSCutLines" AS xs
+  WHERE
+    path."LineType" = 'Right' AND
+    xs.geom && path.geom AND
+    ST_Intersects(xs.geom, path.geom)
+)
+UPDATE "{0}"."FlowpathStations" AS flowsta
+SET
+  "RightSta" = xspts."Station"
+FROM
+  xspts
+WHERE
+  xspts."XsecID" = flowsta."XsecID";
+
+------------------------------------------------------------------------------------------------------------------------
+WITH xsdata AS (
+SELECT
+  x."XsecID",
+  s."RiverCode"
+FROM
+  "{0}"."XSCutLines" AS x
+  LEFT JOIN "{0}"."StreamCenterlines" AS s ON x."ReachID" = s."ReachID"
+)
+UPDATE "{0}"."XSCutLines" AS xs
+SET
+  "LeftLen" = abs(nfs."LeftSta" - flowsta."LeftSta"),
+  "ChanLen" = abs(nfs."ChanSta" - flowsta."ChanSta"),
+  "RightLen" = abs(nfs."RightSta" - flowsta."RightSta")
+FROM
+  xsdata,
+  "{0}"."FlowpathStations" AS flowsta,
+  "{0}"."FlowpathStations" AS nfs
+WHERE
+  xs."Nr" > 1 AND
+  xs."XsecID" = xsdata."XsecID" AND
+  xsdata."RiverCode" = flowsta."RiverCode" AND
+  flowsta."RiverCode" = nfs."RiverCode" AND
+  xs."XsecID" = flowsta."XsecID" AND
+  xs."Nr" = flowsta."Nr" AND
+  xs."Nr" = nfs."Nr" + 1;
+
+------------------------------------------------------------------------------------------------------------------------
+UPDATE "{0}"."XSCutLines" AS xs
+SET
+  "LeftLen" = 0,
+  "ChanLen" = 0,
+  "RightLen" = 0
+WHERE
+  xs."Nr" = 1;
+'''
+        qry = qry.format(self.schema)
+        return qry
+
 
 class BankLines(HecRasObject):
     """

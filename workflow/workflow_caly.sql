@@ -518,7 +518,7 @@ create table start."Manning" (
     "Fraction" double precision, -- wzgledne polozenie na linii przekroju
     "LUCode" text, -- kod pokrycia
     "N_Value" double precision, -- wsp szorstkosci
-	geom geometry(point, 2180) -- geometria
+    geom geometry(point, 2180) -- geometria
 );
 
 CREATE INDEX sidx_luchangelocations_geom ON
