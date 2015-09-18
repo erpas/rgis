@@ -69,7 +69,7 @@ SELECT  b."XsecID", b."N_Value", b."LUCode", ST_LineLocatePoint(a.geom,b.geom) A
 		WHERE a."XsecID" = b."XsecID" ORDER BY "XsecID", "Fraction";
 
 ------------------------------------------------------------------------------------------------
--- Creation of table with Manning's coeficients  --
+-- Creation of table with Manning's coefficients  --
 ------------------------------------------------------------------------------------------------
 
 SELECT "XsecID", CASE WHEN "Fraction" < 0.0001 THEN "Fraction" * 0 ELSE "Fraction" END AS "Fraction", "N_Value", "LUCode" INTO "Dzierzgon"."Manning"
