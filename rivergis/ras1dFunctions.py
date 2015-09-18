@@ -29,7 +29,7 @@ def ras1dTopology(rgis):
         return
 
     rgis.addInfo('<br><b>Building topology on StreamCenterlines...</b>')
-    if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_from_to_node'):
+    if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_topology'):
         rgis.addInfo('Done.')
 
 
