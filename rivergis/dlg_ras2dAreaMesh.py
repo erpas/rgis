@@ -30,7 +30,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     
     QObject.connect(self.ui.geoFileBtn, SIGNAL("clicked()"), self.chooseGeoFile)
     
-    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.accept)
+    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.acceptDialog)
     QObject.connect(self.ui.buttonBox, SIGNAL("rejected()"), self.reject)
     QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
     
@@ -54,7 +54,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     s.setValue("rivergis/lastGeoDir", dirname(geoFilename))
     self.ui.lineEditGeoFile.setText( geoFilename )
 
-  def accept(self):
+  def acceptDialog(self):
     wrongGeo = False
     if not self.areasLayer: # no areas layer
       return

@@ -301,6 +301,7 @@ class RiverDatabase(object):
             if attr_map:
                 if attr_name in attr_map.keys():
                     imp_attrs.append([attr[0], attr_map[attr_name], attr[1]])
+                    print imp_attrs
                 else:
                     pass
             else:

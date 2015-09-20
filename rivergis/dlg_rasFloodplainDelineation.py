@@ -20,7 +20,7 @@ class DlgRasFloodplainDelineation(QDialog):
     self.ui.setupUi(self)
     self.rgis = rgis
     
-    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.accept)
+    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.acceptDialog)
     QObject.connect(self.ui.buttonBox, SIGNAL("rejected()"), self.reject)
     QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
     
@@ -33,7 +33,7 @@ class DlgRasFloodplainDelineation(QDialog):
     self.dtmLayer = None
     self.wselLayer = None
 
-  def accept(self ):
+  def acceptDialog(self ):
     if not self.dtmLayer or not self.wselLayer:
       return
     QApplication.setOverrideCursor(Qt.WaitCursor)

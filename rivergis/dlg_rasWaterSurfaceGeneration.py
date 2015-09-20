@@ -23,7 +23,7 @@ class DlgRasWaterSurfaceGeneration(QDialog):
     self.ui = Ui_DlgWaterSurfaceGeneration()
     self.ui.setupUi(self)
     self.rgis = parent
-    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.accept)
+    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.acceptDialog)
     QObject.connect(self.ui.buttonBox, SIGNAL("rejected()"), self.rejectDlg)
     QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
     QObject.connect(self.ui.cboPoints,SIGNAL("currentIndexChanged(int)"),self.cboPointsChanged)
@@ -56,7 +56,7 @@ class DlgRasWaterSurfaceGeneration(QDialog):
     QApplication.setOverrideCursor(Qt.ArrowCursor)
     self.reject()
 
-  def accept(self ):
+  def acceptDialog(self ):
     from qgis.analysis import *
     import processing
     # check input

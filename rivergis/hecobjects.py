@@ -140,14 +140,14 @@ FOR r IN c LOOP
     tosta := 0;
     FOR i in 1..(SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
         SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
-        tosta := fromsta + len;
+        fromsta := tosta + len;
         UPDATE "{0}"."StreamCenterlines" SET
         "ReachLen" = len,
         "FromSta" = fromsta,
         "ToSta" = tosta
         WHERE "RiverCode" = river AND "ToNode" = tonode_id;
         tonode_id := fromnode_id;
-        fromsta := tosta;
+        tosta := fromsta;
     END LOOP;
 END LOOP;
 END;
@@ -172,21 +172,25 @@ class XSCutLines(HecRasObject):
         self.attrs = [
             ('"XsecID"', 'serial primary key'),
             ('"ReachID"', 'integer'),
+            ('"Nr"', 'integer'),
             ('"Station"', 'double precision'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
             ('"LeftBank"', 'double precision'),
             ('"RightBank"', 'double precision'),
-            ('"Llength"', 'double precision'),
+            ('"LLength"', 'double precision'),
             ('"ChLength"', 'double precision'),
-            ('"Rlength"', 'double precision'),
-            ('"NodeName"', 'text')]
+            ('"RLength"', 'double precision'),
+            ('"NodeName"', 'text'),
+            ('"DtmID"', 'integer')]
 
     def pg_river_reach_names(self):
         qry = '''
 UPDATE {0}."XSCutLines" AS xs
 SET
-  "ReachID" = riv."ReachID"
+  "ReachID" = riv."ReachID",
+  "RiverCode" = riv."RiverCode",
+  "ReachCode" = riv."ReachCode"
 FROM
   {0}."StreamCenterlines" AS riv
 WHERE
@@ -225,7 +229,7 @@ WITH orderedXsecs AS (
 SELECT
     "XsecID",
     xs."ReachID",
-    rank() OVER (PARTITION BY "RiverCode" ORDER BY "Station" ASC) AS rank
+    rank() OVER (PARTITION BY xs."RiverCode" ORDER BY xs."Station" ASC) AS rank
   FROM
     "{0}"."XSCutLines" AS xs
   LEFT JOIN
@@ -275,7 +279,8 @@ WHERE
         qry = qry.format(self.schema)
         return qry
 
-    def pg_downstream_reach_names(self):
+
+    def pg_downstream_reach_lengths(self):
         qry = '''
 DROP TABLE IF EXISTS "{0}"."FlowpathStations";
 ------------------------------------------------------------------------------------------------------------------------
@@ -375,9 +380,9 @@ FROM
 )
 UPDATE "{0}"."XSCutLines" AS xs
 SET
-  "LeftLen" = abs(nfs."LeftSta" - flowsta."LeftSta"),
-  "ChanLen" = abs(nfs."ChanSta" - flowsta."ChanSta"),
-  "RightLen" = abs(nfs."RightSta" - flowsta."RightSta")
+  "LLength" = abs(nfs."LeftSta" - flowsta."LeftSta"),
+  "ChLength" = abs(nfs."ChanSta" - flowsta."ChanSta"),
+  "RLength" = abs(nfs."RightSta" - flowsta."RightSta")
 FROM
   xsdata,
   "{0}"."FlowpathStations" AS flowsta,
@@ -394,9 +399,9 @@ WHERE
 ------------------------------------------------------------------------------------------------------------------------
 UPDATE "{0}"."XSCutLines" AS xs
 SET
-  "LeftLen" = 0,
-  "ChanLen" = 0,
-  "RightLen" = 0
+  "LLength" = 0,
+  "ChLength" = 0,
+  "RLength" = 0
 WHERE
   xs."Nr" = 1;
 '''
@@ -436,7 +441,15 @@ class Flowpaths(HecRasObject):
         super(Flowpaths, self).__init__()
         self.hdf_dataset = None
         self.geom_type = 'LINESTRING'
-        self.attrs = [('"LineType"', 'text')]
+        self.attrs = [('"FpID"', 'serial primary key'),
+                      ('"LineType"', 'text')]
+
+    def pg_get_flowpaths_linetype(self):
+        qry = '''
+SELECT "LineType" FROM "{0}"."Flowpaths";
+'''
+        qry = qry.format(self.schema)
+        return qry
 
 
 class Bridges(HecRasObject):

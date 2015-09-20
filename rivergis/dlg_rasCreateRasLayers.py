@@ -18,7 +18,7 @@ class DlgCreateRasLayers(QDialog):
         self.rgis = parent
         self.rdb = parent.rdb
 
-        self.ui.buttonBox.accepted.connect(self.accept)
+        self.ui.buttonBox.accepted.connect(self.acceptDialog)
         self.ui.buttonBox.rejected.connect(self.reject)
         self.ui.helpButton.clicked.connect(self.displayHelp)
         self.ui.allChbox.toggled.connect(self.allChboxToggled)
@@ -43,7 +43,7 @@ class DlgCreateRasLayers(QDialog):
         self.rgis.ui.textEdit.append(text)
 
 
-    def accept(self):
+    def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         self.addInfo('<br><b>Running Create RAS Layers and Tables...</b>')
         tablesToCreate = []

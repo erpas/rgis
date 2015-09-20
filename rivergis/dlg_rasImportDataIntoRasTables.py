@@ -17,7 +17,7 @@ class DlgImportDataIntoRasTables(QDialog):
         self.ui = Ui_importDataIntoRasTables()
         self.ui.setupUi(self)
         self.rgis = rgis
-        self.ui.buttonBox.accepted.connect(self.accept)
+        self.ui.buttonBox.accepted.connect(self.acceptDialog)
         self.ui.buttonBox.rejected.connect(self.rejectDlg)
         self.ui.cboFlowPaths.currentIndexChanged.connect(self.cboFlowpathsLayerChanged)
         self.ui.cboIneffective.currentIndexChanged.connect(self.cboIneffectiveLayerChanged)
@@ -31,7 +31,7 @@ class DlgImportDataIntoRasTables(QDialog):
         self.landuseLayer = None
 
 
-    def accept(self):
+    def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         importInfo = []
 
