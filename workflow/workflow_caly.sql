@@ -510,83 +510,110 @@ VALUES
   ('f', 0.06, ST_GeomFromText('POLYGON((324532 392777,324787 393080,324786 393283,325222 392320,324815 392196,324687 392593,324532 392777))',2180));
 
 
-------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 -- Intersect of land use layer with cross section layer  --
-------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+DROP TABLE IF EXISTS start."Manning";
 
-SELECT "LUID", "LUCode", "N_Value",ST_AsText((ST_Dump(geom)).geom) AS geom INTO start.ludump
-FROM  start."LanduseAreas";
+SELECT "LUID", "LUCode", "N_Value",ST_AsText((ST_Dump(geom)).geom) AS geom
+INTO start.ludump
+FROM start."LanduseAreas";
 
 ALTER TABLE start.ludump
-	ALTER COLUMN geom TYPE geometry(POLYGON,2180)
-	USING ST_SetSRID(geom,2180);
+ALTER COLUMN geom TYPE geometry(POLYGON, 2180)
+USING ST_SetSRID(geom, 2180);
+
 CREATE INDEX idx_ludump
- 	ON start.ludump
- 	 	USING gist(geom);
+ON start.ludump
+USING gist(geom);
 
+------------------------------------------------------------------------------------------------------------------------
+SELECT "XSCutLines"."XsecID", ludump."N_Value", ludump."LUCode", ST_Intersection(ludump.geom, "XSCutLines".geom) AS geom
+INTO start.intercrossection
+FROM start.ludump, start."XSCutLines"
+WHERE
+    ludump.geom && "XSCutLines".geom AND
+    ST_Intersects(ludump.geom, "XSCutLines".geom)
+ORDER BY "XSCutLines"."XsecID";
 
-SELECT "XSCutLines"."XsecID", ludump."N_Value", ludump."LUCode", ST_Intersection(ludump.geom, "XSCutLines".geom) AS geom INTO start.intercrossection
-	FROM start.ludump, start."XSCutLines"
-		WHERE ludump.geom && "XSCutLines".geom AND ST_Intersects(ludump.geom, "XSCutLines".geom) ORDER BY "XSCutLines"."XsecID";
-
-SELECT "XsecID","N_Value","LUCode" ,ST_AsText((ST_Dump(geom)).geom) AS geom INTO start.intercrossectiondump
-	FROM start.intercrossection;
+SELECT "XsecID","N_Value","LUCode" ,ST_AsText((ST_Dump(geom)).geom) AS geom
+INTO start.intercrossectiondump
+FROM start.intercrossection;
 
 
 ALTER TABLE start.intercrossectiondump
-	ALTER COLUMN geom TYPE geometry(LINESTRING,2180)
-	USING ST_SetSRID(geom,2180);
+ALTER COLUMN geom TYPE geometry(LINESTRING, 2180)
+USING ST_SetSRID(geom, 2180);
+
 CREATE INDEX idx_intercrossectiondump
- 	ON start.intercrossectiondump
- 	 	USING gist(geom);
+ONstart.intercrossectiondump
+USING gist(geom);
 
-
-------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 -- Multilinestring to line string --
-------------------------------------------------------------------------------------------------
-
-SELECT "XsecID", ST_AsText((ST_Dump("XSCutLines".geom)).geom) AS geom INTO start.single_line
-	FROM start."XSCutLines" ORDER BY "XsecID";
+------------------------------------------------------------------------------------------------------------------------
+SELECT "XsecID", ST_AsText((ST_Dump("XSCutLines".geom)).geom) AS geom
+INTO start.single_line
+FROM start."XSCutLines"
+ORDER BY "XsecID";
 
 ALTER TABLE start.single_line
- 	ALTER COLUMN geom TYPE geometry(LINESTRING,2180)
-  	USING ST_SetSRID(geom,2180);
+ALTER COLUMN geom TYPE geometry(LINESTRING, 2180)
+USING ST_SetSRID(geom, 2180);
 
 CREATE INDEX idx_single_line
- 	ON start.single_line
- 	 	USING gist(geom);
+ON start.single_line
+USING gist(geom);
 
-----------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 -- Creation of points on the line start points, 5 mm shifting for appropriate "N_Value" application    --
-----------------------------------------------------------------------------------------------------------
-
-SELECT "XsecID", "N_Value", "LUCode", ST_Line_Interpolate_Point(intercrossectiondump.geom,0.00005) as geom INTO start.shiftpoints
-	FROM start.intercrossectiondump ORDER BY "XsecID";
+------------------------------------------------------------------------------------------------------------------------
+SELECT "XsecID", "N_Value", "LUCode", ST_Line_Interpolate_Point(intercrossectiondump.geom, 0.00005) AS geom
+INTO start.shiftpoints
+FROM start.intercrossectiondump
+ORDER BY "XsecID";
 
 ALTER TABLE start.shiftpoints
-	ALTER COLUMN geom TYPE geometry(POINT,2180)
-	USING ST_SetSRID(geom,2180);
+ALTER COLUMN geom TYPE geometry(POINT, 2180)
+USING ST_SetSRID(geom, 2180);
 
 CREATE INDEX idx_shiftpoints
- 	ON start.shiftpoints
- 	 	USING gist(geom);
+ON start.shiftpoints
+USING gist(geom);
 
-------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 -- Calculation of fraction along line cross sections  --
-------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+SELECT  b."XsecID", b."N_Value", b."LUCode", ST_LineLocatePoint(a.geom,b.geom) AS "Fraction"
+INTO start.tempmann
+FROM start.single_line AS a, start.shiftpoints AS b
+WHERE a."XsecID" = b."XsecID"
+ORDER BY "XsecID", "Fraction";
 
-SELECT  b."XsecID", b."N_Value", b."LUCode", ST_LineLocatePoint(a.geom,b.geom) AS "Fraction" INTO start.tempmann
-	FROM start.single_line AS a, start.shiftpoints AS b
-		WHERE a."XsecID" = b."XsecID" ORDER BY "XsecID", "Fraction";
-
-------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 -- Creation of table with Manning's coefficients  --
-------------------------------------------------------------------------------------------------
-
-SELECT "XsecID", CASE WHEN "Fraction" < 0.0001 THEN "Fraction" * 0 ELSE "Fraction" END AS "Fraction", "N_Value", "LUCode" INTO start."Manning"
+------------------------------------------------------------------------------------------------------------------------
+SELECT
+    "XsecID",
+    CASE WHEN
+        "Fraction" < 0.0001 THEN 0
+    ELSE
+        "Fraction"
+    END AS "Fraction",
+    "N_Value",
+    "LUCode"
+INTO start."Manning"
 FROM start.tempmann;
 
-DROP TABLE start.intercrossection,start.intercrossectiondump, start.single_line, start.shiftpoints,start.tempmann,start.ludump
+DROP TABLE
+    start.intercrossection,
+    start.intercrossectiondump,
+    start.single_line,
+    start.shiftpoints,
+    start.tempmann,
+    start.ludump
+
+------------------------------------------------------------------------------------------------------------------------
 
 
 
