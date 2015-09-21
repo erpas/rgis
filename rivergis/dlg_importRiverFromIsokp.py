@@ -19,7 +19,7 @@ class DlgImportRiverFromIsokp(QDialog):
     self.mydb = None
     self.rgis = rgis
 
-    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.accept)
+    QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.acceptDialog)
     QObject.connect(self.ui.buttonBox, SIGNAL("rejected()"), self.reject)
     QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
 
@@ -82,7 +82,7 @@ class DlgImportRiverFromIsokp(QDialog):
     # print "Current river id=%i, name=%s" % (self.riv_id, self.ui.cboRivers.currentText())
 
 
-  def accept(self):
+  def acceptDialog(self):
     if not self.riv_id: # no river selected
       return
     self.srid = int(self.ui.lineEdSrid.text())

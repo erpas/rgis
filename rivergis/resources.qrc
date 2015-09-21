@@ -1,18 +1,28 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/ras1dDTMSetup.svg</file>
+    <file>icons/ras1dXsRiverNames.svg</file>
+    <file>icons/ras1dXsAll.svg</file>
+    <file>icons/ras1dXsElevations.svg</file>
+    <file>icons/ras1dXsStationing.svg</file>
+    <file>icons/ras1dXsBanks.svg</file>
+    <file>icons/ras1dXsDSLenghts.svg</file>
     <file>icons/importLayersIntoRdb.svg</file>
-    <file>icons/save2dmeshPtsToGeo.svg</file>
+    <file>icons/ras1dStreamCenterlinesAll.svg</file>
+    <file>icons/ras1dStreamCenterlinesLengthsStations.svg</file>
+    <file>icons/refreshConnections.svg</file>
+    <file>icons/ras1dStreamCenterlinesTopology.svg</file>
     <file>icons/createPgTables.svg</file>
     <file>icons/loadRdbTablesIntoQgis.svg</file>
     <file>icons/loadWselHdf.svg</file>
     <file>icons/createDepthsAndRange.svg</file>
     <file>icons/createWselRaster.svg</file>
     <file>icons/importFromIsok.svg</file>
-    <file>icons/action_refresh.png</file>
     <file>icons/rivergis.svg</file>
     <file>icons/correctLateralWeir.svg</file>
-    <file>icons/2darea_perimeter.svg</file>
-    <file>icons/2darea.svg</file>
-    <file>icons/rivergis.svg</file>
+    <file>icons/loadVelHdf.svg</file>
+    <file>icons/ras2dareaCreate.svg</file>
+    <file>icons/ras2dareaPreview.svg</file>
+    <file>icons/ras2dareaSaveToGeo.svg</file>
   </qresource>
 </RCC>

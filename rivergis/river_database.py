@@ -9,6 +9,7 @@ from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NUL
 from qgis.gui import QgsMessageBar
 from os.path import join
 
+
 class RiverDatabase(object):
     """
     Class for PostgreSQL database and hydrodynamic models handling.
@@ -55,7 +56,7 @@ class RiverDatabase(object):
             self.rgis.iface.messageBar().pushMessage("Error", 'Can\'t connect to PostGIS database. Check connection details!', level=QgsMessageBar.CRITICAL, duration=10)
             msg = e
         finally:
-            print(msg)
+            self.rgis.addInfo(msg)
             return msg
 
     def disconnect_pg(self):
@@ -66,7 +67,7 @@ class RiverDatabase(object):
             self.con.close()
             self.con = None
         else:
-            print('Can not disconnect. There is no opened connection!')
+            self.rgis.addInfo('Can not disconnect. There is no opened connection!')
 
     def setup_hydro_object(self, hydro_object, schema=None, srid=None):
         """
@@ -97,7 +98,6 @@ class RiverDatabase(object):
         result = None
         try:
             if self.con:
-                # cur = self.con.cursor()
                 cur = self.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
                 cur.execute(qry)
                 if fetch is True:
@@ -106,10 +106,10 @@ class RiverDatabase(object):
                     result = []
                 self.con.commit()
             else:
-                print('There is no opened connection! Use "connect_pg" method before running query.')
+                self.rgis.addInfo('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
             self.con.rollback()
-            print(e)
+            self.rgis.addInfo(repr(e))
         finally:
             return result
 
@@ -141,7 +141,7 @@ class RiverDatabase(object):
         if key not in self.register:
             self.register[key] = obj
         else:
-            print('{0} already exists inside RiverGIS registry.'.format(key))
+            self.rgis.addInfo('{0} already exists inside RiverGIS registry.'.format(key))
 
     def register_existing(self, hydro_module, schema=None, srid=None):
         """
@@ -159,7 +159,8 @@ class RiverDatabase(object):
                 self.setup_hydro_object(hydro_object, schema, srid)
                 obj = hydro_object()
                 self.register_object(obj)
-                print('{0} registered'.format(obj.name))
+                if self.rgis.DEBUG:
+                    self.rgis.addInfo('{0} registered'.format(obj.name))
             else:
                 pass
 
@@ -193,7 +194,7 @@ class RiverDatabase(object):
             self.queries[method.__name__] = qry
             return obj
         else:
-            print('Process aborted!')
+            self.rgis.addInfo('Process aborted!')
 
     def make_vlayer(self, obj):
         """
@@ -227,10 +228,6 @@ class RiverDatabase(object):
         """
         Setting layers uris list from QgsMapLayerRegistry
         """
-        # dziala ok w pustym projekcie
-        # przy probie ponownego uruchomienia wywala QGISa
-        # przy uruchomieniu w projekcie z zaladowanymi tabelami zarejestrowanymi w RDB wywala QGISa
-        # wydaje mi sie, ze mozna spprobować uzyc klasy layerTree do sprawdzenia stanu zaladowanych warstw.
         self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
 
         if self.rgis.DEBUG:
@@ -408,10 +405,5 @@ if __name__ == '__main__':
     baza.process_hecobject(heco.StreamCenterlines3D, 'pg_create_table')
     baza.process_hecobject(heco.StreamCenterlines, 'pg_topology')
     baza.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations')
-
-    for qry in baza.queries:
-        print(qry)
-        print(baza.queries[qry])
-    print(baza.register)
 
     baza.disconnect_pg()

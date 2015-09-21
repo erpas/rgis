@@ -45,6 +45,7 @@ class RiverGIS(QMainWindow):
         self.iface = iface
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
+        self.dtms = None
 
         self.DEBUG = 1
 
@@ -59,25 +60,25 @@ class RiverGIS(QMainWindow):
         self.ui.actionImportRiverFromIsokp.triggered.connect(self.importRiverIsokp)
         # RAS Geometry
         # 1D
+        self.ui.actionRASDTMSetup.triggered.connect(self.rasDTMSetup)
         self.ui.actionRASCreateRdbTables.triggered.connect(self.rasCreateRdbTables)
         self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
-        self.ui.actionRASTopology1D.triggered.connect(self.rasTopology1D)
-        self.ui.actionRASLengthsStations.triggered.connect(self.rasLengthsStations)
-        self.ui.actionRASCenterlineElevations.triggered.connect(self.rasCenterlineElevations)
-        self.ui.actionRASStreamCenterlineAll.triggered.connect(self.rasStreamCenterlineAll)
-        self.ui.actionRASXSRiverReachNames.triggered.connect(self.rasXSRiverReachNames)
-        self.ui.actionRASXSStationing.triggered.connect(self.rasXSStationing)
-        self.ui.actionRASXSBankStations.triggered.connect(self.rasXSBankStations)
-        self.ui.actionRASXSDownstreamReachLengths.triggered.connect(self.rasXSDownstreamReachLengths)
-        self.ui.actionRASXSElevations.triggered.connect(self.rasXSElevations)
-        self.ui.actionRASXSAll.triggered.connect(self.rasXSAll)
-        self.ui.actionRASManningsNValues.triggered.connect(self.rasManningsNValues)
-        self.ui.actionRASLevees.triggered.connect(self.rasLevees)
-        self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.rasIneffectiveFlowAreas)
-        self.ui.actionRASBlockedObstructions.triggered.connect(self.rasBlockedObstructions)
-        self.ui.actionRASFlipXSDirection.triggered.connect(self.rasFlipXSDirection)
-        self.ui.actionRASExport1DRASData.triggered.connect(self.rasExport1DRasData)
+        self.ui.actionRASTopology1D.triggered.connect(self.ras1dStreamCenterlinesTopology)
+        self.ui.actionRASLengthsStations.triggered.connect(self.ras1dStreamCenterlinesLengthsStations)
+        self.ui.actionRASStreamCenterlineAll.triggered.connect(self.ras1dStreamCenterlineAll)
+        self.ui.actionRASXSRiverReachNames.triggered.connect(self.ras1dXSRiverReachNames)
+        self.ui.actionRASXSStationing.triggered.connect(self.ras1dXSStationing)
+        self.ui.actionRASXSBankStations.triggered.connect(self.ras1dXSBankStations)
+        self.ui.actionRASXSDownstreamReachLengths.triggered.connect(self.ras1dXSDownstreamReachLengths)
+        self.ui.actionRASXSElevations.triggered.connect(self.ras1dXSElevations)
+        self.ui.actionRASXSAll.triggered.connect(self.ras1dXSAll)
+        self.ui.actionRASManningsNValues.triggered.connect(self.ras1dManningsNValues)
+        self.ui.actionRASLevees.triggered.connect(self.ras1dLevees)
+        self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.ras1dIneffectiveFlowAreas)
+        self.ui.actionRASBlockedObstructions.triggered.connect(self.ras1dBlockedObstructions)
+        self.ui.actionRASFlipXSDirection.triggered.connect(self.ras1dFlipXSDirection)
+        self.ui.actionRASExport1DRASData.triggered.connect(self.ras1dExportDataSDF)
         # 2D
         self.ui.actionRASCreate2dArea.triggered.connect(self.rasCreate2dArea)
         self.ui.actionRASPreview2DMesh.triggered.connect(self.rasPreview2DMesh)
@@ -95,17 +96,33 @@ class RiverGIS(QMainWindow):
         self.ui.dbToolBar.setObjectName("Rdb_ToolBar")
         self.ui.dbToolBar.addAction(self.ui.actionRefreshConnections)
 
+        # Settings Toolbar
+        self.ui.settingsToolBar = QToolBar("Settings", self)
+        self.ui.settingsToolBar.setObjectName("Settings_ToolBar")
+        self.ui.settingsToolBar.addAction(self.ui.actionRASDTMSetup)
+
         # 1D HEC-RAS Toolbar
         self.ui.ras1dToolBar = QToolBar("HEC-RAS 1D Geometry", self)
         self.ui.ras1dToolBar.setObjectName("RAS1D_ToolBar")
         self.ui.ras1dToolBar.addAction(self.ui.actionRASCreateRdbTables )
         self.ui.ras1dToolBar.addAction(self.ui.actionRASLoadRdbTablesIntoQGIS)
         self.ui.ras1dToolBar.addAction(self.ui.actionRASImportLayersIntoRdbTables)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASTopology1D)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASLengthsStations)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASStreamCenterlineAll)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSRiverReachNames)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSStationing)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSBankStations)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSDownstreamReachLengths)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSElevations)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSAll)
 
         # 2D HEC-RAS Toolbar
         self.ui.ras2dToolBar = QToolBar("HEC-RAS 2D Geometry", self)
         self.ui.ras2dToolBar.setObjectName("RAS2D_ToolBar")
         self.ui.ras2dToolBar.addAction(self.ui.actionRASCreate2dArea )
+        self.ui.ras2dToolBar.addAction(self.ui.actionRASPreview2DMesh )
+        self.ui.ras2dToolBar.addAction(self.ui.actionRASSaveMeshPointsToHECRASGeometry )
 
         # HEC-RAS Mapping Toolbar
         self.ui.rasMappingToolBar = QToolBar("HEC-RAS Flood Mapping", self)
@@ -115,6 +132,7 @@ class RiverGIS(QMainWindow):
         self.ui.rasMappingToolBar.addAction(self.ui.actionRASFloodplainDelineation)
 
         self.addToolBar(self.ui.dbToolBar)
+        self.addToolBar(self.ui.settingsToolBar)
         self.addToolBar(self.ui.ras1dToolBar)
         self.addToolBar(self.ui.ras2dToolBar)
         self.addToolBar(self.ui.rasMappingToolBar)
@@ -126,13 +144,13 @@ class RiverGIS(QMainWindow):
         # Some info
         self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please, start with choosing a <b>connection to a PostGIS database and a schema</b> from the above lists.')
         self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
-        self.ui.textEdit.append('<b>Loading HEC-RAS 2D results</b> requires a h5py Python package ( http://www.h5py.org ).')
+        self.ui.textEdit.append('Loading HEC-RAS results requires a h5py Python package ( http://www.h5py.org ).')
         self.ui.textEdit.append('<br>----------------------------------------------------------------------------')
 
         # restore the window state
         settings = QSettings()
-        self.restoreGeometry( settings.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ) )
-        self.restoreState( settings.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ) )
+        self.restoreGeometry(settings.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
+        self.restoreState(settings.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
 
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
@@ -146,8 +164,8 @@ class RiverGIS(QMainWindow):
 
         # save the window state
         settings = QSettings()
-        settings.setValue( "/rivergis/mainWindow/windowState", self.saveState() )
-        settings.setValue( "/rivergis/mainWindow/geometry", self.saveGeometry() )
+        settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
+        settings.setValue("/rivergis/mainWindow/geometry", self.saveGeometry())
 
         QMainWindow.closeEvent(self, e)
 
@@ -196,14 +214,6 @@ class RiverGIS(QMainWindow):
         self.database = s.value('database')
         self.user = s.value('username')
         self.passwd = s.value('password')
-        # self.sslmode = s.value('sslmode')
-        # self.connParams = "host='%s' port='%s' dbname='%s' user='%s' password='%s'" % \
-        #                          (self.host,self.port,self.database,self.user,self.passwd)
-        # sslmodesList = [0,'disable', 'allow', 'prefer', 'require']
-        # if self.sslmode:
-        #     self.connParams += " sslmode='%s'" % sslmodesList[self.sslmode]
-        # self.conn = psycopg2.connect(self.connParams)
-        # self.addInfo('Current DB connection is: %s' % self.curConnName)
 
         # close any existing connection to river database
         if self.rdb:
@@ -211,6 +221,7 @@ class RiverGIS(QMainWindow):
                 self.rdb.dbname, self.rdb.host))
             self.rdb.disconnect_pg()
             self.rdb = None
+
         # create a new connection to river database
         self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SCHEMA = 'start'
@@ -258,6 +269,11 @@ class RiverGIS(QMainWindow):
 
     # 1D HEC-RAS Geometry Functions
 
+    def rasDTMSetup(self):
+        from dlg_dtmSetup import DlgDTMSetup
+        dlg = DlgDTMSetup(self)
+        dlg.exec_()
+
     def rasCreateRdbTables(self):
         from dlg_rasCreateRasLayers import DlgCreateRasLayers
         dlg = DlgCreateRasLayers(self)
@@ -283,62 +299,58 @@ class RiverGIS(QMainWindow):
         importData = DlgImportDataIntoRasTables(self)
         importData.exec_()
 
-    def rasTopology1D(self):
-        from ras1dFunctions import ras1dTopology
-        ras1dTopology(self)
+    def ras1dStreamCenterlinesTopology(self):
+        from ras1dFunctions import ras1dStreamCenterlineTopology
+        ras1dStreamCenterlineTopology(self)
 
-    def rasLengthsStations(self):
-        from ras1dFunctions import ras1dLengthsStations
-        ras1dLengthsStations(self)
+    def ras1dStreamCenterlinesLengthsStations(self):
+        from ras1dFunctions import ras1dStreamCenterlineLengthsStations
+        ras1dStreamCenterlineLengthsStations(self)
 
-    def rasCenterlineElevations(self):
-        from ras1dFunctions import ras1dCenterlineElevations
-        ras1dCenterlineElevations(self)
-
-    def rasStreamCenterlineAll(self):
+    def ras1dStreamCenterlineAll(self):
         from ras1dFunctions import ras1dStreamCenterlineAll
         ras1dStreamCenterlineAll(self)
 
-    def rasXSRiverReachNames(self):
+    def ras1dXSRiverReachNames(self):
         from ras1dFunctions import ras1dXSRiverReachNames
         ras1dXSRiverReachNames(self)
 
-    def rasXSStationing(self):
+    def ras1dXSStationing(self):
         from ras1dFunctions import ras1dXSStationing
         ras1dXSStationing(self)
 
-    def rasXSBankStations(self):
+    def ras1dXSBankStations(self):
         from ras1dFunctions import ras1dXSBankStations
         ras1dXSBankStations(self)
 
-    def rasXSDownstreamReachLengths(self):
+    def ras1dXSDownstreamReachLengths(self):
         from ras1dFunctions import ras1dXSDownstreamLengths
         ras1dXSDownstreamLengths(self)
 
-    def rasXSElevations(self):
+    def ras1dXSElevations(self):
         from ras1dFunctions import ras1dXSElevations
         ras1dXSElevations(self)
 
-    def rasXSAll(self):
+    def ras1dXSAll(self):
         from ras1dFunctions import ras1dXSAll
         ras1dXSAll(self)
 
-    def rasManningsNValues(self):
+    def ras1dManningsNValues(self):
         pass
 
-    def rasLevees(self):
+    def ras1dLevees(self):
         pass
 
-    def rasIneffectiveFlowAreas(self):
+    def ras1dIneffectiveFlowAreas(self):
         pass
 
-    def rasBlockedObstructions(self):
+    def ras1dBlockedObstructions(self):
         pass
 
-    def rasFlipXSDirection(self):
+    def ras1dFlipXSDirection(self):
         pass
 
-    def rasExport1DRasData(self):
+    def ras1dExportDataSDF(self):
         pass
 
     # 2D HEC-RAS Geometry Functions
