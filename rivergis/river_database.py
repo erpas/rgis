@@ -98,7 +98,6 @@ class RiverDatabase(object):
         result = None
         try:
             if self.con:
-                # cur = self.con.cursor()
                 cur = self.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
                 cur.execute(qry)
                 if fetch is True:
@@ -110,7 +109,7 @@ class RiverDatabase(object):
                 self.rgis.addInfo('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
             self.con.rollback()
-            self.rgis.addInfo(e)
+            self.rgis.addInfo(repr(e))
         finally:
             return result
 
@@ -406,10 +405,5 @@ if __name__ == '__main__':
     baza.process_hecobject(heco.StreamCenterlines3D, 'pg_create_table')
     baza.process_hecobject(heco.StreamCenterlines, 'pg_topology')
     baza.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations')
-
-    for qry in baza.queries:
-        print(qry)
-        print(baza.queries[qry])
-    print(baza.register)
 
     baza.disconnect_pg()

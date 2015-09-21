@@ -82,9 +82,11 @@ FOR r IN c LOOP
         end_node := nr;
         INSERT INTO "{0}"."NodesTable" VALUES (end_geom, nr, ST_X(end_geom), ST_Y(end_geom));
     END IF;
-    UPDATE "{0}"."StreamCenterlines" SET
-    "FromNode" = start_node,
-    "ToNode" = end_node
+    UPDATE
+        "{0}"."StreamCenterlines"
+    SET
+        "FromNode" = start_node,
+        "ToNode" = end_node
     WHERE CURRENT OF c;
 END LOOP;
 END;
@@ -113,9 +115,22 @@ GROUP BY "RiverCode", geom
 HAVING COUNT(geom) = 1;
 
 DROP TABLE IF EXISTS "{0}"."Endpoints";
-SELECT tmp1.geom::geometry(POINT, {1}), tmp1."RiverCode", tmp1."ReachCode", "NodesTable"."NodeID" INTO "{0}"."Endpoints"
-FROM "{0}".tmp1, "{0}".tmp2, "{0}"."NodesTable"
-WHERE tmp1."RiverCode" = tmp2."RiverCode" AND tmp1.geom = tmp2.geom AND tmp1.typ_punktu = 'end' AND tmp1.geom = "NodesTable".geom;
+SELECT
+    tmp1.geom::geometry(POINT, {1}),
+    tmp1."RiverCode",
+    tmp1."ReachCode",
+    "NodesTable"."NodeID"
+INTO
+    "{0}"."Endpoints"
+FROM
+    "{0}".tmp1,
+    "{0}".tmp2,
+    "{0}"."NodesTable"
+WHERE
+    tmp1."RiverCode" = tmp2."RiverCode" AND
+    tmp1.geom = tmp2.geom AND
+    tmp1.typ_punktu = 'end' AND
+    tmp1.geom = "NodesTable".geom;
 
 DROP TABLE "{0}".tmp1;
 DROP TABLE "{0}".tmp2;
@@ -132,20 +147,34 @@ DECLARE
     fromsta double precision;
     tosta double precision;
     len double precision;
+    counter integer;
 BEGIN
 FOR r IN c LOOP
     river := r."RiverCode";
     tonode_id := r."NodeID";
     fromsta := 0;
     tosta := 0;
-    FOR i in 1..(SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
-        SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+    counter := (SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river);
+    FOR i IN 1..counter LOOP
+        SELECT
+            "FromNode", ST_Length(geom)
+        INTO
+            fromnode_id, len
+        FROM
+            "{0}"."StreamCenterlines"
+        WHERE
+            "RiverCode" = river AND
+            "ToNode" = tonode_id;
         tosta := fromsta + len;
-        UPDATE {0}."StreamCenterlines" SET
-        "ReachLen" = len,
-        "FromSta" = fromsta,
-        "ToSta" = tosta
-        WHERE "RiverCode" = river AND "ToNode" = tonode_id;
+        UPDATE
+            "{0}"."StreamCenterlines"
+        SET
+            "ReachLen" = len,
+            "FromSta" = fromsta,
+            "ToSta" = tosta
+        WHERE
+            "RiverCode" = river AND
+            "ToNode" = tonode_id;
         tonode_id := fromnode_id;
         fromsta := tosta;
     END LOOP;
@@ -604,6 +633,7 @@ DROP TABLE
         qry = qry.format(self.schema, self.srid)
         return qry
 
+
 class LeveeAlignment(HecRasObject):
     def __init__(self):
         super(LeveeAlignment, self).__init__()
@@ -676,7 +706,7 @@ class SAConnections(HecRasObject):
             ('"DSSA"', 'integer'),
             ('"TopWidth"', 'double precision')]
 
-
+'''
 class StreamCenterlines3D(StreamCenterlines):
     def __init__(self):
         super(StreamCenterlines3D, self).__init__()
@@ -690,3 +720,4 @@ class XSCutLines3D(XSCutLines):
 class Bridges3D(Bridges):
     def __init__(self):
         super(Bridges3D, self).__init__()
+'''
