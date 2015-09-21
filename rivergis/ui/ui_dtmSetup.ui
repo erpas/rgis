@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>DTM(s) Selection</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="../resources.qrc">
-    <normaloff>:/rivergis/icons/ras1dDTMSetup.svg</normaloff>:/rivergis/icons/ras1dDTMSetup.svg</iconset>
-  </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
   </property>
@@ -77,9 +73,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

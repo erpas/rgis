@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_dtmSetup.ui'
 #
-# Created: Sun Sep 20 13:29:07 2015
+# Created: Mon Sep 21 08:51:42 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,9 +27,6 @@ class Ui_DTMSelectionDialog(object):
     def setupUi(self, DTMSelectionDialog):
         DTMSelectionDialog.setObjectName(_fromUtf8("DTMSelectionDialog"))
         DTMSelectionDialog.resize(294, 330)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras1dDTMSetup.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        DTMSelectionDialog.setWindowIcon(icon)
         DTMSelectionDialog.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.gridLayout = QtGui.QGridLayout(DTMSelectionDialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -69,4 +66,3 @@ class Ui_DTMSelectionDialog(object):
         self.allChbox.setText(_translate("DTMSelectionDialog", "Select all", None))
         self.helpButton.setText(_translate("DTMSelectionDialog", "Help", None))
 
-import resources_rc
