@@ -217,7 +217,7 @@ WITH xspts AS (
 )
 UPDATE "{0}"."XSCutLines" AS xs
 SET
-  "Station" = riv."FromSta" + xspts."Fraction" * (riv."ToSta" - riv."FromSta")
+  "Station" = riv."ToSta" + xspts."Fraction" * (riv."FromSta" - riv."ToSta")
 FROM
   xspts,
   "{0}"."StreamCenterlines" AS riv
