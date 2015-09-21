@@ -139,74 +139,74 @@ def ras1dXSElevations(rgis):
         params = '({0})'.format(',\n'.join([name, uri, dp, lid, str(pixelSize), geom]))
         dtmsParams.append(params)
     qry = '''
-INSERT INTO "{0}"."DTMs" ("Name","DtmUri", "Provider", "LayerID", "CellSize", geom) VALUES \n  {1};
+        INSERT INTO "{0}"."DTMs" ("Name","DtmUri", "Provider", "LayerID", "CellSize", geom) VALUES \n  {1};
     '''.format(rgis.rdb.SCHEMA, '{0}'.format(',\n'.join(dtmsParams)))
     rgis.rdb.run_query(qry)
 
     # get the smallest cell size DTM covering each xsection
     qry = '''
-WITH data AS (
-SELECT DISTINCT ON (xs."XsecID")
-    xs."XsecID" as "XsecID",
-	dtm."DtmID" as "DtmID",
-	dtm."CellSize" as "CellSize"
-FROM
-	"{0}"."XSCutLines" as xs,
-	"{0}"."DTMs" as dtm
-WHERE
-	xs.geom && dtm.geom AND
-	ST_Contains(dtm.geom, xs.geom)
-ORDER BY xs."XsecID", dtm."CellSize" ASC)
-UPDATE "{0}"."XSCutLines" as xs
-SET
-    "DtmID" = data."DtmID"
-FROM data
-WHERE
-    data."XsecID" = xs."XsecID";
-SELECT "XsecID", "DtmID"
-FROM "{0}"."XSCutLines";
+    WITH data AS (
+    SELECT DISTINCT ON (xs."XsecID")
+      xs."XsecID" as "XsecID",
+      dtm."DtmID" as "DtmID",
+      dtm."CellSize" as "CellSize"
+    FROM
+      "{0}"."XSCutLines" as xs,
+      "{0}"."DTMs" as dtm
+    WHERE
+      xs.geom && dtm.geom AND
+      ST_Contains(dtm.geom, xs.geom)
+    ORDER BY xs."XsecID", dtm."CellSize" ASC)
+    UPDATE "{0}"."XSCutLines" as xs
+    SET
+      "DtmID" = data."DtmID"
+    FROM data
+    WHERE
+      data."XsecID" = xs."XsecID";
+    SELECT "XsecID", "DtmID"
+    FROM "{0}"."XSCutLines";
     '''.format(rgis.rdb.SCHEMA)
     rgis.rdb.run_query(qry)
 
     # insert xs points along each xsection
     qry = '''
-WITH line AS
-    (SELECT
+    WITH line AS
+      (SELECT
         xs."XsecID" as "XsecID",
         dtm."CellSize" as "CellSize",
         (ST_Dump(xs.geom)).geom AS geom
-    FROM
+      FROM
         "{0}"."XSCutLines" as xs,
         "{0}"."DTMs" as dtm
-    WHERE
+      WHERE
         xs."DtmID" = dtm."DtmID"),
-linemeasure AS
-    (SELECT
+    linemeasure AS
+      (SELECT
         "XsecID",
-		ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
+        ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
         generate_series(0, (ST_Length(line.geom)*100)::int, (line."CellSize"*100)::int) AS "Station"
-    FROM line),
-geometries AS (
-    SELECT
-	    "XsecID",
+      FROM line),
+    geometries AS (
+      SELECT
+        "XsecID",
         "Station",
         (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
-    FROM linemeasure)
+      FROM linemeasure)
 
-INSERT INTO "{0}"."XSPoints" ("XsecID", "Station", geom)
-SELECT
-    "XsecID",
-	"Station",
-    ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom
-FROM geometries;
+    INSERT INTO "{0}"."XSPoints" ("XsecID", "Station", geom)
+    SELECT
+      "XsecID",
+      "Station",
+      ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom
+    FROM geometries;
 
-INSERT INTO "{0}"."XSPoints" ("XsecID", "Station", geom)
-SELECT
-    "XsecID",
-	ST_Length(geom),
-    ST_Endpoint(geom)
-FROM "{0}"."XSCutLines";
-'''
+    INSERT INTO "{0}"."XSPoints" ("XsecID", "Station", geom)
+    SELECT
+      "XsecID",
+      ST_Length(geom),
+      ST_Endpoint(geom)
+    FROM "{0}"."XSCutLines";
+    '''
     qry = qry.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
     rgis.rdb.run_query(qry)
 
@@ -216,7 +216,14 @@ FROM "{0}"."XSCutLines";
     for dtm in dtms:
         lid = dtm[4]
         rlayer = rgis.mapRegistry.mapLayer(lid)
+        qry = '''
+        SELECT
+
+        FROM
+          "{0}".XSCutLInes as xs
+        '''
         # TODO: znajdz id przekrojow, ktore maja przypisany biezacy DtmID i dla nich wykonaj probkowanie
+
 
 
     rgis.addInfo('Done')
