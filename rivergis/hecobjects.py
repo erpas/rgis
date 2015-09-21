@@ -215,13 +215,13 @@ class XSCutLines(HecRasObject):
 
     def pg_river_reach_names(self):
         qry = '''
-UPDATE {0}."XSCutLines" AS xs
+UPDATE "{0}"."XSCutLines" AS xs
 SET
   "ReachID" = riv."ReachID",
   "RiverCode" = riv."RiverCode",
   "ReachCode" = riv."ReachCode"
 FROM
-  {0}."StreamCenterlines" AS riv
+  "{0}"."StreamCenterlines" AS riv
 WHERE
   xs.geom && riv.geom AND
   ST_Intersects(xs.geom, riv.geom);
