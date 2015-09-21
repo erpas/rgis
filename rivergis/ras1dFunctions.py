@@ -19,7 +19,7 @@ email                : rpasiok@gmail.com
  ***************************************************************************/
 """ 
 import hecobjects as heco
-from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI
+from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
 
 def ras1dStreamCenterlineTopology(rgis):
     """Creates river network topology. Creates nodes at reach ends and finds the direction of flow (fromNode, toNode)"""
@@ -94,7 +94,7 @@ def ras1dXSDownstreamLengths(rgis):
 
 def ras1dXSElevations(rgis):
     """Probe a DTM to find cross-section vertical shape"""
-    rgis.addInfo('<br><b>Interpolating cross-sections\' points ...</b>')
+    rgis.addInfo('<br><b>Creating cross-sections\' points:</b>')
     # Create xsection points table
     qry = '''
     DROP TABLE IF EXISTS "{0}"."XSPoints";
@@ -197,7 +197,7 @@ def ras1dXSElevations(rgis):
     INSERT INTO "{0}"."XSPoints" ("XsecID", "Station", geom)
     SELECT
       "XsecID",
-      "Station",
+      "Station"/100,
       ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom
     FROM geometries;
 
@@ -225,21 +225,20 @@ def ras1dXSElevations(rgis):
         xsIds = rgis.rdb.run_query(qry, fetch=True)
         xsIdsWhere = '"XsecID" IN ({0})'.format(','.join([str(elem[0]) for elem in xsIds]))
         uri = QgsDataSourceURI()
-        uri.setConnection(rgis.rdb.host, rgis.rdb.port, rgis.rdb.dbname, rgis.rdb.user, rgis.rdb.password)
-        uri.setDataSource(rgis.rdb.SCHEMA, "XsPoints", "geom", xsIdsWhere)
-        pts = QgsVectorLayer(uri.uri(), "XsPoints", "postgres")
-        pts.startEditing()
-        if rgis.DEBUG:
-            rgis.addInfo('Ilosc punktow do interpolacji: {0}'.format(pts.featureCount()))
+        uri.setConnection(rgis.rdb.host, rgis.rdb.port, rgis.rdb.dbname, \
+                          rgis.rdb.user, rgis.rdb.password)
+        uri.setDataSource(rgis.rdb.SCHEMA, "XSPoints", "geom", xsIdsWhere)
+        pts = QgsVectorLayer(uri.uri(), "XSPoints", "postgres")
+        rgis.addInfo('Getting points elevation from raster: {0} ({1} points)'\
+                     .format(rlayer.name(), pts.featureCount()))
         for pt in pts.getFeatures():
             geom = pt.geometry()
-            ident = rlayer.dataProvider().identify(QgsPoint(geom.asPoint().x(), geom.asPoint().y()), \
-                    QgsRaster.IdentifyFormatValue)
+            ident = rlayer.dataProvider().identify(QgsPoint(geom.asPoint().x(), \
+                           geom.asPoint().y()), QgsRaster.IdentifyFormatValue)
             if ident.isValid():
-                if rgis.DEBUG:
-                    rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], geom.asPoint().x(), geom.asPoint().y()))
-                pts.dataProvider().changeAttributeValues({ pt.id() : {3: ident.results()[1]} })
-        pts.commitChanges()
+                # if rgis.DEBUG:
+                #     rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], geom.asPoint().x(), geom.asPoint().y()))
+                pts.dataProvider().changeAttributeValues({ pt.id() : {3: round(ident.results()[1],2)} })
     rgis.addInfo('Done')
 
 
