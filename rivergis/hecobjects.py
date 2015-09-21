@@ -140,14 +140,14 @@ FOR r IN c LOOP
     tosta := 0;
     FOR i in 1..(SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river) LOOP
         SELECT "FromNode", ST_Length(geom) INTO fromnode_id, len FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river AND "ToNode" = tonode_id;
-        fromsta := tosta + len;
-        UPDATE "{0}"."StreamCenterlines" SET
+        tosta := fromsta + len;
+        UPDATE {0}."StreamCenterlines" SET
         "ReachLen" = len,
         "FromSta" = fromsta,
         "ToSta" = tosta
         WHERE "RiverCode" = river AND "ToNode" = tonode_id;
         tonode_id := fromnode_id;
-        tosta := fromsta;
+        fromsta := tosta;
     END LOOP;
 END LOOP;
 END;
