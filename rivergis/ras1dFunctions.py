@@ -19,6 +19,7 @@ email                : rpasiok@gmail.com
  ***************************************************************************/
 """ 
 import hecobjects as heco
+from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI
 
 def ras1dStreamCenterlineTopology(rgis):
     """Creates river network topology. Creates nodes at reach ends and finds the direction of flow (fromNode, toNode)"""
@@ -214,18 +215,31 @@ def ras1dXSElevations(rgis):
     qry = 'SELECT * FROM "{0}"."DTMs";'.format(rgis.rdb.SCHEMA)
     dtms = rgis.rdb.run_query(qry, fetch=True)
     for dtm in dtms:
+        dtmId = dtm[0]
         lid = dtm[4]
+        cellSize = dtm[5]
         rlayer = rgis.mapRegistry.mapLayer(lid)
         qry = '''
-        SELECT
-
-        FROM
-          "{0}".XSCutLInes as xs
-        '''
-        # TODO: znajdz id przekrojow, ktore maja przypisany biezacy DtmID i dla nich wykonaj probkowanie
-
-
-
+        SELECT "XsecID" FROM "{0}"."XSCutLines" WHERE "DtmID" = {1} ORDER BY "XsecID";
+        '''.format(rgis.rdb.SCHEMA, dtmId)
+        xsIds = rgis.rdb.run_query(qry, fetch=True)
+        xsIdsWhere = '"XsecID" IN ({0})'.format(','.join([str(elem[0]) for elem in xsIds]))
+        uri = QgsDataSourceURI()
+        uri.setConnection(rgis.rdb.host, rgis.rdb.port, rgis.rdb.dbname, rgis.rdb.user, rgis.rdb.password)
+        uri.setDataSource(rgis.rdb.SCHEMA, "XsPoints", "geom", xsIdsWhere)
+        pts = QgsVectorLayer(uri.uri(), "XsPoints", "postgres")
+        pts.startEditing()
+        if rgis.DEBUG:
+            rgis.addInfo('Ilosc punktow do interpolacji: {0}'.format(pts.featureCount()))
+        for pt in pts.getFeatures():
+            geom = pt.geometry()
+            ident = rlayer.dataProvider().identify(QgsPoint(geom.asPoint().x(), geom.asPoint().y()), \
+                    QgsRaster.IdentifyFormatValue)
+            if ident.isValid():
+                if rgis.DEBUG:
+                    rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], geom.asPoint().x(), geom.asPoint().y()))
+                pts.dataProvider().changeAttributeValues({ pt.id() : {3: ident.results()[1]} })
+        pts.commitChanges()
     rgis.addInfo('Done')
 
 
