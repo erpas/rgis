@@ -411,6 +411,9 @@ $BODY$
             self.rgis.addInfo(ext)
         return ext
 
+    def get_points_from_pline_wkt(self, wkt):
+        pass
+
     def spatial_unit(self):
         u = self.rgis.crs.mapUnits()
         return QGis.toLiteral(u).upper()
@@ -432,6 +435,32 @@ $BODY$
                 .format(self.spatial_extent())
         hdr += 'UNITS: {0}\nEND HEADER:\n\n'.format(self.spatial_unit())
         return hdr
+
+
+    def get_stream_network(self):
+        """
+        Return STREAM NETWORK part of RAS GIS Import file
+        """
+        net = 'BEGIN STREAM NETWORK:\n\n'
+        qry = 'SELECT "NodeID", "X", "Y" FROM "{0}"."NodesTable";'.format(self.SCHEMA)
+        nodes = self.run_query(qry, fetch=True)
+        for node in nodes:
+            net += '   ENDPOINT: {:.2}, {:.2}, 0, {}\n' \
+                .format(node[1], node[2], node[0])
+
+        # for each reach
+        qry = '''
+        SELECT
+            "ReachID", "RiverCode", "ReachCode", "FromNode", "ToNode", ST_AsText(geom)
+        FROM "{0}"."StreamCenterlines";
+        '''.format(self.SCHEMA)
+        reaches = self.run_query(qry, fetch=True)
+        for reach in reaches:
+            net += '\n   REACH:\n      STREAM ID: {0}\n      REACH ID: {1}\n      '\
+                .format(reach[1], reach[2])
+            net += 'FROM POINT: {:d}\n      '.format(reach[3])
+            net += 'TO POINT: {:d}\n      CENTERLINE:\n'.format(reach[4])
+
 
 
 if __name__ == '__main__':

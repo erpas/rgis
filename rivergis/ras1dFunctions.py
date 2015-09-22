@@ -99,22 +99,24 @@ def ras1dXSElevations(rgis):
     QApplication.setOverrideCursor(Qt.WaitCursor)
 
     rgis.addInfo('<br><b>Creating cross-sections\' points:</b>')
-    # Create xsection points table
-    # TODO ZA POMOCA PODKLASY XSCUTLINES
-    qry = '''
-    DROP TABLE IF EXISTS "{0}"."XSPoints";
-    CREATE TABLE "{0}"."XSPoints" (
-    "PtID" bigserial primary key,
-    "XsecID" integer,
-    "Station" double precision,
-    "Elevation" double precision,
-    "CoverCode" text,
-    "SrcId" integer,
-    "Notes" text,
-    geom geometry(Point, {1})
-    );
-    '''.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
-    rgis.rdb.run_query(qry)
+    # # Create xsection points table
+    # # TODO ZA POMOCA PODKLASY XSCUTLINES
+    # qry = '''
+    # DROP TABLE IF EXISTS "{0}"."XSPoints";
+    # CREATE TABLE "{0}"."XSPoints" (
+    # "PtID" bigserial primary key,
+    # "XsecID" integer,
+    # "Station" double precision,
+    # "Elevation" double precision,
+    # "CoverCode" text,
+    # "SrcId" integer,
+    # "Notes" text,
+    # geom geometry(Point, {1})
+    # );
+    # '''.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
+    # rgis.rdb.run_query(qry)
+    rgis.rdb.process_hecobject(heco.XSCutLines.XSPoints, 'pg_create_table')
+
 
     # Create DTMs table
     qry = '''
