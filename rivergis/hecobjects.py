@@ -52,6 +52,9 @@ class StreamCenterlines(HecRasObject):
         self.endpoints = None
 
     class NodesTable(HecRasObject):
+        """
+        Geometry and table.
+        """
         def __init__(self):
             super(StreamCenterlines.NodesTable, self).__init__()
             self.main = False
@@ -64,6 +67,9 @@ class StreamCenterlines(HecRasObject):
                 ('"Y"', 'double precision')]
 
     class Endpoints(HecRasObject):
+        """
+        Geometry and table.
+        """
         def __init__(self):
             super(StreamCenterlines.Endpoints, self).__init__()
             self.main = False
@@ -128,7 +134,7 @@ $BODY$
 SELECT "{0}".from_to_node ();
 DROP FUNCTION IF EXISTS "{0}".from_to_node ();
 '''
-        qry = qry.format(self.schema, self.srid)
+        qry = qry.format(self.schema)
         return qry
 
     def pg_lengths_stations(self):
