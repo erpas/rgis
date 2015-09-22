@@ -100,6 +100,7 @@ def ras1dXSElevations(rgis):
 
     rgis.addInfo('<br><b>Creating cross-sections\' points:</b>')
     # Create xsection points table
+    # TODO ZA POMOCA PODKLASY XSCUTLINES
     qry = '''
     DROP TABLE IF EXISTS "{0}"."XSPoints";
     CREATE TABLE "{0}"."XSPoints" (
