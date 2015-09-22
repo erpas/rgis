@@ -735,3 +735,5 @@ SET "Station" = b."Station", "ReachCode" = b."ReachCode", "RiverCode" = b."River
 	FROM start.tempstatclosestpoints as b
     WHERE a."LateralStrID" = b."LateralStrID";
 DROP TABLE start.riverclosestpoint1, start.riverclosestpoint2, start.tempstatclosestpoints;
+
+------------------------------------------------------------------------------------------------------------------------
