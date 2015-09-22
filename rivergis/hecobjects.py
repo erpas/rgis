@@ -9,8 +9,10 @@ class HecRasObject(object):
     """
     SCHEMA = None
     SRID = None
+    OVERWRITE = True
 
     def __init__(self):
+        self.main = True
         self.schema = self.SCHEMA
         self.srid = self.SRID
         self.name = self.__class__.__name__
@@ -21,8 +23,11 @@ class HecRasObject(object):
         schema_name = '"{0}"."{1}"'.format(self.schema, self.name)
         attrs = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         attrs += [' '.join(field) for field in self.attrs]
-        qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(schema_name, schema_name, ',\n\t'.join(attrs))
-        qry += 'SELECT create_spatial_index(\'{0}\', \'{1}\')'.format(self.schema, self.name)
+        if self.OVERWRITE is True:
+            qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(schema_name, schema_name, ',\n\t'.join(attrs))
+        else:
+            qry = 'CREATE TABLE {0}(\n\t{1});\n'.format(schema_name, ',\n\t'.join(attrs))
+        qry += 'SELECT create_spatial_index(\'{0}\', \'{1}\');'.format(self.schema, self.name)
         return qry
 
 
@@ -32,7 +37,6 @@ class StreamCenterlines(HecRasObject):
     """
     def __init__(self):
         super(StreamCenterlines, self).__init__()
-        self.hdf_dataset = u'River Centerlines'
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"ReachID"', 'serial primary key'),
@@ -44,9 +48,43 @@ class StreamCenterlines(HecRasObject):
             ('"FromSta"', 'double precision'),
             ('"ToSta"', 'double precision'),
             ('"Notes"', 'text')]
+        self.nodes_table = None
+        self.endpoints = None
+
+    class NodesTable(HecRasObject):
+        def __init__(self):
+            super(StreamCenterlines.NodesTable, self).__init__()
+            self.main = False
+            self.schema = StreamCenterlines.SCHEMA
+            self.srid = StreamCenterlines.SRID
+            self.geom_type = 'POINT'
+            self.attrs = [
+                ('"NodeID"', 'serial primary key'),
+                ('"X"', 'double precision'),
+                ('"Y"', 'double precision')]
+
+    class Endpoints(HecRasObject):
+        def __init__(self):
+            super(StreamCenterlines.Endpoints, self).__init__()
+            self.main = False
+            self.schema = StreamCenterlines.SCHEMA
+            self.srid = StreamCenterlines.SRID
+            self.geom_type = 'POINT'
+            self.attrs = [
+                ('"RiverCode"', 'text'),
+                ('"ReachCode"', 'text'),
+                ('"NodeID"', 'integer')]
+
+    def set_nodes_table(self):
+        self.nodes_table = self.NodesTable()
+
+    def set_endpoints(self):
+        self.endpoints = self.Endpoints()
 
     def pg_topology(self):
-        qry = '''
+        self.set_nodes_table()
+        qry = self.nodes_table.pg_create_table()
+        qry += '''
 CREATE OR REPLACE FUNCTION "{0}".from_to_node ()
     RETURNS VOID AS
 $BODY$
@@ -59,12 +97,6 @@ DECLARE
     end_node integer := 0;
     nr integer := 0;
 BEGIN
-DROP TABLE IF EXISTS "{0}"."NodesTable";
-CREATE TABLE "{0}"."NodesTable"(
-    geom geometry(POINT, {1}),
-    "NodeID" serial primary key,
-    "X" double precision,
-    "Y" double precision);
 FOR r IN c LOOP
     start_geom := ST_StartPoint(r.geom);
     end_geom := ST_EndPoint(r.geom);
@@ -100,7 +132,9 @@ DROP FUNCTION IF EXISTS "{0}".from_to_node ();
         return qry
 
     def pg_lengths_stations(self):
-        qry = '''
+        self.set_endpoints()
+        qry = self.endpoints.pg_create_table()
+        qry += '''
 CREATE TABLE "{0}".tmp1 AS
 SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
 FROM "{0}"."StreamCenterlines"
@@ -114,14 +148,12 @@ FROM "{0}".tmp1
 GROUP BY "RiverCode", geom
 HAVING COUNT(geom) = 1;
 
-DROP TABLE IF EXISTS "{0}"."Endpoints";
+INSERT INTO "{0}"."Endpoints"(geom, "RiverCode", "ReachCode", "NodeID")
 SELECT
-    tmp1.geom::geometry(POINT, {1}),
+    tmp1.geom,
     tmp1."RiverCode",
     tmp1."ReachCode",
     "NodesTable"."NodeID"
-INTO
-    "{0}"."Endpoints"
 FROM
     "{0}".tmp1,
     "{0}".tmp2,
@@ -154,7 +186,7 @@ FOR r IN c LOOP
     tonode_id := r."NodeID";
     fromsta := 0;
     tosta := 0;
-    counter := (SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "StreamCenterlines"."RiverCode" = river);
+    counter := (SELECT COUNT(*) FROM "{0}"."StreamCenterlines" WHERE "RiverCode" = river);
     FOR i IN 1..counter LOOP
         SELECT
             "FromNode", ST_Length(geom)
@@ -186,7 +218,7 @@ $BODY$
 SELECT "{0}".from_to_stations ();
 DROP FUNCTION IF EXISTS "{0}".from_to_stations ();
 '''
-        qry = qry.format(self.schema, self.srid)
+        qry = qry.format(self.schema)
         return qry
 
 
@@ -196,7 +228,6 @@ class XSCutLines(HecRasObject):
     """
     def __init__(self):
         super(XSCutLines, self).__init__()
-        self.hdf_dataset = u'Cross Sections'
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"XsecID"', 'serial primary key'),
@@ -212,6 +243,26 @@ class XSCutLines(HecRasObject):
             ('"RLength"', 'double precision'),
             ('"NodeName"', 'text'),
             ('"DtmID"', 'integer')]
+        self.xspoints = None
+
+    class XSPoints(HecRasObject):
+        def __init__(self):
+            super(XSCutLines.XSPoints, self).__init__()
+            self.main = False
+            self.schema = XSCutLines.SCHEMA
+            self.srid = XSCutLines.SRID
+            self.geom_type = 'POINT'
+            self.attrs = [
+                ('"PtID"', 'bigserial primary key'),
+                ('"XsecID"', 'integer'),
+                ('"Station"', 'double precision'),
+                ('"Elevation"', 'double precision'),
+                ('"CoverCode"', 'text'),
+                ('"SrcId"', 'integer'),
+                ('"Notes"', 'text')]
+
+    def set_xspoints(self):
+        self.xspoints = self.XSPoints()
 
     def pg_river_reach_names(self):
         qry = '''
@@ -443,7 +494,6 @@ class BankLines(HecRasObject):
     """
     def __init__(self):
         super(BankLines, self).__init__()
-        self.hdf_dataset = u'River Bank Lines'
         self.geom_type = 'LINESTRING'
         self.attrs = [('"BankID"', 'serial primary key')]
 
@@ -454,7 +504,6 @@ class BankPoints(HecRasObject):
     """
     def __init__(self):
         super(BankPoints, self).__init__()
-        self.hdf_dataset = u'River Bank Lines'
         self.geom_type = 'POINT'
         self.attrs = [('"BankID"', 'serial primary key')]
 
@@ -467,10 +516,10 @@ class Flowpaths(HecRasObject):
     """
     def __init__(self):
         super(Flowpaths, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'LINESTRING'
-        self.attrs = [('"FpID"', 'serial primary key'),
-                      ('"LineType"', 'text')]
+        self.attrs = [
+            ('"FpID"', 'serial primary key'),
+            ('"LineType"', 'text')]
 
     def pg_get_flowpaths_linetype(self):
         qry = '''
@@ -483,7 +532,6 @@ SELECT "LineType" FROM "{0}"."Flowpaths";
 class Bridges(HecRasObject):
     def __init__(self):
         super(Bridges, self).__init__()
-        self.hdf_dataset = u'Structures'
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"BridgeID"', 'serial primary key'),
@@ -498,7 +546,6 @@ class Bridges(HecRasObject):
 class IneffAreas(HecRasObject):
     def __init__(self):
         super(IneffAreas, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'POLYGON'
         self.attrs = [('"IneffID"', 'serial primary key'),
             ('"Elevation"', 'double precision')]
@@ -507,7 +554,6 @@ class IneffAreas(HecRasObject):
 class BlockedObs(HecRasObject):
     def __init__(self):
         super(BlockedObs, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'POLYGON'
         self.attrs = [('"BlockID"', 'serial primary key'),
             ('"Elevation"', 'double precision')]
@@ -516,7 +562,6 @@ class BlockedObs(HecRasObject):
 class LanduseAreas(HecRasObject):
     def __init__(self):
         super(LanduseAreas, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'MULTIPOLYGON'
         self.attrs = [
             ('"LUID"', 'serial primary key'),
@@ -626,7 +671,7 @@ DROP TABLE
     "{0}".single_line,
     "{0}".shiftpoints,
     "{0}".tempmann,
-    "{0}".ludump
+    "{0}".ludump;
 
 ------------------------------------------------------------------------------------------------------------------------
 '''
@@ -637,7 +682,6 @@ DROP TABLE
 class LeveeAlignment(HecRasObject):
     def __init__(self):
         super(LeveeAlignment, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'LINESTRING'
         self.attrs = [('"LeveeID"', 'serial primary key')]
 
@@ -645,7 +689,6 @@ class LeveeAlignment(HecRasObject):
 class LeveePoints(HecRasObject):
     def __init__(self):
         super(LeveePoints, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'POINTS'
         self.attrs = [
             ('"LeveeID"', 'serial primary key'),
@@ -656,7 +699,6 @@ class LeveePoints(HecRasObject):
 class InlineStructures(HecRasObject):
     def __init__(self):
         super(InlineStructures, self).__init__()
-        self.hdf_dataset = u'Structures'
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"InlineStrID"', 'serial primary key'),
@@ -671,7 +713,6 @@ class InlineStructures(HecRasObject):
 class LateralStructures(HecRasObject):
     def __init__(self):
         super(LateralStructures, self).__init__()
-        self.hdf_dataset = u'Structures'
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"LateralStrID"', 'serial primary key'),
@@ -686,7 +727,6 @@ class LateralStructures(HecRasObject):
 class StorageAreas(HecRasObject):
     def __init__(self):
         super(StorageAreas, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"StorageID"', 'serial primary key'),
@@ -698,7 +738,6 @@ class StorageAreas(HecRasObject):
 class SAConnections(HecRasObject):
     def __init__(self):
         super(SAConnections, self).__init__()
-        self.hdf_dataset = None
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"SAconID"', 'serial primary key'),
@@ -706,18 +745,26 @@ class SAConnections(HecRasObject):
             ('"DSSA"', 'integer'),
             ('"TopWidth"', 'double precision')]
 
-'''
-class StreamCenterlines3D(StreamCenterlines):
+
+class DTMs(HecRasObject):
+    """
+    Geometry and table.
+    """
     def __init__(self):
-        super(StreamCenterlines3D, self).__init__()
+        super(DTMs, self).__init__()
+        self.main = False
+        self.geom_type = 'POLYGON'
+        self.attrs = [
+            ('"DtmID"', 'bigserial primary key'),
+            ('"Name"', 'text'),
+            ('"DtmUri"', 'text'),
+            ('"Provider"', 'text'),
+            ('"LayerID"', 'text'),
+            ('"CellSize"', 'double precision')]
 
 
-class XSCutLines3D(XSCutLines):
-    def __init__(self):
-        super(XSCutLines3D, self).__init__()
-
-
-class Bridges3D(Bridges):
-    def __init__(self):
-        super(Bridges3D, self).__init__()
-'''
+if __name__ == '__main__':
+    x = XSCutLines()
+    x.set_xspoints()
+    xs_points = x.xspoints
+    print(xs_points)
