@@ -1,8 +1,12 @@
 <RCC>
   <qresource prefix="/rivergis">
-    <file>icons/ras1dDTMSetup.svg</file>
+    <file>icons/ras1dXsLevees.svg</file>
     <file>icons/ras1dXsRiverNames.svg</file>
+    <file>icons/ras1dXsMannings.svg</file>
+    <file>icons/ras1dXsBlockedObs.svg</file>
+    <file>icons/ras1dXsIneffective.svg</file>
     <file>icons/ras1dXsAll.svg</file>
+    <file>icons/dtmSetup.svg</file>
     <file>icons/ras1dXsElevations.svg</file>
     <file>icons/ras1dXsStationing.svg</file>
     <file>icons/ras1dXsBanks.svg</file>

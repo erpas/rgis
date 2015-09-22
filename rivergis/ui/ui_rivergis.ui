@@ -361,8 +361,15 @@
    </property>
   </action>
   <action name="actionRASManningsNValues">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dXsMannings.svg</normaloff>:/rivergis/icons/ras1dXsMannings.svg</iconset>
+   </property>
    <property name="text">
     <string>Extract Manning's n Values</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS 1D Extract Manning's n Values</string>
    </property>
   </action>
   <action name="actionRASExport1DRASData">
@@ -507,21 +514,45 @@
    </property>
   </action>
   <action name="actionRASLevees">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dXsLevees.svg</normaloff>:/rivergis/icons/ras1dXsLevees.svg</iconset>
+   </property>
    <property name="text">
     <string>Levees</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D Levees</string>
+   </property>
   </action>
   <action name="actionRASIneffectiveFlowAreas">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dXsIneffective.svg</normaloff>:/rivergis/icons/ras1dXsIneffective.svg</iconset>
+   </property>
    <property name="text">
     <string>Ineffective Flow Areas</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D Ineffective Flow Areas</string>
+   </property>
   </action>
   <action name="actionRASBlockedObstructions">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dXsBlockedObs.svg</normaloff>:/rivergis/icons/ras1dXsBlockedObs.svg</iconset>
+   </property>
    <property name="text">
     <string>Blocked Obstructions</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D Blocked Obstructions</string>
+   </property>
   </action>
   <action name="actionRASFlipXSDirection">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Flip Cross Sections</string>
    </property>
@@ -541,7 +572,7 @@
   <action name="actionRASDTMSetup">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dDTMSetup.svg</normaloff>:/rivergis/icons/ras1dDTMSetup.svg</iconset>
+     <normaloff>:/rivergis/icons/dtmSetup.svg</normaloff>:/rivergis/icons/dtmSetup.svg</iconset>
    </property>
    <property name="text">
     <string>DTM Setup</string>

@@ -20,6 +20,8 @@ email                : rpasiok@gmail.com
 """ 
 import hecobjects as heco
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 def ras1dStreamCenterlineTopology(rgis):
     """Creates river network topology. Creates nodes at reach ends and finds the direction of flow (fromNode, toNode)"""
@@ -94,6 +96,8 @@ def ras1dXSDownstreamLengths(rgis):
 
 def ras1dXSElevations(rgis):
     """Probe a DTM to find cross-section vertical shape"""
+    QApplication.setOverrideCursor(Qt.WaitCursor)
+
     rgis.addInfo('<br><b>Creating cross-sections\' points:</b>')
     # Create xsection points table
     qry = '''
@@ -220,30 +224,54 @@ def ras1dXSElevations(rgis):
         cellSize = dtm[5]
         rlayer = rgis.mapRegistry.mapLayer(lid)
         qry = '''
-        SELECT "XsecID" FROM "{0}"."XSCutLines" WHERE "DtmID" = {1} ORDER BY "XsecID";
+        WITH xsids AS (
+        SELECT "XsecID" FROM "{0}"."XSCutLines" WHERE "DtmID" = {1} ORDER BY "XsecID"
+        )
+        SELECT
+          pts."PtID" as "PtID",
+          ST_X(pts.geom) as x,
+          ST_Y(pts.geom) as y
+        FROM
+          "{0}"."XSPoints" as pts,
+          xsids
+        WHERE
+          pts."XsecID" = xsids."XsecID"
+        ;
         '''.format(rgis.rdb.SCHEMA, dtmId)
-        xsIds = rgis.rdb.run_query(qry, fetch=True)
-        xsIdsWhere = '"XsecID" IN ({0})'.format(','.join([str(elem[0]) for elem in xsIds]))
-        uri = QgsDataSourceURI()
-        uri.setConnection(rgis.rdb.host, rgis.rdb.port, rgis.rdb.dbname, \
-                          rgis.rdb.user, rgis.rdb.password)
-        uri.setDataSource(rgis.rdb.SCHEMA, "XSPoints", "geom", xsIdsWhere)
-        pts = QgsVectorLayer(uri.uri(), "XSPoints", "postgres")
-        rgis.addInfo('Getting points elevation from raster: {0} ({1} points)'\
-                     .format(rlayer.name(), pts.featureCount()))
-        for pt in pts.getFeatures():
-            geom = pt.geometry()
-            ident = rlayer.dataProvider().identify(QgsPoint(geom.asPoint().x(), \
-                           geom.asPoint().y()), QgsRaster.IdentifyFormatValue)
+        pts = rgis.rdb.run_query(qry, fetch=True)
+
+        qry = ''
+        for pt in pts:
+            ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
+            if rgis.DEBUG > 1:
+                rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], pt[1], pt[2]))
             if ident.isValid():
-                # if rgis.DEBUG:
-                #     rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], geom.asPoint().x(), geom.asPoint().y()))
-                pts.dataProvider().changeAttributeValues({ pt.id() : {3: round(ident.results()[1],2)} })
+                pt.append(round(ident.results()[1],2))
+                if rgis.DEBUG > 1:
+                    rgis.addInfo('{0}'.format(', '.join([str(a) for a in pt])))
+                qry += 'UPDATE "{0}"."XSPoints" SET "Elevation" = {1} WHERE "PtID" = {2};\n'\
+                    .format(rgis.rdb.SCHEMA, pt[3], pt[0])
+
+        if rgis.DEBUG:
+            rgis.addInfo(qry)
+        rgis.rdb.run_query(qry)
+
+    QApplication.restoreOverrideCursor()
     rgis.addInfo('Done')
 
 
 def ras1dXSAll(rgis):
     """Runs all the XS analyses"""
-    pass
+    ras1dXSRiverReachNames(rgis)
+    ras1dXSStationing(rgis)
+    ras1dXSBankStations(rgis)
+    ras1dXSDownstreamLengths(rgis)
+    ras1dXSElevations(rgis)
+
+
+def ras1dXSExtractMannings(rgis):
+    rgis.addInfo('<br><b>Extracting Manning\'s n values for cross-sections</b>')
+    if rgis.rdb.process_hecobject(heco.LanduseAreas, 'extract_manning'):
+        rgis.addInfo('Done.')
 
 

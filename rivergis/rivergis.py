@@ -116,6 +116,10 @@ class RiverGIS(QMainWindow):
         self.ui.ras1dToolBar.addAction(self.ui.actionRASXSDownstreamReachLengths)
         self.ui.ras1dToolBar.addAction(self.ui.actionRASXSElevations)
         self.ui.ras1dToolBar.addAction(self.ui.actionRASXSAll)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASManningsNValues)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASLevees)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASIneffectiveFlowAreas)
+        self.ui.ras1dToolBar.addAction(self.ui.actionRASBlockedObstructions)
 
         # 2D HEC-RAS Toolbar
         self.ui.ras2dToolBar = QToolBar("HEC-RAS 2D Geometry", self)
@@ -336,7 +340,8 @@ class RiverGIS(QMainWindow):
         ras1dXSAll(self)
 
     def ras1dManningsNValues(self):
-        pass
+        from ras1dFunctions import ras1dXSExtractMannings
+        ras1dXSExtractMannings(self)
 
     def ras1dLevees(self):
         pass
@@ -446,7 +451,7 @@ class RiverGIS(QMainWindow):
             return
 
         finally:
-                        QApplication.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
 
     def unregisterAction(self, action, menuName):
         if not hasattr(self, '_registeredDbActions'):
