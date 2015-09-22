@@ -621,28 +621,28 @@ DROP TABLE
 -- RiverCode and RiverReach update from StreamCenterline layer
 UPDATE start."Bridges" AS a
 SET "RiverCode" = b."RiverCode" , "ReachCode" = b."ReachCode"
-	FROM start."StreamCenterlines" AS b
-    WHERE  a.geom && b.geom AND ST_Intersects(a.geom,b.geom);
+    FROM start."StreamCenterlines" AS b
+    WHERE a.geom && b.geom AND ST_Intersects(a.geom,b.geom);
 
 -- Generating of points needed for bridges Stationing calculation
 DROP TABLE IF EXISTS start.pointsbridges;
 SELECT DISTINCT (ST_Dump(ST_Intersection(a.geom,b.geom))).geom AS geom,b."RiverCode", b."ReachCode", b."BridgeID"
-	INTO start.pointsbridges
-		FROM start."StreamCenterlines" AS a, start."Bridges" as b
-		WHERE a.geom && b.geom;
+    INTO start.pointsbridges
+        FROM start."StreamCenterlines" AS a, start."Bridges" as b
+        WHERE a.geom && b.geom;
 
 -- Calculation of bridges Stationing
 DROP TABLE IF EXISTS start.tempstatbridges;
 SELECT b."BridgeID", b."RiverCode",b."ReachCode", (a."ToSta" - a."FromSta")*(1-ST_Line_Locate_Point(a.geom,b.geom)) AS "Station"
-	INTO start.tempstatbridges
-		FROM start."StreamCenterlines" AS a, start.pointsbridges AS b
+    INTO start.tempstatbridges
+        FROM start."StreamCenterlines" AS a, start.pointsbridges AS b
         WHERE a."ReachCode" = b."ReachCode"
         ORDER BY "ReachCode", "Station" ;
 
 -- Update of Bridges layer by Stationing values
 UPDATE start."Bridges" AS a
 SET "Station" = b."Station"
-	FROM start.tempstatbridges as b
+    FROM start.tempstatbridges as b
     WHERE a."BridgeID" = b."BridgeID";
 DROP TABLE
     start.pointsbridges,
@@ -656,28 +656,28 @@ DROP TABLE
 -- RiverCode and RiverReach update from StreamCenterline layer
 UPDATE start."Inline_Structures" AS a
 SET "RiverCode" = b."RiverCode" , "ReachCode" = b."ReachCode"
-	FROM start."StreamCenterlines" AS b
+    FROM start."StreamCenterlines" AS b
     WHERE  a.geom && b.geom AND ST_Intersects(a.geom,b.geom);
 
 -- Generating of points needed for Inline_Structures Stationing calculation
 DROP TABLE IF EXISTS start.pointsinlinestr;
 SELECT DISTINCT (ST_Dump(ST_Intersection(a.geom,b.geom))).geom AS geom,b."RiverCode", b."ReachCode", b."InlineStrID"
-	INTO start.pointsinlinestr
-		FROM start."StreamCenterlines" AS a, start."Inline_Structures" as b
-		WHERE a.geom && b.geom;
+    INTO start.pointsinlinestr
+        FROM start."StreamCenterlines" AS a, start."Inline_Structures" as b
+        WHERE a.geom && b.geom;
 
 -- Calculation of Inline_Structures Stationing
 DROP TABLE IF EXISTS start.tempstatinlinestr;
 SELECT b."InlineStrID", b."RiverCode",b."ReachCode", (a."ToSta" - a."FromSta")*(1-ST_Line_Locate_Point(a.geom,b.geom)) AS "Station"
-	INTO start.tempstatinlinestr
-		FROM start."StreamCenterlines" AS a, start.pointsinlinestr AS b
+    INTO start.tempstatinlinestr
+        FROM start."StreamCenterlines" AS a, start.pointsinlinestr AS b
         WHERE a."ReachCode" = b."ReachCode"
         ORDER BY "ReachCode", "Station" ;
 
 -- Update of Inline_Structures layer by Stationing values
 UPDATE start."Inline_Structures" AS a
 SET "Station" = b."Station"
-	FROM start.tempstatinlinestr as b
+    FROM start.tempstatinlinestr as b
     WHERE a."InlineStrID" = b."InlineStrID";
 DROP TABLE start.pointsinlinestr, start.tempstatinlinestr;
 
@@ -693,46 +693,46 @@ DROP TABLE start.pointsinlinestr, start.tempstatinlinestr;
 
 DROP TABLE IF EXISTS start.riverclosestpoint1;
 SELECT ST_ClosestPoint(a.geom,ST_StartPoint(b.geom)) AS geom, ST_Distance(a.geom,ST_StartPoint(b.geom)) AS dist, a."RiverCode", a."ReachCode", b."LateralStrID"
-	INTO start.riverclosestpoint1
-		FROM start."StreamCenterlines" AS a, start."Lateral_Structures" AS b
-		WHERE a.geom && b.geom ORDER BY b."LateralStrID";
+    INTO start.riverclosestpoint1
+        FROM start."StreamCenterlines" AS a, start."Lateral_Structures" AS b
+        WHERE a.geom && b.geom ORDER BY b."LateralStrID";
 
 ALTER TABLE start.riverclosestpoint1
     ALTER COLUMN geom TYPE geometry(POINT,2180)
- 	USING ST_SetSRID(geom,2180);
+    USING ST_SetSRID(geom,2180);
 
 CREATE INDEX idx_riverclosestpoint1
-  	ON start.riverclosestpoint1
-  	 	USING gist(geom);
+    ON start.riverclosestpoint1
+        USING gist(geom);
 
 --- Selection of points which have the smallest distance to the river
 DROP TABLE IF EXISTS start.riverclosestpoint2;
 SELECT "LateralStrID","RiverCode", "ReachCode", dist, geom INTO start.riverclosestpoint2
 FROM (
-  SELECT "LateralStrID","RiverCode", "ReachCode", dist, geom, RANK() OVER (PARTITION BY "LateralStrID"  ORDER BY dist) AS rnk
-  FROM start.riverclosestpoint1) AS temp
+    SELECT "LateralStrID","RiverCode", "ReachCode", dist, geom, RANK() OVER (PARTITION BY "LateralStrID"  ORDER BY dist) AS rnk
+    FROM start.riverclosestpoint1) AS temp
 WHERE rnk = 1;
 
 ALTER TABLE start.riverclosestpoint2
     ALTER COLUMN geom TYPE geometry(POINT,2180)
- 	USING ST_SetSRID(geom,2180);
+    USING ST_SetSRID(geom,2180);
 
 CREATE INDEX idx_riverclosestpoint2
-  	ON start.riverclosestpoint2
-  	 	USING gist(geom);
+    ON start.riverclosestpoint2
+    USING gist(geom);
 
 --- Calculation of Stationing for those points
 DROP TABLE IF EXISTS start.tempstatclosestpoints;
 SELECT b."LateralStrID", b."RiverCode",b."ReachCode", (a."ToSta" - a."FromSta")*(1-ST_Line_Locate_Point(a.geom,b.geom)) AS "Station"
-	INTO start.tempstatclosestpoints
-		FROM start."StreamCenterlines" AS a, start.riverclosestpoint2 AS b
+    INTO start.tempstatclosestpoints
+        FROM start."StreamCenterlines" AS a, start.riverclosestpoint2 AS b
         WHERE  a."ReachCode" = b."ReachCode"
         ORDER BY "ReachCode", "Station" ;
 
 --- Update Lateral_Structure layer by dane from previous step basing on LateralStrID
 UPDATE start."Lateral_Structures" AS a
 SET "Station" = b."Station", "ReachCode" = b."ReachCode", "RiverCode" = b."RiverCode"
-	FROM start.tempstatclosestpoints as b
+    FROM start.tempstatclosestpoints as b
     WHERE a."LateralStrID" = b."LateralStrID";
 DROP TABLE start.riverclosestpoint1, start.riverclosestpoint2, start.tempstatclosestpoints;
 

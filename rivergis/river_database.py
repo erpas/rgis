@@ -216,13 +216,13 @@ class RiverDatabase(object):
         Args:
             vlayer (QgsVectorLayer): QgsVectorLayer object
         """
-        map_registry = QgsMapLayerRegistry.instance()
-        map_layer = map_registry.addMapLayer(vlayer)
-        style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
         try:
+            map_registry = QgsMapLayerRegistry.instance()
+            map_layer = map_registry.addMapLayer(vlayer)
+            style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
             map_layer.loadNamedStyle(style_file)
-        except:
-            self.rgis.addInfo('Could not find style: {0}'.format(style_file))
+        except Exception, e:
+            self.rgis.addInfo(repr(e))
 
     def refresh_uris(self):
         """
@@ -443,7 +443,6 @@ if __name__ == '__main__':
 
     baza.connect_pg()
     baza.register_existing(heco)
-    baza.process_hecobject(heco.StreamCenterlines3D, 'pg_create_table')
     baza.process_hecobject(heco.StreamCenterlines, 'pg_topology')
     baza.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations')
 
