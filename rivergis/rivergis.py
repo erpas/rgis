@@ -46,8 +46,7 @@ class RiverGIS(QMainWindow):
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
         self.dtms = None
-
-        self.DEBUG = 1
+        self.DEBUG = 0
 
         # create status bar
         self.statusBar = QStatusBar(self)
@@ -58,9 +57,11 @@ class RiverGIS(QMainWindow):
         # DB
         self.ui.actionRefreshConnections.triggered.connect(self.connChanged)
         self.ui.actionImportRiverFromIsokp.triggered.connect(self.importRiverIsokp)
+        # Settings
+        self.ui.actionRASDTMSetup.triggered.connect(self.rasDTMSetup)
+        self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
         # RAS Geometry
         # 1D
-        self.ui.actionRASDTMSetup.triggered.connect(self.rasDTMSetup)
         self.ui.actionRASCreateRdbTables.triggered.connect(self.rasCreateRdbTables)
         self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
@@ -78,7 +79,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.ras1dIneffectiveFlowAreas)
         self.ui.actionRASBlockedObstructions.triggered.connect(self.ras1dBlockedObstructions)
         self.ui.actionRASFlipXSDirection.triggered.connect(self.ras1dFlipXSDirection)
-        self.ui.actionRASExport1DRASData.triggered.connect(self.ras1dExportDataSDF)
+        self.ui.actionRASCreateRASGISImport.triggered.connect(self.ras1dCreateRasGisImport)
         # 2D
         self.ui.actionRASCreate2dArea.triggered.connect(self.rasCreate2dArea)
         self.ui.actionRASPreview2DMesh.triggered.connect(self.rasPreview2DMesh)
@@ -102,24 +103,29 @@ class RiverGIS(QMainWindow):
         self.ui.settingsToolBar.addAction(self.ui.actionRASDTMSetup)
 
         # 1D HEC-RAS Toolbar
-        self.ui.ras1dToolBar = QToolBar("HEC-RAS 1D Geometry", self)
-        self.ui.ras1dToolBar.setObjectName("RAS1D_ToolBar")
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASCreateRdbTables )
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASLoadRdbTablesIntoQGIS)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASImportLayersIntoRdbTables)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASTopology1D)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASLengthsStations)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASStreamCenterlineAll)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSRiverReachNames)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSStationing)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSBankStations)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSDownstreamReachLengths)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSElevations)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASXSAll)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASManningsNValues)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASLevees)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASIneffectiveFlowAreas)
-        self.ui.ras1dToolBar.addAction(self.ui.actionRASBlockedObstructions)
+        self.ui.ras1dTablesToolBar = QToolBar("HEC-RAS 1D Tables", self)
+        self.ui.ras1dTablesToolBar.setObjectName("RAS1D_Tables_Toolbar")
+        self.ui.ras1dTablesToolBar.addAction(self.ui.actionRASCreateRdbTables )
+        self.ui.ras1dTablesToolBar.addAction(self.ui.actionRASLoadRdbTablesIntoQGIS)
+        self.ui.ras1dTablesToolBar.addAction(self.ui.actionRASImportLayersIntoRdbTables)
+
+        # 1D HEC-RAS Geometry Toolbar
+        self.ui.ras1dGeometryToolBar = QToolBar("HEC-RAS 1D Geometry", self)
+        self.ui.ras1dGeometryToolBar.setObjectName("RAS1D_Geometry_ToolBar")
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASTopology1D)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASLengthsStations)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASStreamCenterlineAll)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSRiverReachNames)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSStationing)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSBankStations)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSDownstreamReachLengths)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSElevations)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSAll)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASManningsNValues)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASLevees)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASIneffectiveFlowAreas)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASBlockedObstructions)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASCreateRASGISImport)
 
         # 2D HEC-RAS Toolbar
         self.ui.ras2dToolBar = QToolBar("HEC-RAS 2D Geometry", self)
@@ -137,7 +143,8 @@ class RiverGIS(QMainWindow):
 
         self.addToolBar(self.ui.dbToolBar)
         self.addToolBar(self.ui.settingsToolBar)
-        self.addToolBar(self.ui.ras1dToolBar)
+        self.addToolBar(self.ui.ras1dTablesToolBar)
+        self.addToolBar(self.ui.ras1dGeometryToolBar)
         self.addToolBar(self.ui.ras2dToolBar)
         self.addToolBar(self.ui.rasMappingToolBar)
 
@@ -278,6 +285,14 @@ class RiverGIS(QMainWindow):
         dlg = DlgDTMSetup(self)
         dlg.exec_()
 
+    def toggleDebugMode(self):
+        if self.ui.actionDebugMode.isChecked():
+            # self.ui.actionDebugMode.setChecked(False)
+            self.DEBUG = 1
+        else:
+            # self.ui.actionDebugMode.setChecked(True)
+            self.DEBUG = 0
+
     def rasCreateRdbTables(self):
         from dlg_rasCreateRasLayers import DlgCreateRasLayers
         dlg = DlgCreateRasLayers(self)
@@ -355,8 +370,9 @@ class RiverGIS(QMainWindow):
     def ras1dFlipXSDirection(self):
         pass
 
-    def ras1dExportDataSDF(self):
-        pass
+    def ras1dCreateRasGisImport(self):
+        from ras1dFunctions import ras1dCreateRasGisImportFile
+        ras1dCreateRasGisImportFile(self)
 
     # 2D HEC-RAS Geometry Functions
 

@@ -22,6 +22,7 @@ import hecobjects as heco
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from os.path import dirname
 
 def ras1dStreamCenterlineTopology(rgis):
     """Creates river network topology. Creates nodes at reach ends and finds the direction of flow (fromNode, toNode)"""
@@ -100,23 +101,7 @@ def ras1dXSElevations(rgis):
 
     rgis.addInfo('<br><b>Creating cross-sections\' points:</b>')
     # # Create xsection points table
-    # # TODO ZA POMOCA PODKLASY XSCUTLINES
-    # qry = '''
-    # DROP TABLE IF EXISTS "{0}"."XSPoints";
-    # CREATE TABLE "{0}"."XSPoints" (
-    # "PtID" bigserial primary key,
-    # "XsecID" integer,
-    # "Station" double precision,
-    # "Elevation" double precision,
-    # "CoverCode" text,
-    # "SrcId" integer,
-    # "Notes" text,
-    # geom geometry(Point, {1})
-    # );
-    # '''.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
-    # rgis.rdb.run_query(qry)
     rgis.rdb.process_hecobject(heco.XSCutLines.XSPoints, 'pg_create_table')
-
 
     # Create DTMs table
     qry = '''
@@ -134,6 +119,9 @@ def ras1dXSElevations(rgis):
     rgis.rdb.run_query(qry)
 
     # insert DTMs parameters into the DTMs table
+    if not rgis.dtms:
+        rgis.addInfo('<br>Choose a DTM for cross-section points elevation (Settings > DTM Setup) and try again.')
+        return
     dtmsParams = []
     for layerId in rgis.dtms:
         rlayer = rgis.mapRegistry.mapLayer(layerId)
@@ -276,5 +264,24 @@ def ras1dXSExtractMannings(rgis):
     rgis.addInfo('<br><b>Extracting Manning\'s n values for cross-sections</b>')
     if rgis.rdb.process_hecobject(heco.LanduseAreas, 'extract_manning'):
         rgis.addInfo('Done.')
+
+def ras1dCreateRasGisImportFile(rgis):
+    """
+    Save HEC-RAS model geometry in RAS GIS Import format.
+    """
+    s = QSettings()
+    lastRasGisImportFileDir = s.value("rivergis/lastRasGisImportDir", "")
+    importFileName = QFileDialog.getSaveFileName(None, \
+                     'Target HEC-RAS GIS Import file', \
+                     directory=lastRasGisImportFileDir, \
+                     filter='HEC-RAS GIS Import (*.sdf)')
+    if not importFileName:
+        return
+    s.setValue("rivergis/lastRasGisImportDir", dirname(importFileName))
+    if rgis.DEBUG:
+        rgis.addInfo(rgis.rdb.get_ras_gis_import())
+    importFile = open(importFileName, 'wb')
+    importFile.write(rgis.rdb.get_ras_gis_import())
+    importFile.close()
 
 

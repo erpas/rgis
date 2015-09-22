@@ -81,8 +81,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.53903"
-     inkscape:cx="10.37076"
-     inkscape:cy="11.214004"
+     inkscape:cx="9.860534"
+     inkscape:cy="10.859064"
      inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:grid-bbox="true"
@@ -180,6 +180,12 @@
      inkscape:label="Layer"
      style="display:inline"
      transform="translate(0,-8)">
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 0.5,8.5 0,23 23,0 0,-23 z"
+       id="path8585"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccc" />
     <g
        id="g15324"
        transform="matrix(0.52751447,0.77345492,-0.77345492,0.52751447,35.063181,14.521653)">

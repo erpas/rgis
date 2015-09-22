@@ -1,19 +1,20 @@
 <RCC>
   <qresource prefix="/rivergis">
-    <file>icons/ras1dXsLevees.svg</file>
     <file>icons/ras1dXsRiverNames.svg</file>
+    <file>icons/ras1dXsStationing.svg</file>
+    <file>icons/ras1dCreateRASImport.svg</file>
+    <file>icons/ras1dXsLevees.svg</file>
     <file>icons/ras1dXsMannings.svg</file>
     <file>icons/ras1dXsBlockedObs.svg</file>
     <file>icons/ras1dXsIneffective.svg</file>
-    <file>icons/ras1dXsAll.svg</file>
     <file>icons/dtmSetup.svg</file>
     <file>icons/ras1dXsElevations.svg</file>
-    <file>icons/ras1dXsStationing.svg</file>
     <file>icons/ras1dXsBanks.svg</file>
     <file>icons/ras1dXsDSLenghts.svg</file>
     <file>icons/importLayersIntoRdb.svg</file>
-    <file>icons/ras1dStreamCenterlinesAll.svg</file>
     <file>icons/ras1dStreamCenterlinesLengthsStations.svg</file>
+    <file>icons/ras1dStreamCenterlinesAll.svg</file>
+    <file>icons/ras1dXsAll.svg</file>
     <file>icons/refreshConnections.svg</file>
     <file>icons/ras1dStreamCenterlinesTopology.svg</file>
     <file>icons/createPgTables.svg</file>

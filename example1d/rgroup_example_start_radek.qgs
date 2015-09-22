@@ -321,50 +321,28 @@
     </legendlayer>
   </legend>
   <mapcanvas>
-    <units>meters</units>
+    <units>degrees</units>
     <extent>
-      <xmin>323270.89112983841914684</xmin>
-      <ymin>391280.43602883379207924</ymin>
-      <xmax>327711.91375659604091197</xmax>
-      <ymax>393905.33412026922451332</ymax>
+      <xmin>0</xmin>
+      <ymin>0</ymin>
+      <xmax>0</xmax>
+      <ymax>0</ymax>
     </extent>
     <rotation>0</rotation>
-    <projections>1</projections>
+    <projections>0</projections>
     <destinationsrs>
       <spatialrefsys>
-        <proj4>+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
-        <srsid>171</srsid>
-        <srid>2180</srid>
-        <authid>EPSG:2180</authid>
-        <description>ETRS89 / Poland CS92</description>
-        <projectionacronym>tmerc</projectionacronym>
-        <ellipsoidacronym>GRS80</ellipsoidacronym>
-        <geographicflag>false</geographicflag>
+        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+        <srsid>3452</srsid>
+        <srid>4326</srid>
+        <authid>EPSG:4326</authid>
+        <description>WGS 84</description>
+        <projectionacronym>longlat</projectionacronym>
+        <ellipsoidacronym>WGS84</ellipsoidacronym>
+        <geographicflag>true</geographicflag>
       </spatialrefsys>
     </destinationsrs>
-    <layer_coordinate_transform_info>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="IneffAreas20150918203303737"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="NodesTable20150918214614120"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="XSCutLines20150918203305391"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="dtm_2m20150920201632544"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="flow_paths20150918203115648"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="LeveeAlignment20150918203304922"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="hillshade20150920133031662"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="LateralStructures20150918203304695"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="dtm20150920133031349"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="DTMs20150920185349839"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="Przycięte__zakres_20150920201529062"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="Bridges20150918203303288"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="Endpoints20150919124308196"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="Flowpaths20150919222827025"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="BlockedObs20150918203303055"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="Flowpaths20150919223732086"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="StreamCenterlines20150918203304212"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="DTMs20150920185824495"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="InlineStructures20150918203303975"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="XSPoints20150920152919887"/>
-      <layer_coordinate_transform destAuthId="EPSG:2180" srcAuthId="EPSG:2180" srcDatumTransform="-1" destDatumTransform="-1" layerid="Flowpaths20150918203303499"/>
-    </layer_coordinate_transform_info>
+    <layer_coordinate_transform_info/>
   </mapcanvas>
   <projectlayers layercount="31">
     <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="100000" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="0" scaleBasedLabelVisibilityFlag="0">
@@ -7719,7 +7697,10 @@
                 <effect type="outerGlow">
                   <prop k="blend_mode" v="0"/>
                   <prop k="blur_level" v="3"/>
+                  <prop k="color1" v="0,0,255,255"/>
+                  <prop k="color2" v="0,255,0,255"/>
                   <prop k="color_type" v="0"/>
+                  <prop k="discrete" v="0"/>
                   <prop k="draw_mode" v="2"/>
                   <prop k="enabled" v="0"/>
                   <prop k="single_color" v="255,255,255,255"/>
@@ -7749,7 +7730,10 @@
                 <effect type="innerGlow">
                   <prop k="blend_mode" v="0"/>
                   <prop k="blur_level" v="3"/>
+                  <prop k="color1" v="0,0,255,255"/>
+                  <prop k="color2" v="0,255,0,255"/>
                   <prop k="color_type" v="0"/>
+                  <prop k="discrete" v="0"/>
                   <prop k="draw_mode" v="2"/>
                   <prop k="enabled" v="0"/>
                   <prop k="single_color" v="255,255,255,255"/>
@@ -7780,7 +7764,10 @@
           <effect type="outerGlow">
             <prop k="blend_mode" v="0"/>
             <prop k="blur_level" v="3"/>
+            <prop k="color1" v="0,0,255,255"/>
+            <prop k="color2" v="0,255,0,255"/>
             <prop k="color_type" v="0"/>
+            <prop k="discrete" v="0"/>
             <prop k="draw_mode" v="2"/>
             <prop k="enabled" v="0"/>
             <prop k="single_color" v="255,255,255,255"/>
@@ -7810,7 +7797,10 @@
           <effect type="innerGlow">
             <prop k="blend_mode" v="0"/>
             <prop k="blur_level" v="3"/>
+            <prop k="color1" v="0,0,255,255"/>
+            <prop k="color2" v="0,255,0,255"/>
             <prop k="color_type" v="0"/>
+            <prop k="discrete" v="0"/>
             <prop k="draw_mode" v="2"/>
             <prop k="enabled" v="0"/>
             <prop k="single_color" v="255,255,255,255"/>
@@ -7847,10 +7837,10 @@
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <editform></editform>
+      <editform>.</editform>
       <editforminit/>
       <featformsuppress>0</featformsuppress>
-      <annotationform></annotationform>
+      <annotationform>.</annotationform>
       <editorlayout>generatedlayout</editorlayout>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>

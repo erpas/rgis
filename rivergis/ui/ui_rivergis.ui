@@ -192,7 +192,7 @@
     <addaction name="actionRASBlockedObstructions"/>
     <addaction name="menuUtilities"/>
     <addaction name="separator"/>
-    <addaction name="actionRASExport1DRASData"/>
+    <addaction name="actionRASCreateRASGISImport"/>
     <addaction name="separator"/>
     <addaction name="actionRASCreate2dArea"/>
     <addaction name="actionRASPreview2DMesh"/>
@@ -212,6 +212,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionRASDTMSetup"/>
+    <addaction name="actionDebugMode"/>
    </widget>
    <addaction name="menuDB"/>
    <addaction name="menuSettings"/>
@@ -372,9 +373,13 @@
     <string>RAS 1D Extract Manning's n Values</string>
    </property>
   </action>
-  <action name="actionRASExport1DRASData">
+  <action name="actionRASCreateRASGISImport">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dCreateRASImport.svg</normaloff>:/rivergis/icons/ras1dCreateRASImport.svg</iconset>
+   </property>
    <property name="text">
-    <string>Export 1D RAS Data</string>
+    <string>Create RAS GIS Import File</string>
    </property>
   </action>
   <action name="actionRASTopology1D">
@@ -576,6 +581,17 @@
    </property>
    <property name="text">
     <string>DTM Setup</string>
+   </property>
+  </action>
+  <action name="actionDebugMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Debug mode</string>
    </property>
   </action>
  </widget>
