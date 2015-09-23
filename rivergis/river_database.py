@@ -169,7 +169,11 @@ class RiverDatabase(object):
         Load hydrodynamic model objects from register.
         """
         for k in sorted(self.register.keys()):
-            self.add_to_view(self.register[k])
+            obj = self.register[k]
+            if obj.visible is True:
+                self.add_to_view(obj)
+            else:
+                pass
 
     def process_hecobject(self, hecobject, pg_method, schema=None, srid=None):
         """
@@ -445,7 +449,6 @@ $BODY$
         hdr += 'UNITS: {0}\nEND HEADER:\n\n'.format(self.spatial_unit())
         return hdr
 
-
     def get_stream_network(self):
         """
         Return STREAM NETWORK part of RAS GIS Import file
@@ -475,17 +478,11 @@ $BODY$
         return net
 
 
-
 if __name__ == '__main__':
-    import hecobjects as heco
     baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
 
     baza.SCHEMA = 'public'
     baza.SRID = 2180
 
     baza.connect_pg()
-    baza.register_existing(heco)
-    baza.process_hecobject(heco.StreamCenterlines, 'pg_topology')
-    baza.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations')
-
     baza.disconnect_pg()
