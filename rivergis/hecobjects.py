@@ -781,8 +781,7 @@ class BreakLines2d(HecRasObject):
             ('"AreaID"', 'integer'),
             ('"CellSizeAlong"', 'double precision'),
             ('"CellSizeAcross"', 'double precision'),
-            ('"MeshRows"', 'integer')
-        ]
+            ('"MeshRows"', 'integer')]
 
 
 class BreakPoints2d(HecRasObject):
@@ -793,8 +792,7 @@ class BreakPoints2d(HecRasObject):
             ('"BPID"', 'serial primary key'),
             ('"AreaID"', 'integer'),
             ('"BLID"', 'integer'),
-            ('"Fraction"', 'double precision')
-        ]
+            ('"Fraction"', 'double precision')]
 
 
 class MeshPoints2d(HecRasObject):
@@ -805,9 +803,7 @@ class MeshPoints2d(HecRasObject):
             ('"MPID"', 'serial primary key'),
             ('"AreaID"', 'integer'),
             ('"BLID"', 'integer'),
-            ('"CellSize"', 'double precision')
-        ]
-
+            ('"CellSize"', 'double precision')]
 
 
 if __name__ == '__main__':
