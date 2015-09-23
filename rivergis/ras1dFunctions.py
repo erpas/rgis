@@ -210,9 +210,8 @@ def ras1dXSElevations(rgis):
     qry = 'SELECT * FROM "{0}"."DTMs";'.format(rgis.rdb.SCHEMA)
     dtms = rgis.rdb.run_query(qry, fetch=True)
     for dtm in dtms:
-        dtmId = dtm[0]
-        lid = dtm[4]
-        cellSize = dtm[5]
+        dtmId = dtm['DtmID']
+        lid = dtm['LayerID']
         rlayer = rgis.mapRegistry.mapLayer(lid)
         qry = '''
         WITH xsids AS (
@@ -231,21 +230,24 @@ def ras1dXSElevations(rgis):
         '''.format(rgis.rdb.SCHEMA, dtmId)
         pts = rgis.rdb.run_query(qry, fetch=True)
 
-        qry = ''
-        for pt in pts:
-            ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
-            if rgis.DEBUG > 1:
-                rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], pt[1], pt[2]))
-            if ident.isValid():
-                pt.append(round(ident.results()[1],2))
+        if pts:
+            qry = ''
+            for pt in pts:
+                ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]),\
+                        QgsRaster.IdentifyFormatValue)
                 if rgis.DEBUG > 1:
-                    rgis.addInfo('{0}'.format(', '.join([str(a) for a in pt])))
-                qry += 'UPDATE "{0}"."XSPoints" SET "Elevation" = {1} WHERE "PtID" = {2};\n'\
-                    .format(rgis.rdb.SCHEMA, pt[3], pt[0])
+                    rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(\
+                        ident.results()[1], pt[1], pt[2]))
+                if ident.isValid():
+                    pt.append(round(ident.results()[1],2))
+                    if rgis.DEBUG > 1:
+                        rgis.addInfo('{0}'.format(', '.join([str(a) for a in pt])))
+                    qry += 'UPDATE "{0}"."XSPoints" SET "Elevation" = {1} WHERE "PtID" = {2};\n'\
+                        .format(rgis.rdb.SCHEMA, pt[3], pt[0])
 
-        if rgis.DEBUG:
-            rgis.addInfo(qry)
-        rgis.rdb.run_query(qry)
+            if rgis.DEBUG:
+                rgis.addInfo(qry)
+            rgis.rdb.run_query(qry)
 
     QApplication.restoreOverrideCursor()
     rgis.addInfo('Done')
@@ -280,7 +282,7 @@ def ras1dCreateRasGisImportFile(rgis):
     s.setValue("rivergis/lastRasGisImportDir", dirname(importFileName))
     if rgis.DEBUG:
         rgis.addInfo(rgis.rdb.get_ras_gis_import())
-    importFile = open(importFileName, 'wb')
+    importFile = open(importFileName, 'w')
     importFile.write(rgis.rdb.get_ras_gis_import())
     importFile.close()
 
