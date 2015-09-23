@@ -33,6 +33,7 @@ def ras1dStreamCenterlineTopology(rgis):
         return
 
     rgis.addInfo('<br><b>Building topology on StreamCenterlines...</b>')
+    rgis.rdb.process_hecobject(heco.NodesTable, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_topology'):
         rgis.addInfo('Done.')
 
@@ -44,6 +45,7 @@ def ras1dStreamCenterlineLengthsStations(rgis):
         rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build StreamCenterlines Topology first.<br>Cancelling...')
         qry = ''
     rgis.addInfo('<br><b>Calculating river reach(es) lenghts and their end stations...</b>')
+    rgis.rdb.process_hecobject(heco.Endpoints, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations'):
         rgis.addInfo('Done.')
 
@@ -101,7 +103,7 @@ def ras1dXSElevations(rgis):
 
     rgis.addInfo('<br><b>Creating cross-sections\' points:</b>')
     # # Create xsection points table
-    rgis.rdb.process_hecobject(heco.XSCutLines.XSPoints, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.XSPoints, 'pg_create_table')
 
     # Create DTMs table
     rgis.rdb.process_hecobject(heco.DTMs, 'pg_create_table')
