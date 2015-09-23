@@ -81,7 +81,6 @@ class DlgRasCreate2dFlowAreas(QDialog):
     call(["mkdir", join(expanduser("~"), "qgis_processing_temp")], shell=True)
     call(["mkdir", workDirName], shell=True)
 
-    # cur = self.rgis.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     self.rgis.addInfo("  Creating tables..." )
 
     # create 2dareas table

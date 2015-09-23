@@ -141,7 +141,8 @@ class RiverDatabase(object):
         if key not in self.register:
             self.register[key] = obj
         else:
-            self.rgis.addInfo('{0} already exists inside RiverGIS registry.'.format(key))
+            if self.rgis.DEBUG:
+                self.rgis.addInfo('{0} already exists inside RiverGIS registry.'.format(key))
 
     def register_existing(self, hydro_module, schema=None, srid=None):
         """
@@ -174,6 +175,7 @@ class RiverDatabase(object):
                 self.add_to_view(obj)
             else:
                 pass
+        self.rgis.iface.mapCanvas().refresh()
 
     def process_hecobject(self, hecobject, pg_method, schema=None, srid=None):
         """
@@ -225,6 +227,7 @@ class RiverDatabase(object):
             map_layer = map_registry.addMapLayer(vlayer)
             style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
             map_layer.loadNamedStyle(style_file)
+
         except Exception, e:
             self.rgis.addInfo(repr(e))
 
@@ -325,6 +328,7 @@ class RiverDatabase(object):
         qry += 'geom) \nVALUES\n\t'
         # list of attributes data
         feats_def = []
+        singleToMultiConversion = False
         for feat in features:
             # field values of the feature
             vals = []
@@ -338,8 +342,7 @@ class RiverDatabase(object):
                 self.rgis.addInfo('WARNING:<br>Source geometry is of type MULTI but the target is a {0} --- skipping the layer.'.format(hecobject.geom_type))
                 qry = ''
             elif target_multi and not src_multi:
-                self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
-                self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI - check the results!')
+                singleToMultiConversion = True
                 geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, SRID)
             else:
                 geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID)
@@ -353,6 +356,9 @@ class RiverDatabase(object):
             vals.append(geometry)
             feats_def.append('({0})'.format(', '.join(vals)))
         qry += '{0};'.format(',\n\t'.join(feats_def))
+        if singleToMultiConversion:
+            self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
+            self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI - check the results!')
         if self.rgis.DEBUG:
             self.rgis.addInfo(qry)
         else:
