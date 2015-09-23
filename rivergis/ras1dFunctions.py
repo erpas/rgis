@@ -225,8 +225,7 @@ def ras1dXSElevations(rgis):
           "{0}"."XSPoints" as pts,
           xsids
         WHERE
-          pts."XsecID" = xsids."XsecID"
-        ;
+          pts."XsecID" = xsids."XsecID";
         '''.format(rgis.rdb.SCHEMA, dtmId)
         pts = rgis.rdb.run_query(qry, fetch=True)
 

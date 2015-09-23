@@ -309,12 +309,9 @@ class RiverDatabase(object):
                 else:
                     pass
 
-        if self.rgis.DEBUG:
-            self.rgis.addInfo('Importing {0}'.format(hecobject.name))
-            for i in imp_attrs:
-                self.rgis.addInfo('  {0} as {1} with type {2}'.format(i[0], i[1], i[2]))
-        else:
-            pass
+        self.rgis.addInfo('<br>Importing {0}'.format(hecobject.name))
+        for i in imp_attrs:
+            self.rgis.addInfo('  {0} as {1} with type {2}'.format(i[0], i[1], i[2]))
 
         # create SQL for inserting the layer into PG database
         schema_name = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
@@ -334,11 +331,11 @@ class RiverDatabase(object):
             target_multi = hecobject.geom_type.startswith('MULTI')
             src_multi = feat.geometry().isMultipart()
             if not target_multi and src_multi:
-                self.rgis.addInfo('WARNING: Source geometry is of type MULTI but the target is a {0} --- skipping the layer.'.format(hecobject.geom_type))
+                self.rgis.addInfo('WARNING:<br>Source geometry is of type MULTI but the target is a {0} --- skipping the layer.'.format(hecobject.geom_type))
                 qry = ''
             elif target_multi and not src_multi:
                 self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
-                self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI.')
+                self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI - check the results!')
                 geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, SRID)
             else:
                 geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID)
@@ -357,6 +354,8 @@ class RiverDatabase(object):
         else:
             pass
         self.run_query(qry)
+        self.rgis.addInfo('OK')
+
 
     def create_spatial_index(self):
         """

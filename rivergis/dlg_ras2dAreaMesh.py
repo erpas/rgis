@@ -26,8 +26,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     self.ui = Ui_AreaMesh()
     self.ui.setupUi(self)
     self.rgis = rgis
-    self.schName = rgis.schema
-    
+
     QObject.connect(self.ui.geoFileBtn, SIGNAL("clicked()"), self.chooseGeoFile)
     
     QObject.connect(self.ui.buttonBox, SIGNAL("accepted()"), self.acceptDialog)
@@ -86,33 +85,33 @@ class DlgRasCreate2dFlowAreas(QDialog):
     self.rgis.addInfo("  Creating tables..." )
 
     # create 2dareas table
-    qry = 'drop table if exists %s.areas2d cascade;' % self.schName
-    qry += 'create table %s.areas2d (gid serial primary key, name text, cellsize double precision, geom geometry(Polygon, %i));' % (self.schName, srid)
-    qry += "select create_st_index_if_not_exists('%s','areas2d');" % (self.schName)
+    qry = 'drop table if exists %s.areas2d cascade;' % self.rgis.rdb.SCHEMA
+    qry += 'create table %s.areas2d (gid serial primary key, name text, cellsize double precision, geom geometry(Polygon, %i));' % (self.rgis.rdb.SCHEMA, srid)
+    qry += "select create_st_index_if_not_exists('%s','areas2d');" % (self.rgis.rdb.SCHEMA)
 
     # create structures table
-    qry += 'drop table if exists %s.struct_lines cascade;' % self.schName
-    qry += 'create table %s.struct_lines (gid serial primary key, aid integer, cellsizealong double precision, cellsizeacross double precision, meshrows integer, geom geometry(Linestring, %i));' % (self.schName, srid)
-    qry += "select create_st_index_if_not_exists('%s','struct_lines');" % (self.schName)
+    qry += 'drop table if exists %s."Breaklines" cascade;' % self.rgis.rdb.SCHEMA
+    qry += 'create table %s."Breaklines" (gid serial primary key, aid integer, cellsizealong double precision, cellsizeacross double precision, meshrows integer, geom geometry(Linestring, %i));' % (self.rgis.rdb.SCHEMA, srid)
+    qry += "select create_st_index_if_not_exists('%s','struct_lines');" % (self.rgis.rdb.SCHEMA)
 
     # create structure routes table
-    qry += 'drop table if exists %s.struct_lines_m cascade;' % self.schName
-    qry += 'create table %s.struct_lines_m (gid serial primary key, aid integer, cellsizealong double precision, cellsizeacross double precision, meshrows integer, geom geometry(LinestringM, %i));' % (self.schName, srid)
-    qry += "select create_st_index_if_not_exists('%s','struct_lines_m');" % (self.schName)
+    qry += 'drop table if exists %s."Breaklines_m" cascade;' % self.rgis.rdb.SCHEMA
+    qry += 'create table %s."Breaklines_m" (gid serial primary key, aid integer, cellsizealong double precision, cellsizeacross double precision, meshrows integer, geom geometry(LinestringM, %i));' % (self.rgis.rdb.SCHEMA, srid)
+    qry += "select create_st_index_if_not_exists('%s','struct_lines_m');" % (self.rgis.rdb.SCHEMA)
 
     # create breakpoints table
-    qry += 'drop table if exists %s.breakpoints cascade;' % self.schName
-    qry += 'create table %s.breakpoints (gid serial primary key, aid integer, sid integer, m double precision, geom geometry(Point, %i));' % (self.schName, srid)
+    qry += 'drop table if exists %s.breakpoints cascade;' % self.rgis.rdb.SCHEMA
+    qry += 'create table %s.breakpoints (gid serial primary key, aid integer, sid integer, m double precision, geom geometry(Point, %i));' % (self.rgis.rdb.SCHEMA, srid)
 
     # 2d mesh points table
-    qry += 'drop table if exists %s.mesh_pts cascade;' % self.schName
-    qry += 'create table %s.mesh_pts (gid serial primary key, aid integer, lid integer, cellsize double precision, geom geometry(Point, %i));' % (self.schName, srid)
-    qry += "select create_st_index_if_not_exists('%s','mesh_pts');" % (self.schName)
+    qry += 'drop table if exists %s.mesh_pts cascade;' % self.rgis.rdb.SCHEMA
+    qry += 'create table %s.mesh_pts (gid serial primary key, aid integer, lid integer, cellsize double precision, geom geometry(Point, %i));' % (self.rgis.rdb.SCHEMA, srid)
+    qry += "select create_st_index_if_not_exists('%s','mesh_pts');" % (self.rgis.rdb.SCHEMA)
 
     # structures buffers table
-    qry += 'drop table if exists %s.wyciecie_pkt_org;' % self.schName
-    qry += 'create table if not exists %s.wyciecie_pkt_org (gid serial primary key,geom geometry(Polygon, %i));' % (self.schName, srid)
-    qry += "select create_st_index_if_not_exists('%s','wyciecie_pkt_org');" % (self.schName)
+    qry += 'drop table if exists %s.wyciecie_pkt_org;' % self.rgis.rdb.SCHEMA
+    qry += 'create table if not exists %s.wyciecie_pkt_org (gid serial primary key,geom geometry(Polygon, %i));' % (self.rgis.rdb.SCHEMA, srid)
+    qry += "select create_st_index_if_not_exists('%s','wyciecie_pkt_org');" % (self.rgis.rdb.SCHEMA)
 
     # time.sleep(0.05)
     self.rgis.rdb.run_query(qry)
@@ -130,7 +129,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
 
     areaFeats = areas.getFeatures()
 
-    qry = 'INSERT INTO %s.areas2d (name, cellsize, geom) VALUES \n' % self.schName
+    qry = 'INSERT INTO %s.areas2d (name, cellsize, geom) VALUES \n' % self.rgis.rdb.SCHEMA
 
     for feat in areaFeats:
       areaName = str(feat[nameAttr])
@@ -150,7 +149,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     self.rgis.addInfo("  Creating preliminary regular mesh points..." )
 
     qry = '''insert into %s.mesh_pts (aid, lid, geom)
-    SELECT gid, -1, (ST_Dump(makegrid(geom, cellsize, %i))).geom as geom from %s.areas2d;''' % (self.schName, srid, self.schName)
+    SELECT gid, -1, (ST_Dump(makegrid(geom, cellsize, %i))).geom as geom from %s.areas2d;''' % (self.rgis.rdb.SCHEMA, srid, self.rgis.rdb.SCHEMA)
     qry += '''
     with areas2dshrinked as (
       select gid, ST_Buffer(a2d.geom,-0.3*a2d.cellsize) as geom
@@ -163,7 +162,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
        pkts.geom && areas2dshrinked.geom
        and
        ST_Intersects(pkts.geom, areas2dshrinked.geom));
-    ''' % ((self.schName,) * 3)
+    ''' % ((self.rgis.rdb.SCHEMA,) * 3)
     self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Inserting structures into PostGIS table" )
@@ -171,7 +170,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     if structures:
       structFeats = structures.getFeatures()
 
-      qry = 'INSERT INTO %s.struct_lines (cellsizealong, cellsizeacross, meshrows, geom) VALUES \n' % self.schName
+      qry = 'INSERT INTO %s."Breaklines" (cellsizealong, cellsizeacross, meshrows, geom) VALUES \n' % self.rgis.rdb.SCHEMA
 
       for feat in structFeats:
         if not feat[structMeshSizeAlongAttr] or not feat[structMeshSizeAcrossAttr]:
@@ -202,7 +201,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
     if breakPoints:
       breakFeats = breakPoints.getFeatures()
 
-      qry = 'INSERT INTO %s.breakpoints (geom) VALUES \n' % self.schName
+      qry = 'INSERT INTO %s.breakpoints (geom) VALUES \n' % self.rgis.rdb.SCHEMA
 
       for feat in breakFeats:
         geom = feat.geometry()
@@ -217,24 +216,24 @@ class DlgRasCreate2dFlowAreas(QDialog):
     with ids as (
     select a.gid as agid, l.gid as lgid
     from
-      %s.struct_lines l, %s.areas2d a
+      %s."Breaklines" l, %s.areas2d a
     where
       a.geom && l.geom and
       ST_Contains(a.geom, l.geom)
       )
-    update %s.struct_lines l set aid = ids.agid
+    update %s."Breaklines" l set aid = ids.agid
     from ids
     where ids.lgid = l.gid;
-    ''' % ((self.schName,) * 3)
+    ''' % ((self.rgis.rdb.SCHEMA,) * 3)
     self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating routes along structure lines..." )
 
-    qry = 'insert into %s.struct_lines_m (aid, cellsizealong, cellsizeacross, meshrows, geom) select aid, cellsizealong, cellsizeacross, meshrows, (ST_Dump(ST_AddMeasure(geom, 0, ST_Length(geom)))).geom from %s.struct_lines;' % ((self.schName,) * 2)
+    qry = 'insert into %s."Breaklines_m" (aid, cellsizealong, cellsizeacross, meshrows, geom) select aid, cellsizealong, cellsizeacross, meshrows, (ST_Dump(ST_AddMeasure(geom, 0, ST_Length(geom)))).geom from %s."Breaklines";' % ((self.rgis.rdb.SCHEMA,) * 2)
 
     self.rgis.addInfo("  Deleting orignal mesh points near structures..." )
-    qry += 'insert into %s.wyciecie_pkt_org (geom) select ST_Buffer(geom, meshrows*cellsizeacross+cellsizealong*0.6, \'endcap=flat join=round\') from %s.struct_lines_m;' % ((self.schName,) * 2)
-    qry += 'delete from %s.mesh_pts as p using %s.wyciecie_pkt_org as w where w.geom && p.geom and ST_Intersects(w.geom, p.geom);' % ((self.schName,) * 2)
+    qry += 'insert into %s.wyciecie_pkt_org (geom) select ST_Buffer(geom, meshrows*cellsizeacross+cellsizealong*0.6, \'endcap=flat join=round\') from %s."Breaklines_m";' % ((self.rgis.rdb.SCHEMA,) * 2)
+    qry += 'delete from %s.mesh_pts as p using %s.wyciecie_pkt_org as w where w.geom && p.geom and ST_Intersects(w.geom, p.geom);' % ((self.rgis.rdb.SCHEMA,) * 2)
     self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating mesh points along structures..." )
@@ -247,7 +246,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       with ids as (
       select s.gid as sgid, p.gid as pgid
       from
-        %s.struct_lines s, %s.breakpoints p
+        %s."Breaklines" s, %s.breakpoints p
       where
         ST_Buffer(s.geom, %.2f) && p.geom and
         ST_Contains(ST_Buffer(s.geom, 10), p.geom)
@@ -255,7 +254,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       update %s.breakpoints p set sid = ids.sgid
       from ids
       where ids.pgid = p.gid;
-      ''' % (self.schName, self.schName, breakPtsLocTol, self.schName)
+      ''' % (self.rgis.rdb.SCHEMA, self.rgis.rdb.SCHEMA, breakPtsLocTol, self.rgis.rdb.SCHEMA)
       self.rgis.rdb.run_query(qry)
 
       # find measures of breakpoints along structure_lines
@@ -274,14 +273,14 @@ class DlgRasCreate2dFlowAreas(QDialog):
       qry = '''
       update %s.breakpoints p set m = %s(s.geom, p.geom)
       from
-        %s.struct_lines s
+        %s."Breaklines" s
       where p.sid = s.gid;
-      ''' % (self.schName, locate, self.schName)
+      ''' % (self.rgis.rdb.SCHEMA, locate, self.rgis.rdb.SCHEMA)
       self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating aligned mesh points along structures..." )
 
-    qry = "SELECT gid, aid, cellsizealong, cellsizeacross, ST_Length(geom) as len, meshrows as rows from %s.struct_lines_m;" % self.schName
+    qry = 'SELECT gid, aid, cellsizealong, cellsizeacross, ST_Length(geom) as len, meshrows as rows from %s."Breaklines_m";' % self.rgis.rdb.SCHEMA
 
     for line in self.rgis.rdb.run_query(qry, True):
       odl = float(line['cellsizealong'])
@@ -291,7 +290,7 @@ class DlgRasCreate2dFlowAreas(QDialog):
       rows = int(line['rows'])
       imax = int(leng/(odl))
 
-      qry = "SELECT DISTINCT b.m from %s.breakpoints b, %s.struct_lines s where b.sid = %i;" % (self.schName, self.schName, id)
+      qry = 'SELECT DISTINCT b.m from %s.breakpoints b, %s."Breaklines" s where b.sid = %i;' % (self.rgis.rdb.SCHEMA, self.rgis.rdb.SCHEMA, id)
       ms = self.rgis.rdb.run_query(qry, True)
 
       if not ms: # no breakpoints: create aligned mesh at regular interval = cellsize
@@ -299,8 +298,8 @@ class DlgRasCreate2dFlowAreas(QDialog):
         for i in range(0, imax+1):
           dist = i * odl
           for j in range(0,rows):
-            qry = 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, %.2f)) from %s.struct_lines_m where gid = %i;' % (self.schName, odl, dist, j*szer+szer/2, self.schName, id)
-            qry += 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, -%.2f)) from %s.struct_lines_m where gid = %i;' % (self.schName, odl, dist, j*szer+szer/2, self.schName, id)
+            qry = 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, %.2f)) from %s."Breaklines_m" where gid = %i;' % (self.rgis.rdb.SCHEMA, odl, dist, j*szer+szer/2, self.rgis.rdb.SCHEMA, id)
+            qry += 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, -%.2f)) from %s."Breaklines_m" where gid = %i;' % (self.rgis.rdb.SCHEMA, odl, dist, j*szer+szer/2, self.rgis.rdb.SCHEMA, id)
             self.rgis.rdb.run_query(qry)
 
       else: # create cellfaces at structure breakpoints
@@ -348,8 +347,8 @@ class DlgRasCreate2dFlowAreas(QDialog):
         # insert aligned mesh points into table
         for m in sorted(mpts):
           for j in range(0,rows):
-            qry = 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, %.2f)) from  %s.struct_lines_m where gid = %i;\n' % (self.schName, cs_min, m*leng, j*odl+odl/2, self.schName, id)
-            qry += 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, -%.2f)) from %s.struct_lines_m where gid = %i;' % (self.schName, cs_min, m*leng, j*odl+odl/2, self.schName, id)
+            qry = 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, %.2f)) from  %s."Breaklines_m" where gid = %i;\n' % (self.rgis.rdb.SCHEMA, cs_min, m*leng, j*odl+odl/2, self.rgis.rdb.SCHEMA, id)
+            qry += 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, -%.2f)) from %s."Breaklines_m" where gid = %i;' % (self.rgis.rdb.SCHEMA, cs_min, m*leng, j*odl+odl/2, self.rgis.rdb.SCHEMA, id)
             self.rgis.rdb.run_query(qry)
 
 
@@ -358,11 +357,11 @@ class DlgRasCreate2dFlowAreas(QDialog):
     qry = '''delete from %s.mesh_pts as p1 using %s.mesh_pts as p2
       where p1.lid <> -1 and p2.lid <> -1 and p1.lid <> p2.lid and p1.gid > p2.gid
       and ST_DWithin(p1.geom, p2.geom, 0.75 * least(p1.cellsize, p2.cellsize))
-      ;''' % ((self.schName,) * 2)
+      ;''' % ((self.rgis.rdb.SCHEMA,) * 2)
     qry += '''delete from %s.mesh_pts as p using %s.areas2d as a
       where
         not ST_Contains( ST_Buffer(a.geom,-0.3*a.cellsize), p.geom )
-      ;''' % ((self.schName,) * 2)
+      ;''' % ((self.rgis.rdb.SCHEMA,) * 2)
     self.rgis.rdb.run_query(qry)
 
     if geoFileName:

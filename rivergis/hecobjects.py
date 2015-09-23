@@ -511,7 +511,10 @@ class BankPoints(HecRasObject):
     def __init__(self):
         super(BankPoints, self).__init__()
         self.geom_type = 'POINT'
-        self.attrs = [('"BankID"', 'serial primary key')]
+        self.attrs = [('"BankID"', 'serial primary key'),
+                      ('"XsecID"', 'integer'),
+                      ('"Elevation"', 'double precision')
+                      ]
 
 
 class Flowpaths(HecRasObject):
@@ -695,7 +698,7 @@ class LeveeAlignment(HecRasObject):
 class LeveePoints(HecRasObject):
     def __init__(self):
         super(LeveePoints, self).__init__()
-        self.geom_type = 'POINTS'
+        self.geom_type = 'POINT'
         self.attrs = [
             ('"LeveeID"', 'serial primary key'),
             ('"Station"', 'integer'),
@@ -767,6 +770,54 @@ class DTMs(HecRasObject):
             ('"Provider"', 'text'),
             ('"LayerID"', 'text'),
             ('"CellSize"', 'double precision')]
+
+
+class FlowAreas2d(HecRasObject):
+    def __init__(self):
+        super(FlowAreas2d, self).__init__()
+        self.geom_type = 'POLYGON'
+        self.attrs = [
+            ('"AreaID"', 'serial primary key'),
+            ('"Name"', 'text'),
+            ('"CellSize"', 'double precision')]
+
+
+class BreakLines2d(HecRasObject):
+    def __init__(self):
+        super(BreakLines2d, self).__init__()
+        self.geom_type = 'LINESTRING'
+        self.attrs = [
+            ('"BLID"', 'serial primary key'),
+            ('"AreaID"', 'integer'),
+            ('"CellSizeAlong"', 'double precision'),
+            ('"CellSizeAcross"', 'double precision'),
+            ('"MeshRows"', 'integer')
+        ]
+
+
+class BreakPoints2d(HecRasObject):
+    def __init__(self):
+        super(BreakPoints2d, self).__init__()
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"BPID"', 'serial primary key'),
+            ('"AreaID"', 'integer'),
+            ('"BLID"', 'integer'),
+            ('"Fraction"', 'double precision')
+        ]
+
+
+class MeshPoints2d(HecRasObject):
+    def __init__(self):
+        super(MeshPoints2d, self).__init__()
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"MPID"', 'serial primary key'),
+            ('"AreaID"', 'integer'),
+            ('"BLID"', 'integer'),
+            ('"CellSize"', 'double precision')
+        ]
+
 
 
 if __name__ == '__main__':

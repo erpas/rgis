@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>377</width>
-    <height>232</height>
+    <width>387</width>
+    <height>280</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,48 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
+     <item row="10" column="0">
+      <widget class="QCheckBox" name="landuseChbox">
+       <property name="text">
+        <string>Landuse Areas</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="bridgesChbox">
+       <property name="text">
+        <string>Bridges/Culverts</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QCheckBox" name="blockedChbox">
+       <property name="text">
+        <string>Blocked Obstructions</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QCheckBox" name="flowPathChbox">
+       <property name="text">
+        <string>Flow Path Centerlines</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QCheckBox" name="bankLinesChbox">
+       <property name="text">
+        <string>Bank Lines</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QCheckBox" name="xsCutLinesChbox">
+       <property name="text">
+        <string>XS Cut Lines</string>
+       </property>
+      </widget>
+     </item>
      <item row="8" column="0">
       <widget class="QCheckBox" name="ineffectiveChbox">
        <property name="text">
@@ -23,73 +65,10 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QCheckBox" name="inlineStructChbox">
-       <property name="text">
-        <string>Inline Structures</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
+     <item row="12" column="1">
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="standardButtons">
         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QCheckBox" name="leveeChbox">
-       <property name="text">
-        <string>Levee Alignment</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="blockedChbox">
-       <property name="text">
-        <string>Blocked Obstructions</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QCheckBox" name="landuseChbox">
-       <property name="text">
-        <string>Landuse Areas</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QCheckBox" name="xsCutLinesChbox">
-       <property name="text">
-        <string>XS Cut Lines</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QCheckBox" name="flowPathChbox">
-       <property name="text">
-        <string>Flow Path Centerlines</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QCheckBox" name="bridgesChbox">
-       <property name="text">
-        <string>Bridges/Culverts</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QCheckBox" name="bankLinesChbox">
-       <property name="text">
-        <string>Bank Lines</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QCheckBox" name="lateralStructChbox">
-       <property name="text">
-        <string>Lateral Structures</string>
        </property>
       </widget>
      </item>
@@ -100,14 +79,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
-      <widget class="QCheckBox" name="storageAreasChbox">
-       <property name="text">
-        <string>Storage Areas</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
+     <item row="12" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="helpButton">
@@ -130,6 +102,55 @@
         </spacer>
        </item>
       </layout>
+     </item>
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="inlineStructChbox">
+       <property name="text">
+        <string>Inline Structures</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QCheckBox" name="leveeChbox">
+       <property name="text">
+        <string>Levee Alignment</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QCheckBox" name="lateralStructChbox">
+       <property name="text">
+        <string>Lateral Structures</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QCheckBox" name="storageAreasChbox">
+       <property name="text">
+        <string>Storage Areas</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QCheckBox" name="flowAreas2DChbox">
+       <property name="text">
+        <string>2D Flow Areas</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QCheckBox" name="breaklines2DChbox">
+       <property name="text">
+        <string>2D Breaklines</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QCheckBox" name="breakpoints2DChbox">
+       <property name="text">
+        <string>2D Breakpoints</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

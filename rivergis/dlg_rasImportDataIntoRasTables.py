@@ -42,6 +42,8 @@ class DlgImportDataIntoRasTables(QDialog):
             self.rgis.rdb.insert_layer(streamCenterlinesLayer, \
                 self.rgis.rdb.register['StreamCenterlines'])
             importInfo.append('Stream Centerlines')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                streamCenterlinesLayer.setCacheImage(None)
 
         if not self.ui.cboXsecs.currentText() == '':
             curInd = self.ui.cboXsecs.currentIndex()
@@ -49,6 +51,8 @@ class DlgImportDataIntoRasTables(QDialog):
             xsLayer = self.rgis.mapRegistry.mapLayer(lid)
             self.rgis.rdb.insert_layer(xsLayer, self.rgis.rdb.register['XSCutLines'])
             importInfo.append('XSCutlines')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                xsLayer.setCacheImage(None)
 
         if not self.ui.cboBanks.currentText() == '':
             curInd = self.ui.cboBanks.currentIndex()
@@ -56,6 +60,8 @@ class DlgImportDataIntoRasTables(QDialog):
             banksLayer = self.rgis.mapRegistry.mapLayer(lid)
             self.rgis.rdb.insert_layer(banksLayer, self.rgis.rdb.register['BankLines'])
             importInfo.append('Banks')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                banksLayer.setCacheImage(None)
 
         if not self.ui.cboFlowPaths.currentText() == '':
             attrMapFlowpaths = {}
@@ -66,13 +72,17 @@ class DlgImportDataIntoRasTables(QDialog):
                 attrMapFlowpaths['LineType'] = self.ui.cboFlowpathType.currentText()
             self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'], attr_map=attrMapFlowpaths)
             importInfo.append('Flowpaths')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                pathsLayer.setCacheImage(None)
 
         if not self.ui.cboLevees.currentText() == '':
             curInd = self.ui.cboLevees.currentIndex()
             lid = self.ui.cboLevees.itemData(curInd)
-            pathsLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['LeveeAlignment'])
+            leveesLayer = self.rgis.mapRegistry.mapLayer(lid)
+            self.rgis.rdb.insert_layer(leveesLayer, self.rgis.rdb.register['LeveeAlignment'])
             importInfo.append('Levee Alignment')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                leveesLayer.setCacheImage(None)
 
         if not self.ui.cboIneffective.currentText() == '':
             attrMapIneff = {}
@@ -83,6 +93,8 @@ class DlgImportDataIntoRasTables(QDialog):
                 attrMapIneff['Elevation'] = self.ui.cboIneffElev.currentText()
             self.rgis.rdb.insert_layer(ineffLayer, self.rgis.rdb.register['IneffAreas'], attr_map=attrMapIneff)
             importInfo.append('Ineffective Areas')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                ineffLayer.setCacheImage(None)
 
         if not self.ui.cboObstructions.currentText() == '':
             attrMapObs = {}
@@ -93,6 +105,8 @@ class DlgImportDataIntoRasTables(QDialog):
                 attrMapObs['Elevation'] = self.ui.cboObstructionsElev.currentText()
             self.rgis.rdb.insert_layer(obsLayer, self.rgis.rdb.register['BlockedObs'], attr_map=attrMapObs)
             importInfo.append('Blocked Obstructions')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                obsLayer.setCacheImage(None)
 
         if not self.ui.cboLanduse.currentText() == '':
             attrMapLU = {}
@@ -104,6 +118,8 @@ class DlgImportDataIntoRasTables(QDialog):
                 attrMapLU['N_Value'] = self.ui.cboManningAttr.currentText()
             self.rgis.rdb.insert_layer(landuseLayer, self.rgis.rdb.register['LanduseAreas'], attr_map=attrMapLU)
             importInfo.append('Landuse Areas')
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                landuseLayer.setCacheImage(None)
 
         self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(importInfo)))
         self.rgis.iface.mapCanvas().refresh()

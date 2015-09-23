@@ -34,6 +34,7 @@ class RiverGIS(QMainWindow):
 
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
+        QApplication.setOverrideCursor(Qt.ArrowCursor)
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ui = Ui_RiverGIS()
         self.ui.setupUi(self)
