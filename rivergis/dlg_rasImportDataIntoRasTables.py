@@ -23,111 +23,104 @@ class DlgImportDataIntoRasTables(QDialog):
         self.ui.cboIneffective.currentIndexChanged.connect(self.cboIneffectiveLayerChanged)
         self.ui.cboObstructions.currentIndexChanged.connect(self.cboObstructionsLayerChanged)
         self.ui.cboLanduse.currentIndexChanged.connect(self.cboLanduseLayerChanged)
-        # QObject.connect(self.ui.helpButton, SIGNAL("clicked()"), self.displayHelp)
         self.populateCbos()
         self.flowpathsLayer = None
         self.ineffectiveLayer = None
         self.obstructionsLayer = None
         self.landuseLayer = None
+        self.importInfo = []
+        self.layers = {
+            'Stream Centerlines': {
+                'cbo': self.ui.cboStreamCenterlines,
+                'className': 'StreamCenterlines',
+                'attrs': {}
+            },
+            'Cross-sections': {
+                'cbo': self.ui.cboXsecs,
+                'className': 'XSCutLines',
+                'attrs': {}
+            },
+            'Banks': {
+                'cbo': self.ui.cboBanks,
+                'className': 'BankLines',
+                'attrs': {}
+            },
+            'Flow Paths': {
+                'cbo': self.ui.cboFlowPaths,
+                'className': 'Flowpaths',
+                'attrs': {
+                    'LineType': {
+                        'cbo': self.ui.cboFlowpathType,
+                        'check': ['type', 'linetype']
+                    }
+                }
+            },
+            'Levee Alignment': {
+                'cbo': self.ui.cboLevees,
+                'className': 'LeveeAlignment',
+                'attrs': {}
+            },
+            'Ineffective Flow Areas': {
+                'cbo': self.ui.cboIneffective,
+                'className': 'IneffAreas',
+                'attrs': {
+                    'Elevation': {
+                        'cbo': self.ui.cboIneffElev,
+                        'check': ['elevation', 'elev']
+                    }
+                }
+            },
+            'Blocked Obstructions': {
+                'cbo': self.ui.cboObstructions,
+                'className': 'BlockedObs',
+                'attrs': {
+                    'Elevation': {
+                        'cbo': self.ui.cboObstructionsElev,
+                        'check': ['elevation', 'elev']
+                    }
+                }
+            },
+            'Landuse Areas': {
+                'cbo': self.ui.cboLanduse,
+                'className': 'LanduseAreas',
+                'attrs': {
+                    'LUCode': {
+                        'cbo': self.ui.cboLandCodeAttr,
+                        'check': ['lucode', 'code']
+                    },
+                    'N_Value': {
+                        'cbo': self.ui.cboManningAttr,
+                        'check': ['manning', 'n', 'n_value']
+                    }
+                }
+            }
+        }
 
+    def processLayers(self, name, data):
+        if not data['cbo'].currentText() == '':
+            curInd = data['cbo'].currentIndex()
+            lid = data['cbo'].itemData(curInd)
+            layer = self.rgis.mapRegistry.mapLayer(lid)
+            attrMap = {}
+            for attr, attrData in data['attrs'].iteritems():
+                attrMap[attr] = attrData['cbo'].currentText()
+            self.rgis.rdb.insert_layer(layer, \
+                self.rgis.rdb.register[data['className']], \
+                attr_map=attrMap)
+            self.importInfo.append(name)
+            if self.rgis.iface.mapCanvas().isCachingEnabled():
+                layer.setCacheImage(None)
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
-        importInfo = []
 
-        if not self.ui.cboStreamCenterlines.currentText() == '':
-            curInd = self.ui.cboStreamCenterlines.currentIndex()
-            lid = self.ui.cboStreamCenterlines.itemData(curInd)
-            streamCenterlinesLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(streamCenterlinesLayer, \
-                self.rgis.rdb.register['StreamCenterlines'])
-            importInfo.append('Stream Centerlines')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                streamCenterlinesLayer.setCacheImage(None)
+        for key, data in self.layers.iteritems():
+            self.processLayers(key, data)
 
-        if not self.ui.cboXsecs.currentText() == '':
-            curInd = self.ui.cboXsecs.currentIndex()
-            lid = self.ui.cboXsecs.itemData(curInd)
-            xsLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(xsLayer, self.rgis.rdb.register['XSCutLines'])
-            importInfo.append('XSCutlines')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                xsLayer.setCacheImage(None)
-
-        if not self.ui.cboBanks.currentText() == '':
-            curInd = self.ui.cboBanks.currentIndex()
-            lid = self.ui.cboBanks.itemData(curInd)
-            banksLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(banksLayer, self.rgis.rdb.register['BankLines'])
-            importInfo.append('Banks')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                banksLayer.setCacheImage(None)
-
-        if not self.ui.cboFlowPaths.currentText() == '':
-            attrMapFlowpaths = {}
-            curInd = self.ui.cboFlowPaths.currentIndex()
-            lid = self.ui.cboFlowPaths.itemData(curInd)
-            pathsLayer = self.rgis.mapRegistry.mapLayer(lid)
-            if not self.ui.cboFlowpathType.currentText() == '':
-                attrMapFlowpaths['LineType'] = self.ui.cboFlowpathType.currentText()
-            self.rgis.rdb.insert_layer(pathsLayer, self.rgis.rdb.register['Flowpaths'], attr_map=attrMapFlowpaths)
-            importInfo.append('Flowpaths')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                pathsLayer.setCacheImage(None)
-
-        if not self.ui.cboLevees.currentText() == '':
-            curInd = self.ui.cboLevees.currentIndex()
-            lid = self.ui.cboLevees.itemData(curInd)
-            leveesLayer = self.rgis.mapRegistry.mapLayer(lid)
-            self.rgis.rdb.insert_layer(leveesLayer, self.rgis.rdb.register['LeveeAlignment'])
-            importInfo.append('Levee Alignment')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                leveesLayer.setCacheImage(None)
-
-        if not self.ui.cboIneffective.currentText() == '':
-            attrMapIneff = {}
-            curInd = self.ui.cboIneffective.currentIndex()
-            lid = self.ui.cboIneffective.itemData(curInd)
-            ineffLayer = self.rgis.mapRegistry.mapLayer(lid)
-            if not self.ui.cboIneffElev.currentText() == '':
-                attrMapIneff['Elevation'] = self.ui.cboIneffElev.currentText()
-            self.rgis.rdb.insert_layer(ineffLayer, self.rgis.rdb.register['IneffAreas'], attr_map=attrMapIneff)
-            importInfo.append('Ineffective Areas')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                ineffLayer.setCacheImage(None)
-
-        if not self.ui.cboObstructions.currentText() == '':
-            attrMapObs = {}
-            curInd = self.ui.cboObstructions.currentIndex()
-            lid = self.ui.cboObstructions.itemData(curInd)
-            obsLayer = self.rgis.mapRegistry.mapLayer(lid)
-            if not self.ui.cboIneffElev.currentText() == '':
-                attrMapObs['Elevation'] = self.ui.cboObstructionsElev.currentText()
-            self.rgis.rdb.insert_layer(obsLayer, self.rgis.rdb.register['BlockedObs'], attr_map=attrMapObs)
-            importInfo.append('Blocked Obstructions')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                obsLayer.setCacheImage(None)
-
-        if not self.ui.cboLanduse.currentText() == '':
-            attrMapLU = {}
-            curInd = self.ui.cboLanduse.currentIndex()
-            lid = self.ui.cboLanduse.itemData(curInd)
-            landuseLayer = self.rgis.mapRegistry.mapLayer(lid)
-            if not self.ui.cboLandCodeAttr.currentText() == '':
-                attrMapLU['LUCode'] = self.ui.cboLandCodeAttr.currentText()
-                attrMapLU['N_Value'] = self.ui.cboManningAttr.currentText()
-            self.rgis.rdb.insert_layer(landuseLayer, self.rgis.rdb.register['LanduseAreas'], attr_map=attrMapLU)
-            importInfo.append('Landuse Areas')
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                landuseLayer.setCacheImage(None)
-
-        self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(importInfo)))
+        self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(self.importInfo)))
         self.rgis.iface.mapCanvas().refresh()
         QApplication.setOverrideCursor(Qt.ArrowCursor)
         QDialog.accept(self)
-
-
-
 
     def displayHelp(self):
         pass
@@ -228,8 +221,39 @@ class DlgImportDataIntoRasTables(QDialog):
                         typeIdx = i + 1
                 self.ui.cboObstructionsElev.setCurrentIndex(typeIdx)
 
+    def layerCboChanged(self):
+        layerCbo = self.sender()
+
+        curInd = layerCbo.currentIndex()
+        lid = layerCbo.itemData(curInd)
+        cboLayer = self.rgis.mapRegistry.mapLayer(lid)
+        if cboLayer:
+            if cboLayer.featureCount():
+                for layer, data in self.layers.iteritems():
+                    # TODO
+                    pass
+
+
+                self.ui.cboLandCodeAttr.clear()
+                self.ui.cboLandCodeAttr.addItem("")
+                self.ui.cboManningAttr.clear()
+                self.ui.cboManningAttr.addItem("")
+                attrs = self.landuseLayer.pendingFields()
+                codeIdx = mannIdx = 0
+                for i, attr in enumerate(attrs):
+                    self.ui.cboLandCodeAttr.addItem(attr.name())
+                    self.ui.cboManningAttr.addItem(attr.name())
+                    if attr.name().lower() == 'lucode' or attr.name().lower == 'code':
+                        codeIdx = i + 1
+                    if attr.name().lower() == 'n_value' or attr.name().lower() == 'manning':
+                        mannIdx = i + 1
+                self.ui.cboLandCodeAttr.setCurrentIndex(codeIdx)
+                self.ui.cboManningAttr.setCurrentIndex(mannIdx)
+
 
     def cboLanduseLayerChanged(self):
+        layerCbo = self.sender()
+        self.rgis.addInfo(layerCbo.objectName())
         curInd = self.ui.cboLanduse.currentIndex()
         lid = self.ui.cboLanduse.itemData(curInd)
         self.landuseLayer = self.rgis.mapRegistry.mapLayer(lid)
