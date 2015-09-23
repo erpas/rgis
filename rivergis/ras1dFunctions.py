@@ -104,19 +104,7 @@ def ras1dXSElevations(rgis):
     rgis.rdb.process_hecobject(heco.XSCutLines.XSPoints, 'pg_create_table')
 
     # Create DTMs table
-    qry = '''
-    DROP TABLE IF EXISTS "{0}"."DTMs";
-    CREATE TABLE "{0}"."DTMs" (
-    "DtmID" bigserial primary key,
-    "Name" text,
-    "DtmUri" text,
-    "Provider" text,
-    "LayerID" text,
-    "CellSize" double precision,
-    geom geometry(Polygon, {1})
-    );
-    '''.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
-    rgis.rdb.run_query(qry)
+    rgis.rdb.process_hecobject(heco.DTMs, 'pg_create_table')
 
     # insert DTMs parameters into the DTMs table
     if not rgis.dtms:
@@ -132,10 +120,10 @@ def ras1dXSElevations(rgis):
         pixelSize = min(rlayer.rasterUnitsPerPixelX(), rlayer.rasterUnitsPerPixelY())
         bboxWkt = rlayer.extent().asWktPolygon()
         geom = 'ST_GeomFromText(\'{0}\', {1})'.format(bboxWkt, rgis.rdb.SRID)
-        params = '({0})'.format(',\n'.join([name, uri, dp, lid, str(pixelSize), geom]))
+        params = '({0})'.format(',\n'.join([geom, name, uri, dp, lid, str(pixelSize)]))
         dtmsParams.append(params)
     qry = '''
-        INSERT INTO "{0}"."DTMs" ("Name","DtmUri", "Provider", "LayerID", "CellSize", geom) VALUES \n  {1};
+        INSERT INTO "{0}"."DTMs" (geom, "Name","DtmUri", "Provider", "LayerID", "CellSize") VALUES \n  {1};
     '''.format(rgis.rdb.SCHEMA, '{0}'.format(',\n'.join(dtmsParams)))
     rgis.rdb.run_query(qry)
 
@@ -189,18 +177,18 @@ def ras1dXSElevations(rgis):
         (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
       FROM linemeasure)
 
-    INSERT INTO "{0}"."XSPoints" ("XsecID", "Station", geom)
+    INSERT INTO "{0}"."XSPoints" (geom, "XsecID", "Station")
     SELECT
+      ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
       "XsecID",
-      "Station"/100,
-      ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom
+      "Station"/100
     FROM geometries;
 
-    INSERT INTO "{0}"."XSPoints" ("XsecID", "Station", geom)
+    INSERT INTO "{0}"."XSPoints" (geom, "XsecID", "Station")
     SELECT
+      ST_Endpoint(geom),
       "XsecID",
-      ST_Length(geom),
-      ST_Endpoint(geom)
+      ST_Length(geom)
     FROM "{0}"."XSCutLines";
     '''
     qry = qry.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
@@ -225,29 +213,27 @@ def ras1dXSElevations(rgis):
           "{0}"."XSPoints" as pts,
           xsids
         WHERE
-          pts."XsecID" = xsids."XsecID"
-        ;
+          pts."XsecID" = xsids."XsecID";
         '''.format(rgis.rdb.SCHEMA, dtmId)
         pts = rgis.rdb.run_query(qry, fetch=True)
 
         if pts:
             qry = ''
             for pt in pts:
-                ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]),\
-                        QgsRaster.IdentifyFormatValue)
+                ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
                 if rgis.DEBUG > 1:
-                    rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(\
-                        ident.results()[1], pt[1], pt[2]))
+                    rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], pt[1], pt[2]))
                 if ident.isValid():
-                    pt.append(round(ident.results()[1],2))
+                    pt.append(round(ident.results()[1], 2))
                     if rgis.DEBUG > 1:
                         rgis.addInfo('{0}'.format(', '.join([str(a) for a in pt])))
                     qry += 'UPDATE "{0}"."XSPoints" SET "Elevation" = {1} WHERE "PtID" = {2};\n'\
                         .format(rgis.rdb.SCHEMA, pt[3], pt[0])
-
             if rgis.DEBUG:
                 rgis.addInfo(qry)
             rgis.rdb.run_query(qry)
+        else:
+            pass
 
     QApplication.restoreOverrideCursor()
     rgis.addInfo('Done')

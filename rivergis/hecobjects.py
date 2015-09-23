@@ -142,10 +142,10 @@ DROP FUNCTION IF EXISTS "{0}".from_to_node ();
         qry = self.endpoints.pg_create_table()
         qry += '''
 CREATE TABLE "{0}".tmp1 AS
-SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
+SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS point_type
 FROM "{0}"."StreamCenterlines"
 UNION ALL
-SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
+SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS point_type
 FROM "{0}"."StreamCenterlines";
 
 CREATE TABLE "{0}".tmp2 AS
@@ -167,11 +167,12 @@ FROM
 WHERE
     tmp1."RiverCode" = tmp2."RiverCode" AND
     tmp1.geom = tmp2.geom AND
-    tmp1.typ_punktu = 'end' AND
+    tmp1.point_type = 'end' AND
     tmp1.geom = "NodesTable".geom;
 
-DROP TABLE "{0}".tmp1;
-DROP TABLE "{0}".tmp2;
+DROP TABLE
+    "{0}".tmp1,
+    "{0}".tmp2;
 ------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION "{0}".from_to_stations ()
     RETURNS VOID AS
@@ -768,7 +769,8 @@ class DTMs(HecRasObject):
             ('"LayerID"', 'text'),
             ('"CellSize"', 'double precision')]
 
-
+class HecRasExport(object):
+    pass
 if __name__ == '__main__':
     x = XSCutLines()
     x.set_xspoints()

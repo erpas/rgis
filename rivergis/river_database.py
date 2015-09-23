@@ -446,7 +446,6 @@ $BODY$
         hdr += 'UNITS: {0}\nEND HEADER:\n\n'.format(self.spatial_unit())
         return hdr
 
-
     def get_stream_network(self):
         """
         Return STREAM NETWORK part of RAS GIS Import file
