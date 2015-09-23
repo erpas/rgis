@@ -360,7 +360,6 @@ class RiverDatabase(object):
         self.run_query(qry)
         self.rgis.addInfo('OK')
 
-
     def create_spatial_index(self):
         """
         Create PostgreSQL function create_st_index_if_not_exists(schema, table).

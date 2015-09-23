@@ -567,7 +567,7 @@ class LanduseAreas(HecRasObject):
             ('"LUCode"', 'text'),
             ('"N_Value"', 'double precision')]
 
-    def extract_manning(self):
+    def pg_extract_manning(self):
         qry = '''
 ------------------------------------------------------------------------------------------------------------------------
 -- Intersect of land use layer with cross section layer  --
