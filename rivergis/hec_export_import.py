@@ -6,32 +6,42 @@ import hecobjects as heco
 
 
 class HecRasExport(object):
-    '''
+
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
-        self.
-    def export
-        nor = self.process_hecobject('number_of_reaches')
-        nox = number_of_xsections
-        su = spatial_unit
-'''
+        self.srid = rgis.rdb.SRID
+
+    def export_StreamCenterlines(self):
+        qry = self.number_of_reaches()
+        nor = int(self.rgis.rdb.run_query(qry, fetch=True)[0][0])
+        if self.rgis.DEBUG:
+            self.rgis.addInfo('Nr of reaches: {:d}'.format(nor))
+        else:
+            pass
+        qry = self.nodes()
+        nodes = self.run_query(qry, fetch=True)
+        qry = self.reaches()
+        reaches = self.run_query(qry, fetch=True)
 
 #STREAM
 
     def number_of_reaches(self):
-        qry = 'SELECT COUNT("ReachID") FROM "{0}"."StreamCenterlines";'.format(self.SCHEMA)
-        nor = int(self.run_query(qry, fetch=True)[0][0])
-        if self.rgis.DEBUG:
-            self.rgis.addInfo('Nr of reaches: {:d}'.format(nor))
-        return nor
-
-    def get_reaches(self):
-        qry = '''
-SELECT "ReachID", "RiverCode", "ReachCode", "FromNode", "ToNode", ST_AsText(geom) FROM "{0}"."StreamCenterlines";
-        '''
-        qry = qry.format(self.SCHEMA)
+        qry = 'SELECT COUNT("ReachID") FROM "{0}"."StreamCenterlines";'
+        qry = qry.format(self.schema)
         return qry
+
+    def nodes(self):
+        qry = 'SELECT "NodeID", "X", "Y" FROM "{0}"."NodesTable";'
+        qry = qry.format(self.schema)
+        return qry
+
+    def reaches(self):
+        qry = 'SELECT "ReachID", "RiverCode", "ReachCode", "FromNode", "ToNode", ST_AsText(geom) FROM "{0}"."StreamCenterlines";'
+        qry = qry.format(self.schema)
+        return qry
+
+# TODO: everything below ;-)
 # XS
 
     def number_of_xsections(self):
@@ -68,7 +78,7 @@ SELECT "ReachID", "RiverCode", "ReachCode", "FromNode", "ToNode", ST_AsText(geom
         imp += self.get_ras_gis_import_header()
         imp += self.get_stream_network()
         return imp
-###
+
     def get_ras_gis_import_header(self):
         """
         Return header of RAS GIS Import file.

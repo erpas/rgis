@@ -252,7 +252,7 @@ def ras1dXSAll(rgis):
 
 def ras1dXSExtractMannings(rgis):
     rgis.addInfo('<br><b>Extracting Manning\'s n values for cross-sections</b>')
-    if rgis.rdb.process_hecobject(heco.LanduseAreas, 'extract_manning'):
+    if rgis.rdb.process_hecobject(heco.LanduseAreas, 'pg_extract_manning'):
         rgis.addInfo('Done.')
 
 def ras1dCreateRasGisImportFile(rgis):
