@@ -82,9 +82,11 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASFlipXSDirection.triggered.connect(self.ras1dFlipXSDirection)
         self.ui.actionRASCreateRASGISImport.triggered.connect(self.ras1dCreateRasGisImport)
         # 2D
-        self.ui.actionRASCreate2dArea.triggered.connect(self.rasCreate2dArea)
-        self.ui.actionRASPreview2DMesh.triggered.connect(self.rasPreview2DMesh)
-        self.ui.actionRASSaveMeshPointsToHECRASGeometry.triggered.connect(self.rasSaveMeshPtsToHecrasGeo)
+        self.ui.actionRASCreate2dAreaPoints.triggered.connect(self.ras2dCreate2dAreaPoints)
+        self.ui.actionRASPreview2DMesh.triggered.connect(self.ras2dPreview2DMesh)
+        self.ui.actionRASSave2DPointsToHECRASGeometry.triggered.connect(self.ras2dSaveMeshPtsToHecrasGeo)
+
+        # RAS Mapping
         self.ui.actionRASImportRasData.triggered.connect(self.rasImportRasDataStart)
         self.ui.actionRASWaterSurfaceGeneration.triggered.connect(self.rasWaterSurfaceGeneration)
         self.ui.actionRASFloodplainDelineation.triggered.connect(self.rasFloodplainDelineation)
@@ -103,7 +105,7 @@ class RiverGIS(QMainWindow):
         self.ui.settingsToolBar.setObjectName("Settings_ToolBar")
         self.ui.settingsToolBar.addAction(self.ui.actionRASDTMSetup)
 
-        # 1D HEC-RAS Toolbar
+        # 1D HEC-RAS Tables Toolbar
         self.ui.ras1dTablesToolBar = QToolBar("HEC-RAS 1D Tables", self)
         self.ui.ras1dTablesToolBar.setObjectName("RAS1D_Tables_Toolbar")
         self.ui.ras1dTablesToolBar.addAction(self.ui.actionRASCreateRdbTables )
@@ -131,9 +133,9 @@ class RiverGIS(QMainWindow):
         # 2D HEC-RAS Toolbar
         self.ui.ras2dToolBar = QToolBar("HEC-RAS 2D Geometry", self)
         self.ui.ras2dToolBar.setObjectName("RAS2D_ToolBar")
-        self.ui.ras2dToolBar.addAction(self.ui.actionRASCreate2dArea )
+        self.ui.ras2dToolBar.addAction(self.ui.actionRASCreate2dAreaPoints )
         self.ui.ras2dToolBar.addAction(self.ui.actionRASPreview2DMesh )
-        self.ui.ras2dToolBar.addAction(self.ui.actionRASSaveMeshPointsToHECRASGeometry )
+        self.ui.ras2dToolBar.addAction(self.ui.actionRASSave2DPointsToHECRASGeometry )
 
         # HEC-RAS Mapping Toolbar
         self.ui.rasMappingToolBar = QToolBar("HEC-RAS Flood Mapping", self)
@@ -378,24 +380,27 @@ class RiverGIS(QMainWindow):
 
     # 2D HEC-RAS Geometry Functions
 
-    def rasCreate2dArea(self):
-        if self.curConnName is '' or self.schema is '':
-            QMessageBox.warning(None, "2D Area", "Please, choose a connection and schema.")
-            return
-        else:
-            from dlg_ras2dAreaMesh import DlgRasCreate2dFlowAreas
-            self.addInfo('<br><b>Running Create 2D Flow Areas</b>' )
-            dlg = DlgRasCreate2dFlowAreas(self)
-            dlg.exec_()
+    def ras2dCreate2dAreaPoints(self):
+        from ras2dFunctions import ras2dCreate2dPoints
+        ras2dCreate2dPoints(self)
 
-    def rasPreview2DMesh(self):
+        # if self.curConnName is '' or self.schema is '':
+        #     QMessageBox.warning(None, "2D Area", "Please, choose a connection and schema.")
+        #     return
+        # else:
+        #     from dlg_ras2dAreaMesh import DlgRasCreate2dFlowAreas
+        #     self.addInfo('<br><b>Running Create 2D Flow Areas</b>' )
+        #     dlg = DlgRasCreate2dFlowAreas(self)
+        #     dlg.exec_()
+
+    def ras2dPreview2DMesh(self):
         if self.curConnName is '' or self.schema is '':
             QMessageBox.warning(None, "Preview 2D Area", "Please, choose a connection and schema.")
             return
         from ras2dPreviewMesh import ras2dPreviewMesh
         ras2dPreviewMesh(self)
 
-    def rasSaveMeshPtsToHecrasGeo(self):
+    def ras2dSaveMeshPtsToHecrasGeo(self):
         from ras2dSaveMeshPtsToGeometry import ras2dSaveMeshPtsToGeometry
         ras2dSaveMeshPtsToGeometry(self)
 

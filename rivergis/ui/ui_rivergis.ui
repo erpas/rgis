@@ -194,7 +194,7 @@
     <addaction name="separator"/>
     <addaction name="actionRASCreateRASGISImport"/>
     <addaction name="separator"/>
-    <addaction name="actionRASCreate2dPoints"/>
+    <addaction name="actionRASCreate2dAreaPoints"/>
     <addaction name="actionRASPreview2DMesh"/>
     <addaction name="actionRASSave2DPointsToHECRASGeometry"/>
     <addaction name="actionRASCorrectLateralWeirs"/>
@@ -242,7 +242,7 @@
     <string>Correct Lateral Weirs</string>
    </property>
   </action>
-  <action name="actionRASCreate2dPoints">
+  <action name="actionRASCreate2dAreaPoints">
    <property name="icon">
     <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/ras2dareaCreate.svg</normaloff>:/rivergis/icons/ras2dareaCreate.svg</iconset>

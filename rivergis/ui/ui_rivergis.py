@@ -2,14 +2,12 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Thu Sep 24 17:53:03 2015
+# Created: Thu Sep 24 17:53:47 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-from qgis.gui import QgsProjectionSelectionWidget
-from ..resources_rc import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -381,5 +379,5 @@ class Ui_RiverGIS(object):
         self.actionRASDTMSetup.setText(_translate("RiverGIS", "DTM Setup", None))
         self.actionDebugMode.setText(_translate("RiverGIS", "Debug mode", None))
 
-
-		
+from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
+import resources_rc
