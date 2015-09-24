@@ -1,31 +1,35 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.10.1-Pisa" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.11.0-Master" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="100000" hasScaleBasedVisibilityFlag="0" simplifyLocal="0" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
-    <edittype widgetv2type="TextEdit" name="LUID">
+    <edittype widgetv2type="TextEdit" name="AreaID">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="LUCode">
+    <edittype widgetv2type="TextEdit" name="Name">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="N_Value">
+    <edittype widgetv2type="TextEdit" name="CellSize">
       <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
     </edittype>
   </edittypes>
-  <renderer-v2 symbollevels="0" type="singleSymbol">
+  <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol">
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="fill" name="0">
-        <layer pass="0" class="SimpleFill" locked="0">
-          <prop k="border_width_map_unit_scale" v="0,0"/>
-          <prop k="color" v="197,223,172,255"/>
+        <layer pass="0" class="SimpleLine" locked="0">
+          <prop k="capstyle" v="square"/>
+          <prop k="customdash" v="5;2"/>
+          <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="customdash_unit" v="MM"/>
+          <prop k="draw_inside_polygon" v="0"/>
           <prop k="joinstyle" v="bevel"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0"/>
+          <prop k="line_color" v="0,175,139,255"/>
+          <prop k="line_style" v="solid"/>
+          <prop k="line_width" v="0.8"/>
+          <prop k="line_width_unit" v="MM"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_style" v="solid"/>
-          <prop k="outline_width" v="0.26"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="style" v="solid"/>
+          <prop k="use_custom_dash" v="0"/>
+          <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
           <effect enabled="0" type="effectStack">
             <effect type="dropShadow">
               <prop k="blend_mode" v="13"/>
@@ -36,7 +40,7 @@
               <prop k="offset_angle" v="135"/>
               <prop k="offset_distance" v="2"/>
               <prop k="offset_unit" v="MM"/>
-              <prop k="offset_unit_scale" v="0,0"/>
+              <prop k="offset_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="transparency" v="0"/>
             </effect>
             <effect type="outerGlow">
@@ -48,7 +52,7 @@
               <prop k="single_color" v="255,255,255,255"/>
               <prop k="spread" v="2"/>
               <prop k="spread_unit" v="MM"/>
-              <prop k="spread_unit_scale" v="0,0"/>
+              <prop k="spread_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="transparency" v="0.5"/>
             </effect>
             <effect type="drawSource">
@@ -66,7 +70,7 @@
               <prop k="offset_angle" v="135"/>
               <prop k="offset_distance" v="2"/>
               <prop k="offset_unit" v="MM"/>
-              <prop k="offset_unit_scale" v="0,0"/>
+              <prop k="offset_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="transparency" v="0"/>
             </effect>
             <effect type="innerGlow">
@@ -78,7 +82,7 @@
               <prop k="single_color" v="255,255,255,255"/>
               <prop k="spread" v="2"/>
               <prop k="spread_unit" v="MM"/>
-              <prop k="spread_unit_scale" v="0,0"/>
+              <prop k="spread_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="transparency" v="0.5"/>
             </effect>
           </effect>
@@ -97,7 +101,7 @@
         <prop k="offset_angle" v="135"/>
         <prop k="offset_distance" v="2"/>
         <prop k="offset_unit" v="MM"/>
-        <prop k="offset_unit_scale" v="0,0"/>
+        <prop k="offset_unit_scale" v="0,0,0,0,0,0"/>
         <prop k="transparency" v="0"/>
       </effect>
       <effect type="outerGlow">
@@ -109,7 +113,7 @@
         <prop k="single_color" v="255,255,255,255"/>
         <prop k="spread" v="2"/>
         <prop k="spread_unit" v="MM"/>
-        <prop k="spread_unit_scale" v="0,0"/>
+        <prop k="spread_unit_scale" v="0,0,0,0,0,0"/>
         <prop k="transparency" v="0.5"/>
       </effect>
       <effect type="drawSource">
@@ -127,7 +131,7 @@
         <prop k="offset_angle" v="135"/>
         <prop k="offset_distance" v="2"/>
         <prop k="offset_unit" v="MM"/>
-        <prop k="offset_unit_scale" v="0,0"/>
+        <prop k="offset_unit_scale" v="0,0,0,0,0,0"/>
         <prop k="transparency" v="0"/>
       </effect>
       <effect type="innerGlow">
@@ -139,7 +143,7 @@
         <prop k="single_color" v="255,255,255,255"/>
         <prop k="spread" v="2"/>
         <prop k="spread_unit" v="MM"/>
-        <prop k="spread_unit_scale" v="0,0"/>
+        <prop k="spread_unit_scale" v="0,0,0,0,0,0"/>
         <prop k="transparency" v="0.5"/>
       </effect>
     </effect>
@@ -154,7 +158,7 @@
     <property key="labeling/bufferColorB" value="255"/>
     <property key="labeling/bufferColorG" value="255"/>
     <property key="labeling/bufferColorR" value="255"/>
-    <property key="labeling/bufferDraw" value="false"/>
+    <property key="labeling/bufferDraw" value="true"/>
     <property key="labeling/bufferJoinStyle" value="64"/>
     <property key="labeling/bufferNoFill" value="false"/>
     <property key="labeling/bufferSize" value="1"/>
@@ -170,9 +174,11 @@
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/distMapUnitMaxScale" value="0"/>
     <property key="labeling/distMapUnitMinScale" value="0"/>
-    <property key="labeling/enabled" value="false"/>
-    <property key="labeling/fieldName" value=""/>
-    <property key="labeling/fontBold" value="false"/>
+    <property key="labeling/drawLabels" value="true"/>
+    <property key="labeling/enabled" value="true"/>
+    <property key="labeling/fieldName" value="Name"/>
+    <property key="labeling/fitInPolygonOnly" value="false"/>
+    <property key="labeling/fontBold" value="true"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
     <property key="labeling/fontItalic" value="false"/>
@@ -180,16 +186,16 @@
     <property key="labeling/fontLimitPixelSize" value="false"/>
     <property key="labeling/fontMaxPixelSize" value="10000"/>
     <property key="labeling/fontMinPixelSize" value="3"/>
-    <property key="labeling/fontSize" value="8.25"/>
+    <property key="labeling/fontSize" value="10"/>
     <property key="labeling/fontSizeInMapUnits" value="false"/>
     <property key="labeling/fontSizeMapUnitMaxScale" value="0"/>
     <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
     <property key="labeling/fontStrikeout" value="false"/>
     <property key="labeling/fontUnderline" value="false"/>
-    <property key="labeling/fontWeight" value="50"/>
+    <property key="labeling/fontWeight" value="75"/>
     <property key="labeling/fontWordSpacing" value="0"/>
     <property key="labeling/formatNumbers" value="false"/>
-    <property key="labeling/isExpression" value="true"/>
+    <property key="labeling/isExpression" value="false"/>
     <property key="labeling/labelOffsetInMapUnits" value="true"/>
     <property key="labeling/labelOffsetMapUnitMaxScale" value="0"/>
     <property key="labeling/labelOffsetMapUnitMinScale" value="0"/>
@@ -203,11 +209,13 @@
     <property key="labeling/minFeatureSize" value="0"/>
     <property key="labeling/multilineAlign" value="0"/>
     <property key="labeling/multilineHeight" value="1"/>
-    <property key="labeling/namedStyle" value="Normalny"/>
+    <property key="labeling/namedStyle" value="Bold"/>
     <property key="labeling/obstacle" value="true"/>
+    <property key="labeling/obstacleFactor" value="1"/>
+    <property key="labeling/obstacleType" value="0"/>
     <property key="labeling/placeDirectionSymbol" value="0"/>
     <property key="labeling/placement" value="1"/>
-    <property key="labeling/placementFlags" value="0"/>
+    <property key="labeling/placementFlags" value="10"/>
     <property key="labeling/plussign" value="false"/>
     <property key="labeling/preserveRotation" value="true"/>
     <property key="labeling/previewBkgrdColor" value="#ffffff"/>
@@ -278,22 +286,24 @@
     <property key="labeling/shapeTransparency" value="0"/>
     <property key="labeling/shapeType" value="0"/>
     <property key="labeling/textColorA" value="255"/>
-    <property key="labeling/textColorB" value="0"/>
-    <property key="labeling/textColorG" value="0"/>
+    <property key="labeling/textColorB" value="139"/>
+    <property key="labeling/textColorG" value="175"/>
     <property key="labeling/textColorR" value="0"/>
     <property key="labeling/textTransp" value="0"/>
     <property key="labeling/upsidedownLabels" value="0"/>
     <property key="labeling/wrapChar" value=""/>
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
+    <property key="variableNames" value="_fields_"/>
+    <property key="variableValues" value=""/>
   </customproperties>
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <layerTransparency>0</layerTransparency>
-  <displayfield>LUID</displayfield>
+  <displayfield>Name</displayfield>
   <label>0</label>
   <labelattributes>
-    <label fieldname="" text="Etykieta"/>
+    <label fieldname="" text="Label"/>
     <family fieldname="" name="MS Shell Dlg 2"/>
     <size fieldname="" units="pt" value="12"/>
     <bold fieldname="" on="0"/>
@@ -313,7 +323,7 @@
     <selectedonly on=""/>
   </labelattributes>
   <SingleCategoryDiagramRenderer diagramType="Pie">
-    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="0">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
     </DiagramCategory>
   </SingleCategoryDiagramRenderer>
@@ -326,4 +336,8 @@
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
   <attributeactions/>
+  <conditionalstyles>
+    <rowstyles/>
+    <fieldstyles/>
+  </conditionalstyles>
 </qgis>

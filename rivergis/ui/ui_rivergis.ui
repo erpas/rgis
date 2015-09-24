@@ -194,9 +194,9 @@
     <addaction name="separator"/>
     <addaction name="actionRASCreateRASGISImport"/>
     <addaction name="separator"/>
-    <addaction name="actionRASCreate2dArea"/>
+    <addaction name="actionRASCreate2dPoints"/>
     <addaction name="actionRASPreview2DMesh"/>
-    <addaction name="actionRASSaveMeshPointsToHECRASGeometry"/>
+    <addaction name="actionRASSave2DPointsToHECRASGeometry"/>
     <addaction name="actionRASCorrectLateralWeirs"/>
     <addaction name="separator"/>
    </widget>
@@ -242,13 +242,13 @@
     <string>Correct Lateral Weirs</string>
    </property>
   </action>
-  <action name="actionRASCreate2dArea">
+  <action name="actionRASCreate2dPoints">
    <property name="icon">
     <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/ras2dareaCreate.svg</normaloff>:/rivergis/icons/ras2dareaCreate.svg</iconset>
    </property>
    <property name="text">
-    <string>Create 2D Flow Areas</string>
+    <string>Create 2D Computational Points</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -328,13 +328,13 @@
     <string>Create 1D PostGIS Tables</string>
    </property>
   </action>
-  <action name="actionRASSaveMeshPointsToHECRASGeometry">
+  <action name="actionRASSave2DPointsToHECRASGeometry">
    <property name="icon">
     <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/ras2dareaSaveToGeo.svg</normaloff>:/rivergis/icons/ras2dareaSaveToGeo.svg</iconset>
    </property>
    <property name="text">
-    <string>Save mesh points to HEC-RAS geometry file</string>
+    <string>Save 2D Points to HEC-RAS Geometry</string>
    </property>
   </action>
   <action name="actionRASPreview2DMesh">

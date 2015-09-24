@@ -65,7 +65,7 @@ def ras2dPreviewMesh(rgis):
         rgis.iface.legendInterface().refreshLayerSymbology(child.layer())
         rgis.iface.mapCanvas().refresh()
       elif child.layerName() == 'Mesh points':
-        stylePath = join(rgis.rivergisPath,'styles/ras2dMeshPts.qml')
+        stylePath = join(rgis.rivergisPath,'styles/MeshPoints2d.qml')
         child.layer().loadNamedStyle(stylePath)
         rgis.iface.legendInterface().refreshLayerSymbology(child.layer())
         rgis.iface.mapCanvas().refresh()

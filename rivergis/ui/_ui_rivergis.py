@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Tue Sep 22 22:01:59 2015
+# Created: Thu Sep 24 13:24:28 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -109,11 +109,11 @@ class Ui_RiverGIS(object):
         icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/correctLateralWeir.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionRASCorrectLateralWeirs.setIcon(icon2)
         self.actionRASCorrectLateralWeirs.setObjectName(_fromUtf8("actionRASCorrectLateralWeirs"))
-        self.actionRASCreate2dArea = QtGui.QAction(RiverGIS)
+        self.actionRASCreate2dPoints = QtGui.QAction(RiverGIS)
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras2dareaCreate.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionRASCreate2dArea.setIcon(icon3)
-        self.actionRASCreate2dArea.setObjectName(_fromUtf8("actionRASCreate2dArea"))
+        self.actionRASCreate2dPoints.setIcon(icon3)
+        self.actionRASCreate2dPoints.setObjectName(_fromUtf8("actionRASCreate2dPoints"))
         self.actionAbout = QtGui.QAction(RiverGIS)
         self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
         self.actionHelpContents = QtGui.QAction(RiverGIS)
@@ -151,11 +151,11 @@ class Ui_RiverGIS(object):
         self.actionRASImportRasData.setObjectName(_fromUtf8("actionRASImportRasData"))
         self.actionCreate_1d_PostGIS_Tables = QtGui.QAction(RiverGIS)
         self.actionCreate_1d_PostGIS_Tables.setObjectName(_fromUtf8("actionCreate_1d_PostGIS_Tables"))
-        self.actionRASSaveMeshPointsToHECRASGeometry = QtGui.QAction(RiverGIS)
+        self.actionRASSave2DPointsToHECRASGeometry = QtGui.QAction(RiverGIS)
         icon9 = QtGui.QIcon()
         icon9.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras2dareaSaveToGeo.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionRASSaveMeshPointsToHECRASGeometry.setIcon(icon9)
-        self.actionRASSaveMeshPointsToHECRASGeometry.setObjectName(_fromUtf8("actionRASSaveMeshPointsToHECRASGeometry"))
+        self.actionRASSave2DPointsToHECRASGeometry.setIcon(icon9)
+        self.actionRASSave2DPointsToHECRASGeometry.setObjectName(_fromUtf8("actionRASSave2DPointsToHECRASGeometry"))
         self.actionRASPreview2DMesh = QtGui.QAction(RiverGIS)
         self.actionRASPreview2DMesh.setEnabled(True)
         icon10 = QtGui.QIcon()
@@ -295,9 +295,9 @@ class Ui_RiverGIS(object):
         self.menu_Geometry.addSeparator()
         self.menu_Geometry.addAction(self.actionRASCreateRASGISImport)
         self.menu_Geometry.addSeparator()
-        self.menu_Geometry.addAction(self.actionRASCreate2dArea)
+        self.menu_Geometry.addAction(self.actionRASCreate2dPoints)
         self.menu_Geometry.addAction(self.actionRASPreview2DMesh)
-        self.menu_Geometry.addAction(self.actionRASSaveMeshPointsToHECRASGeometry)
+        self.menu_Geometry.addAction(self.actionRASSave2DPointsToHECRASGeometry)
         self.menu_Geometry.addAction(self.actionRASCorrectLateralWeirs)
         self.menu_Geometry.addSeparator()
         self.menuDB.addAction(self.actionRefreshConnections)
@@ -328,7 +328,7 @@ class Ui_RiverGIS(object):
         self.menuSettings.setTitle(_translate("RiverGIS", "Settings", None))
         self.actionCreate2dAreaPerimeter.setText(_translate("RiverGIS", "2D Area (Perimeter)", None))
         self.actionRASCorrectLateralWeirs.setText(_translate("RiverGIS", "Correct Lateral Weirs", None))
-        self.actionRASCreate2dArea.setText(_translate("RiverGIS", "Create 2D Flow Areas", None))
+        self.actionRASCreate2dPoints.setText(_translate("RiverGIS", "Create 2D Computational Points", None))
         self.actionAbout.setText(_translate("RiverGIS", "About", None))
         self.actionHelpContents.setText(_translate("RiverGIS", "Contents", None))
         self.actionLoad_2D_WSEL_from_HDF.setText(_translate("RiverGIS", "Load 2D WSEL from HDF", None))
@@ -339,7 +339,7 @@ class Ui_RiverGIS(object):
         self.actionLoad_1D_WSEL_from_HDF.setText(_translate("RiverGIS", "Load 1D WSEL from HDF", None))
         self.actionRASImportRasData.setText(_translate("RiverGIS", "Import RAS Data", None))
         self.actionCreate_1d_PostGIS_Tables.setText(_translate("RiverGIS", "Create 1D PostGIS Tables", None))
-        self.actionRASSaveMeshPointsToHECRASGeometry.setText(_translate("RiverGIS", "Save mesh points to HEC-RAS geometry file", None))
+        self.actionRASSave2DPointsToHECRASGeometry.setText(_translate("RiverGIS", "Save 2D Points to HEC-RAS Geometry", None))
         self.actionRASPreview2DMesh.setText(_translate("RiverGIS", "Preview 2D Mesh", None))
         self.actionRASCreateRdbTables.setText(_translate("RiverGIS", "Create River Database Tables", None))
         self.actionRASCreateRdbTables.setToolTip(_translate("RiverGIS", "RAS 1D Create River Database Tables", None))
@@ -381,4 +381,4 @@ class Ui_RiverGIS(object):
         self.actionRASDTMSetup.setText(_translate("RiverGIS", "DTM Setup", None))
         self.actionDebugMode.setText(_translate("RiverGIS", "Debug mode", None))
 
-		
+        
