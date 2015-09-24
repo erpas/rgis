@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
+    <width>362</width>
     <height>586</height>
    </rect>
   </property>
@@ -243,7 +243,7 @@
          <item>
           <widget class="QGroupBox" name="groupBox">
            <property name="title">
-            <string>2D Areas Layer</string>
+            <string>2D Flow Areas</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_4" rowstretch="0">
             <property name="margin">
@@ -322,7 +322,7 @@
                 <item>
                  <widget class="QLabel" name="AreaNameAttributeLabel_2">
                   <property name="text">
-                   <string>Default mesh size attribute</string>
+                   <string>Default cell size attribute</string>
                   </property>
                   <property name="buddy">
                    <cstring>cbo2dAreasMeshSizeAttr</cstring>
@@ -365,12 +365,12 @@
                    <string>Layer name</string>
                   </property>
                   <property name="buddy">
-                   <cstring>cboStructures</cstring>
+                   <cstring>cboBreaklines</cstring>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="cboStructures">
+                 <widget class="QComboBox" name="cboBreaklines">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -393,15 +393,15 @@
                 <item>
                  <widget class="QLabel" name="AreaNameAttributeLabel_4">
                   <property name="text">
-                   <string>Mesh size along structure</string>
+                   <string>Cell size along a breakline</string>
                   </property>
                   <property name="buddy">
-                   <cstring>cboStructureMeshSizeAlongAttr</cstring>
+                   <cstring>cboBreaklineCellSizeAlongAttr</cstring>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="cboStructureMeshSizeAlongAttr">
+                 <widget class="QComboBox" name="cboBreaklineCellSizeAlongAttr">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -420,12 +420,12 @@
                 <item>
                  <widget class="QLabel" name="label_16">
                   <property name="text">
-                   <string>Mesh size across structure</string>
+                   <string>Cell size across a breakline</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="cboStructureMeshSizeAcrossAttr">
+                 <widget class="QComboBox" name="cboBreaklineCellSizeAcrossAttr">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -441,12 +441,12 @@
                 <item>
                  <widget class="QLabel" name="label_17">
                   <property name="text">
-                   <string>Mesh rows number</string>
+                   <string>Number of cells rows to align</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="cboStructureMeshRowsAttr">
+                 <widget class="QComboBox" name="cboBreaklineCellRowsAttr">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -465,7 +465,7 @@
          <item>
           <widget class="QGroupBox" name="groupBox_3">
            <property name="title">
-            <string>Structure breakpoints</string>
+            <string>Breakpoints</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
             <property name="margin">
@@ -483,7 +483,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="cboBreakPoints">
+                 <widget class="QComboBox" name="cboBreakpoints">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                     <horstretch>0</horstretch>

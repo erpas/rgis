@@ -781,7 +781,7 @@ class BreakLines2d(HecRasObject):
             ('"AreaID"', 'integer'),
             ('"CellSizeAlong"', 'double precision'),
             ('"CellSizeAcross"', 'double precision'),
-            ('"MeshRows"', 'integer')]
+            ('"RowsAligned"', 'integer')]
 
 
 class BreakPoints2d(HecRasObject):
