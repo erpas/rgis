@@ -66,6 +66,8 @@ class RiverDatabase(object):
         if self.con:
             self.con.close()
             self.con = None
+            self.register.clear()
+            self.queries.clear()
         else:
             self.rgis.addInfo('Can not disconnect. There is no opened connection!')
 
@@ -177,7 +179,7 @@ class RiverDatabase(object):
                 pass
         self.rgis.iface.mapCanvas().refresh()
 
-    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None):
+    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None, **kwargs):
         """
         Creating and processing tables inside PostGIS database.
 
@@ -186,6 +188,7 @@ class RiverDatabase(object):
             pg_method (str): String representation of method that will be called on the hecobject class
             schema (str): Schema where tables will be created or processed
             srid (int): A Spatial Reference System Identifier
+            **kwargs (dict): Additional keyword arguments passed to pg_method
 
         Returns:
             obj: Instance of HEC-RAS class object
@@ -193,7 +196,10 @@ class RiverDatabase(object):
         self.setup_hydro_object(hecobject, schema, srid)
         obj = hecobject()
         method = getattr(obj, pg_method)
-        qry = method()
+        if kwargs is True:
+            qry = method(**kwargs)
+        else:
+            qry = method()
         result = self.run_query(qry)
         if result is not None:
             self.register_object(obj)
@@ -227,7 +233,6 @@ class RiverDatabase(object):
             map_layer = map_registry.addMapLayer(vlayer)
             style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
             map_layer.loadNamedStyle(style_file)
-
         except Exception, e:
             self.rgis.addInfo(repr(e))
 
@@ -236,7 +241,6 @@ class RiverDatabase(object):
         Setting layers uris list from QgsMapLayerRegistry
         """
         self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
-
         if self.rgis.DEBUG:
             self.rgis.addInfo('Layers sources:\n    {0}'.format('\n    '.join(self.uris)))
 
