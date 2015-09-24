@@ -257,6 +257,7 @@ class RiverGIS(QMainWindow):
         self.schemaChanged()
 
     def schemaChanged(self):
+        self.rdb.register.clear()
         if not self.ui.schemasCbo.currentText() == '':
             self.schema = self.ui.schemasCbo.currentText()
             self.addInfo('Current DB schema is: %s' % self.schema)
