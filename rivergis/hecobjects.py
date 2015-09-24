@@ -30,7 +30,6 @@ class HecRasObject(object):
         else:
             qry = 'CREATE TABLE {0}(\n\t{1});\n'.format(schema_name, ',\n\t'.join(attrs))
         if self.spatial_index is True:
-
             qry += 'SELECT create_spatial_index(\'{0}\', \'{1}\');'.format(self.schema, self.name)
         else:
             pass
@@ -509,9 +508,7 @@ class BankPoints(HecRasObject):
 
 class Flowpaths(HecRasObject):
     """
-    Geometry only in PostGIS.
-    Table in PostGIS and HDF (Cross Sections dataset).
-    StreamCenterline and XSCutLines objects must exist.
+    Geometry and table.
     """
     def __init__(self):
         super(Flowpaths, self).__init__()
@@ -521,14 +518,15 @@ class Flowpaths(HecRasObject):
             ('"LineType"', 'text')]
 
     def pg_get_flowpaths_linetype(self):
-        qry = '''
-SELECT "LineType" FROM "{0}"."Flowpaths";
-'''
+        qry = '''SELECT "LineType" FROM "{0}"."Flowpaths";'''
         qry = qry.format(self.schema)
         return qry
 
 
 class Bridges(HecRasObject):
+    """
+    Geometry and table.
+    """
     def __init__(self):
         super(Bridges, self).__init__()
         self.geom_type = 'LINESTRING'
@@ -543,6 +541,9 @@ class Bridges(HecRasObject):
 
 
 class IneffAreas(HecRasObject):
+    """
+    Geometry and table.
+    """
     def __init__(self):
         super(IneffAreas, self).__init__()
         self.geom_type = 'POLYGON'
@@ -551,6 +552,9 @@ class IneffAreas(HecRasObject):
 
 
 class BlockedObs(HecRasObject):
+    """
+    Geometry and table.
+    """
     def __init__(self):
         super(BlockedObs, self).__init__()
         self.geom_type = 'POLYGON'
@@ -559,6 +563,9 @@ class BlockedObs(HecRasObject):
 
 
 class LanduseAreas(HecRasObject):
+    """
+    Geometry and table.
+    """
     def __init__(self):
         super(LanduseAreas, self).__init__()
         self.geom_type = 'MULTIPOLYGON'
