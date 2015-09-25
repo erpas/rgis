@@ -36,3 +36,13 @@ baza.add_to_view(lu)
 
 baza.insert_layer(s, sc)
 iface.mapCanvas().refresh()
+
+# export wyników do RAS GIS Import
+from rivergis import ras_gis_import
+
+rgis = qgis.utils.plugins['rivergis'].dlg
+ex = ras_gis_import.HecRasExport(rgis)
+sdf = ex.gis_import_file()
+
+with open(r'E:\test\sdefik.sdf', 'w') as f:
+    f.write(sdf)
