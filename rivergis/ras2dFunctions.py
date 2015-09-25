@@ -18,10 +18,13 @@ email                : rpasiok@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from qgis.core import *
+from qgis.utils import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from math import floor
-
+from os.path import join, dirname, isfile
+import processing
 
 
 def ras2dCreate2dPoints(rgis):
@@ -385,3 +388,181 @@ def ras2dCreate2dPoints(rgis):
     rgis.addInfo('Done')
 
     QApplication.setOverrideCursor(Qt.ArrowCursor)
+
+
+def ras2dPreviewMesh(rgis):
+    """Loads the mesh points to the canvas and builds Voronoi polygons"""
+    areas = None
+    u1 = QgsDataSourceURI()
+    u1.setConnection(rgis.host, rgis.port, rgis.database, rgis.user, rgis.passwd)
+    u1.setDataSource(rgis.schema, "MeshPoints2d", "geom")
+    mesh_pts = QgsVectorLayer(u1.uri(), "MeshPoints2d", "postgres")
+    voronoi = processing.runalg("qgis:voronoipolygons",mesh_pts,3,None)
+    # QgsMapLayerRegistry.instance().addMapLayers([mesh_pts])
+
+    # try to load the 2D Area polygon and clip the Voronoi diagram
+    try:
+        u2 = QgsDataSourceURI()
+        u2.setConnection(rgis.host, rgis.port, rgis.database, rgis.user, rgis.passwd)
+        u2.setDataSource(rgis.schema, "FlowArea2d", "geom")
+        areas = QgsVectorLayer(u2.uri(), "FlowArea2d", "postgres")
+        # TODO: construct voronoi polygons separately for each 2d mesh area
+        voronoiClip = processing.runalg("qgis:clip",voronoi['OUTPUT'],areas,None)
+        QgsMapLayerRegistry.instance().addMapLayers([voronoiClipLayer])
+        voronoiClipLayer = QgsVectorLayer(voronoiClip['OUTPUT'], "Mesh preview", "ogr")
+        QgsMapLayerRegistry.instance().addMapLayers([voronoiClipLayer])
+
+    except:
+        voronoiLayer = QgsVectorLayer(voronoi['OUTPUT'], "Mesh preview", "ogr")
+        QgsMapLayerRegistry.instance().addMapLayers([voronoiLayer])
+
+    # # change layers' style
+    # root = QgsProject.instance().layerTreeRoot()
+    # for child in root.children():
+    #   if isinstance(child, QgsLayerTreeLayer):
+    #     if child.layerName() == 'Mesh preview':
+    #       stylePath = join(rgis.rivergisPath,'styles/ras2dmesh.qml')
+    #       child.layer().loadNamedStyle(stylePath)
+    #       rgis.iface.legendInterface().refreshLayerSymbology(child.layer())
+    #       rgis.iface.mapCanvas().refresh()
+    #     elif child.layerName() == 'Mesh points':
+    #       stylePath = join(rgis.rivergisPath,'styles/MeshPoints2d.qml')
+    #       child.layer().loadNamedStyle(stylePath)
+    #       rgis.iface.legendInterface().refreshLayerSymbology(child.layer())
+    #       rgis.iface.mapCanvas().refresh()
+
+
+def ras2dSaveMeshPtsToGeometry(rgis,geoFileName=None):
+    """Saves mesh points from current schema and table 'mesh_pts' to HEC-RAS geometry file"""
+    if not geoFileName:
+        s = QSettings()
+        lastGeoFileDir = s.value("rivergis/lastGeoDir", "")
+        geoFileName = QFileDialog.getSaveFileName(None, 'Target HEC-RAS geometry file', directory=lastGeoFileDir, filter='HEC-RAS geometry (*.g**)')
+        if not geoFileName:
+            return
+        s.setValue("rivergis/lastGeoDir", dirname(geoFileName))
+
+    rgis.addInfo("Saving 2D Flow Area to HEC-RAS geometry file...")
+
+    # get mesh points extent
+    qry = '''
+    SELECT
+        ST_XMin(ST_Collect(geom)) as xmin,
+        ST_XMax(ST_collect(geom)) as xmax,
+        ST_YMin(ST_collect(geom)) as ymin,
+        ST_YMax(ST_collect(geom)) as ymax
+    FROM
+        "{0}"."MeshPoints2d";
+    '''.format(rgis.rdb.SCHEMA)
+    pExt = rgis.rdb.run_query(qry, True)[0]
+    xmin, xmax, ymin, ymax = [pExt['xmin'], pExt['xmax'], pExt['ymin'], pExt['ymax']]
+    buf = max(0.2*(xmax-xmin), 0.2*(ymax-ymin))
+    pExtStr = '{:.2f}, {:.2f}, {:.2f}, {:.2f}'.format(xmin-buf, xmax+buf, ymax+buf, ymin-buf)
+
+    # get list of mesh areas
+    qry = '''
+    SELECT
+        "AreaID",
+        "Name",
+        ST_X(ST_Centroid(geom)) as x,
+        ST_Y(ST_Centroid(geom)) as y,
+        ST_NPoints(geom) as ptsnr
+    FROM "{0}"."FlowAreas2d";
+    '''.format(rgis.rdb.SCHEMA)
+    t = ''
+
+    for area in rgis.rdb.run_query(qry, True):
+        qry = '''
+        SELECT ST_AsText(geom) as geom
+        FROM
+            "{0}"."FlowAreas2d"
+        WHERE
+            "AreaID"={1};
+        '''.format(rgis.rdb.SCHEMA, area['AreaID'])
+        res = rgis.rdb.run_query(qry, True)[0]['geom']
+        ptsList = res[9:-2].split(',')
+        ptsTxt = ''
+        for pt in ptsList:
+            x, y = [float(c) for c in pt.split(' ')]
+            ptsTxt += '{:>16.4f}{:>16.4f}\r\n'.format(x, y)
+        t += '''
+
+Storage Area={0:14}             ,{1:14},{2:14}
+Storage Area Surface Line= {3:d}
+{4}
+Storage Area Type= 0
+Storage Area Area=
+Storage Area Min Elev=
+Storage Area Is2D=-1
+Storage Area Point Generation Data=,,,
+'''.format(area['Name'], area['x'], area['y'], area['ptsnr'], ptsTxt)
+
+        qry = '''
+        SELECT
+            ST_X(geom) as x,
+            ST_Y(geom) as y
+        FROM
+            "{0}"."MeshPoints2d"
+        WHERE
+            "AreaID" = {1};
+        '''.format(rgis.schema, area['AreaID'])
+        pkty = rgis.rdb.run_query(qry, True)
+
+        coords = ''
+        for i, pt in enumerate(pkty):
+            if i % 2 == 0:
+                coords += '{:16.2f}{:16.2f}'.format(float(pt['x']), float(pt['y']))
+            else:
+                coords += '{:16.2f}{:16.2f}\r\n'.format(float(pt['x']), float(pt['y']))
+
+        t += '''Storage Area 2D Points= {0}
+{1}
+
+Storage Area 2D PointsPerimeterTime=25Jan2015 01:00:00
+Storage Area Mannings=0.06
+2D Cell Volume Filter Tolerance=0.003
+2D Face Profile Filter Tolerance=0.003
+2D Face Area Elevation Profile Filter Tolerance=0.003
+2D Face Area Elevation Conveyance Ratio=0.02
+
+'''.format(len(pkty), coords)
+
+    if not isfile(geoFileName):
+        createNewGeometry(geoFileName, pExtStr)
+
+    geoFile = open(geoFileName, 'rb')
+    geoLines = geoFile.readlines()
+    geoFile.close()
+
+    geoFile = open(geoFileName, 'wb')
+    geo = ""
+    for line in geoLines:
+        if not line.startswith('Chan Stop Cuts'):
+            geo += line
+        else:
+            geo += t
+            geo += line
+    geoFile.write(geo)
+    geoFile.close()
+
+    rgis.addInfo('2D flow area(s) saved to HEC-RAS geometry file:\n{}'.format(geoFileName))
+
+
+def createNewGeometry(filename, extent):
+    t = '''Geom Title=Import from RiverGIS
+Program Version=5.00
+Viewing Rectangle= {0}
+
+
+Chan Stop Cuts=-1
+
+
+
+Use User Specified Reach Order=0
+GIS Ratio Cuts To Invert=-1
+GIS Limit At Bridges=0
+Composite Channel Slope=5
+'''.format(extent)
+    geoFile = open(filename, 'w')
+    geoFile.write(t)
+    geoFile.close()
