@@ -96,7 +96,7 @@ END HEADER:
 
 class NetworkBuilder(object):
     """
-    Return STREAM NETWORK part of RAS GIS Import file
+    Return STREAM NETWORK part of RAS GIS Import file.
     """
     def __init__(self, rgis):
         self.rgis = rgis
