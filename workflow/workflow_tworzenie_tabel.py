@@ -44,5 +44,6 @@ rgis = qgis.utils.plugins['rivergis'].dlg
 ex = ras_gis_import.HecRasExport(rgis)
 sdf = ex.gis_import_file()
 
+# zapis do pliku SDF
 with open(r'E:\test\sdefik.sdf', 'w') as f:
     f.write(sdf)
