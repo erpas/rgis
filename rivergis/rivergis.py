@@ -238,7 +238,6 @@ class RiverGIS(QMainWindow):
 
         # create a new connection to river database
         self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
-        self.rdb.SCHEMA = 'start'
         self.rdb.SRID = int(self.crs.postgisSrid())
         self.rdb.connect_pg()
         self.rdb.create_spatial_index()
@@ -394,14 +393,14 @@ class RiverGIS(QMainWindow):
         #     dlg.exec_()
 
     def ras2dPreview2DMesh(self):
-        if self.curConnName is '' or self.schema is '':
+        if self.rdb.SCHEMA is '':
             QMessageBox.warning(None, "Preview 2D Area", "Please, choose a connection and schema.")
             return
-        from ras2dPreviewMesh import ras2dPreviewMesh
+        from ras2dFunctions import ras2dPreviewMesh
         ras2dPreviewMesh(self)
 
     def ras2dSaveMeshPtsToHecrasGeo(self):
-        from ras2dSaveMeshPtsToGeometry import ras2dSaveMeshPtsToGeometry
+        from ras2dFunctions import ras2dSaveMeshPtsToGeometry
         ras2dSaveMeshPtsToGeometry(self)
 
     # RAS Mapping function
