@@ -30,10 +30,10 @@ class HeaderBuilder(object):
         self.host = rgis.rdb.host
         self.schema = rgis.rdb.SCHEMA
         self.srid = rgis.rdb.SRID
-        self.nor = self.number_of_reaches()
-        self.nox = self.number_of_xsections()
-        self.se = self.spatial_extent()
-        self.su = self.spatial_unit()
+        self.nor = None
+        self.nox = None
+        self.se = None
+        self.su = None
 
     def number_of_reaches(self):
         qry = 'SELECT COUNT("ReachID") FROM "{0}"."StreamCenterlines";'
