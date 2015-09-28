@@ -19,6 +19,7 @@ SELECT
 ST_LineLocatePoint("XSCutLines".geom, "LeveesPoints".geom)
 FROM "XSCutLines", "LeveesPoints"
 WHERE
+    "XSCutLines".geom && "LeveesPoints".geom;
     ST_Intersects("XSCutLines".geom, ST_Buffer("LeveesPoints".geom,0.01));
 
 ALTER TABLE "LeveesPoints" ADD COLUMN "Elevation" real
