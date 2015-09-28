@@ -5,7 +5,7 @@ __author__ = 'Łukasz Dębek'
 from qgis.core import QGis
 
 
-class HecRasExport(object):
+class RasGisImport(object):
     """
     Exporting model to RAS GIS Import file.
     """

@@ -17,7 +17,8 @@ email                : rpasiok@gmail.com
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-""" 
+"""
+from ras_gis_import import *
 import hecobjects as heco
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
 from PyQt4.QtCore import *
@@ -268,10 +269,10 @@ def ras1dCreateRasGisImportFile(rgis):
     if not importFileName:
         return
     s.setValue("rivergis/lastRasGisImportDir", dirname(importFileName))
+    rgi = RasGisImport(rgis)
+    sdf = rgi.gis_import_file()
     if rgis.DEBUG:
-        rgis.addInfo(rgis.rdb.get_ras_gis_import())
+        rgis.addInfo(sdf)
     importFile = open(importFileName, 'w')
-    importFile.write(rgis.rdb.get_ras_gis_import())
+    importFile.write(sdf)
     importFile.close()
-
-
