@@ -148,5 +148,34 @@ class NetworkBuilder(object):
         return net
 
 
+class XSBuilder(object):
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def build_cross_sections(self):
+        xsec = 'BEGIN CROSS-SECTIONS:\n\n'
+        xsec_nval = '         {0}, {1}\n'
+        xsec_levee = '         {0}, {1}, {2}\n'
+        xsec_ineff = '         {0}, {1}, {2}\n'
+        xsec_cut = '         {0}, {1}\n'
+        xsec_surf = '         {0}, {1}, {2}\n'
+        xsec_cross = '''
+   CROSS-SECTION:
+      STREAM ID:
+      REACH ID:
+      STATION:
+      NODE NAME:
+      BANK POSITIONS:
+      REACH LENGTHS:
+      NVALUES:
+      LEVEE POSITIONS:
+      INEFFECTIVE POSITIONS:
+      BLOCKED POSITIONS:
+      CUT LINE:
+   END:
+'''
+
+
 if __name__ == '__name__':
     pass
