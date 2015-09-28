@@ -60,7 +60,7 @@ class HeaderBuilder(object):
         ext = 'XMIN: {0}\n      YMIN: {1}\n      XMAX: {2}\n      YMAX: {3}\n   '
         self.se = ext.format(box_min[0], box_min[1], box_max[0], box_max[1])
         if self.rgis.DEBUG:
-            self.rgis.addInfo(ext)
+            self.rgis.addInfo(self.se)
         return self.se
 
     def spatial_unit(self):
