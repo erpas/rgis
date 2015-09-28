@@ -40,7 +40,7 @@ class HeaderBuilder(object):
         qry = qry.format(self.schema)
         self.nor = int(self.rgis.rdb.run_query(qry, fetch=True)[0][0])
         if self.rgis.DEBUG:
-            self.rgis.addInfo('Nr of reaches: {0:d}'.format(nor))
+            self.rgis.addInfo('Nr of reaches: {0:d}'.format(self.nor))
         return self.nor
 
     def number_of_xsections(self):
@@ -48,7 +48,7 @@ class HeaderBuilder(object):
         qry = qry.format(self.schema)
         self.nox = int(self.rgis.rdb.run_query(qry, fetch=True)[0][0])
         if self.rgis.DEBUG:
-            self.rgis.addInfo('Nr of cross-sections: {0:d}'.format(nox))
+            self.rgis.addInfo('Nr of cross-sections: {0:d}'.format(self.nox))
         return self.nox
 
     def spatial_extent(self):
