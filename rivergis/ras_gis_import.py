@@ -13,11 +13,27 @@ class RasGisImport(object):
         self.rgis = rgis
         self.header = HeaderBuilder(rgis)
         self.network = NetworkBuilder(rgis)
+        self.xsections = XSBuilder(rgis)
 
     def gis_import_file(self):
         imp = self.header.build_header()
         imp += self.network.build_network()
+        imp += self.xsections.build_cross_sections()
         return imp
+
+    @staticmethod
+    def unpack_wkt(wkt):
+        eidx = -1
+        if wkt.startswith('POINT'):
+            sidx = 6
+        elif wkt.startswith('LINESTRING'):
+            sidx = 11
+        elif wkt.startswith('POLYGON'):
+            sidx = 8
+        else:
+            raise ValueError('Inappropariate WKT geometry type. WKT must be POINT, LINSTRING or POLYGON.')
+        pnts = (p.split() for p in wkt[sidx:eidx].split(','))
+        return pnts
 
 
 class HeaderBuilder(object):
@@ -103,14 +119,6 @@ class NetworkBuilder(object):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
 
-    def unpack_centerline(self, net_centerline, wkt):
-        centerline = ''
-        pts = wkt[11:-1].split(',')
-        for pt in pts:
-            x, y = pt.split()
-            centerline += net_centerline.format(x, y)
-        return centerline
-
     def get_nodes(self):
         qry = 'SELECT "NodeID", "X", "Y" FROM "{0}"."NodesTable";'
         qry = qry.format(self.schema)
@@ -118,13 +126,23 @@ class NetworkBuilder(object):
         return nodes
 
     def get_reaches(self):
-        qry = 'SELECT "ReachID", "RiverCode", "ReachCode", "FromNode", "ToNode", ST_AsText(geom) AS wkt FROM "{0}"."StreamCenterlines";'
+        qry = '''
+SELECT
+    "ReachID",
+    "RiverCode",
+    "ReachCode",
+    "FromNode",
+    "ToNode",
+    ST_AsText(geom) AS wkt
+FROM
+    "{0}"."StreamCenterlines";
+'''
         qry = qry.format(self.schema)
         reaches = self.rgis.rdb.run_query(qry, fetch=True)
         return reaches
 
     def build_network(self):
-        net = 'BEGIN STREAM NETWORK:\n\n'
+        net = 'BEGIN STREAM NETWORK:\n'
         net_node = '   ENDPOINT: {0:f}, {1:f}, 0, {2}\n'
         net_reach = '''
    REACH:
@@ -142,39 +160,110 @@ class NetworkBuilder(object):
         for node in nodes:
             net += net_node.format(node['X'], node['Y'], node['NodeID'])
         for reach in reaches:
-            centerlines = self.unpack_centerline(net_centerline, reach['wkt'])
+            centerlines = ''
+            pnts = RasGisImport.unpack_wkt(reach['wkt'])
+            for pt in pnts:
+                x, y = pt
+                centerlines += net_centerline.format(x, y)
             net += net_reach.format(reach['RiverCode'], reach['ReachCode'], reach['FromNode'], reach['ToNode'], centerlines)
         net += net_end
         return net
 
 
 class XSBuilder(object):
+    """
+     Return CROSS SECTIONS part of RAS GIS Import file.
+    """
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
 
+    def get_xsections(self):
+        qry = '''
+SELECT
+    "XsecID",
+    "RiverCode",
+    "ReachCode",
+    "Station",
+    "LeftBank",
+    "RightBank",
+    "LLength",
+    "ChLength",
+    "RLength",
+    ST_AsText(geom) AS wkt
+FROM
+    "{0}"."XSCutLines";
+'''
+        qry = qry.format(self.schema)
+        xsections = self.rgis.rdb.run_query(qry, fetch=True)
+        return xsections
+
+    def get_nvalues(self, xs_id):
+        qry = 'SELECT "Fraction", "N_Value" FROM "{0}"."Manning" WHERE "XsecID" = {1};'
+        qry = qry.format(self.schema, xs_id)
+        nvalues = self.rgis.rdb.run_query(qry, fetch=True)
+        return nvalues
+
+    def get_levees(self):
+        pass
+
+    def get_ineffs(self):
+        pass
+
+    def get_blocks(self):
+        pass
+
+    def get_surf(self, xs_id):
+        qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."XSPoints" WHERE "XsecID" = {1};'
+        qry = qry.format(self.schema, xs_id)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        return surfs
+
     def build_cross_sections(self):
-        xsec = 'BEGIN CROSS-SECTIONS:\n\n'
+        xsec = 'BEGIN CROSS-SECTIONS:\n'
         xsec_nval = '         {0}, {1}\n'
         xsec_levee = '         {0}, {1}, {2}\n'
         xsec_ineff = '         {0}, {1}, {2}\n'
+        xsec_block = '         {0}, {1}, {2}, {3}\n'
         xsec_cut = '         {0}, {1}\n'
         xsec_surf = '         {0}, {1}, {2}\n'
         xsec_cross = '''
    CROSS-SECTION:
-      STREAM ID:
-      REACH ID:
-      STATION:
+      STREAM ID:{6}
+      REACH ID:{7}
+      STATION:{8}
       NODE NAME:
-      BANK POSITIONS:
-      REACH LENGTHS:
+      BANK POSITIONS: {9}, {10}
+      REACH LENGTHS: {11}, {12}
       NVALUES:
-      LEVEE POSITIONS:
-      INEFFECTIVE POSITIONS:
-      BLOCKED POSITIONS:
-      CUT LINE:
-   END:
+{0}   LEVEE POSITIONS:
+{1}   INEFFECTIVE POSITIONS:
+{2}   BLOCKED POSITIONS:
+{3}   CUT LINE:
+{4}   SURFACE LINE:
+{5}   END:
 '''
+        xsec_end = '\nEND CROSS-SECTIONS:\n\n'
+        cross_sections = self.get_xsections()
+        for cs in cross_sections:
+            attrs = cs[1:-1]
+            nvalues = ''
+            levees = ''
+            ineffs = ''
+            blocks = ''
+            cuts = ''
+            surfs = ''
+            for n in self.get_nvalues(cs['XsecID']):
+                nvalues += xsec_nval.format(n['Fraction'], n['N_Value'])
+            pnts = RasGisImport.unpack_wkt(cs['wkt'])
+            for pt in pnts:
+                x, y = pt
+                cuts += xsec_cut.format(x, y)
+            for s in self.get_surf(cs['XsecID']):
+                surfs += xsec_surf.format(s['x'], s['y'], s['Elevation'])
+            xsec += xsec_cross.format(nvalues, levees, ineffs, blocks, cuts, surfs, *attrs)
+        xsec += xsec_end
+        return xsec
 
 
 if __name__ == '__name__':
