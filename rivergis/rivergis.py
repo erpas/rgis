@@ -362,13 +362,20 @@ class RiverGIS(QMainWindow):
         ras1dXSExtractMannings(self)
 
     def ras1dLevees(self):
-        pass
+        from ras1dFunctions import ras1dLevees
+        ras1dLevees(self)
 
     def ras1dIneffectiveFlowAreas(self):
-        pass
+        from ras1dFunctions import ras1dIneffective
+        ras1dIneffective(self)
 
     def ras1dBlockedObstructions(self):
-        pass
+        from ras1dFunctions import ras1dObstructions
+        ras1dIneffective(self)
+
+    def ras1dInsertMeasPts(self):
+        from ras1dFunctions import ras1dXSInsertMeasPts
+        ras1dXSInsertMeasPts(self)
 
     def ras1dFlipXSDirection(self):
         pass
