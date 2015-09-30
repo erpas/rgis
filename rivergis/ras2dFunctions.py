@@ -25,6 +25,7 @@ from PyQt4.QtGui import *
 from math import floor
 from os.path import join, dirname, isfile
 import processing
+from time import sleep
 
 
 def ras2dCreate2dPoints(rgis):
@@ -50,6 +51,7 @@ def ras2dCreate2dPoints(rgis):
     # create regular mesh points
     # and delete points located too close to the 2D area boundary
     qry = '''
+    DELETE FROM "{0}"."MeshPoints2d";
     INSERT INTO
         "{0}"."MeshPoints2d" ("AreaID", "BLID", geom)
     SELECT
@@ -137,7 +139,7 @@ def ras2dCreate2dPoints(rgis):
     WITH brbuf AS (
     SELECT
         ST_Buffer(geom, "RowsAligned" * "CellSizeAcross" +
-                    "CellSizeAlong" * 0.6, \'endcap=flat join=round\') as geom
+                    "CellSizeAlong" * 0.2, \'endcap=flat join=round\') as geom
     FROM
         "{0}"."BreakLines2d_m"
     )
@@ -326,8 +328,10 @@ def ras2dCreate2dPoints(rgis):
                     k = int(floor(dist / (2*dist_min)))
                     # distance between new points
                     cs = dist / k
-                    for j in range(0,k):
+                    for j in range(1,k):
                         mpts.append(m - j * cs)
+                        if rgis.DEBUG:
+                            rgis.addInfo('gap: dist={}, m={}'.format(cs, m - j * cs))
 
                 # insert aligned mesh points into table
                 for m in sorted(mpts):
@@ -404,11 +408,16 @@ def ras2dPreviewMesh(rgis):
     try:
         u2 = QgsDataSourceURI()
         u2.setConnection(rgis.host, rgis.port, rgis.database, rgis.user, rgis.passwd)
-        u2.setDataSource(rgis.schema, "FlowArea2d", "geom")
-        areas = QgsVectorLayer(u2.uri(), "FlowArea2d", "postgres")
+        u2.setDataSource(rgis.schema, "FlowAreas2d", "geom")
+        areas = QgsVectorLayer(u2.uri(), "FlowAreas2d", "postgres")
+        if rgis.DEBUG:
+            rgis.addInfo('Voronoi layer: \n{0}\nFlow Areas 2d layer ok? {1}'.format( \
+                voronoi['OUTPUT'], areas.isValid()))
         # TODO: construct voronoi polygons separately for each 2d mesh area
         voronoiClip = processing.runalg("qgis:clip",voronoi['OUTPUT'],areas,None)
-        QgsMapLayerRegistry.instance().addMapLayers([voronoiClipLayer])
+        if rgis.DEBUG:
+            rgis.addInfo('Cutted Voronoi polygons:\n{0}'.format(voronoiClip['OUTPUT']))
+        sleep(1)
         voronoiClipLayer = QgsVectorLayer(voronoiClip['OUTPUT'], "Mesh preview", "ogr")
         QgsMapLayerRegistry.instance().addMapLayers([voronoiClipLayer])
 
@@ -416,20 +425,15 @@ def ras2dPreviewMesh(rgis):
         voronoiLayer = QgsVectorLayer(voronoi['OUTPUT'], "Mesh preview", "ogr")
         QgsMapLayerRegistry.instance().addMapLayers([voronoiLayer])
 
-    # # change layers' style
-    # root = QgsProject.instance().layerTreeRoot()
-    # for child in root.children():
-    #   if isinstance(child, QgsLayerTreeLayer):
-    #     if child.layerName() == 'Mesh preview':
-    #       stylePath = join(rgis.rivergisPath,'styles/ras2dmesh.qml')
-    #       child.layer().loadNamedStyle(stylePath)
-    #       rgis.iface.legendInterface().refreshLayerSymbology(child.layer())
-    #       rgis.iface.mapCanvas().refresh()
-    #     elif child.layerName() == 'Mesh points':
-    #       stylePath = join(rgis.rivergisPath,'styles/MeshPoints2d.qml')
-    #       child.layer().loadNamedStyle(stylePath)
-    #       rgis.iface.legendInterface().refreshLayerSymbology(child.layer())
-    #       rgis.iface.mapCanvas().refresh()
+    # change layers' style
+    root = QgsProject.instance().layerTreeRoot()
+    legItems = root.findLayers()
+    for item in legItems:
+        if item.layerName() == 'Mesh preview':
+            stylePath = join(rgis.rivergisPath,'styles/Mesh2d.qml')
+            item.layer().loadNamedStyle(stylePath)
+            rgis.iface.legendInterface().refreshLayerSymbology(item.layer())
+            rgis.iface.mapCanvas().refresh()
 
 
 def ras2dSaveMeshPtsToGeometry(rgis,geoFileName=None):
@@ -442,7 +446,7 @@ def ras2dSaveMeshPtsToGeometry(rgis,geoFileName=None):
             return
         s.setValue("rivergis/lastGeoDir", dirname(geoFileName))
 
-    rgis.addInfo("Saving 2D Flow Area to HEC-RAS geometry file...")
+    rgis.addInfo("<br><b>Saving 2D Flow Area to HEC-RAS geometry file...</b>")
 
     # get mesh points extent
     qry = '''
@@ -484,10 +488,10 @@ def ras2dSaveMeshPtsToGeometry(rgis,geoFileName=None):
         ptsTxt = ''
         for pt in ptsList:
             x, y = [float(c) for c in pt.split(' ')]
-            ptsTxt += '{:>16.4f}{:>16.4f}\r\n'.format(x, y)
+            ptsTxt += '{:>16.4f}{:>16.4f}\n'.format(x, y)
         t += '''
 
-Storage Area={0:14}             ,{1:14},{2:14}
+Storage Area={0:<14},{1:14},{2:14}
 Storage Area Surface Line= {3:d}
 {4}
 Storage Area Type= 0
@@ -513,11 +517,10 @@ Storage Area Point Generation Data=,,,
             if i % 2 == 0:
                 coords += '{:16.2f}{:16.2f}'.format(float(pt['x']), float(pt['y']))
             else:
-                coords += '{:16.2f}{:16.2f}\r\n'.format(float(pt['x']), float(pt['y']))
+                coords += '{:16.2f}{:16.2f}\n'.format(float(pt['x']), float(pt['y']))
 
         t += '''Storage Area 2D Points= {0}
 {1}
-
 Storage Area 2D PointsPerimeterTime=25Jan2015 01:00:00
 Storage Area Mannings=0.06
 2D Cell Volume Filter Tolerance=0.003
@@ -530,11 +533,11 @@ Storage Area Mannings=0.06
     if not isfile(geoFileName):
         createNewGeometry(geoFileName, pExtStr)
 
-    geoFile = open(geoFileName, 'rb')
+    geoFile = open(geoFileName, 'r')
     geoLines = geoFile.readlines()
     geoFile.close()
 
-    geoFile = open(geoFileName, 'wb')
+    geoFile = open(geoFileName, 'w')
     geo = ""
     for line in geoLines:
         if not line.startswith('Chan Stop Cuts'):
@@ -545,7 +548,7 @@ Storage Area Mannings=0.06
     geoFile.write(geo)
     geoFile.close()
 
-    rgis.addInfo('2D flow area(s) saved to HEC-RAS geometry file:\n{}'.format(geoFileName))
+    rgis.addInfo('Saved to:\n{}'.format(geoFileName))
 
 
 def createNewGeometry(filename, extent):
