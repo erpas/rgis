@@ -337,7 +337,7 @@ class RiverDatabase(object):
             # field values of the feature
             vals = []
             geom_wkt = feat.geometry().exportToWkt()
-            # Geometry types check:
+            # Geometry type check:
             # is target geometry of type multi?
             # is source layer geom multi?
             target_multi = hecobject.geom_type.startswith('MULTI')

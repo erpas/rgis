@@ -26,14 +26,14 @@ from PyQt4.QtGui import *
 from os.path import dirname
 
 def ras1dStreamCenterlineTopology(rgis):
-    """Creates river network topology. Creates nodes at reach ends and finds the direction of flow (fromNode, toNode)"""
+    """Create river network topology. Create nodes at reach ends and find the direction of flow (fromNode, toNode)"""
     # check if streamlines table is registered
     scExist = 'StreamCenterlines' in rgis.rdb.register.keys()
     if not scExist:
-        rgis.addInfo('<br>StreamCenterlines are not registered in the river database. Cancelling...')
+        rgis.addInfo('<br>StreamCenterlines are not registered in the river database. Import or create stream centerlines. <br>Cancelling...')
         return
 
-    rgis.addInfo('<br><b>Building topology on StreamCenterlines...</b>')
+    rgis.addInfo('<br><b>Building stream centerlines topology...</b>')
     rgis.rdb.process_hecobject(heco.NodesTable, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_topology'):
         rgis.addInfo('Done.')
@@ -43,7 +43,7 @@ def ras1dStreamCenterlineLengthsStations(rgis):
     """Calculate river reaches lenght and their endpoints stations"""
     ntExist = 'NodesTable' in [t[0] for t in rgis.rdb.list_tables()]
     if not ntExist:
-        rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build StreamCenterlines Topology first.<br>Cancelling...')
+        rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build stream centerlines topology first.<br>Cancelling...')
         qry = ''
     rgis.addInfo('<br><b>Calculating river reach(es) lenghts and their end stations...</b>')
     rgis.rdb.process_hecobject(heco.Endpoints, 'pg_create_table')

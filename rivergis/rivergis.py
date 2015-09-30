@@ -46,7 +46,7 @@ class RiverGIS(QMainWindow):
         self.iface = iface
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
-        self.dtms = None
+        self.dtms = []
         self.DEBUG = 0
 
         # create status bar
