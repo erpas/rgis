@@ -259,8 +259,8 @@ def ras1dXSExtractMannings(rgis):
 
 def ras1dLevees(rgis):
     rgis.addInfo('<br><b>Calculating levees stations for cross-sections...</b>')
-    # TODO
-    if rgis.rdb.process_hecobject(heco.LeveeAlignment, 'pg_????'):
+    rgis.rdb.process_hecobject(heco.LeveePoints, 'pg_create_table')
+    if rgis.rdb.process_hecobject(heco.LeveeAlignment, 'pg_levee_positions'):
         rgis.addInfo('Done.')
 
 

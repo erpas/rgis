@@ -690,17 +690,6 @@ class LeveeAlignment(HecRasObject):
         self.geom_type = 'LINESTRING'
         self.attrs = [('"LeveeID"', 'serial primary key')]
 
-
-class LeveePoints(HecRasObject):
-    def __init__(self):
-        super(LeveePoints, self).__init__()
-        self.geom_type = 'POINT'
-        self.attrs = [
-            ('"LeveeID"', 'integer'),
-            ('"XsecID"', 'integer'),
-            ('"Fraction"', 'double precision'),
-            ('"Elevation"', 'double precision')]
-
     def pg_levee_positions(self):
         qry = '''
 INSERT INTO "{0}"."LeveePoints"(geom, "LeveeID", "XsecID", "Fraction")
@@ -718,6 +707,19 @@ INSERT INTO "{0}"."LeveePoints"(geom, "LeveeID", "XsecID", "Fraction")
 '''
         qry = qry.format(self.schema)
         return qry
+
+
+class LeveePoints(HecRasObject):
+    def __init__(self):
+        super(LeveePoints, self).__init__()
+        self.main = False
+        self.spatial_index = False
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"LeveeID"', 'integer'),
+            ('"XsecID"', 'integer'),
+            ('"Fraction"', 'double precision'),
+            ('"Elevation"', 'double precision')]
 
 
 class InlineStructures(HecRasObject):
