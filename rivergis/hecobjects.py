@@ -502,8 +502,7 @@ class BankPoints(HecRasObject):
         self.geom_type = 'POINT'
         self.attrs = [('"BankID"', 'serial primary key'),
                       ('"XsecID"', 'integer'),
-                      ('"Elevation"', 'double precision')
-                      ]
+                      ('"Elevation"', 'double precision')]
 
 
 class Flowpaths(HecRasObject):
@@ -697,9 +696,10 @@ class LeveePoints(HecRasObject):
         super(LeveePoints, self).__init__()
         self.geom_type = 'POINT'
         self.attrs = [
-            ('"LeveeID"', 'serial primary key'),
-            ('"Station"', 'integer'),
-            ('"Elevation"', 'integer')]
+            ('"LeveeID"', 'integer'),
+            ('"XsecID"', 'integer'),
+            ('"Fraction"', 'double precision'),
+            ('"Elevation"', 'double precision')]
 
 
 class InlineStructures(HecRasObject):

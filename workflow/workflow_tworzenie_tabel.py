@@ -41,7 +41,7 @@ iface.mapCanvas().refresh()
 from rivergis import ras_gis_import
 
 rgis = qgis.utils.plugins['rivergis'].dlg
-ex = ras_gis_import.HecRasExport(rgis)
+ex = ras_gis_import.RasGisImport(rgis)
 sdf = ex.gis_import_file()
 
 # zapis do pliku SDF
