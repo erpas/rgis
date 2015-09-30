@@ -701,6 +701,24 @@ class LeveePoints(HecRasObject):
             ('"Fraction"', 'double precision'),
             ('"Elevation"', 'double precision')]
 
+    def pg_levee_positions(self):
+        qry = '''
+INSERT INTO "{0}"."LeveePoints"(geom, "LeveeID", "XsecID", "Fraction")
+    SELECT
+        ST_Intersection(lev.geom, xs.geom) AS geom,
+        lev."LeveeID",
+        xs."XsecID",
+        ST_LineLocatePoint(xs.geom, ST_Intersection(lev.geom, xs.geom)) AS "Fraction"
+    FROM
+        "{0}"."LeveeAlignment" AS lev,
+        "{0}"."XSCutLines" AS xs
+    WHERE
+        xs.geom && lev.geom AND
+        ST_Intersects(xs.geom, lev.geom);
+'''
+        qry = qry.format(self.schema)
+        return qry
+
 
 class InlineStructures(HecRasObject):
     def __init__(self):

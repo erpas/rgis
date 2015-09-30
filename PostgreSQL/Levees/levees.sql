@@ -18,14 +18,14 @@
 --ALTER TABLE "LeveesPoints" ADD COLUMN "Elevation" real
 
 ------------------------------------------------------------------------------------------------------------------------
-INSERT INTO "LeveesPoints"(geom, "LeveeID", "XsecID", "Fraction")
+INSERT INTO "LeveePoints"(geom, "LeveeID", "XsecID", "Fraction")
   SELECT
     ST_Intersection(lev.geom, xs.geom) AS geom,
     lev."LeveeID",
     xs."XsecID",
     ST_LineLocatePoint(xs.geom, ST_Intersection(lev.geom, xs.geom)) AS "Fraction"
   FROM
-    "Levees" AS lev,
+    "LeveeAlignment" AS lev,
     "XSCutLines" AS xs
   WHERE
     xs.geom && lev.geom AND
