@@ -34,7 +34,7 @@ class WorkerRasImportRasData(QObject):
   def __init__(self, rgis):
     QObject.__init__(self)
     self.rgis = rgis
-    self.rgis.addInfo("<br><br><b>Running Load max WSEL from HEC-RAS</b>...\n")
+    self.rgis.addInfo("<br><b>Running Load max WSEL from HEC-RAS</b>...\n")
     self.res = None
     try:
       import h5py
@@ -68,6 +68,10 @@ class WorkerRasImportRasData(QObject):
 
     # show plans dialog
     dlg.exec_()
+    # check if a plan was specified
+    if not rgis.curHdfFile:
+        rgis.addInfo('  No plan data specified. Cancelling...')
+        return
 
     messageBar = self.rgis.iface.messageBar().createMessage('Loading max water surface elevation...', )
     progressBar = QProgressBar()

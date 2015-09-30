@@ -47,10 +47,10 @@ class DlgCreateRasLayers(QDialog):
             if chbox.isChecked():
                 obj = self.rdb.process_hecobject(hecobj_class, 'pg_create_table')
                 try:
-                    self.rgis.addInfo('{0} OK'.format(obj.name))
+                    self.rgis.addInfo('  {0} OK'.format(obj.name))
                     self.rdb.add_to_view(obj)
                 except:
-                    self.rgis.addInfo('{0} - failure!<br>{1}'.format(chbox.text(), obj))
+                    self.rgis.addInfo('  {0} - failure!<br>{1}'.format(chbox.text(), obj))
         QApplication.setOverrideCursor(Qt.ArrowCursor)
         QDialog.accept(self)
 

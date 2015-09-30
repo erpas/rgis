@@ -449,7 +449,6 @@ class RiverGIS(QMainWindow):
 
     def rasFloodplainDelineation(self):
         from dlg_rasFloodplainDelineation import DlgRasFloodplainDelineation
-        self.addInfo('\n<b>Running floodplain delineation.</b>' )
         dialog = DlgRasFloodplainDelineation(self)
         dialog.exec_()
 

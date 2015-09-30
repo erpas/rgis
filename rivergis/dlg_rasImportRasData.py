@@ -45,7 +45,7 @@ class Ui_hecrasPlanDialog(object):
 
     self.retranslateUi(planDialog)
     QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), planDialog.acceptDialog)
-    QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), planDialog.reject)
+    QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), planDialog.rejectDialog)
     QtCore.QMetaObject.connectSlotsByName(planDialog)
 
   def retranslateUi(self, planDialog):
@@ -70,6 +70,10 @@ class DlgImportRasData(QtGui.QDialog):
     self.rgis.wselCrs = self.ui.crsWidget.crs()
     self.rgis.curHdfFile = self.ui.planCbo.itemData(self.ui.planCbo.currentIndex()) + '.hdf'
     QtGui.QDialog.accept(self)
+
+  def rejectDialog(self):
+    self.rgis.curHdfFile = None
+    QtGui.QDialog.reject(self)
 
 
 

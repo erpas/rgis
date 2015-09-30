@@ -35,7 +35,17 @@ def ras2dCreate2dPoints(rgis):
     Points spacing along and across a breakline is read from CellSizeAlong and CellSizeAcross attributes of BreakLines2D table, respectively. A number of cells rows to align with a beakline can be given.
     Create breakpoints at locations where a cell face is needed (on a breakline).
     """
-    rgis.addInfo("<br><b>Creating computational points for 2D flow areas<b>" )
+    rgis.addInfo("<br><b>Creating computational points for 2D flow areas<b>")
+
+    # and create breaklines with a linear measure
+    qry = '''
+    SELECT * FROM "{0}"."FlowAreas2d"
+    '''.format(rgis.rdb.SCHEMA)
+    chk2dAreas = rgis.rdb.run_query(qry, fetch=True)
+    if not chk2dAreas:
+        rgis.addInfo("  No 2d flow area in the database.<br>  Import or create it before generating 2d computational points.<br>  Cancelling...")
+        return
+
     QApplication.setOverrideCursor(Qt.WaitCursor)
     qry = '''CREATE OR REPLACE FUNCTION "{0}".makegrid(geometry, float, integer)
     RETURNS geometry AS
