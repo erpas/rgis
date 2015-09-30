@@ -256,6 +256,35 @@ def ras1dXSExtractMannings(rgis):
     if rgis.rdb.process_hecobject(heco.LanduseAreas, 'pg_extract_manning'):
         rgis.addInfo('Done.')
 
+
+def ras1dLevees(rgis):
+    rgis.addInfo('<br><b>Calculating levees stations for cross-sections...</b>')
+    # TODO
+    if rgis.rdb.process_hecobject(heco.LeveeAlignment, 'pg_????'):
+        rgis.addInfo('Done.')
+
+
+def ras1dIneffective(rgis):
+    rgis.addInfo('<br><b>Finding ineffective flow areas for cross-sections</b>')
+    # TODO
+    if rgis.rdb.process_hecobject(heco.IneffAreas, 'pg_????'):
+        rgis.addInfo('Done.')
+
+
+def ras1dObstructions(rgis):
+    rgis.addInfo('<br><b>Finding blocked obstructions for cross-sections</b>')
+    # TODO
+    if rgis.rdb.process_hecobject(heco.BlockedObs, 'pg_????'):
+        rgis.addInfo('Done.')
+
+
+def ras1dXSInsertMeasPts(rgis):
+    rgis.addInfo('<br><b>Updating cross-sections - inserting measured points...</b>')
+    # TODO
+    if rgis.rdb.process_hecobject(heco.XSCutlines, 'pg_????'):
+        rgis.addInfo('Done.')
+
+
 def ras1dCreateRasGisImportFile(rgis):
     """
     Save HEC-RAS model geometry in RAS GIS Import format.
