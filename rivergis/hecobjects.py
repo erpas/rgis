@@ -338,7 +338,74 @@ WHERE
         qry = qry.format(self.schema)
         return qry
 
-    def pg_downstream_reach_lengths(self):
+    def pg_downstream_reach_lengths(self, line_type='Channel'):
+        if line_type == 'Left':
+            column = 'LLength'
+        elif line_type == 'Channel':
+            column = 'ChLength'
+        elif line_type == 'Right':
+            column = 'RLength'
+        else:
+            raise ValueError('Invalid line type!')
+        qry = '''
+CREATE OR REPLACE FUNCTION "{0}".downstream_reach_lengths ()
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM "{0}"."XSCutLines";
+    r "{0}"."XSCutLines"%ROWTYPE;
+    river_code text := '';
+    shift double precision := 0;
+    station double precision;
+BEGIN
+FOR r IN c LOOP
+    IF shift = 0 OR r."RiverCode" <> river_code THEN
+        UPDATE  "{0}"."XSCutLines" SET
+            "{2}" = 0
+        WHERE CURRENT OF c;
+        SELECT
+            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom),
+            r."RiverCode"
+        INTO
+            shift,
+            river_code
+        FROM
+            "{0}"."Flowpaths" AS path
+        WHERE
+            path."LineType" = '{1}' AND
+            r.geom && path.geom AND
+            ST_Intersects(r.geom, path.geom);
+    ELSE
+        SELECT
+            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom)
+        INTO
+            station
+        FROM
+            "{0}"."Flowpaths" AS path
+        WHERE
+            path."LineType" = '{1}' AND
+            r.geom && path.geom AND
+            ST_Intersects(r.geom, path.geom);
+        shift := station - shift;
+        UPDATE "{0}"."XSCutLines" SET
+            "{2}" = shift
+        WHERE CURRENT OF c;
+    END IF;
+END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+------------------------------------------------------------------------------------------------------------------------
+DROP INDEX IF EXISTS "{0}"."{0}_XSCutLines_order_idx";
+CREATE INDEX "{0}_XSCutLines_order_idx" ON "{0}"."XSCutLines" ("RiverCode", "Station");
+CLUSTER "{0}"."XSCutLines" USING "{0}_XSCutLines_order_idx";
+SELECT "{0}".downstream_reach_lengths ();
+DROP FUNCTION IF EXISTS "{0}".downstream_reach_lengths ();
+'''
+        qry = qry.format(self.schema, line_type, column)
+        return qry
+
+    def pg_downstream_reach_lengths2(self):
         qry = '''
 DROP TABLE IF EXISTS "{0}"."FlowpathStations";
 ------------------------------------------------------------------------------------------------------------------------

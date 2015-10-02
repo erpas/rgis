@@ -196,10 +196,7 @@ class RiverDatabase(object):
         self.setup_hydro_object(hecobject, schema, srid)
         obj = hecobject()
         method = getattr(obj, pg_method)
-        if kwargs is True:
-            qry = method(**kwargs)
-        else:
-            qry = method()
+        qry = method(**kwargs)
         result = self.run_query(qry)
         if result is not None:
             self.register_object(obj)
