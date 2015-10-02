@@ -377,19 +377,21 @@ FOR r IN c LOOP
             ST_Intersects(r.geom, path.geom);
     ELSE
         SELECT
-            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom)
+            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom),
+            r."RiverCode"
         INTO
-            station
+            station,
+            river_code
         FROM
             "{0}"."Flowpaths" AS path
         WHERE
             path."LineType" = '{1}' AND
             r.geom && path.geom AND
             ST_Intersects(r.geom, path.geom);
-        shift := station - shift;
         UPDATE "{0}"."XSCutLines" SET
-            "{2}" = shift
+            "{2}" = station - shift
         WHERE CURRENT OF c;
+        shift := station;
     END IF;
 END LOOP;
 END;
