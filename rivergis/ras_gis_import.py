@@ -196,16 +196,28 @@ FROM
 '''
         qry = qry.format(self.schema)
         xsections = self.rgis.rdb.run_query(qry, fetch=True)
-        return xsections
+        if xsections is None:
+            return []
+        else:
+            return xsections
 
     def get_nvalues(self, xs_id):
         qry = 'SELECT "Fraction", "N_Value" FROM "{0}"."Manning" WHERE "XsecID" = {1};'
         qry = qry.format(self.schema, xs_id)
         nvalues = self.rgis.rdb.run_query(qry, fetch=True)
-        return nvalues
+        if nvalues is None:
+            return []
+        else:
+            return nvalues
 
-    def get_levees(self):
-        pass
+    def get_levees(self, xs_id):
+        qry = 'SELECT "LeveeID", "Fraction", "Elevation" FROM "{0}"."LeveePoints" WHERE "XsecID" = {1};'
+        qry = qry.format(self.schema, xs_id)
+        levees = self.rgis.rdb.run_query(qry, fetch=True)
+        if levees is None:
+            return []
+        else:
+            return levees
 
     def get_ineffs(self):
         pass
@@ -217,7 +229,10 @@ FROM
         qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."XSPoints" WHERE "XsecID" = {1};'
         qry = qry.format(self.schema, xs_id)
         surfs = self.rgis.rdb.run_query(qry, fetch=True)
-        return surfs
+        if surfs is None:
+            return []
+        else:
+            return surfs
 
     def build_cross_sections(self):
         xsec = 'BEGIN CROSS-SECTIONS:\n'
@@ -244,8 +259,8 @@ FROM
 {5}   END:
 '''
         xsec_end = '\nEND CROSS-SECTIONS:\n\n'
-        cross_sections = self.get_xsections()
-        for cs in cross_sections:
+        for cs in self.get_xsections():
+            xs_id = cs['XsecID']
             attrs = cs[1:-1]
             nvalues = ''
             levees = ''
@@ -253,18 +268,16 @@ FROM
             blocks = ''
             cuts = ''
             surfs = ''
-            for n in self.get_nvalues(cs['XsecID']):
+            for n in self.get_nvalues(xs_id):
                 nvalues += xsec_nval.format(n['Fraction'], n['N_Value'])
+            for l in self.get_levees(xs_id):
+                levees += xsec_levee.format(l['LeveeID'], l['Fraction'], l['Elevation'])
             pnts = RasGisImport.unpack_wkt(cs['wkt'])
             for pt in pnts:
                 x, y = pt
                 cuts += xsec_cut.format(x, y)
-            for s in self.get_surf(cs['XsecID']):
+            for s in self.get_surf(xs_id):
                 surfs += xsec_surf.format(s['x'], s['y'], s['Elevation'])
             xsec += xsec_cross.format(nvalues, levees, ineffs, blocks, cuts, surfs, *attrs)
         xsec += xsec_end
         return xsec
-
-
-if __name__ == '__name__':
-    pass
