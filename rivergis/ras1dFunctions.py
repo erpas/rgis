@@ -103,6 +103,15 @@ def ras1dXSDownstreamLengths(rgis):
         rgis.addInfo('Right flowpaths done.')
 
 
+def ras1dStreamCenterlines2Flowpaths(rgis):
+    """Copy stream centerlines into flowpaths PostGIS table.
+    Reaches are merged based on their river name to form a continuous lines."""
+    rgis.addInfo('<br><b>Copying stream centerlines into flowpaths...</b>')
+    if rgis.rdb.process_hecobject(heco.Flowpaths, 'pg_channel_from_stream'):
+        rgis.addInfo('Done.')
+
+
+
 def ras1dXSElevations(rgis):
     """Probe a DTM to find cross-section vertical shape"""
     QApplication.setOverrideCursor(Qt.WaitCursor)

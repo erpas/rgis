@@ -68,6 +68,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
         self.ui.actionRASTopology1D.triggered.connect(self.ras1dStreamCenterlinesTopology)
         self.ui.actionRASLengthsStations.triggered.connect(self.ras1dStreamCenterlinesLengthsStations)
+        self.ui.actionCopyStreamCenterlines2Flowpaths.triggered.connect(self.ras1dStreamCenterlines2Flowpaths)
         self.ui.actionRASStreamCenterlineAll.triggered.connect(self.ras1dStreamCenterlineAll)
         self.ui.actionRASXSRiverReachNames.triggered.connect(self.ras1dXSRiverReachNames)
         self.ui.actionRASXSStationing.triggered.connect(self.ras1dXSStationing)
@@ -324,6 +325,10 @@ class RiverGIS(QMainWindow):
     def ras1dStreamCenterlinesTopology(self):
         from ras1dFunctions import ras1dStreamCenterlineTopology
         ras1dStreamCenterlineTopology(self)
+
+    def ras1dStreamCenterlines2Flowpaths(self):
+        from ras1dFunctions import ras1dStreamCenterlines2Flowpaths
+        ras1dStreamCenterlines2Flowpaths(self)
 
     def ras1dStreamCenterlinesLengthsStations(self):
         from ras1dFunctions import ras1dStreamCenterlineLengthsStations
