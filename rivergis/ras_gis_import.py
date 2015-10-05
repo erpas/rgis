@@ -135,7 +135,9 @@ SELECT
     "ToNode",
     ST_AsText(geom) AS wkt
 FROM
-    "{0}"."StreamCenterlines";
+    "{0}"."StreamCenterlines"
+WHERE
+    "ReachCode" IS NOT NULL;
 '''
         qry = qry.format(self.schema)
         reaches = self.rgis.rdb.run_query(qry, fetch=True)
