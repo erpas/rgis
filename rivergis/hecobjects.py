@@ -217,6 +217,7 @@ class Endpoints(HecRasObject):
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
+            ('"EndID"', 'serial primary key'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
             ('"NodeID"', 'integer')]
@@ -418,9 +419,10 @@ class BankPoints(HecRasObject):
     def __init__(self):
         super(BankPoints, self).__init__()
         self.geom_type = 'POINT'
-        self.attrs = [('"BankID"', 'serial primary key'),
-                      ('"XsecID"', 'integer'),
-                      ('"Elevation"', 'double precision')]
+        self.attrs = [
+            ('"BankID"', 'serial primary key'),
+            ('"XsecID"', 'integer'),
+            ('"Elevation"', 'double precision')]
 
 
 class Flowpaths(HecRasObject):
@@ -475,7 +477,8 @@ class IneffAreas(HecRasObject):
     def __init__(self):
         super(IneffAreas, self).__init__()
         self.geom_type = 'POLYGON'
-        self.attrs = [('"IneffID"', 'serial primary key'),
+        self.attrs = [
+            ('"IneffID"', 'serial primary key'),
             ('"Elevation"', 'double precision')]
 
 
@@ -486,7 +489,8 @@ class BlockedObs(HecRasObject):
     def __init__(self):
         super(BlockedObs, self).__init__()
         self.geom_type = 'POLYGON'
-        self.attrs = [('"BlockID"', 'serial primary key'),
+        self.attrs = [
+            ('"BlockID"', 'serial primary key'),
             ('"Elevation"', 'double precision')]
 
 
@@ -645,6 +649,7 @@ class LeveePoints(HecRasObject):
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
+            ('"LeveePID"', 'serial primary key'),
             ('"LeveeID"', 'integer'),
             ('"XsecID"', 'integer'),
             ('"Fraction"', 'double precision'),
