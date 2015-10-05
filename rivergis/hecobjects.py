@@ -232,7 +232,6 @@ class XSCutLines(HecRasObject):
         self.attrs = [
             ('"XsecID"', 'serial primary key'),
             ('"ReachID"', 'integer'),
-            ('"Nr"', 'integer'),
             ('"Station"', 'double precision'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
@@ -283,24 +282,6 @@ FROM
 WHERE
   xspts."ReachID" = riv."ReachID" AND
   xspts."XsecID" = xs."XsecID";
-------------------------------------------------------------------------------------------------------------------------
-WITH orderedXsecs AS (
-SELECT
-    "XsecID",
-    xs."ReachID",
-    rank() OVER (PARTITION BY xs."RiverCode" ORDER BY xs."Station" ASC) AS rank
-  FROM
-    "{0}"."XSCutLines" AS xs
-  LEFT JOIN
-    "{0}"."StreamCenterlines" sc ON  sc."ReachID" = xs."ReachID"
-)
-UPDATE "{0}"."XSCutLines" xs
-  SET
-    "Nr" = rank
-  FROM
-    orderedXsecs ox
-  WHERE
-    xs."XsecID" = ox."XsecID";
 '''
         qry = qry.format(self.schema)
         return qry
@@ -338,7 +319,16 @@ WHERE
         qry = qry.format(self.schema)
         return qry
 
-    def pg_downstream_reach_lengths(self, line_type='Channel'):
+    def pg_downstream_reach_lengths(self, line_type='Channel', sort=True):
+        index = ''
+        if sort is True:
+            index = '''
+DROP INDEX IF EXISTS "{0}"."{0}_XSCutLines_order_idx";
+CREATE INDEX "{0}_XSCutLines_order_idx" ON "{0}"."XSCutLines" ("RiverCode", "Station");
+CLUSTER "{0}"."XSCutLines" USING "{0}_XSCutLines_order_idx";
+'''.format(self.schema)
+        else:
+            pass
         if line_type == 'Left':
             column = 'LLength'
         elif line_type == 'Channel':
@@ -355,184 +345,43 @@ DECLARE
     c cursor FOR SELECT * FROM "{0}"."XSCutLines";
     r "{0}"."XSCutLines"%ROWTYPE;
     river_code text := '';
-    shift double precision := 0;
-    station double precision;
+    distance double precision := 0;
+    station double precision := 0;
+    prev_station double precision := 0;
 BEGIN
 FOR r IN c LOOP
-    IF shift = 0 OR r."RiverCode" <> river_code THEN
-        UPDATE  "{0}"."XSCutLines" SET
-            "{2}" = 0
-        WHERE CURRENT OF c;
-        SELECT
-            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom),
-            r."RiverCode"
-        INTO
-            shift,
-            river_code
-        FROM
-            "{0}"."Flowpaths" AS path
-        WHERE
-            path."LineType" = '{1}' AND
-            r.geom && path.geom AND
-            ST_Intersects(r.geom, path.geom);
-    ELSE
-        SELECT
-            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom),
-            r."RiverCode"
-        INTO
-            station,
-            river_code
-        FROM
-            "{0}"."Flowpaths" AS path
-        WHERE
-            path."LineType" = '{1}' AND
-            r.geom && path.geom AND
-            ST_Intersects(r.geom, path.geom);
+    SELECT
+        (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom)
+    INTO
+        station
+    FROM
+        "{0}"."Flowpaths" AS path
+    WHERE
+        path."LineType" = '{1}' AND
+        r.geom && path.geom AND
+        ST_Intersects(r.geom, path.geom);
+    distance := station - prev_station;
+    IF river_code <> r."RiverCode" OR distance <= 0 THEN
         UPDATE "{0}"."XSCutLines" SET
-            "{2}" = station - shift
+        "{2}" = 0
         WHERE CURRENT OF c;
-        shift := station;
+    ELSE
+        UPDATE "{0}"."XSCutLines" SET
+        "{2}" = distance
+        WHERE CURRENT OF c;
     END IF;
+    prev_station := station;
+    river_code := r."RiverCode";
 END LOOP;
 END;
 $BODY$
     LANGUAGE plpgsql;
 ------------------------------------------------------------------------------------------------------------------------
-DROP INDEX IF EXISTS "{0}"."{0}_XSCutLines_order_idx";
-CREATE INDEX "{0}_XSCutLines_order_idx" ON "{0}"."XSCutLines" ("RiverCode", "Station");
-CLUSTER "{0}"."XSCutLines" USING "{0}_XSCutLines_order_idx";
+{3}
 SELECT "{0}".downstream_reach_lengths ();
 DROP FUNCTION IF EXISTS "{0}".downstream_reach_lengths ();
 '''
-        qry = qry.format(self.schema, line_type, column)
-        return qry
-
-    def pg_downstream_reach_lengths2(self):
-        qry = '''
-DROP TABLE IF EXISTS "{0}"."FlowpathStations";
-------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE "{0}"."FlowpathStations" (
-  "XsecID" integer primary key,
-  "RiverCode" text,
-  "Nr" integer,
-  "LeftSta" double precision,
-  "ChanSta" double precision,
-  "RightSta" double precision);
-
-------------------------------------------------------------------------------------------------------------------------
-INSERT INTO "{0}"."FlowpathStations"
-  ("XsecID", "RiverCode", "Nr")
-SELECT
-  xs."XsecID",
-  sc."RiverCode",
-  xs."Nr"
-FROM
-  "{0}"."XSCutLines" AS xs
-  LEFT JOIN "{0}"."StreamCenterlines" AS sc ON xs."ReachID" = sc."ReachID";
-
-------------------------------------------------------------------------------------------------------------------------
-WITH xspts AS (
-  SELECT
-    xs."XsecID" AS "XsecID",
-    path."LineType" AS "LineType",
-    ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom)) * ST_Length(path.geom) AS "Station"
-  FROM
-    "{0}"."Flowpaths" AS path,
-    "{0}"."XSCutLines" AS xs
-  WHERE
-    path."LineType" = 'Channel' AND
-    xs.geom && path.geom AND
-    ST_Intersects(xs.geom, path.geom)
-)
-UPDATE "{0}"."FlowpathStations" AS flowsta
-SET
-  "ChanSta" = xspts."Station"
-FROM
-  xspts
-WHERE
-  xspts."XsecID" = flowsta."XsecID";
-
-------------------------------------------------------------------------------------------------------------------------
-WITH xspts AS (
-  SELECT
-    xs."XsecID" AS "XsecID",
-    path."LineType" AS "LineType",
-    ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom)) * ST_Length(path.geom) AS "Station"
-  FROM
-    "{0}"."Flowpaths" AS path,
-    "{0}"."XSCutLines" AS xs
-  WHERE
-    path."LineType" = 'Left' AND
-    xs.geom && path.geom AND
-    ST_Intersects(xs.geom, path.geom)
-)
-UPDATE "{0}"."FlowpathStations" AS flowsta
-SET
-  "LeftSta" = xspts."Station"
-FROM
-  xspts
-WHERE
-  xspts."XsecID" = flowsta."XsecID";
-
-------------------------------------------------------------------------------------------------------------------------
-WITH xspts AS (
-  SELECT
-    xs."XsecID" AS "XsecID",
-    path."LineType" AS "LineType",
-    ST_LineLocatePoint(path.geom, ST_Intersection(xs.geom, path.geom)) * ST_Length(path.geom) AS "Station"
-  FROM
-    "{0}"."Flowpaths" AS path,
-    "{0}"."XSCutLines" AS xs
-  WHERE
-    path."LineType" = 'Right' AND
-    xs.geom && path.geom AND
-    ST_Intersects(xs.geom, path.geom)
-)
-UPDATE "{0}"."FlowpathStations" AS flowsta
-SET
-  "RightSta" = xspts."Station"
-FROM
-  xspts
-WHERE
-  xspts."XsecID" = flowsta."XsecID";
-
-------------------------------------------------------------------------------------------------------------------------
-WITH xsdata AS (
-SELECT
-  x."XsecID",
-  s."RiverCode"
-FROM
-  "{0}"."XSCutLines" AS x
-  LEFT JOIN "{0}"."StreamCenterlines" AS s ON x."ReachID" = s."ReachID"
-)
-UPDATE "{0}"."XSCutLines" AS xs
-SET
-  "LLength" = abs(nfs."LeftSta" - flowsta."LeftSta"),
-  "ChLength" = abs(nfs."ChanSta" - flowsta."ChanSta"),
-  "RLength" = abs(nfs."RightSta" - flowsta."RightSta")
-FROM
-  xsdata,
-  "{0}"."FlowpathStations" AS flowsta,
-  "{0}"."FlowpathStations" AS nfs
-WHERE
-  xs."Nr" > 1 AND
-  xs."XsecID" = xsdata."XsecID" AND
-  xsdata."RiverCode" = flowsta."RiverCode" AND
-  flowsta."RiverCode" = nfs."RiverCode" AND
-  xs."XsecID" = flowsta."XsecID" AND
-  xs."Nr" = flowsta."Nr" AND
-  xs."Nr" = nfs."Nr" + 1;
-
-------------------------------------------------------------------------------------------------------------------------
-UPDATE "{0}"."XSCutLines" AS xs
-SET
-  "LLength" = 0,
-  "ChLength" = 0,
-  "RLength" = 0
-WHERE
-  xs."Nr" = 1;
-'''
-        qry = qry.format(self.schema)
+        qry = qry.format(self.schema, line_type, column, index)
         return qry
 
 
@@ -587,6 +436,17 @@ class Flowpaths(HecRasObject):
 
     def pg_get_flowpaths_linetype(self):
         qry = '''SELECT "LineType" FROM "{0}"."Flowpaths";'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_channel_from_stream(self):
+        qry = '''
+INSERT INTO "{0}"."Flowpaths"(geom, "LineType")
+    (SELECT (ST_Dump(geom)).geom AS geom, 'Channel'
+    FROM (SELECT ST_LineMerge(ST_Union(geom)) AS geom
+        FROM "{0}"."StreamCenterlines"
+         GROUP BY "RiverCode") AS river_union)
+'''
         qry = qry.format(self.schema)
         return qry
 
