@@ -345,44 +345,33 @@ DECLARE
     c cursor FOR SELECT * FROM "{0}"."XSCutLines";
     r "{0}"."XSCutLines"%ROWTYPE;
     river_code text := '';
-    shift double precision := 0;
-    station double precision;
+    distance double precision := 0;
+    station double precision := 0;
+    prev_station double precision := 0;
 BEGIN
 FOR r IN c LOOP
-    IF shift = 0 OR r."RiverCode" <> river_code THEN
-        UPDATE  "{0}"."XSCutLines" SET
-            "{2}" = 0
-        WHERE CURRENT OF c;
-        SELECT
-            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom),
-            r."RiverCode"
-        INTO
-            shift,
-            river_code
-        FROM
-            "{0}"."Flowpaths" AS path
-        WHERE
-            path."LineType" = '{1}' AND
-            r.geom && path.geom AND
-            ST_Intersects(r.geom, path.geom);
-    ELSE
-        SELECT
-            (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom),
-            r."RiverCode"
-        INTO
-            station,
-            river_code
-        FROM
-            "{0}"."Flowpaths" AS path
-        WHERE
-            path."LineType" = '{1}' AND
-            r.geom && path.geom AND
-            ST_Intersects(r.geom, path.geom);
+    SELECT
+        (1 - ST_LineLocatePoint(path.geom, ST_Intersection(r.geom, path.geom))) * ST_Length(path.geom)
+    INTO
+        station
+    FROM
+        "{0}"."Flowpaths" AS path
+    WHERE
+        path."LineType" = '{1}' AND
+        r.geom && path.geom AND
+        ST_Intersects(r.geom, path.geom);
+    distance := station - prev_station;
+    IF river_code <> r."RiverCode" OR distance <= 0 THEN
         UPDATE "{0}"."XSCutLines" SET
-            "{2}" = station - shift
+        "{2}" = 0
         WHERE CURRENT OF c;
-        shift := station;
+    ELSE
+        UPDATE "{0}"."XSCutLines" SET
+        "{2}" = distance
+        WHERE CURRENT OF c;
     END IF;
+    prev_station := station;
+    river_code := r."RiverCode";
 END LOOP;
 END;
 $BODY$
@@ -447,6 +436,17 @@ class Flowpaths(HecRasObject):
 
     def pg_get_flowpaths_linetype(self):
         qry = '''SELECT "LineType" FROM "{0}"."Flowpaths";'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_channel_from_stream(self):
+        qry = '''
+INSERT INTO "{0}"."Flowpaths"(geom, "LineType")
+    (SELECT (ST_Dump(geom)).geom AS geom, 'Channel'
+    FROM (SELECT ST_LineMerge(ST_Union(geom)) AS geom
+        FROM "{0}"."StreamCenterlines"
+         GROUP BY "RiverCode") AS river_union)
+'''
         qry = qry.format(self.schema)
         return qry
 
