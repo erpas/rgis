@@ -447,7 +447,7 @@ INSERT INTO "{0}"."Flowpaths"(geom, "LineType")
     (SELECT (ST_Dump(geom)).geom AS geom, 'Channel'
     FROM (SELECT ST_LineMerge(ST_Union(geom)) AS geom
         FROM "{0}"."StreamCenterlines"
-         GROUP BY "RiverCode") AS river_union)
+         GROUP BY "RiverCode") AS river_union);
 '''
         qry = qry.format(self.schema)
         return qry

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Thu Sep 24 17:53:03 2015
+# Created: Mon Oct 05 09:46:53 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -264,6 +264,8 @@ class Ui_RiverGIS(object):
         self.actionDebugMode.setCheckable(True)
         self.actionDebugMode.setChecked(False)
         self.actionDebugMode.setObjectName(_fromUtf8("actionDebugMode"))
+        self.actionCopyStreamCenterlines2Flowpaths = QtGui.QAction(RiverGIS)
+        self.actionCopyStreamCenterlines2Flowpaths.setObjectName(_fromUtf8("actionCopyStreamCenterlines2Flowpaths"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuRASMapping.addAction(self.actionRASImportRasData)
         self.menuRASMapping.addSeparator()
@@ -281,6 +283,8 @@ class Ui_RiverGIS(object):
         self.menuStreamCenterlineAttributes.addAction(self.actionRASLengthsStations)
         self.menuStreamCenterlineAttributes.addSeparator()
         self.menuStreamCenterlineAttributes.addAction(self.actionRASStreamCenterlineAll)
+        self.menuStreamCenterlineAttributes.addSeparator()
+        self.menuStreamCenterlineAttributes.addAction(self.actionCopyStreamCenterlines2Flowpaths)
         self.menuUtilities.addAction(self.actionRASFlipXSDirection)
         self.menu_Geometry.addAction(self.actionRASCreateRdbTables)
         self.menu_Geometry.addAction(self.actionRASLoadRdbTablesIntoQGIS)
@@ -380,6 +384,6 @@ class Ui_RiverGIS(object):
         self.actionRASLoadRdbTablesIntoQGIS.setToolTip(_translate("RiverGIS", "RAS 1D Load River Database Tables Into QGIS", None))
         self.actionRASDTMSetup.setText(_translate("RiverGIS", "DTM Setup", None))
         self.actionDebugMode.setText(_translate("RiverGIS", "Debug mode", None))
+        self.actionCopyStreamCenterlines2Flowpaths.setText(_translate("RiverGIS", "Copy Stream Centerlines to Flowpaths", None))
 
-
-		
+        
