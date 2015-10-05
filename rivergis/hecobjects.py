@@ -766,6 +766,3 @@ class MeshPoints2d(HecRasObject):
             ('"BLID"', 'integer'),
             ('"CellSize"', 'double precision')]
 
-
-if __name__ == '__main__':
-    pass
