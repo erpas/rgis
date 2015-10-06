@@ -116,9 +116,9 @@ def ras1dXSElevations(rgis):
     """Probe a DTM to find cross-section vertical shape"""
     QApplication.setOverrideCursor(Qt.WaitCursor)
 
-    rgis.addInfo('<br><b>Creating cross-sections\' points:</b>')
+    rgis.addInfo('<br><b>Creating cross-section points:</b>')
     # # Create xsection points table
-    rgis.rdb.process_hecobject(heco.XSPoints, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
 
     # Create DTMs table
     rgis.rdb.process_hecobject(heco.DTMs, 'pg_create_table')
@@ -194,14 +194,14 @@ def ras1dXSElevations(rgis):
         (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
       FROM linemeasure)
 
-    INSERT INTO "{0}"."XSPoints" (geom, "XsecID", "Station")
+    INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station")
     SELECT
       ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
       "XsecID",
       "Station"/100
     FROM geometries;
 
-    INSERT INTO "{0}"."XSPoints" (geom, "XsecID", "Station")
+    INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station")
     SELECT
       ST_Endpoint(geom),
       "XsecID",
@@ -227,7 +227,7 @@ def ras1dXSElevations(rgis):
           ST_X(pts.geom) as x,
           ST_Y(pts.geom) as y
         FROM
-          "{0}"."XSPoints" as pts,
+          "{0}"."XSSurface" as pts,
           xsids
         WHERE
           pts."XsecID" = xsids."XsecID";
@@ -244,7 +244,7 @@ def ras1dXSElevations(rgis):
                     pt.append(round(ident.results()[1], 2))
                     if rgis.DEBUG > 1:
                         rgis.addInfo('{0}'.format(', '.join([str(a) for a in pt])))
-                    qry += 'UPDATE "{0}"."XSPoints" SET "Elevation" = {1} WHERE "PtID" = {2};\n'\
+                    qry += 'UPDATE "{0}"."XSSurface" SET "Elevation" = {1} WHERE "PtID" = {2};\n'\
                         .format(rgis.rdb.SCHEMA, pt[3], pt[0])
             if rgis.DEBUG:
                 rgis.addInfo(qry)
