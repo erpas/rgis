@@ -221,11 +221,23 @@ FROM
         else:
             return levees
 
-    def get_ineffs(self):
-        pass
+    def get_ineffs(self, xs_id):
+        qry = 'SELECT "IneffID", "FromFract", "ToFract", "Elevation" FROM "{0}"."IneffLines" WHERE "XsecID" = {1};'
+        qry = qry.format(self.schema, xs_id)
+        ineffs = self.rgis.rdb.run_query(qry, fetch=True)
+        if ineffs is None:
+            return []
+        else:
+            return ineffs
 
-    def get_blocks(self):
-        pass
+    def get_blocks(self, xs_id):
+        qry = 'SELECT "BlockID", "FromFract", "ToFract", "Elevation" FROM "{0}"."BlockLines" WHERE "XsecID" = {1};'
+        qry = qry.format(self.schema, xs_id)
+        blocks = self.rgis.rdb.run_query(qry, fetch=True)
+        if blocks is None:
+            return []
+        else:
+            return blocks
 
     def get_surf(self, xs_id):
         qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."XSPoints" WHERE "XsecID" = {1};'
@@ -240,7 +252,7 @@ FROM
         xsec = 'BEGIN CROSS-SECTIONS:\n'
         xsec_nval = '         {0}, {1}\n'
         xsec_levee = '         {0}, {1}, {2}\n'
-        xsec_ineff = '         {0}, {1}, {2}\n'
+        xsec_ineff = '         {0}, {1}, {2}, {3}\n'
         xsec_block = '         {0}, {1}, {2}, {3}\n'
         xsec_cut = '         {0}, {1}\n'
         xsec_surf = '         {0}, {1}, {2}\n'
@@ -274,6 +286,10 @@ FROM
                 nvalues += xsec_nval.format(n['Fraction'], n['N_Value'])
             for l in self.get_levees(xs_id):
                 levees += xsec_levee.format(l['LeveeID'], l['Fraction'], l['Elevation'])
+            for i in self.get_ineffs(xs_id):
+                ineffs += xsec_ineff.format(i['IneffID'], i['FromFract'], i['ToFract'], i['Elevation'])
+            for b in self.get_blocks(xs_id):
+                blocks += xsec_block.format(b['BlockID'], b['FromFract'], b['ToFract'], b['Elevation'])
             pnts = RasGisImport.unpack_wkt(cs['wkt'])
             for pt in pnts:
                 x, y = pt

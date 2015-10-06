@@ -280,15 +280,15 @@ def ras1dLevees(rgis):
 
 def ras1dIneffective(rgis):
     rgis.addInfo('<br><b>Finding ineffective flow areas for cross-sections</b>')
-    # TODO
-    if rgis.rdb.process_hecobject(heco.IneffAreas, 'pg_????'):
+    rgis.rdb.process_hecobject(heco.IneffLines, 'pg_create_table')
+    if rgis.rdb.process_hecobject(heco.IneffAreas, 'pg_ineffective_positions'):
         rgis.addInfo('Done.')
 
 
 def ras1dObstructions(rgis):
     rgis.addInfo('<br><b>Finding blocked obstructions for cross-sections</b>')
-    # TODO
-    if rgis.rdb.process_hecobject(heco.BlockedObs, 'pg_????'):
+    rgis.rdb.process_hecobject(heco.BlockLines, 'pg_create_table')
+    if rgis.rdb.process_hecobject(heco.BlockedObs, 'pg_blocked_positions'):
         rgis.addInfo('Done.')
 
 
@@ -301,8 +301,9 @@ def ras1dXSInsertMeasPts(rgis):
 
 def ras1dCreateRasGisImportFile(rgis):
     """
-    Save HEC-RAS model geometry in RAS GIS Import format.
+    Save HEC-RAS model geometry in RAS GIS Import format (SDF).
     """
+    rgis.addInfo('<br><b>Creating RAS GIS Import file from HEC-RAS model geometry...</b>')
     s = QSettings()
     lastRasGisImportFileDir = s.value("rivergis/lastRasGisImportDir", "")
     importFileName = QFileDialog.getSaveFileName(None, \
@@ -310,12 +311,13 @@ def ras1dCreateRasGisImportFile(rgis):
                      directory=lastRasGisImportFileDir, \
                      filter='HEC-RAS GIS Import (*.sdf)')
     if not importFileName:
+        rgis.addInfo('Creating RAS GIS Import file cancelled.')
         return
     s.setValue("rivergis/lastRasGisImportDir", dirname(importFileName))
     rgi = RasGisImport(rgis)
     sdf = rgi.gis_import_file()
     if rgis.DEBUG:
         rgis.addInfo(sdf)
-    importFile = open(importFileName, 'w')
-    importFile.write(sdf)
-    importFile.close()
+    with open(importFileName, 'w') as importFile:
+        importFile.write(sdf)
+    rgis.addInfo('Done.')
