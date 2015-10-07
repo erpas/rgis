@@ -50,7 +50,7 @@ class WorkerRasImportRasData(QObject):
         self.prj = HecrasProject(prjFilename)
         # check if there is a result file
         if not self.prj.planHdfFiles:
-            self.rgis.addInfo("  Project \"%s\" has no HDF result file. Run some computations and try again.\n" % self.prj.title)
+            self.rgis.addInfo("  Project {} has no HDF result file. Run some computations and try again.".format(self.prj.title))
             self.finished.emit(self.res)
             return
 
@@ -58,9 +58,10 @@ class WorkerRasImportRasData(QObject):
         dlg = DlgImportRasData(rgis)
         for i,id in enumerate(self.prj.planHdfFiles):
             plan = HecrasPlan(self.prj,id)
-            dlg.ui.planCbo.addItem(plan.name,plan.file)
-            if plan.id == self.prj.curPlanId:
-                dlg.ui.planCbo.setCurrentIndex(i)
+            if plan.hdf:
+                dlg.ui.planCbo.addItem(plan.name,plan.file)
+                if plan.id == self.prj.curPlanId:
+                    dlg.ui.planCbo.setCurrentIndex(i)
 
         # show plans dialog
         dlg.exec_()
@@ -77,7 +78,7 @@ class WorkerRasImportRasData(QObject):
         self.messageBar = messageBar
         self.progress.connect(progressBar.setValue)
 
-        self.rgis.addInfo("  Reading results from file:\n  %s" % rgis.curHdfFile)
+        self.rgis.addInfo("  Reading results from file:<br>  %s" % rgis.curHdfFile)
         self.curPlan = HecrasPlan(self.prj, rgis.curHdfFile[-7:-4])
         self.curPlan.checkHasResults()
         if self.h5py:
