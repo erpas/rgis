@@ -376,7 +376,7 @@ class RiverGIS(QMainWindow):
 
     def ras1dBlockedObstructions(self):
         from ras1dFunctions import ras1dObstructions
-        ras1dIneffective(self)
+        ras1dObstructions(self)
 
     def ras1dInsertMeasPts(self):
         from ras1dFunctions import ras1dXSInsertMeasPts

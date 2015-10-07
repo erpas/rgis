@@ -37,9 +37,6 @@ class HecRasObject(object):
 
 
 class StreamCenterlines(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(StreamCenterlines, self).__init__()
         self.geom_type = 'LINESTRING'
@@ -193,9 +190,6 @@ DROP FUNCTION IF EXISTS "{0}".from_to_stations ();
 
 
 class NodesTable(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(NodesTable, self).__init__()
         self.main = False
@@ -208,9 +202,6 @@ class NodesTable(HecRasObject):
 
 
 class Endpoints(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(Endpoints, self).__init__()
         self.main = False
@@ -224,9 +215,6 @@ class Endpoints(HecRasObject):
 
 
 class XSCutLines(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(XSCutLines, self).__init__()
         self.geom_type = 'LINESTRING'
@@ -386,9 +374,9 @@ DROP FUNCTION IF EXISTS "{0}".downstream_reach_lengths ();
         return qry
 
 
-class XSPoints(HecRasObject):
+class XSSurface(HecRasObject):
     def __init__(self):
-        super(XSPoints, self).__init__()
+        super(XSSurface, self).__init__()
         self.main = False
         self.spatial_index = False
         self.geom_type = 'POINT'
@@ -403,9 +391,6 @@ class XSPoints(HecRasObject):
 
 
 class BankLines(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(BankLines, self).__init__()
         self.geom_type = 'LINESTRING'
@@ -413,11 +398,11 @@ class BankLines(HecRasObject):
 
 
 class BankPoints(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(BankPoints, self).__init__()
+        self.main = False
+        self.spatial_index = False
+        self.visible = False
         self.geom_type = 'POINT'
         self.attrs = [
             ('"BankID"', 'serial primary key'),
@@ -426,9 +411,6 @@ class BankPoints(HecRasObject):
 
 
 class Flowpaths(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(Flowpaths, self).__init__()
         self.geom_type = 'LINESTRING'
@@ -454,27 +436,7 @@ INSERT INTO "{0}"."Flowpaths"(geom, "LineType")
         return qry
 
 
-class Bridges(HecRasObject):
-    """
-    Geometry and table.
-    """
-    def __init__(self):
-        super(Bridges, self).__init__()
-        self.geom_type = 'LINESTRING'
-        self.attrs = [
-            ('"BridgeID"', 'serial primary key'),
-            ('"RiverCode"', 'text'),
-            ('"ReachCode"', 'text'),
-            ('"Station"', 'double precision'),
-            ('"USDistance"', 'double precision'),
-            ('"TopWidth"', 'double precision'),
-            ('"NodeName"', 'text')]
-
-
 class IneffAreas(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(IneffAreas, self).__init__()
         self.geom_type = 'POLYGON'
@@ -482,11 +444,50 @@ class IneffAreas(HecRasObject):
             ('"IneffID"', 'serial primary key'),
             ('"Elevation"', 'double precision')]
 
+    def pg_ineffective_positions(self):
+        qry = '''
+INSERT INTO "{0}"."IneffLines"(geom, "XsecID", "IneffID", "Elevation")
+SELECT
+    ST_Intersection(xs.geom, ineff.geom) as geom,
+    xs."XsecID",
+    ineff."IneffID",
+    ineff."Elevation"
+FROM
+    "{0}"."XSCutLines" AS xs,
+    "{0}"."IneffAreas" AS ineff
+WHERE
+    xs.geom && ineff.geom AND
+    ST_Intersects(xs.geom, ineff.geom);
+
+UPDATE "{0}"."IneffLines" AS il
+SET
+    "FromFract" = ST_LineLocatePoint(xs.geom, ST_StartPoint(il.geom)),
+    "ToFract" = ST_LineLocatePoint(xs.geom, ST_EndPoint(il.geom))
+FROM
+    "{0}"."XSCutLines" AS xs
+WHERE
+    il."XsecID" = xs."XsecID";
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+
+class IneffLines(HecRasObject):
+    def __init__(self):
+        super(IneffLines, self).__init__()
+        self.main = False
+        self.visible = False
+        self.geom_type = 'LINESTRING'
+        self.attrs = [
+            ('"IneffLID"', 'serial primary key'),
+            ('"IneffID"', 'integer'),
+            ('"XsecID"', 'integer'),
+            ('"FromFract"', 'double precision'),
+            ('"ToFract"', 'double precision'),
+            ('"Elevation"', 'double precision')]
+
 
 class BlockedObs(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(BlockedObs, self).__init__()
         self.geom_type = 'POLYGON'
@@ -494,11 +495,50 @@ class BlockedObs(HecRasObject):
             ('"BlockID"', 'serial primary key'),
             ('"Elevation"', 'double precision')]
 
+    def pg_blocked_positions(self):
+        qry = '''
+INSERT INTO "{0}"."BlockLines"(geom, "XsecID", "BlockID", "Elevation")
+SELECT
+    ST_Intersection(xs.geom, block.geom) as geom,
+    xs."XsecID",
+    block."BlockID",
+    block."Elevation"
+FROM
+    "{0}"."XSCutLines" AS xs,
+    "{0}"."BlockedObs" AS block
+WHERE
+    xs.geom && block.geom AND
+    ST_Intersects(xs.geom, block.geom);
+
+UPDATE "{0}"."BlockLines" AS bl
+SET
+    "FromFract" = ST_LineLocatePoint(xs.geom, ST_StartPoint(bl.geom)),
+    "ToFract" = ST_LineLocatePoint(xs.geom, ST_EndPoint(bl.geom))
+FROM
+    "{0}"."XSCutLines" AS xs
+WHERE
+    bl."XsecID" = xs."XsecID";
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+
+class BlockLines(HecRasObject):
+    def __init__(self):
+        super(BlockLines, self).__init__()
+        self.main = False
+        self.visible = False
+        self.geom_type = 'LINESTRING'
+        self.attrs = [
+            ('"BlockLID"', 'serial primary key'),
+            ('"BlockID"', 'integer'),
+            ('"XsecID"', 'integer'),
+            ('"FromFract"', 'double precision'),
+            ('"ToFract"', 'double precision'),
+            ('"Elevation"', 'double precision')]
+
 
 class LanduseAreas(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(LanduseAreas, self).__init__()
         self.geom_type = 'MULTIPOLYGON'
@@ -648,6 +688,7 @@ class LeveePoints(HecRasObject):
         super(LeveePoints, self).__init__()
         self.main = False
         self.spatial_index = False
+        self.visible = False
         self.geom_type = 'POINT'
         self.attrs = [
             ('"LeveePID"', 'serial primary key'),
@@ -657,12 +698,26 @@ class LeveePoints(HecRasObject):
             ('"Elevation"', 'double precision')]
 
 
+class Bridges(HecRasObject):
+    def __init__(self):
+        super(Bridges, self).__init__()
+        self.geom_type = 'LINESTRING'
+        self.attrs = [
+            ('"BridgeID"', 'serial primary key'),
+            ('"RiverCode"', 'text'),
+            ('"ReachCode"', 'text'),
+            ('"Station"', 'double precision'),
+            ('"USDistance"', 'double precision'),
+            ('"TopWidth"', 'double precision'),
+            ('"NodeName"', 'text')]
+
+
 class InlineStructures(HecRasObject):
     def __init__(self):
         super(InlineStructures, self).__init__()
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"InlineStrID"', 'serial primary key'),
+            ('"InlineSID"', 'serial primary key'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
             ('"Station"', 'double precision'),
@@ -676,7 +731,7 @@ class LateralStructures(HecRasObject):
         super(LateralStructures, self).__init__()
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"LateralStrID"', 'serial primary key'),
+            ('"LateralSID"', 'serial primary key'),
             ('"RiverCode"', 'text'),
             ('"ReachCode"', 'text'),
             ('"Station"', 'double precision'),
@@ -699,7 +754,7 @@ class StorageAreas(HecRasObject):
 class SAConnections(HecRasObject):
     def __init__(self):
         super(SAConnections, self).__init__()
-        self.geom_type = 'POLYGON'
+        self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"SAconID"', 'serial primary key'),
             ('"USSA"', 'integer'),
@@ -708,9 +763,6 @@ class SAConnections(HecRasObject):
 
 
 class DTMs(HecRasObject):
-    """
-    Geometry and table.
-    """
     def __init__(self):
         super(DTMs, self).__init__()
         self.main = False
