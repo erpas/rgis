@@ -15,23 +15,29 @@ class RasGisImport(object):
         self.network = NetworkBuilder(rgis)
         self.xsections = XSBuilder(rgis)
         self.levees = LeveesBuilder(rgis)
+        self.ineff_areas = IneffAreasBuilder(rgis)
+        self.blocked_obs = BlockedObsBuilder(rgis)
 
     def gis_import_file(self):
         imp = self.header.build_header()
         imp += self.network.build_network()
         imp += self.xsections.build_cross_sections()
         imp += self.levees.build_levees()
+        imp += self.ineff_areas.build_ineff_areas()
+        imp += self.blocked_obs.build_blocked_obs()
         return imp
 
     @staticmethod
     def unpack_wkt(wkt):
-        eidx = -1
         if wkt.startswith('POINT'):
             sidx = 6
+            eidx = -1
         elif wkt.startswith('LINESTRING'):
             sidx = 11
+            eidx = -1
         elif wkt.startswith('POLYGON'):
-            sidx = 8
+            sidx = 9
+            eidx = -2
         else:
             raise ValueError('Inappropariate WKT geometry type. WKT must be POINT, LINSTRING or POLYGON.')
         pnts = (p.split() for p in wkt[sidx:eidx].split(','))
@@ -142,7 +148,7 @@ WHERE
         return reaches
 
     def build_network(self):
-        net = 'BEGIN STREAM NETWORK:\n'
+        net_all = 'BEGIN STREAM NETWORK:\n'
         net_node = '   ENDPOINT: {0:f}, {1:f}, 0, {2}\n'
         net_reach = '''
    REACH:
@@ -158,16 +164,16 @@ WHERE
         nodes = self.get_nodes()
         reaches = self.get_reaches()
         for node in nodes:
-            net += net_node.format(node['X'], node['Y'], node['NodeID'])
+            net_all += net_node.format(node['X'], node['Y'], node['NodeID'])
         for reach in reaches:
             centerlines = ''
             pnts = RasGisImport.unpack_wkt(reach['wkt'])
             for pt in pnts:
                 x, y = pt
                 centerlines += net_centerline.format(x, y)
-            net += net_reach.format(reach['RiverCode'], reach['ReachCode'], reach['FromNode'], reach['ToNode'], centerlines)
-        net += net_end
-        return net
+            net_all += net_reach.format(reach['RiverCode'], reach['ReachCode'], reach['FromNode'], reach['ToNode'], centerlines)
+        net_all += net_end
+        return net_all
 
 
 class XSBuilder(object):
@@ -247,7 +253,7 @@ FROM
             return surfs
 
     def build_cross_sections(self):
-        xsec = 'BEGIN CROSS-SECTIONS:\n'
+        xsec_all = 'BEGIN CROSS-SECTIONS:\n'
         xsec_nval = '         {0}, {1}\n'
         xsec_levee_points = '         {0}, {1}, {2}\n'
         xsec_ineff = '         {0}, {1}, {2}, {3}\n'
@@ -294,9 +300,9 @@ FROM
                 cuts += xsec_cut.format(x, y)
             for s in self.get_surf(xs_id):
                 surfs += xsec_surf.format(s['x'], s['y'], s['Elevation'])
-            xsec += xsec_cross.format(nvalues, levee_points, ineffs, blocks, cuts, surfs, *attrs)
-        xsec += xsec_end
-        return xsec
+            xsec_all += xsec_cross.format(nvalues, levee_points, ineffs, blocks, cuts, surfs, *attrs)
+        xsec_all += xsec_end
+        return xsec_all
 
 
 class LeveesBuilder(object):
@@ -317,8 +323,8 @@ class LeveesBuilder(object):
             return levees
 
     def build_levees(self):
-        levees = 'BEGIN LEVEES:\n'
-        levees_levee = '''
+        levees_all = 'BEGIN LEVEES:\n'
+        levee_object = '''
    LEVEE ID: {0}
       SURFACE LINE:
 {1}   END:
@@ -332,6 +338,82 @@ class LeveesBuilder(object):
             for pt in pnts:
                 x, y = pt
                 surfs += levees_surf.format(x, y)
-            levees += levees_levee.format(levee_id, surfs)
-        levees += levees_end
-        return levees
+            levees_all += levee_object.format(levee_id, surfs)
+        levees_all += levees_end
+        return levees_all
+
+
+class IneffAreasBuilder(object):
+    """
+     Return Ineffective Areas part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_ineffective_areas(self):
+        qry = 'SELECT "IneffID", ST_AsText(geom) AS wkt FROM "{0}"."IneffAreas";'
+        qry = qry.format(self.schema)
+        ineff_areas = self.rgis.rdb.run_query(qry, fetch=True)
+        if ineff_areas is None:
+            return []
+        else:
+            return ineff_areas
+
+    def build_ineff_areas(self):
+        ineff_all = 'BEGIN INEFFECTIVE AREAS:\n'
+        ineff_poly = '''
+   INEFFECTIVE ID: {0}
+      POLYGON:
+{1}   END:
+'''
+        ineff_vertex = '         {0}, {1}\n'
+        ineff_end = '\nEND INEFFECTIVE AREAS:\n\n'
+        for i in self.get_ineffective_areas():
+            vertices = ''
+            ineff_id = i['IneffID']
+            pnts = RasGisImport.unpack_wkt(i['wkt'])
+            for pt in pnts:
+                x, y = pt
+                vertices += ineff_vertex.format(x, y)
+            ineff_all += ineff_poly.format(ineff_id, vertices)
+        ineff_all += ineff_end
+        return ineff_all
+
+
+class BlockedObsBuilder(object):
+    """
+     Return Blocked Obstructions part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_blocked_obstructions(self):
+        qry = 'SELECT "BlockID", ST_AsText(geom) AS wkt FROM "{0}"."BlockedObs";'
+        qry = qry.format(self.schema)
+        block_obs = self.rgis.rdb.run_query(qry, fetch=True)
+        if block_obs is None:
+            return []
+        else:
+            return block_obs
+
+    def build_blocked_obs(self):
+        block_all = 'BEGIN BLOCKED OBSTRUCTIONS:\n'
+        block_poly = '''
+   BLOCKED ID: {0}
+      POLYGON:
+{1}   END:
+'''
+        block_vertex = '         {0}, {1}\n'
+        block_end = '\nEND BLOCKED OBSTRUCTIONS:\n\n'
+        for b in self.get_blocked_obstructions():
+            vertices = ''
+            block_id = b['BlockID']
+            pnts = RasGisImport.unpack_wkt(b['wkt'])
+            for pt in pnts:
+                x, y = pt
+                vertices += block_vertex.format(x, y)
+            block_all += block_poly.format(block_id, vertices)
+        block_all += block_end
+        return block_all
