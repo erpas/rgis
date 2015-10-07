@@ -760,6 +760,7 @@ class BreakPoints2d(HecRasObject):
 class MeshPoints2d(HecRasObject):
     def __init__(self):
         super(MeshPoints2d, self).__init__()
+        self.main = False
         self.geom_type = 'POINT'
         self.attrs = [
             ('"MPID"', 'serial primary key'),

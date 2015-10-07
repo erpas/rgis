@@ -34,7 +34,7 @@ class WorkerRasImportRasData(QObject):
     def __init__(self, rgis):
         QObject.__init__(self)
         self.rgis = rgis
-        self.rgis.addInfo("<br><b>Running Load max WSEL from HEC-RAS</b>...\n")
+        self.rgis.addInfo("<br><b>Running Load max WSEL from HEC-RAS</b>...")
         self.res = None
 
         # try to import h5py or netCDF4 package - we need one of them to read HDF files
@@ -49,8 +49,7 @@ class WorkerRasImportRasData(QObject):
         except:
             self.netcdf = False
         if not self.netcdf and not self.h5py:
-            self.rgis.addInfo("\n\nQGIS couldn't import h5py or netCDF4 Python package and doesn't know how to read HEC-RAS result file (HDF). Check your h5py or netCDF4 package installation!")
-            QMessageBox.warning(rgis, "Load WSEL from HDF", "QGIS couldn't import h5py or netCDF4 Python package and doesn't know how to read HEC-RAS result file (HDF). Check your h5py or netCDF4 package installation!")
+            self.rgis.addInfo("<br>QGIS couldn't import h5py or netCDF4 Python package and doesn't know how to read HEC-RAS result file (HDF). Check your h5py or netCDF4 package installation!")
             self.finished.emit(None)
             return
 
@@ -65,7 +64,7 @@ class WorkerRasImportRasData(QObject):
         self.prj = HecrasProject(prjFilename)
         # check if there is a result file
         if not self.prj.planHdfFiles:
-            self.rgis.addInfo("  Project \"%s\" has no HDF result file. Run some computations and try again.\n" % self.prj.title)
+            self.rgis.addInfo("  Project {} has no HDF result file. Run some computations and try again.".format(self.prj.title))
             self.finished.emit(self.res)
             return
 
