@@ -231,6 +231,7 @@ class RiverDatabase(object):
             style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
             map_layer.loadNamedStyle(style_file)
         except Exception, e:
+            self.rgis.addInfo(vlayer.name())
             self.rgis.addInfo(repr(e))
 
     def refresh_uris(self):
