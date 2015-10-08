@@ -244,7 +244,7 @@ FROM
             return blocks
 
     def get_surf(self, xs_id):
-        qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."XSSurface" WHERE "XsecID" = {1} ORDER BY "PtID";'
+        qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."XSSurface" WHERE "XsecID" = {1} ORDER BY "Station";'
         qry = qry.format(self.schema, xs_id)
         surfs = self.rgis.rdb.run_query(qry, fetch=True)
         if surfs is None:

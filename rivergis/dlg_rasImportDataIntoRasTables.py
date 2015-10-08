@@ -148,6 +148,66 @@ class DlgImportDataIntoRasTables(QDialog):
                 'className': 'BreakPoints2d',
                 'attrs': {},
                 'geomType': 0 # points
+            },
+
+            'Bridges/Culverts': {
+                'cbo': self.ui.cboBridgesLayer,
+                'className': 'Bridges',
+                'attrs': {
+                    'NodeName': {
+                        'cbo': self.ui.cboBridgesName,
+                        'checkName': ['name', 'nodename', 'desc']
+                    },
+                    'USDistance': {
+                        'cbo': self.ui.cboBridgesUsDist,
+                        'checkName': ['usdist', 'usdistance', 'distance']
+                    },
+                    'TopWidth': {
+                        'cbo': self.ui.cboBridgesTopWidth,
+                        'checkName': ['width', 'topwidth', 'top_width']
+                    }
+                },
+                'geomType': 1 # lines
+            },
+
+            'Inline Structures': {
+                'cbo': self.ui.cboInlineStrLayer,
+                'className': 'InlineStructures',
+                'attrs': {
+                    'NodeName': {
+                        'cbo': self.ui.cboInlineStrName,
+                        'checkName': ['name', 'nodename', 'desc']
+                    },
+                    'USDistance': {
+                        'cbo': self.ui.cboInlineStrUsDist,
+                        'checkName': ['usdist', 'usdistance', 'distance']
+                    },
+                    'TopWidth': {
+                        'cbo': self.ui.cboInlineStrTopWidth,
+                        'checkName': ['width', 'topwidth', 'top_width']
+                    }
+                },
+                'geomType': 1 # lines
+            },
+
+            'Lateral Structures': {
+                'cbo': self.ui.cboLateralStrLayer,
+                'className': 'InlineStructures',
+                'attrs': {
+                    'NodeName': {
+                        'cbo': self.ui.cboLateralStrName,
+                        'checkName': ['name', 'nodename', 'desc']
+                    },
+                    'USDistance': {
+                        'cbo': self.ui.cboLateralStrUsDist,
+                        'checkName': ['usdist', 'usdistance', 'distance']
+                    },
+                    'TopWidth': {
+                        'cbo': self.ui.cboLateralStrTopWidth,
+                        'checkName': ['width', 'topwidth', 'top_width']
+                    }
+                },
+                'geomType': 1 # lines
             }
         }
 
