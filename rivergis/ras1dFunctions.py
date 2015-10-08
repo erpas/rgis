@@ -25,6 +25,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from os.path import dirname
 
+from dlg_rasXSUpdate import DlgXSUpdateInsertMeasuredPts
+
 def ras1dStreamCenterlineTopology(rgis):
     """Creates river network topology. Creates nodes at reach ends and finds the direction of flow (fromNode, toNode)"""
     # check if streamlines table is registered
@@ -292,11 +294,11 @@ def ras1dObstructions(rgis):
         rgis.addInfo('Done.')
 
 
-def ras1dXSInsertMeasPts(rgis):
+def ras1dXSUpdateInsertMeasuredPts(rgis):
     rgis.addInfo('<br><b>Updating cross-sections - inserting measured points...</b>')
-    # TODO
-    if rgis.rdb.process_hecobject(heco.XSCutlines, 'pg_????'):
-        rgis.addInfo('Done.')
+
+    # dlg = DlgXSUpdateInsertMeasuredPts(rgis)
+    # dlg.exec_()
 
 
 def ras1dCreateRasGisImportFile(rgis):
@@ -306,9 +308,9 @@ def ras1dCreateRasGisImportFile(rgis):
     rgis.addInfo('<br><b>Creating RAS GIS Import file from HEC-RAS model geometry...</b>')
     s = QSettings()
     lastRasGisImportFileDir = s.value("rivergis/lastRasGisImportDir", "")
-    importFileName = QFileDialog.getSaveFileName(None, \
-                     'Target HEC-RAS GIS Import file', \
-                     directory=lastRasGisImportFileDir, \
+    importFileName = QFileDialog.getSaveFileName(None,
+                     'Target HEC-RAS GIS Import file',
+                     directory=lastRasGisImportFileDir,
                      filter='HEC-RAS GIS Import (*.sdf)')
     if not importFileName:
         rgis.addInfo('Creating RAS GIS Import file cancelled.')

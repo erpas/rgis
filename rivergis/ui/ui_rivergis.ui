@@ -165,6 +165,8 @@
      <addaction name="actionRASXSElevations"/>
      <addaction name="separator"/>
      <addaction name="actionRASXSAll"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASXSUpdateInsertMeasuredPoints"/>
     </widget>
     <widget class="QMenu" name="menuStreamCenterlineAttributes">
      <property name="title">
@@ -215,6 +217,7 @@
     </property>
     <addaction name="actionRASDTMSetup"/>
     <addaction name="actionDebugMode"/>
+    <addaction name="actionAlwaysOnTop"/>
    </widget>
    <addaction name="menuDB"/>
    <addaction name="menuSettings"/>
@@ -599,6 +602,23 @@
   <action name="actionCopyStreamCenterlines2Flowpaths">
    <property name="text">
     <string>Copy Stream Centerlines to Flowpaths</string>
+   </property>
+  </action>
+  <action name="actionAlwaysOnTop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Always on top</string>
+   </property>
+  </action>
+  <action name="actionRASXSUpdateInsertMeasuredPoints">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dXsUpdate.svg</normaloff>:/rivergis/icons/ras1dXsUpdate.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Update - Insert Measured Points</string>
    </property>
   </action>
  </widget>

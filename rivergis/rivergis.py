@@ -34,7 +34,8 @@ class RiverGIS(QMainWindow):
 
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
-        QApplication.setOverrideCursor(Qt.ArrowCursor)
+        if QApplication.overrideCursor():
+            QApplication.restoreOverrideCursor()
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ui = Ui_RiverGIS()
         self.ui.setupUi(self)
@@ -61,6 +62,7 @@ class RiverGIS(QMainWindow):
         # Settings
         self.ui.actionRASDTMSetup.triggered.connect(self.rasDTMSetup)
         self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
+        self.ui.actionAlwaysOnTop.toggled.connect(self.toggleAlwaysOnTop)
         # RAS Geometry
         # 1D
         self.ui.actionRASCreateRdbTables.triggered.connect(self.rasCreateRdbTables)
@@ -81,6 +83,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.ras1dIneffectiveFlowAreas)
         self.ui.actionRASBlockedObstructions.triggered.connect(self.ras1dBlockedObstructions)
         self.ui.actionRASFlipXSDirection.triggered.connect(self.ras1dFlipXSDirection)
+        self.ui.actionRASXSUpdateInsertMeasuredPoints.triggered.connect(self.ras1dXSUpdateInsertMeasuredPts)
         self.ui.actionRASCreateRASGISImport.triggered.connect(self.ras1dCreateRasGisImport)
         # 2D
         self.ui.actionRASCreate2dAreaPoints.triggered.connect(self.ras2dCreate2dAreaPoints)
@@ -129,6 +132,7 @@ class RiverGIS(QMainWindow):
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASLevees)
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASIneffectiveFlowAreas)
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASBlockedObstructions)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSUpdateInsertMeasuredPoints)
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASCreateRASGISImport)
 
         # 2D HEC-RAS Toolbar
@@ -179,6 +183,7 @@ class RiverGIS(QMainWindow):
         settings = QSettings()
         settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
         settings.setValue("/rivergis/mainWindow/geometry", self.saveGeometry())
+        settings.setValue("/rivergis/mainWindow/flags", self.windowFlags())
 
         QMainWindow.closeEvent(self, e)
 
@@ -295,6 +300,15 @@ class RiverGIS(QMainWindow):
         else:
             self.DEBUG = 0
 
+    def toggleAlwaysOnTop(self):
+        if self.ui.actionAlwaysOnTop.isChecked():
+            flags = self.windowFlags()
+            self.setWindowFlags(flags | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
+        else:
+            flags = self.windowFlags()
+            self.setWindowFlags(flags & ~Qt.CustomizeWindowHint & ~Qt.WindowStaysOnTopHint)
+        self.show()
+
     def rasCreateRdbTables(self):
         from dlg_rasCreateRasLayers import DlgCreateRasLayers
         dlg = DlgCreateRasLayers(self)
@@ -376,9 +390,9 @@ class RiverGIS(QMainWindow):
         from ras1dFunctions import ras1dObstructions
         ras1dObstructions(self)
 
-    def ras1dInsertMeasPts(self):
-        from ras1dFunctions import ras1dXSInsertMeasPts
-        ras1dXSInsertMeasPts(self)
+    def ras1dXSUpdateInsertMeasuredPts(self):
+        from ras1dFunctions import ras1dXSUpdateInsertMeasuredPts
+        ras1dXSUpdateInsertMeasuredPts(self)
 
     def ras1dFlipXSDirection(self):
         pass

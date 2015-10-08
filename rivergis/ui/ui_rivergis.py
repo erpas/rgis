@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Oct 05 13:37:22 2015
+# Created: Thu Oct 08 13:49:49 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -264,6 +264,14 @@ class Ui_RiverGIS(object):
         self.actionDebugMode.setObjectName(_fromUtf8("actionDebugMode"))
         self.actionCopyStreamCenterlines2Flowpaths = QtGui.QAction(RiverGIS)
         self.actionCopyStreamCenterlines2Flowpaths.setObjectName(_fromUtf8("actionCopyStreamCenterlines2Flowpaths"))
+        self.actionAlwaysOnTop = QtGui.QAction(RiverGIS)
+        self.actionAlwaysOnTop.setCheckable(True)
+        self.actionAlwaysOnTop.setObjectName(_fromUtf8("actionAlwaysOnTop"))
+        self.actionRASXSUpdateInsertMeasuredPoints = QtGui.QAction(RiverGIS)
+        icon29 = QtGui.QIcon()
+        icon29.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras1dXsUpdate.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionRASXSUpdateInsertMeasuredPoints.setIcon(icon29)
+        self.actionRASXSUpdateInsertMeasuredPoints.setObjectName(_fromUtf8("actionRASXSUpdateInsertMeasuredPoints"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuRASMapping.addAction(self.actionRASImportRasData)
         self.menuRASMapping.addSeparator()
@@ -277,6 +285,8 @@ class Ui_RiverGIS(object):
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSElevations)
         self.menuXS_Cut_Line_Attributes.addSeparator()
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSAll)
+        self.menuXS_Cut_Line_Attributes.addSeparator()
+        self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSUpdateInsertMeasuredPoints)
         self.menuStreamCenterlineAttributes.addAction(self.actionRASTopology1D)
         self.menuStreamCenterlineAttributes.addAction(self.actionRASLengthsStations)
         self.menuStreamCenterlineAttributes.addSeparator()
@@ -306,6 +316,7 @@ class Ui_RiverGIS(object):
         self.menuDB.addAction(self.actionImportRiverFromIsokp)
         self.menuSettings.addAction(self.actionRASDTMSetup)
         self.menuSettings.addAction(self.actionDebugMode)
+        self.menuSettings.addAction(self.actionAlwaysOnTop)
         self.menubar.addAction(self.menuDB.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menu_Geometry.menuAction())
@@ -383,6 +394,8 @@ class Ui_RiverGIS(object):
         self.actionRASDTMSetup.setText(_translate("RiverGIS", "DTM Setup", None))
         self.actionDebugMode.setText(_translate("RiverGIS", "Debug mode", None))
         self.actionCopyStreamCenterlines2Flowpaths.setText(_translate("RiverGIS", "Copy Stream Centerlines to Flowpaths", None))
+        self.actionAlwaysOnTop.setText(_translate("RiverGIS", "Always on top", None))
+        self.actionRASXSUpdateInsertMeasuredPoints.setText(_translate("RiverGIS", "Update - Insert Measured Points", None))
 
 from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
 import resources_rc
