@@ -33,7 +33,7 @@ import hecobjects as heco
 class RiverGIS(QMainWindow):
 
     def __init__(self, iface, parent=None):
-        QMainWindow.__init__(self, parent, Qt.WindowStaysOnTopHint)
+        QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
         QApplication.setOverrideCursor(Qt.ArrowCursor)
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ui = Ui_RiverGIS()
@@ -175,8 +175,6 @@ class RiverGIS(QMainWindow):
         self.updateDefaultCrs()
 
     def closeEvent(self, e):
-        # self.unregisterAllActions()
-
         # save the window state
         settings = QSettings()
         settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
