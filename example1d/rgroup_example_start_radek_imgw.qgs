@@ -14,7 +14,7 @@
       <layer-tree-layer expanded="1" checked="Qt::Checked" id="StorageAreas20151008081900767" name="StorageAreas">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="LeveePoints20151008081900455" name="LeveePoints">
+      <layer-tree-layer expanded="1" checked="Qt::Checked" id="LeveePoints20151008081900455" name="LeveePoints">
         <customproperties/>
       </layer-tree-layer>
       <layer-tree-layer expanded="1" checked="Qt::Checked" id="LeveeAlignment20151008081900174" name="LeveeAlignment">
@@ -110,10 +110,10 @@
   <mapcanvas>
     <units>meters</units>
     <extent>
-      <xmin>322738.83621906780172139</xmin>
-      <ymin>392090.16205562790855765</ymin>
-      <xmax>325614.6926457240479067</xmax>
-      <ymax>393402.61110133351758122</ymax>
+      <xmin>324318.72909056348726153</xmin>
+      <ymin>391750.24603258207207546</ymin>
+      <xmax>325088.64442511042580009</xmax>
+      <ymax>393315.9806758988997899</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>0</projections>
@@ -184,9 +184,9 @@
           <legendlayerfile isInOverview="0" layerid="StorageAreas20151008081900767" visible="1"/>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="LeveePoints" showFeatureCount="0">
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="LeveePoints" showFeatureCount="0">
         <filegroup open="true" hidden="false">
-          <legendlayerfile isInOverview="0" layerid="LeveePoints20151008081900455" visible="0"/>
+          <legendlayerfile isInOverview="0" layerid="LeveePoints20151008081900455" visible="1"/>
         </filegroup>
       </legendlayer>
       <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="LeveeAlignment" showFeatureCount="0">
@@ -5265,7 +5265,7 @@
         </spatialrefsys>
       </srs>
       <provider encoding="System">ogr</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE( "NodeName", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">
@@ -5846,7 +5846,7 @@
         </spatialrefsys>
       </srs>
       <provider encoding="System">ogr</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE( "NodeName", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">
@@ -6238,7 +6238,7 @@
         </spatialrefsys>
       </srs>
       <provider encoding="System">ogr</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE( "NodeName", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">
@@ -6930,6 +6930,25 @@
     <Digitizing>
       <DefaultSnapToleranceUnit type="int">1</DefaultSnapToleranceUnit>
       <LayerSnappingList type="QStringList">
+        <value>BankLines20151008081855946</value>
+        <value>BlockedObs20151008081856352</value>
+        <value>BreakLines2d20151008081856648</value>
+        <value>BreakPoints2d20151008081856960</value>
+        <value>Bridges20151008081857304</value>
+        <value>FlowAreas2d20151008081857943</value>
+        <value>Flowpaths20151008081857631</value>
+        <value>IneffAreas20151008081858567</value>
+        <value>InlineStructures20151008081858864</value>
+        <value>LanduseAreas20151008081859534</value>
+        <value>LateralStructures20151008081859862</value>
+        <value>LeveeAlignment20151008081900174</value>
+        <value>LeveePoints20151008081900455</value>
+        <value>MeshPoints2d20151008081858255</value>
+        <value>SAConnections20151008081901079</value>
+        <value>StorageAreas20151008081900767</value>
+        <value>StreamCenterlines20151008081859176</value>
+        <value>XSCutLines20151008081901422</value>
+        <value>XSSurface20151008084213441</value>
         <value>banks20151008081413597</value>
         <value>blocked_obstructions20151008081413831</value>
         <value>bridges20151008081414034</value>
@@ -6941,26 +6960,9 @@
         <value>levee_alignment20151008081415235</value>
         <value>streamcenterlines20151008081415438</value>
         <value>xsections20151008081415641</value>
-        <value>BankLines20151008081855946</value>
-        <value>BlockedObs20151008081856352</value>
-        <value>BreakLines2d20151008081856648</value>
-        <value>BreakPoints2d20151008081856960</value>
-        <value>Bridges20151008081857304</value>
-        <value>Flowpaths20151008081857631</value>
-        <value>FlowAreas2d20151008081857943</value>
-        <value>MeshPoints2d20151008081858255</value>
-        <value>IneffAreas20151008081858567</value>
-        <value>InlineStructures20151008081858864</value>
-        <value>StreamCenterlines20151008081859176</value>
-        <value>LanduseAreas20151008081859534</value>
-        <value>LateralStructures20151008081859862</value>
-        <value>LeveeAlignment20151008081900174</value>
-        <value>LeveePoints20151008081900455</value>
-        <value>StorageAreas20151008081900767</value>
-        <value>SAConnections20151008081901079</value>
-        <value>XSCutLines20151008081901422</value>
       </LayerSnappingList>
       <LayerSnappingEnabledList type="QStringList">
+        <value>disabled</value>
         <value>disabled</value>
         <value>disabled</value>
         <value>disabled</value>
@@ -7023,8 +7025,10 @@
         <value>1</value>
         <value>1</value>
         <value>1</value>
+        <value>1</value>
       </LayerSnappingToleranceUnitList>
       <LayerSnapToList type="QStringList">
+        <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
@@ -7058,6 +7062,7 @@
       <DefaultSnapType type="QString">off</DefaultSnapType>
       <DefaultSnapTolerance type="double">5</DefaultSnapTolerance>
       <LayerSnappingToleranceList type="QStringList">
+        <value>5.000000</value>
         <value>5.000000</value>
         <value>5.000000</value>
         <value>5.000000</value>
