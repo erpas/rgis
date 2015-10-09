@@ -3,10 +3,10 @@
 $BODY$
 DECLARE
     lev double precision := 0;
+    division integer := 5;
     area double precision := 9;
     emax double precision := (SELECT MAX("Elevation") FROM "Pasleka".sa_points);
     emin double precision := (SELECT MIN("Elevation") FROM "Pasleka".sa_points);
-    division integer := 5;
     h double precision := (emax - emin) / division;
 BEGIN
     FOR i IN 1..division LOOP
@@ -17,6 +17,7 @@ BEGIN
 END;
 $BODY$
     LANGUAGE plpgsql;
+
 
 DROP TABLE IF EXISTS "Pasleka".levels;
 CREATE TABLE "Pasleka".levels(start_level double precision, end_level double precision, volume double precision);

@@ -22,11 +22,11 @@ BEGIN
         y := min_y;
         FOR j in 1..cols LOOP
             pnt := (ST_SetSRID(ST_Point(x, y), 2180));
-	    SELECT ST_Within(pnt, geom), "StorageID" INTO inside, said FROM "Pasleka"."StorageAreas" WHERE ST_Within(pnt, geom) IS True;
+            SELECT ST_Within(pnt, geom), "StorageID" INTO inside, said FROM "Pasleka"."StorageAreas" WHERE ST_Within(pnt, geom) IS True;
             IF inside is True THEN
-		INSERT INTO "Pasleka"."SASurface"(geom, "StorageID")
-		VALUES (pnt, said);
-	    END IF;
+        INSERT INTO "Pasleka"."SASurface"(geom, "StorageID")
+        VALUES (pnt, said);
+        END IF;
             y := y + step;
         END LOOP;
         x := x + step;
