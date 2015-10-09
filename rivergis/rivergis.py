@@ -430,13 +430,13 @@ class RiverGIS(QMainWindow):
         self.threadWselHecRas = thread
 
     def rasImportRasDataFinish(self, res):
-            if not res == None:
-                # processing.load(res['OUTPUT_LAYER'], 'WSEL_temp_points')
-                # processing.load(res.dataProvider().dataSourceUri(), 'WSEL_temp_points')
-                processing.load(res, 'WSEL_temp_points')
-            else:
-                self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
-
+            # if not res == None:
+            #     # processing.load(res['OUTPUT_LAYER'], 'WSEL_temp_points')
+            #     # processing.load(res.dataProvider().dataSourceUri(), 'WSEL_temp_points')
+            #     processing.load(res, 'WSEL_temp_points')
+            # else:
+            #     self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
+            self.addInfo('Done.')
             self.workerWselHecRas.deleteLater()
             self.threadWselHecRas.quit()
             self.threadWselHecRas.wait()
