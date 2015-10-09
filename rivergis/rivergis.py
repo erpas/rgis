@@ -34,7 +34,8 @@ class RiverGIS(QMainWindow):
 
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
-        QApplication.setOverrideCursor(Qt.ArrowCursor)
+        if QApplication.overrideCursor():
+            QApplication.restoreOverrideCursor()
         self.setAttribute(Qt.WA_DeleteOnClose)
         self.ui = Ui_RiverGIS()
         self.ui.setupUi(self)
@@ -61,6 +62,7 @@ class RiverGIS(QMainWindow):
         # Settings
         self.ui.actionRASDTMSetup.triggered.connect(self.rasDTMSetup)
         self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
+        self.ui.actionAlwaysOnTop.toggled.connect(self.toggleAlwaysOnTop)
         # RAS Geometry
         # 1D
         self.ui.actionRASCreateRdbTables.triggered.connect(self.rasCreateRdbTables)
@@ -81,6 +83,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.ras1dIneffectiveFlowAreas)
         self.ui.actionRASBlockedObstructions.triggered.connect(self.ras1dBlockedObstructions)
         self.ui.actionRASFlipXSDirection.triggered.connect(self.ras1dFlipXSDirection)
+        self.ui.actionRASXSUpdateInsertMeasuredPoints.triggered.connect(self.ras1dXSUpdateInsertMeasuredPts)
         self.ui.actionRASCreateRASGISImport.triggered.connect(self.ras1dCreateRasGisImport)
         # 2D
         self.ui.actionRASCreate2dAreaPoints.triggered.connect(self.ras2dCreate2dAreaPoints)
@@ -129,6 +132,7 @@ class RiverGIS(QMainWindow):
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASLevees)
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASIneffectiveFlowAreas)
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASBlockedObstructions)
+        self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSUpdateInsertMeasuredPoints)
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASCreateRASGISImport)
 
         # 2D HEC-RAS Toolbar
@@ -175,12 +179,11 @@ class RiverGIS(QMainWindow):
         self.updateDefaultCrs()
 
     def closeEvent(self, e):
-        self.unregisterAllActions()
-
         # save the window state
         settings = QSettings()
         settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
         settings.setValue("/rivergis/mainWindow/geometry", self.saveGeometry())
+        settings.setValue("/rivergis/mainWindow/flags", self.windowFlags())
 
         QMainWindow.closeEvent(self, e)
 
@@ -230,9 +233,9 @@ class RiverGIS(QMainWindow):
         self.user = s.value('username')
         self.passwd = s.value('password')
 
-        # close any existing connection to river database
+        # close any existing connection to a river database
         if self.rdb:
-            self.addInfo("Closing existing connection to {0}@{1} river database".format( \
+            self.addInfo("Closing existing connection to {0}@{1} river database".format(
                 self.rdb.dbname, self.rdb.host))
             self.rdb.disconnect_pg()
             self.rdb = None
@@ -242,7 +245,7 @@ class RiverGIS(QMainWindow):
         self.rdb.SRID = int(self.crs.postgisSrid())
         self.rdb.connect_pg()
         self.rdb.create_spatial_index()
-        self.addInfo('Created connection to river database: {0}@{1}'.format( \
+        self.addInfo('Created connection to river database: {0}@{1}'.format(
             self.rdb.dbname, self.rdb.host))
 
         # refresh schemas combo
@@ -266,11 +269,13 @@ class RiverGIS(QMainWindow):
             # change river database parameters
             self.rdb.SCHEMA = self.schema
             self.rdb.register_existing(heco)
-            # self.rdb.load_registered()
             reg = [self.rdb.register[k].name for k in sorted(self.rdb.register.keys())]
-            self.addInfo('Objects registered in the database:\n  {0}'.format( \
-            '\n  '.join(reg)))
-            self.addInfo('You can load them now using RAS Geometry > Load River Database Tables Into QGIS')
+            if self.DEBUG:
+                self.addInfo('Objects registered in the database:<br>  {0}'.format(
+                    '<br>  '.join(reg)))
+                self.addInfo('You can load them now using RAS Geometry > Load River Database Tables Into QGIS')
+            else:
+                self.addInfo('There are some objects registered in the database.')
 
     def importRiverIsokp(self):
         from dlg_importRiverFromIsokp import DlgImportRiverFromIsokp
@@ -291,11 +296,18 @@ class RiverGIS(QMainWindow):
 
     def toggleDebugMode(self):
         if self.ui.actionDebugMode.isChecked():
-            # self.ui.actionDebugMode.setChecked(False)
             self.DEBUG = 1
         else:
-            # self.ui.actionDebugMode.setChecked(True)
             self.DEBUG = 0
+
+    def toggleAlwaysOnTop(self):
+        if self.ui.actionAlwaysOnTop.isChecked():
+            flags = self.windowFlags()
+            self.setWindowFlags(flags | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
+        else:
+            flags = self.windowFlags()
+            self.setWindowFlags(flags & ~Qt.CustomizeWindowHint & ~Qt.WindowStaysOnTopHint)
+        self.show()
 
     def rasCreateRdbTables(self):
         from dlg_rasCreateRasLayers import DlgCreateRasLayers
@@ -311,7 +323,7 @@ class RiverGIS(QMainWindow):
 
     def rasImportLayersIntoRdbTables(self):
         '''
-        Imports chosen layers into PostGIS database.
+        Import chosen layers into PostGIS database.
         '''
         from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
         self.addInfo("<br><b>Import data into RAS PostGIS tables...</b>")
@@ -378,9 +390,9 @@ class RiverGIS(QMainWindow):
         from ras1dFunctions import ras1dObstructions
         ras1dObstructions(self)
 
-    def ras1dInsertMeasPts(self):
-        from ras1dFunctions import ras1dXSInsertMeasPts
-        ras1dXSInsertMeasPts(self)
+    def ras1dXSUpdateInsertMeasuredPts(self):
+        from ras1dFunctions import ras1dXSUpdateInsertMeasuredPts
+        ras1dXSUpdateInsertMeasuredPts(self)
 
     def ras1dFlipXSDirection(self):
         pass
@@ -394,15 +406,6 @@ class RiverGIS(QMainWindow):
     def ras2dCreate2dAreaPoints(self):
         from ras2dFunctions import ras2dCreate2dPoints
         ras2dCreate2dPoints(self)
-
-        # if self.curConnName is '' or self.schema is '':
-        #     QMessageBox.warning(None, "2D Area", "Please, choose a connection and schema.")
-        #     return
-        # else:
-        #     from dlg_ras2dAreaMesh import DlgRasCreate2dFlowAreas
-        #     self.addInfo('<br><b>Running Create 2D Flow Areas</b>' )
-        #     dlg = DlgRasCreate2dFlowAreas(self)
-        #     dlg.exec_()
 
     def ras2dPreview2DMesh(self):
         if self.rdb.SCHEMA is '':
@@ -430,13 +433,11 @@ class RiverGIS(QMainWindow):
         self.threadWselHecRas = thread
 
     def rasImportRasDataFinish(self, res):
-            # if not res == None:
-            #     # processing.load(res['OUTPUT_LAYER'], 'WSEL_temp_points')
-            #     # processing.load(res.dataProvider().dataSourceUri(), 'WSEL_temp_points')
-            #     processing.load(res, 'WSEL_temp_points')
-            # else:
-            #     self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
-            self.addInfo('Done.')
+            if not res == None:
+                processing.load(res, 'WSEL_temp_points')
+            else:
+                self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
+
             self.workerWselHecRas.deleteLater()
             self.threadWselHecRas.quit()
             self.threadWselHecRas.wait()
@@ -459,80 +460,3 @@ class RiverGIS(QMainWindow):
 
     def about(self):
         self.showHelp('index.html')
-
-    def registerAction(self, action, menuName, callback=None):
-        pass
-
-    def invokeCallback(self, callback, params=None):
-        """ Call a method passing the selected item in the database tree,
-                        the sender (usually a QAction), the plugin mainWindow and
-                        optionally additional parameters.
-
-                        This method takes care to override and restore the cursor,
-                        but also catches exceptions and displays the error dialog.
-        """
-        QApplication.setOverrideCursor(Qt.WaitCursor)
-        try:
-            if params is None:
-                callback( self.tree.currentItem(), self.sender(), self )
-            else:
-                callback( self.tree.currentItem(), self.sender(), self, *params )
-
-        except BaseError, e:
-            # catch database errors and display the error dialog
-            DlgDbError.showError(e, self)
-            return
-
-        finally:
-            QApplication.restoreOverrideCursor()
-
-    def unregisterAction(self, action, menuName):
-        if not hasattr(self, '_registeredDbActions'):
-            return
-
-        if menuName == None or menuName == "":
-            self.removeAction( action )
-
-            if self._registeredDbActions.has_key(menuName):
-                if self._registeredDbActions[menuName].count( action ) > 0:
-                    self._registeredDbActions[menuName].remove( action )
-
-            action.deleteLater()
-            return True
-
-        for a in self.menuBar.actions():
-            if not a.menu() or a.menu().title() != menuName:
-                continue
-
-            menu = a.menu()
-            menuActions = menu.actions()
-
-            menu.removeAction( action )
-            if menu.isEmpty():    # hide the menu
-                a.setVisible(False)
-
-            if self._registeredDbActions.has_key(menuName):
-                if self._registeredDbActions[menuName].count( action ) > 0:
-                    self._registeredDbActions[menuName].remove( action )
-
-                # hide the placeholder if there're no other registered actions
-                if len(self._registeredDbActions[menuName]) <= 0:
-                    for i in range(len(menuActions)):
-                        if menuActions[i].isSeparator() and menuActions[i].objectName().endswith("_placeholder"):
-                            menuActions[i].setVisible(False)
-                            break
-
-            action.deleteLater()
-            return True
-
-        return False
-
-    def unregisterAllActions(self):
-        if not hasattr(self, '_registeredDbActions'):
-            return
-
-        for menuName in self._registeredDbActions:
-            for action in list(self._registeredDbActions[menuName]):
-                self.unregisterAction( action, menuName )
-        del self._registeredDbActions
-

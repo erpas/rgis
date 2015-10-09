@@ -554,7 +554,7 @@ class LanduseAreas(HecRasObject):
 ------------------------------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS "{0}"."Manning";
 
-SELECT "LUID", "LUCode", "N_Value",ST_AsText((ST_Dump(geom)).geom) AS geom
+SELECT "LUID", "LUCode", "N_Value", ST_AsText((ST_Dump(geom)).geom) AS geom
 INTO "{0}".ludump
 FROM "{0}"."LanduseAreas";
 

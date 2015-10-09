@@ -9,8 +9,9 @@
     <file>icons/ras1dXsIneffective.svg</file>
     <file>icons/dtmSetup.svg</file>
     <file>icons/ras1dXsElevations.svg</file>
-    <file>icons/ras1dXsBanks.svg</file>
     <file>icons/ras1dXsDSLenghts.svg</file>
+    <file>icons/ras1dXsBanks.svg</file>
+    <file>icons/ras1dXsUpdate.svg</file>
     <file>icons/importLayersIntoRdb.svg</file>
     <file>icons/ras1dStreamCenterlinesLengthsStations.svg</file>
     <file>icons/ras1dStreamCenterlinesAll.svg</file>

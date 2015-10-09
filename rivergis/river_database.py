@@ -231,6 +231,7 @@ class RiverDatabase(object):
             style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
             map_layer.loadNamedStyle(style_file)
         except Exception, e:
+            self.rgis.addInfo(vlayer.name())
             self.rgis.addInfo(repr(e))
 
     def refresh_uris(self):
@@ -317,9 +318,9 @@ class RiverDatabase(object):
                 else:
                     pass
 
-        self.rgis.addInfo('<br>Importing {0}'.format(hecobject.name))
+        self.rgis.addInfo('<br>  Importing {0}'.format(hecobject.name))
         for i in imp_attrs:
-            self.rgis.addInfo('  {0} as {1} with type {2}'.format(i[0], i[1], i[2]))
+            self.rgis.addInfo('      {0} as {1} with type {2}'.format(i[0], i[1], i[2]))
 
         # create SQL for inserting the layer into PG database
         schema_name = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
