@@ -138,8 +138,6 @@
          </layout>
         </item>
        </layout>
-       <zorder>label_4</zorder>
-       <zorder>verticalLayoutWidget_2</zorder>
       </widget>
      </item>
     </layout>
