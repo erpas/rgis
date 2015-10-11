@@ -259,7 +259,7 @@ class RiverDatabase(object):
         else:
             self.add_vlayer(vlayer)
 
-    def insert_layer(self, layer, hecobject, schema=None, srid=None, attr_map=None):
+    def insert_layer(self, layer, hecobject, schema=None, srid=None, attr_map=None, onlySelected=False):
         """
         Insert a vector layer's features into a PostGIS table of a hecras object.
         If an attribute map attr_map is specified, only the mapped attributes are imported. If attr_map
@@ -286,7 +286,13 @@ class RiverDatabase(object):
             SRID = srid
 
         # get the layer's features
-        features = layer.getFeatures()
+        # check if only selected features should be imported
+        if onlySelected:
+            # get only selected
+            features = layer.selectedFeatures()
+        else:
+            # get all features
+            features = layer.getFeatures()
         layer_fields = layer.dataProvider().fields().toList()
         field_names = ['{0}'.format(f.name()) for f in layer_fields]
 
@@ -331,6 +337,7 @@ class RiverDatabase(object):
         # list of attributes data
         feats_def = []
         singleToMultiConversion = False
+
         for feat in features:
             # field values of the feature
             vals = []

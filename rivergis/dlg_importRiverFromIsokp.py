@@ -178,7 +178,7 @@ class DlgImportRiverFromIsokp(QDialog):
       cur.execute(qry)
     conn.commit()
     self.rgis.addInfo("  OK")
-    QApplication.setOverrideCursor(Qt.ArrowCursor)
+    QApplication.restoreOverrideCursor()
     del mcur, cur
     QDialog.accept(self)
 

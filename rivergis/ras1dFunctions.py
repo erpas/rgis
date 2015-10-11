@@ -297,8 +297,8 @@ def ras1dObstructions(rgis):
 def ras1dXSUpdateInsertMeasuredPts(rgis):
     rgis.addInfo('<br><b>Updating cross-sections - inserting measured points...</b>')
 
-    # dlg = DlgXSUpdateInsertMeasuredPts(rgis)
-    # dlg.exec_()
+    dlg = DlgXSUpdateInsertMeasuredPts(rgis)
+    dlg.exec_()
 
 
 def ras1dCreateRasGisImportFile(rgis):

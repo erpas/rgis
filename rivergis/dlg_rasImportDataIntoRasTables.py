@@ -241,7 +241,7 @@ class DlgImportDataIntoRasTables(QDialog):
             self.processLayers(key, data)
         self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(self.importInfo)))
         self.rgis.iface.mapCanvas().refresh()
-        QApplication.setOverrideCursor(Qt.ArrowCursor)
+        QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 
 

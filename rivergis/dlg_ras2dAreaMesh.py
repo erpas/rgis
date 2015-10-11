@@ -55,99 +55,12 @@ class DlgRasCreate2dFlowAreas(QDialog):
 
 
   def acceptDialog(self):
-
     wrongGeo = False
-
-    # if not self.areasLayer: # no areas layer
-    #   return
-    # self.rgis.addInfo("Creating function makegrid..." )
-    # areas = self.areasLayer
-    # nameAttr = self.ui.cbo2dAreasNameAttr.currentText()
-    # meshSizeAttr = self.ui.cbo2dAreasMeshSizeAttr.currentText()
-    #
-    # structures = self.structuresLayer
-    # structMeshSizeAlongAttr = self.ui.cboStructureMeshSizeAlongAttr.currentText()
-    # structMeshSizeAcrossAttr = self.ui.cboStructureMeshSizeAcrossAttr.currentText()
-    # structMeshRowsAttr = self.ui.cboStructureMeshRowsAttr.currentText()
-    #
-    # breakPoints = self.breakPointsLayer
-    #
-    # srid = areas.dataProvider().crs().postgisSrid()
-    # geoFileName = self.ui.lineEditGeoFile.text()
-    # if structures:
-    #   self.rgis.addInfo('\n\n<b>Running 2D Area</b> (%s, %s, %s, %s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr, structures.name(), structMeshSizeAlongAttr, structMeshSizeAcrossAttr) )
-    # else:
-    #   self.rgis.addInfo('\n\n<b>Running 2D Area</b> (%s, %s, %s)\n' % (areas.name(), nameAttr, meshSizeAttr) )
-
     QApplication.setOverrideCursor(Qt.WaitCursor)
     uid = str(uuid.uuid4())
     workDirName = join(expanduser("~"), "qgis_processing_temp", uid)
     call(["mkdir", join(expanduser("~"), "qgis_processing_temp")], shell=True)
     call(["mkdir", workDirName], shell=True)
-
-    # self.rgis.addInfo("  Creating tables..." )
-    #
-    # # create 2dareas table
-    # qry = 'drop table if exists %s.areas2d cascade;' % self.rgis.rdb.SCHEMA
-    # qry += 'create table %s.areas2d (gid serial primary key, name text, cellsize double precision, geom geometry(Polygon, %i));' % (self.rgis.rdb.SCHEMA, srid)
-    # qry += "select create_st_index_if_not_exists('%s','areas2d');" % (self.rgis.rdb.SCHEMA)
-    #
-    # # create structures table
-    # qry += 'drop table if exists %s."Breaklines" cascade;' % self.rgis.rdb.SCHEMA
-    # qry += 'create table %s."Breaklines" (gid serial primary key, aid integer, cellsizealong double precision, cellsizeacross double precision, meshrows integer, geom geometry(Linestring, %i));' % (self.rgis.rdb.SCHEMA, srid)
-    # qry += "select create_st_index_if_not_exists('%s','struct_lines');" % (self.rgis.rdb.SCHEMA)
-    #
-    # # create structure routes table
-    # qry += 'drop table if exists %s."Breaklines_m" cascade;' % self.rgis.rdb.SCHEMA
-    # qry += 'create table %s."Breaklines_m" (gid serial primary key, aid integer, cellsizealong double precision, cellsizeacross double precision, meshrows integer, geom geometry(LinestringM, %i));' % (self.rgis.rdb.SCHEMA, srid)
-    # qry += "select create_st_index_if_not_exists('%s','struct_lines_m');" % (self.rgis.rdb.SCHEMA)
-    #
-    # # create breakpoints table
-    # qry += 'drop table if exists %s.breakpoints cascade;' % self.rgis.rdb.SCHEMA
-    # qry += 'create table %s.breakpoints (gid serial primary key, aid integer, sid integer, m double precision, geom geometry(Point, %i));' % (self.rgis.rdb.SCHEMA, srid)
-    #
-    # # 2d mesh points table
-    # qry += 'drop table if exists %s.mesh_pts cascade;' % self.rgis.rdb.SCHEMA
-    # qry += 'create table %s.mesh_pts (gid serial primary key, aid integer, lid integer, cellsize double precision, geom geometry(Point, %i));' % (self.rgis.rdb.SCHEMA, srid)
-    # qry += "select create_st_index_if_not_exists('%s','mesh_pts');" % (self.rgis.rdb.SCHEMA)
-    #
-    # # structures buffers table
-    # qry += 'drop table if exists %s.wyciecie_pkt_org;' % self.rgis.rdb.SCHEMA
-    # qry += 'create table if not exists %s.wyciecie_pkt_org (gid serial primary key,geom geometry(Polygon, %i));' % (self.rgis.rdb.SCHEMA, srid)
-    # qry += "select create_st_index_if_not_exists('%s','wyciecie_pkt_org');" % (self.rgis.rdb.SCHEMA)
-    #
-    # # time.sleep(0.05)
-    # self.rgis.rdb.run_query(qry)
-    #
-    # qry = '''CREATE OR REPLACE FUNCTION makegrid(geometry, float, integer)
-    # RETURNS geometry AS
-    # 'SELECT ST_Collect(st_setsrid(ST_POINT(x/1000000::float,y/1000000::float),$3)) FROM
-    #   generate_series(floor(st_xmin($1)*1000000)::bigint, ceiling(st_xmax($1)*1000000)::bigint,($2*1000000)::bigint) as x,
-    #   generate_series(floor(st_ymin($1)*1000000)::bigint, ceiling(st_ymax($1)*1000000)::bigint,($2*1000000)::bigint) as y
-    # where st_intersects($1,st_setsrid(ST_POINT(x/1000000::float,y/1000000::float),$3))'
-    # LANGUAGE sql;'''
-    # self.rgis.rdb.run_query(qry)
-    #
-    # self.rgis.addInfo("  Inserting polygons into 2D areas PostGIS table..." )
-    #
-    # areaFeats = areas.getFeatures()
-    #
-    # qry = 'INSERT INTO %s.areas2d (name, cellsize, geom) VALUES \n' % self.rgis.rdb.SCHEMA
-    #
-    # for feat in areaFeats:
-    #   areaName = str(feat[nameAttr])
-    #   cellSize = float(feat[meshSizeAttr])
-    #   geom = feat.geometry()
-    #   polygon = geom.asPolygon()
-    #   qry += "('%s', %.6f, ST_GeomFromText('POLYGON((" % (areaName, cellSize)
-    #   for pt in polygon[0]:
-    #     qry += '%.4f %.4f, ' % (pt.x(), pt.y())
-    #
-    #   qry = qry[:-2] + "))',%i)),\n" % srid
-    #
-    # qry = qry[:-2] + ';'
-    #
-    # self.rgis.rdb.run_query(qry)
 
     self.rgis.addInfo("  Creating preliminary regular mesh points..." )
 

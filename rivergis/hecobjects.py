@@ -820,3 +820,14 @@ class MeshPoints2d(HecRasObject):
             ('"BLID"', 'integer'),
             ('"CellSize"', 'double precision')]
 
+
+class Bathymetry(HecRasObject):
+    def __init__(self):
+        super(Bathymetry, self).__init__()
+        self.main = False
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"BID"', 'serial primary key'),
+            ('"XsecID"', 'integer'),
+            ('"Station"', 'double precision'),
+            ('"Elevation"', 'double precision')]

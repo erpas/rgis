@@ -51,7 +51,7 @@ class DlgCreateRasLayers(QDialog):
                     self.rdb.add_to_view(obj)
                 except:
                     self.rgis.addInfo('  {0} - failure!<br>{1}'.format(chbox.text(), obj))
-        QApplication.setOverrideCursor(Qt.ArrowCursor)
+        QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 
     def displayHelp(self):

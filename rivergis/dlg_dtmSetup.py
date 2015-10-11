@@ -53,7 +53,7 @@ class DlgDTMSetup(QDialog):
                 self.rgis.addInfo('{0}'.format(item.data()[0]))
                 self.rgis.dtms.append(item.data()[1]) # append layerId
 
-        QApplication.setOverrideCursor(Qt.ArrowCursor)
+        QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 
 
