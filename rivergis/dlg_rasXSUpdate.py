@@ -69,6 +69,24 @@ class DlgXSUpdateInsertMeasuredPts(QDialog):
 
         if self.ui.groupBanksExt.isChecked():
 
+            # check if bank stations are calculated for each cross-section
+            qry = '''
+SELECT DISTINCT
+    "RiverCode", "ReachCode"
+FROM
+"{0}"."XSCutLines" as xs
+WHERE
+xs."LeftBank" IS NULL OR
+xs."RightBank" IS NULL;
+'''.format(self.rgis.rdb.SCHEMA)
+            miss = self.rgis.rdb.run_query(qry, fetch=True)
+            if miss:
+                for id in miss:
+                    self.rgis.addInfo(
+                        'There is at least one NULL bank station on river {}, reach {}'.format(id[0], id[1]))
+                self.rgis.addInfo('  Cannot continue with NULL bank station. Please, set the bank stations and try again.<br>  Cancelling...')
+                QApplication.restoreOverrideCursor()
+                return
             upArea = self.ui.cboInterpArea.currentText()
             self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_banks', area=upArea, xsTol=tol)
 
@@ -82,7 +100,7 @@ class DlgXSUpdateInsertMeasuredPts(QDialog):
             try:
                 self.rgis.addInfo('  Table {0} created.'.format(obj.name))
             except:
-                self.rgis.addInfo('  Could not create bathymetry points table.')
+                self.rgis.addInfo('  Could not create bathymetry extents table.')
 
             # insert bathymetry extents into the database
             data = {
@@ -103,8 +121,7 @@ class DlgXSUpdateInsertMeasuredPts(QDialog):
                 self.rgis.rdb.insert_layer(
                     layer,
                     self.rgis.rdb.register[data['className']],
-                    attr_map=attrMap,
-                    onlySelected=self.ui.chkOnlySelected.isChecked())
+                    attr_map=attrMap)
 
             self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_polygons', xsTol=tol)
 

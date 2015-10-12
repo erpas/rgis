@@ -5,9 +5,6 @@
     <customproperties/>
     <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="rdb">
       <customproperties/>
-      <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="bathymetry_points20151012100303788" name="bathymetry_points">
-        <customproperties/>
-      </layer-tree-layer>
       <layer-tree-layer expanded="1" checked="Qt::Checked" id="LeveePoints20151012121638783" name="LeveePoints">
         <customproperties/>
       </layer-tree-layer>
@@ -71,15 +68,18 @@
       <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="BlockedObs20151012101512966" name="BlockedObs">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="Bathymetry20151012101512296" name="Bathymetry">
+      <layer-tree-layer expanded="1" checked="Qt::Checked" id="Bathymetry20151012101512296" name="Bathymetry">
         <customproperties/>
       </layer-tree-layer>
-      <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="BankLines20151012101511556" name="BankLines">
+      <layer-tree-layer expanded="1" checked="Qt::Checked" id="BankLines20151012101511556" name="BankLines">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
     <layer-tree-group expanded="1" checked="Qt::PartiallyChecked" name="src">
       <customproperties/>
+      <layer-tree-layer expanded="1" checked="Qt::Checked" id="bathymetry_points20151012100303788" name="bathymetry_points">
+        <customproperties/>
+      </layer-tree-layer>
       <layer-tree-layer expanded="1" checked="Qt::Checked" id="xsections20151008081415641" name="xsections">
         <customproperties/>
       </layer-tree-layer>
@@ -128,10 +128,10 @@
   <mapcanvas>
     <units>meters</units>
     <extent>
-      <xmin>323060.84369801555294544</xmin>
-      <ymin>391972.3199082066421397</ymin>
-      <xmax>326829.55951674864627421</xmax>
-      <ymax>393538.05455152440117672</ymax>
+      <xmin>323891.31781626184238121</xmin>
+      <ymin>392979.84152487246319652</ymin>
+      <xmax>324362.40729360346449539</xmax>
+      <ymax>393175.55835528718307614</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>0</projections>
@@ -193,11 +193,6 @@
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
     <legendgroup open="true" checked="Qt::PartiallyChecked" name="rdb">
-      <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="bathymetry_points" showFeatureCount="0">
-        <filegroup open="true" hidden="false">
-          <legendlayerfile isInOverview="0" layerid="bathymetry_points20151012100303788" visible="0"/>
-        </filegroup>
-      </legendlayer>
       <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="LeveePoints" showFeatureCount="0">
         <filegroup open="true" hidden="false">
           <legendlayerfile isInOverview="0" layerid="LeveePoints20151012121638783" visible="1"/>
@@ -303,18 +298,23 @@
           <legendlayerfile isInOverview="0" layerid="BlockedObs20151012101512966" visible="0"/>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="Bathymetry" showFeatureCount="0">
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="Bathymetry" showFeatureCount="0">
         <filegroup open="true" hidden="false">
-          <legendlayerfile isInOverview="0" layerid="Bathymetry20151012101512296" visible="0"/>
+          <legendlayerfile isInOverview="0" layerid="Bathymetry20151012101512296" visible="1"/>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="BankLines" showFeatureCount="0">
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="BankLines" showFeatureCount="0">
         <filegroup open="true" hidden="false">
-          <legendlayerfile isInOverview="0" layerid="BankLines20151012101511556" visible="0"/>
+          <legendlayerfile isInOverview="0" layerid="BankLines20151012101511556" visible="1"/>
         </filegroup>
       </legendlayer>
     </legendgroup>
     <legendgroup open="true" checked="Qt::PartiallyChecked" name="src">
+      <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="bathymetry_points" showFeatureCount="0">
+        <filegroup open="true" hidden="false">
+          <legendlayerfile isInOverview="0" layerid="bathymetry_points20151012100303788" visible="1"/>
+        </filegroup>
+      </legendlayer>
       <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="xsections" showFeatureCount="0">
         <filegroup open="true" hidden="false">
           <legendlayerfile isInOverview="0" layerid="xsections20151008081415641" visible="1"/>
@@ -655,7 +655,7 @@
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">postgres</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE( "BID", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">
@@ -5694,7 +5694,7 @@
         </spatialrefsys>
       </srs>
       <provider encoding="UTF-8">postgres</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE("Name", '&lt;NULL>')</previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">
@@ -6359,7 +6359,7 @@
         </spatialrefsys>
       </srs>
       <provider encoding="System">ogr</provider>
-      <previewExpression></previewExpression>
+      <previewExpression>COALESCE( "id", '&lt;NULL>' )</previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">

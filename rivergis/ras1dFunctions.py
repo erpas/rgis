@@ -127,7 +127,9 @@ def ras1dXSElevations(rgis):
 
     # insert DTMs parameters into the DTMs table
     if not rgis.dtms:
-        rgis.addInfo('<br>Choose a DTM for cross-section points elevation (Settings > DTM Setup) and try again.')
+        rgis.rasDTMSetup()
+    if not rgis.dtms:
+        rgis.addInfo('<br>  Choose a DTM for cross-section points elevation.')
         return
     dtmsParams = []
     for layerId in rgis.dtms:
