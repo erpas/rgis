@@ -2,17 +2,25 @@
     RETURNS VOID AS
 $BODY$
 DECLARE
-    lev double precision := 0;
+    c cursor FOR SELECT * FROM "Pasleka"."StorageAreas";
+    r "Pasleka"."StorageAreas"%ROWTYPE;
     division integer := 5;
-    area double precision := 9;
-    emax double precision := (SELECT MAX("Elevation") FROM "Pasleka".sa_points);
-    emin double precision := (SELECT MIN("Elevation") FROM "Pasleka".sa_points);
-    h double precision := (emax - emin) / division;
+    area double precision := 100;
+    emin double precision;
+    emax double precision;
+    lev double precision;
+    h double precision;
 BEGIN
-    FOR i IN 1..division LOOP
-        INSERT INTO "Pasleka".levels (start_level, end_level, volume)
-        SELECT lev, lev + h, SUM("Elevation")*h FROM "Pasleka".sa_points WHERE "Elevation" BETWEEN lev AND lev + h;
-        lev := lev + h;
+    FOR r IN c LOOP
+        emin := (SELECT MIN("Elevation") FROM "Pasleka"."SASurface" WHERE "StorageID" = r."StorageID");
+        emax := (SELECT MAX("Elevation") FROM "Pasleka"."SASurface" WHERE "StorageID" = r."StorageID");
+        lev := emin;
+        h := (emax - emin) / division;
+        FOR i IN 1..division LOOP
+            INSERT INTO "Pasleka".levels ("StorageID", start_level, end_level, volume)
+            SELECT r."StorageID", lev, lev + h, SUM("Elevation")*h FROM "Pasleka"."SASurface" WHERE "StorageID" = r."StorageID" AND "Elevation" BETWEEN lev AND lev + h;
+            lev := lev + h;
+        END LOOP;
     END LOOP;
 END;
 $BODY$
@@ -20,5 +28,5 @@ $BODY$
 
 
 DROP TABLE IF EXISTS "Pasleka".levels;
-CREATE TABLE "Pasleka".levels(start_level double precision, end_level double precision, volume double precision);
+CREATE TABLE "Pasleka".levels("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
 SELECT "Pasleka".storage_calculator ();

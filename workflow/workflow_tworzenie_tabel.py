@@ -37,13 +37,26 @@ baza.add_to_view(lu)
 baza.insert_layer(s, sc)
 iface.mapCanvas().refresh()
 
-# export wyników do RAS GIS Import
-from rivergis import ras_gis_import
-
+# Próbkowanie rastra punktami.
 rgis = qgis.utils.plugins['rivergis'].dlg
-ex = ras_gis_import.RasGisImport(rgis)
-sdf = ex.gis_import_file()
 
-# zapis do pliku SDF
-with open(r'E:\test\sdefik.sdf', 'w') as f:
-    f.write(sdf)
+qry = '''
+SELECT
+  pts."PtID" AS "PtID",
+  ST_X(pts.geom) AS x,
+  ST_Y(pts.geom) AS y
+FROM
+  "Pasleka"."SASurface" AS pts
+'''
+
+rlayer = QgsMapLayerRegistry.instance().mapLayers().values()[0]
+pts = rgis.rdb.run_query(qry, fetch=True)
+qry = ''
+for pt in pts:
+    ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
+    if ident.isValid():
+        pt.append(round(ident.results()[1], 2))
+        qry += 'UPDATE "Pasleka"."SASurface" SET "Elevation" = {1} WHERE "PtID" = {2};\n'.format(rgis.rdb.SCHEMA, pt[3], pt[0])
+    else:
+        pass
+rgis.rdb.run_query(qry)
