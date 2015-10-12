@@ -227,9 +227,12 @@ class DlgImportDataIntoRasTables(QDialog):
                 curText = attrData['cbo'].currentText()
                 if curText:
                     attrMap[attr] = curText
-            self.rgis.rdb.insert_layer(layer, \
-                self.rgis.rdb.register[data['className']], \
-                attr_map=attrMap)
+            self.rgis.rdb.insert_layer(
+                        layer,
+                        self.rgis.rdb.register[data['className']],
+                        attr_map=attrMap,
+                        onlySelected=self.onlySel
+            )
             self.importInfo.append(name)
             if self.rgis.iface.mapCanvas().isCachingEnabled():
                 layer.setCacheImage(None)
@@ -237,6 +240,7 @@ class DlgImportDataIntoRasTables(QDialog):
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
+        self.onlySel = self.ui.chkOnlySelected.isChecked()
         for key, data in self.layers.iteritems():
             self.processLayers(key, data)
         self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(self.importInfo)))

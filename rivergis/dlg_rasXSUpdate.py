@@ -22,29 +22,74 @@ class DlgXSUpdateInsertMeasuredPts(QDialog):
         self.ui.groupBanksExt.clicked.connect(self.groupBanksExtToggled)
         self.ui.groupBathyExt.clicked.connect(self.groupBathyExtToggled)
 
-
-
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
-        # banks extents
+        if not self.ui.xsTol.text() == '':
+                tol = self.ui.xsTol.text()
+        else:
+            self.rgis.addInfo("XS tolerance must be specifeid. Cancelling.")
+            QApplication.restoreOverrideCursor()
+            return
+
+        # create bathymetry points table
+        obj = self.rgis.rdb.process_hecobject(heco.Bathymetry, 'pg_create_table')
+        try:
+            self.rgis.addInfo('  Table {0} created.'.format(obj.name))
+        except:
+            self.rgis.addInfo('  Could not create bathymetry points table.')
+
+        # get the bathymetry points data
+        data = {
+            'cbo': self.ui.cboMeasuredLayer,
+            'className': 'Bathymetry',
+            'attrs': {
+                'Elevation': {
+                    'cbo': self.ui.cboMeasuredElevation,
+                    'checkName': ['elevation', 'elev']
+                }
+            },
+            'geomType': 0 # points
+            }
+        if not data['cbo'].currentText() == '':
+            curInd = data['cbo'].currentIndex()
+            lid = data['cbo'].itemData(curInd)
+            layer = self.rgis.mapRegistry.mapLayer(lid)
+            attrMap = {}
+            for attr, attrData in data['attrs'].iteritems():
+                curText = attrData['cbo'].currentText()
+                if curText:
+                    attrMap[attr] = curText
+            self.rgis.rdb.insert_layer(
+                layer,
+                self.rgis.rdb.register[data['className']],
+                attr_map=attrMap,
+                onlySelected=self.ui.chkOnlySelected.isChecked())
+
+        # Update area defined by bank lines
+
         if self.ui.groupBanksExt.isChecked():
-            # create bathymetry points table
-            obj = self.rgis.rdb.process_hecobject(heco.Bathymetry, 'pg_create_table')
+
+            upArea = self.ui.cboInterpArea.currentText()
+            self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_banks', area=upArea, xsTol=tol)
+
+
+        # Update area defined by bathymetry extents polygons
+
+        else:
+
+            # create bathymetry extents table
+            obj = self.rgis.rdb.process_hecobject(heco.BathymetryExtents, 'pg_create_table')
             try:
                 self.rgis.addInfo('  Table {0} created.'.format(obj.name))
             except:
                 self.rgis.addInfo('  Could not create bathymetry points table.')
-            # get the bathymetry points data
+
+            # insert bathymetry extents into the database
             data = {
-                'cbo': self.ui.cboMeasuredLayer,
-                'className': 'Bathymetry',
-                'attrs': {
-                    'Elevation': {
-                        'cbo': self.ui.cboMeasuredElevation,
-                        'checkName': ['elevation', 'elev']
-                    }
-                },
-                'geomType': 0 # points
+                'cbo': self.ui.cboBathyExtLayer,
+                'className': 'BathymetryExtents',
+                'attrs': {},
+                'geomType': 2 # polygons
                 }
             if not data['cbo'].currentText() == '':
                 curInd = data['cbo'].currentIndex()
@@ -61,89 +106,8 @@ class DlgXSUpdateInsertMeasuredPts(QDialog):
                     attr_map=attrMap,
                     onlySelected=self.ui.chkOnlySelected.isChecked())
 
-            # check which xsections have some bathymetry points
-            # points must be located within a given tolerance from xs
-            if not self.ui.xsTol.text() == '':
-                xsTol = self.ui.xsTol.text()
-            else:
-                self.rgis.addInfo("XS tolerance must be specifeid. Cancelling.")
-                QApplication.restoreOverrideCursor()
-                return
-            qry = '''
-UPDATE "{0}"."Bathymetry" b SET
-  "XsecID" = xs."XsecID"
-FROM
-  "{0}"."XSCutLines" as xs
-WHERE
-  ST_DWithin(b.geom, xs.geom, {1});
-'''.format(self.rgis.rdb.SCHEMA, xsTol)
-            self.rgis.rdb.run_query(qry)
+            self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_polygons', xsTol=tol)
 
-            # set points stations along a xscutline
-            qry = '''
-UPDATE "{0}"."Bathymetry" b SET
-  "Station" = ST_LineLocatePoint(xs.geom, b.geom) * ST_Length(xs.geom)
-FROM
-  "{0}"."XSCutLines" as xs
-WHERE
-  b."XsecID" IS NOT NULL AND
-  b."XsecID" = xs."XsecID";
-'''.format(self.rgis.rdb.SCHEMA, xsTol)
-            self.rgis.rdb.run_query(qry)
-
-            # delete original xsec points
-            qry = '''
-WITH ids AS (
-    SELECT DISTINCT
-        b."XsecID"
-    FROM
-        "{0}"."Bathymetry" b
-    WHERE
-        b."XsecID" IS NOT NULL
-)
-DELETE FROM "{0}"."XSSurface" p
-USING
-  "{0}"."XSCutLines" as xs,
-  ids
-WHERE
-  ids."XsecID" = xs."XsecID" AND
-  ids."XsecID" = p."XsecID" AND
-  p."Station" > xs."LeftBank" * ST_Length(xs.geom) AND
-  p."Station" < xs."RightBank" * ST_Length(xs.geom);
-'''.format(self.rgis.rdb.SCHEMA)
-            self.rgis.rdb.run_query(qry)
-
-            # insert bathymetry points
-            qry = '''
-WITH bathy AS (
-    SELECT
-        b."XsecID",
-        b."Station",
-        b."Elevation",
-        b.geom
-    FROM
-        "{0}"."Bathymetry" b,
-        "{0}"."XSCutLines" as xs
-    WHERE
-        b."XsecID" = xs."XsecID" AND
-        b."Station" > xs."LeftBank" * ST_Length(xs.geom) AND
-        b."Station" < xs."RightBank" * ST_Length(xs.geom)
-)
-INSERT INTO "{0}"."XSSurface" (
-    "XsecID",
-    "Station",
-    "Elevation",
-    geom
-    )
-(SELECT * FROM bathy);
-'''.format(self.rgis.rdb.SCHEMA)
-            self.rgis.rdb.run_query(qry)
-
-
-        # bathymetry extents
-        else:
-            # filter the points
-            pass
         self.rgis.addInfo("Done.")
         self.rgis.iface.mapCanvas().refresh()
         QApplication.restoreOverrideCursor()

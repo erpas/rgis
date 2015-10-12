@@ -287,7 +287,9 @@ class RiverDatabase(object):
 
         # get the layer's features
         # check if only selected features should be imported
-        if onlySelected:
+        # if selection exists on layer take that selection
+        # if nothing is selected take all features
+        if onlySelected and layer.selectedFeatureCount():
             # get only selected
             features = layer.selectedFeatures()
         else:

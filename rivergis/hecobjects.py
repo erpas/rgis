@@ -373,6 +373,148 @@ DROP FUNCTION IF EXISTS "{0}".downstream_reach_lengths ();
         qry = qry.format(self.schema, line_type, column, index)
         return qry
 
+    def pg_update_banks(self, area='Channel', xsTol=0):
+        """Update XSSurface points using bathymetry points data.
+        The update extents is defined by bank lines and choice of the xsection part: channel, left or right overbank.
+        """
+        qry = '''
+-- check which xsections have some bathymetry points
+-- points must be located within a given tolerance from xs
+UPDATE "{0}"."Bathymetry" b SET
+"XsecID" = xs."XsecID"
+FROM
+"{0}"."XSCutLines" as xs
+WHERE
+ST_DWithin(b.geom, xs.geom, {1});
+
+-- set points stations along a xscutline
+UPDATE "{0}"."Bathymetry" b SET
+"Station" = ST_LineLocatePoint(xs.geom, b.geom) * ST_Length(xs.geom)
+FROM
+"{0}"."XSCutLines" as xs
+WHERE
+b."XsecID" IS NOT NULL AND
+b."XsecID" = xs."XsecID";
+'''.format(self.schema, xsTol)
+
+        if area == 'Channel':
+            cond = '''p."Station" > xs."LeftBank" * ST_Length(xs.geom) AND
+p."Station" < xs."RightBank" * ST_Length(xs.geom)'''
+        elif area == 'Left':
+            cond = 'p."Station" < xs."LeftBank" * ST_Length(xs.geom)'
+        else:
+            cond = 'p."Station" > xs."RightBank" * ST_Length(xs.geom)'
+        qry += '''
+-- delete original xsec points
+WITH ids AS (
+SELECT DISTINCT
+    b."XsecID"
+FROM
+    "{0}"."Bathymetry" b
+WHERE
+    b."XsecID" IS NOT NULL
+)
+DELETE FROM "{0}"."XSSurface" p
+USING
+"{0}"."XSCutLines" as xs,
+ids
+WHERE
+ids."XsecID" = xs."XsecID" AND
+ids."XsecID" = p."XsecID" AND
+{1};
+
+-- insert bathymetry points
+WITH bathy AS (
+SELECT
+    p."XsecID",
+    p."Station",
+    p."Elevation",
+    p.geom
+FROM
+    "{0}"."Bathymetry" p,
+    "{0}"."XSCutLines" as xs
+WHERE
+    p."XsecID" = xs."XsecID" AND
+    {1}
+)
+INSERT INTO "{0}"."XSSurface" (
+"XsecID",
+"Station",
+"Elevation",
+geom
+)
+(SELECT * FROM bathy);
+'''.format(self.schema, cond)
+        return qry
+
+    def pg_update_polygons(self, xsTol=0):
+        """Update XSSurface points using bathymetry points data.
+        Only points inside the polygons of bathymetry extents will be updated.
+        """
+
+        qry = '''
+UPDATE "{0}"."Bathymetry" b SET
+  "XsecID" = xs."XsecID"
+FROM
+  "{0}"."XSCutLines" as xs,
+  "{0}"."BathymetryExtents" as be
+WHERE
+  b.geom && be.geom AND
+  ST_Intersects(b.geom, be.geom) AND
+  ST_DWithin(b.geom, xs.geom, {1});
+
+-- set points stations along a xscutline
+UPDATE "{0}"."Bathymetry" b SET
+"Station" = ST_LineLocatePoint(xs.geom, b.geom) * ST_Length(xs.geom)
+FROM
+"{0}"."XSCutLines" as xs
+WHERE
+b."XsecID" IS NOT NULL AND
+b."XsecID" = xs."XsecID";
+
+-- delete original xsec points
+WITH ids AS (
+SELECT DISTINCT
+    b."XsecID"
+FROM
+    "{0}"."Bathymetry" b
+WHERE
+    b."XsecID" IS NOT NULL
+)
+DELETE FROM "{0}"."XSSurface" p
+USING
+"{0}"."BathymetryExtents" as be,
+ids
+WHERE
+ids."XsecID" = p."XsecID" AND
+p.geom && be.geom AND
+ST_Intersects(p.geom, be.geom);
+
+-- insert bathymetry points
+WITH bathy AS (
+SELECT
+    p."XsecID",
+    p."Station",
+    p."Elevation",
+    p.geom
+FROM
+    "{0}"."Bathymetry" p,
+    "{0}"."BathymetryExtents" as be
+WHERE
+    p."XsecID" IS NOT NULL AND
+    p.geom && be.geom AND
+    ST_Intersects(p.geom, be.geom)
+)
+INSERT INTO "{0}"."XSSurface" (
+"XsecID",
+"Station",
+"Elevation",
+geom
+)
+(SELECT * FROM bathy);
+'''.format(self.schema, xsTol)
+        return qry
+
 
 class XSSurface(HecRasObject):
     def __init__(self):
@@ -825,9 +967,20 @@ class Bathymetry(HecRasObject):
     def __init__(self):
         super(Bathymetry, self).__init__()
         self.main = False
+        self.visible = False
         self.geom_type = 'POINT'
         self.attrs = [
             ('"BID"', 'serial primary key'),
             ('"XsecID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"Elevation"', 'double precision')]
+
+
+class BathymetryExtents(HecRasObject):
+    def __init__(self):
+        super(BathymetryExtents, self).__init__()
+        self.main = False
+        self.visible = False
+        self.geom_type = 'POLYGON'
+        self.attrs = [
+            ('"BID"', 'serial primary key')]

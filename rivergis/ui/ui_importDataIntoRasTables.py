@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_importDataIntoRasTables.ui'
 #
-# Created: Thu Oct 08 11:46:48 2015
+# Created: Mon Oct 12 12:43:59 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_importDataIntoRasTables(object):
     def setupUi(self, importDataIntoRasTables):
         importDataIntoRasTables.setObjectName(_fromUtf8("importDataIntoRasTables"))
-        importDataIntoRasTables.resize(362, 586)
+        importDataIntoRasTables.resize(362, 610)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -546,11 +546,14 @@ class Ui_importDataIntoRasTables(object):
         self.storageAreas = QtGui.QWidget()
         self.storageAreas.setObjectName(_fromUtf8("storageAreas"))
         self.tabWidget.addTab(self.storageAreas, _fromUtf8(""))
-        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.tabWidget, 1, 0, 1, 1)
         self.buttonBox = QtGui.QDialogButtonBox(importDataIntoRasTables)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.gridLayout.addWidget(self.buttonBox, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.buttonBox, 2, 0, 1, 1)
+        self.chkOnlySelected = QtGui.QCheckBox(importDataIntoRasTables)
+        self.chkOnlySelected.setObjectName(_fromUtf8("chkOnlySelected"))
+        self.gridLayout.addWidget(self.chkOnlySelected, 0, 0, 1, 1)
         self.label_9.setBuddy(self.cbo2dFlowAreas)
         self.AreaNameAttributeLabel.setBuddy(self.cbo2dAreasNameAttr)
         self.AreaNameAttributeLabel_2.setBuddy(self.cbo2dAreasMeshSizeAttr)
@@ -607,4 +610,5 @@ class Ui_importDataIntoRasTables(object):
         self.label_30.setText(_translate("importDataIntoRasTables", "Top width attribute", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.structures), _translate("importDataIntoRasTables", "Hydraulic Structures", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.storageAreas), _translate("importDataIntoRasTables", "Storage Areas", None))
+        self.chkOnlySelected.setText(_translate("importDataIntoRasTables", "Use selected features if selection exists", None))
 

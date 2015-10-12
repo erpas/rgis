@@ -96,7 +96,7 @@
           <item>
            <widget class="QCheckBox" name="chkOnlySelected">
             <property name="text">
-             <string>Update only selected points</string>
+             <string>Use only selected points</string>
             </property>
            </widget>
           </item>
@@ -111,7 +111,7 @@
         <locale language="English" country="UnitedStates"/>
        </property>
        <property name="title">
-        <string>Select interpolation limits</string>
+        <string>Select update limits</string>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -123,7 +123,7 @@
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBanksExt">
           <property name="title">
-           <string>Banks extents</string>
+           <string>Bank lines</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -151,7 +151,7 @@
                   <locale language="English" country="UnitedStates"/>
                  </property>
                  <property name="text">
-                  <string>Interpolation Area</string>
+                  <string>Update area</string>
                  </property>
                 </widget>
                </item>
@@ -170,49 +170,6 @@
                </item>
               </layout>
              </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <item>
-                <widget class="QLabel" name="label_4">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="text">
-                  <string>XS Tolerance (maps units)</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QLineEdit" name="xsTol">
-                 <property name="locale">
-                  <locale language="English" country="UnitedStates"/>
-                 </property>
-                 <property name="text">
-                  <string>30</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
             </layout>
            </item>
           </layout>
@@ -221,7 +178,7 @@
         <item row="1" column="0">
          <widget class="QGroupBox" name="groupBathyExt">
           <property name="title">
-           <string>Bathymetry extents</string>
+           <string>Bathymetry polygons</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -244,7 +201,7 @@
                 <locale language="English" country="UnitedStates"/>
                </property>
                <property name="text">
-                <string>Bathymetry extents layer</string>
+                <string>Bathymetry polygons layer</string>
                </property>
               </widget>
              </item>
@@ -259,6 +216,49 @@
            </item>
           </layout>
          </widget>
+        </item>
+        <item row="2" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
+            <property name="text">
+             <string>XS Tolerance (maps units)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="xsTol">
+            <property name="locale">
+             <locale language="English" country="UnitedStates"/>
+            </property>
+            <property name="text">
+             <string>30</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
