@@ -30,7 +30,7 @@ BEGIN
             FOR j IN 1..col_nr LOOP
                 pnt := (ST_SetSRID(ST_Point(x, y), 2180));
                 SELECT ST_Within(pnt, r.geom), r."StorageID" INTO inside, said WHERE ST_Within(pnt, r.geom) IS True;
-                IF inside is True THEN
+                IF inside IS True THEN
                     INSERT INTO "Pasleka"."SASurface"(geom, "StorageID")
                     VALUES (pnt, said);
                 END IF;
