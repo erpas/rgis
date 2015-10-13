@@ -106,7 +106,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true">
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -183,6 +183,10 @@
      <property name="title">
       <string>Bridges/Culverts</string>
      </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/rivergis/icons/ras1dBridges.svg</normaloff>:/rivergis/icons/ras1dBridges.svg</iconset>
+     </property>
      <addaction name="actionRASBRRiverReachNames"/>
      <addaction name="actionRASBRStationing"/>
      <addaction name="separator"/>
@@ -194,6 +198,10 @@
      <property name="title">
       <string>Inline Structures</string>
      </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/rivergis/icons/ras1dInlineStruct.svg</normaloff>:/rivergis/icons/ras1dInlineStruct.svg</iconset>
+     </property>
      <addaction name="actionRASInlRiverReachNames"/>
      <addaction name="actionRASInlStationing"/>
      <addaction name="separator"/>
@@ -204,6 +212,10 @@
     <widget class="QMenu" name="menuLateral_Structures">
      <property name="title">
       <string>Lateral Structures</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/rivergis/icons/ras1dLateralStruct.svg</normaloff>:/rivergis/icons/ras1dLateralStruct.svg</iconset>
      </property>
      <addaction name="actionRASLatRiverReachNames"/>
      <addaction name="actionRASLatStationing"/>
@@ -274,7 +286,6 @@
    <addaction name="menuRASMapping"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionCreate2dAreaPerimeter">
    <property name="icon">
     <iconset>
@@ -777,6 +788,11 @@
   <action name="actionRASSacAll">
    <property name="text">
     <string>All</string>
+   </property>
+  </action>
+  <action name="actionAaa_2">
+   <property name="text">
+    <string>aaa</string>
    </property>
   </action>
  </widget>

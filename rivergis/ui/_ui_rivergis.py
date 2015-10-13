@@ -2,14 +2,14 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Tue Oct 13 10:44:22 2015
+# Created: Tue Oct 13 20:44:56 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
 from qgis.gui import QgsProjectionSelectionWidget
-from ..resources_rc import *
+from ..resources import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

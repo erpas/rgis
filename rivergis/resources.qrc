@@ -1,7 +1,10 @@
 <RCC>
   <qresource prefix="/rivergis">
     <file>icons/ras1dSAElevVolume.svg</file>
+    <file>icons/ras1dBridges.svg</file>
+    <file>icons/ras1dInlineStruct.svg</file>
     <file>icons/ras1dXsRiverNames.svg</file>
+    <file>icons/ras1dLateralStruct.svg</file>
     <file>icons/ras1dSATerPtExtract.svg</file>
     <file>icons/ras1dXsStationing.svg</file>
     <file>icons/ras1dCreateRASImport.svg</file>
@@ -26,8 +29,8 @@
     <file>icons/createDepthsAndRange.svg</file>
     <file>icons/createWselRaster.svg</file>
     <file>icons/importFromIsok.svg</file>
-    <file>icons/rivergis.svg</file>
     <file>icons/correctLateralWeir.svg</file>
+    <file>icons/rivergis.svg</file>
     <file>icons/loadVelHdf.svg</file>
     <file>icons/ras2dareaCreate.svg</file>
     <file>icons/ras2dareaPreview.svg</file>

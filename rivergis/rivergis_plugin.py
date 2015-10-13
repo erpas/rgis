@@ -23,7 +23,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 try:
-  import resources_rc
+  import resources
 except ImportError:
   pass
 
