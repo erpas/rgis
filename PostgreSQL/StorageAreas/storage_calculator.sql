@@ -17,7 +17,7 @@ BEGIN
         lev := emin;
         h := (emax - emin) / division;
         FOR i IN 1..division LOOP
-            INSERT INTO "Pasleka".levels ("StorageID", start_level, end_level, volume)
+            INSERT INTO "Pasleka"."SALevels" ("StorageID", start_level, end_level, volume)
             SELECT r."StorageID", lev, lev + h, SUM("Elevation")*h FROM "Pasleka"."SASurface" WHERE "StorageID" = r."StorageID" AND "Elevation" BETWEEN lev AND lev + h;
             lev := lev + h;
         END LOOP;
@@ -27,6 +27,6 @@ $BODY$
     LANGUAGE plpgsql;
 
 
-DROP TABLE IF EXISTS "Pasleka".levels;
-CREATE TABLE "Pasleka".levels("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
+DROP TABLE IF EXISTS "Pasleka"."SALevels";
+CREATE TABLE "Pasleka"."SALevels"("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
 SELECT "Pasleka".storage_calculator ();
