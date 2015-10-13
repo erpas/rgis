@@ -4,7 +4,7 @@ $BODY$
 DECLARE
     c cursor FOR SELECT * FROM "Pasleka"."StorageAreas";
     r "Pasleka"."StorageAreas"%ROWTYPE;
-    division integer := 5;
+    slices integer := 5;
     area double precision := 100;
     emin double precision;
     emax double precision;
@@ -15,9 +15,9 @@ BEGIN
         emin := (SELECT MIN("Elevation") FROM "Pasleka"."SASurface" WHERE "StorageID" = r."StorageID");
         emax := (SELECT MAX("Elevation") FROM "Pasleka"."SASurface" WHERE "StorageID" = r."StorageID");
         lev := emin;
-        h := (emax - emin) / division;
-        FOR i IN 1..division LOOP
-            INSERT INTO "Pasleka"."SALevels" ("StorageID", start_level, end_level, volume)
+        h := (emax - emin) / slices;
+        FOR i IN 1..slices LOOP
+            INSERT INTO "Pasleka"."SAVolume" ("StorageID", start_level, end_level, volume)
             SELECT r."StorageID", lev, lev + h, SUM("Elevation")*h FROM "Pasleka"."SASurface" WHERE "StorageID" = r."StorageID" AND "Elevation" BETWEEN lev AND lev + h;
             lev := lev + h;
         END LOOP;
@@ -27,6 +27,6 @@ $BODY$
     LANGUAGE plpgsql;
 
 
-DROP TABLE IF EXISTS "Pasleka"."SALevels";
-CREATE TABLE "Pasleka"."SALevels"("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
+DROP TABLE IF EXISTS "Pasleka"."SAVolume";
+CREATE TABLE "Pasleka"."SAVolume"("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
 SELECT "Pasleka".storage_calculator ();
