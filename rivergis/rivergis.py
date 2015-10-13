@@ -82,8 +82,26 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASLevees.triggered.connect(self.ras1dLevees)
         self.ui.actionRASIneffectiveFlowAreas.triggered.connect(self.ras1dIneffectiveFlowAreas)
         self.ui.actionRASBlockedObstructions.triggered.connect(self.ras1dBlockedObstructions)
-        self.ui.actionRASFlipXSDirection.triggered.connect(self.ras1dFlipXSDirection)
         self.ui.actionRASXSUpdateInsertMeasuredPoints.triggered.connect(self.ras1dXSUpdateInsertMeasuredPts)
+        self.ui.actionRASBRRiverReachNames.triggered.connect(self.ras1dBRRiverReachNames)
+        self.ui.actionRASBRStationing.triggered.connect(self.ras1dBRStationing)
+        self.ui.actionRASBRElevations.triggered.connect(self.ras1dBRElevations)
+        self.ui.actionRASBRAll.triggered.connect(self.ras1dRASBRAll)
+        self.ui.actionRASInlRiverReachNames.triggered.connect(self.ras1dInlRiverReachNames)
+        self.ui.actionRASInlStationing.triggered.connect(self.ras1dInlStationing)
+        self.ui.actionRASInlElevations.triggered.connect(self.ras1dInlElevations)
+        self.ui.actionRASInlAll.triggered.connect(self.ras1dInlAll)
+        self.ui.actionRASLatRiverReachNames.triggered.connect(self.ras1dLatRiverReachNames)
+        self.ui.actionRASLatStationing.triggered.connect(self.ras1dLatStationing)
+        self.ui.actionRASLatElevations.triggered.connect(self.ras1dLatElevations)
+        self.ui.actionRASLatAll.triggered.connect(self.ras1dLatAll)
+        self.ui.actionRASSAElevationRange.triggered.connect(self.ras1dSAElevationRange)
+        self.ui.actionRASAElevationVolumeData.triggered.connect(self.ras1dAElevationVolumeData)
+        self.ui.actionRASSATerrainPointExtraction.triggered.connect(self.ras1dSATerrainPointExtraction)
+        self.ui.actionRASSAAll.triggered.connect(self.actionRASSAAll)
+        self.ui.actionRASSacAssignNearestSA.triggered.connect(self.ras1dSacAssignNearestSA)
+        self.ui.actionRASSacElevations.triggered.connect(self.ras1dSacElevations)
+        self.ui.actionRASSacAll.triggered.connect(self.ras1dSacAll)
         self.ui.actionRASCreateRASGISImport.triggered.connect(self.ras1dCreateRasGisImport)
         # 2D
         self.ui.actionRASCreate2dAreaPoints.triggered.connect(self.ras2dCreate2dAreaPoints)
@@ -135,6 +153,18 @@ class RiverGIS(QMainWindow):
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASXSUpdateInsertMeasuredPoints)
         self.ui.ras1dGeometryToolBar.addAction(self.ui.actionRASCreateRASGISImport)
 
+        # 1D HEC-RAS Structures Toolbar
+        # self.ui.ras1dStructuresToolBar = QToolBar("HEC-RAS 1D Structures", self)
+        # self.ui.ras1dStructuresToolBar.setObjectName("RAS1D_Structures_ToolBar")
+        # self.ui.ras1dStructuresToolBar.addAction(self.ui.actionRASTopology1D)
+        # self.ui.ras1dStructuresToolBar.addAction(self.ui.actionRASLengthsStations)
+
+        # 1D HEC-RAS Storage Areas Toolbar
+        self.ui.ras1dSAToolBar = QToolBar("HEC-RAS 1D Storage Areas", self)
+        self.ui.ras1dSAToolBar.setObjectName("RAS1D_SA_ToolBar")
+        self.ui.ras1dSAToolBar.addAction(self.ui.actionRASAElevationVolumeData)
+        self.ui.ras1dSAToolBar.addAction(self.ui.actionRASSATerrainPointExtraction)
+
         # 2D HEC-RAS Toolbar
         self.ui.ras2dToolBar = QToolBar("HEC-RAS 2D Geometry", self)
         self.ui.ras2dToolBar.setObjectName("RAS2D_ToolBar")
@@ -153,6 +183,8 @@ class RiverGIS(QMainWindow):
         self.addToolBar(self.ui.settingsToolBar)
         self.addToolBar(self.ui.ras1dTablesToolBar)
         self.addToolBar(self.ui.ras1dGeometryToolBar)
+        # self.addToolBar(self.ui.ras1dStructuresToolBar)
+        self.addToolBar(self.ui.ras1dSAToolBar)
         self.addToolBar(self.ui.ras2dToolBar)
         self.addToolBar(self.ui.rasMappingToolBar)
 
@@ -394,9 +426,63 @@ class RiverGIS(QMainWindow):
         from ras1dFunctions import ras1dXSUpdateInsertMeasuredPts
         ras1dXSUpdateInsertMeasuredPts(self)
 
-    def ras1dFlipXSDirection(self):
+    def ras1dBRRiverReachNames(self):
         pass
 
+    def ras1dBRStationing(self):
+        pass
+
+    def ras1dBRElevations(self):
+        pass
+
+    def ras1dRASBRAll(self):
+        pass
+
+    def ras1dInlRiverReachNames(self):
+        pass
+
+    def ras1dInlStationing(self):
+        pass
+
+    def ras1dInlElevations(self):
+        pass
+
+    def ras1dInlAll(self):
+        pass
+    
+    def ras1dLatRiverReachNames(self):
+        pass
+    
+    def ras1dLatStationing(self):
+        pass
+    
+    def ras1dLatElevations(self):
+        pass
+    
+    def ras1dLatAll(self):
+        pass
+    
+    def ras1dSAElevationRange(self):
+        pass
+    
+    def ras1dAElevationVolumeData(self):
+        pass
+    
+    def ras1dSATerrainPointExtraction(self):
+        pass
+    
+    def actionRASSAAll(self):
+        pass
+    
+    def ras1dSacAssignNearestSA(self):
+        pass
+    
+    def ras1dSacElevations(self):
+        pass
+    
+    def ras1dSacAll(self):
+        pass
+    
     def ras1dCreateRasGisImport(self):
         from ras1dFunctions import ras1dCreateRasGisImportFile
         ras1dCreateRasGisImportFile(self)

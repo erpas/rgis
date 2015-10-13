@@ -1,6 +1,8 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/ras1dSAElevVolume.svg</file>
     <file>icons/ras1dXsRiverNames.svg</file>
+    <file>icons/ras1dSATerPtExtract.svg</file>
     <file>icons/ras1dXsStationing.svg</file>
     <file>icons/ras1dCreateRASImport.svg</file>
     <file>icons/ras1dXsLevees.svg</file>

@@ -179,11 +179,56 @@
      <addaction name="separator"/>
      <addaction name="actionCopyStreamCenterlines2Flowpaths"/>
     </widget>
-    <widget class="QMenu" name="menuUtilities">
+    <widget class="QMenu" name="menuBridges_Culverts">
      <property name="title">
-      <string>Utilities</string>
+      <string>Bridges/Culverts</string>
      </property>
-     <addaction name="actionRASFlipXSDirection"/>
+     <addaction name="actionRASBRRiverReachNames"/>
+     <addaction name="actionRASBRStationing"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASBRElevations"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASBRAll"/>
+    </widget>
+    <widget class="QMenu" name="menuInline_Structures">
+     <property name="title">
+      <string>Inline Structures</string>
+     </property>
+     <addaction name="actionRASInlRiverReachNames"/>
+     <addaction name="actionRASInlStationing"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASInlElevations"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASInlAll"/>
+    </widget>
+    <widget class="QMenu" name="menuLateral_Structures">
+     <property name="title">
+      <string>Lateral Structures</string>
+     </property>
+     <addaction name="actionRASLatRiverReachNames"/>
+     <addaction name="actionRASLatStationing"/>
+     <addaction name="actionRASLatElevations"/>
+     <addaction name="actionRASLatAll"/>
+    </widget>
+    <widget class="QMenu" name="menuStorage_Areas">
+     <property name="title">
+      <string>Storage Areas</string>
+     </property>
+     <addaction name="actionRASSAElevationRange"/>
+     <addaction name="actionRASAElevationVolumeData"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASSATerrainPointExtraction"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASSAAll"/>
+    </widget>
+    <widget class="QMenu" name="menuStorage_Areas_Connections">
+     <property name="title">
+      <string>Storage Areas Connections</string>
+     </property>
+     <addaction name="actionRASSacAssignNearestSA"/>
+     <addaction name="actionRASSacElevations"/>
+     <addaction name="separator"/>
+     <addaction name="actionRASSacAll"/>
     </widget>
     <addaction name="actionRASCreateRdbTables"/>
     <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
@@ -194,7 +239,12 @@
     <addaction name="actionRASLevees"/>
     <addaction name="actionRASIneffectiveFlowAreas"/>
     <addaction name="actionRASBlockedObstructions"/>
-    <addaction name="menuUtilities"/>
+    <addaction name="separator"/>
+    <addaction name="menuBridges_Culverts"/>
+    <addaction name="menuInline_Structures"/>
+    <addaction name="menuLateral_Structures"/>
+    <addaction name="menuStorage_Areas"/>
+    <addaction name="menuStorage_Areas_Connections"/>
     <addaction name="separator"/>
     <addaction name="actionRASCreateRASGISImport"/>
     <addaction name="separator"/>
@@ -202,7 +252,6 @@
     <addaction name="actionRASPreview2DMesh"/>
     <addaction name="actionRASSave2DPointsToHECRASGeometry"/>
     <addaction name="actionRASCorrectLateralWeirs"/>
-    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuDB">
     <property name="title">
@@ -619,6 +668,115 @@
    </property>
    <property name="text">
     <string>Update - Insert Measured Points</string>
+   </property>
+  </action>
+  <action name="actionRASBRRiverReachNames">
+   <property name="text">
+    <string>River/Reach Names</string>
+   </property>
+  </action>
+  <action name="actionRASBRStationing">
+   <property name="text">
+    <string>Stationing</string>
+   </property>
+  </action>
+  <action name="actionRASBRElevations">
+   <property name="text">
+    <string>Elevations</string>
+   </property>
+  </action>
+  <action name="actionRASBRAll">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionRASInlRiverReachNames">
+   <property name="text">
+    <string>River/Reach Names</string>
+   </property>
+  </action>
+  <action name="actionRASInlStationing">
+   <property name="text">
+    <string>Stationing</string>
+   </property>
+  </action>
+  <action name="actionRASInlElevations">
+   <property name="text">
+    <string>Elevations</string>
+   </property>
+  </action>
+  <action name="actionRASInlAll">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionRASLatRiverReachNames">
+   <property name="text">
+    <string>River/Reach Names</string>
+   </property>
+  </action>
+  <action name="actionRASLatStationing">
+   <property name="text">
+    <string>Stationing</string>
+   </property>
+  </action>
+  <action name="actionRASLatElevations">
+   <property name="text">
+    <string>Elevations</string>
+   </property>
+  </action>
+  <action name="actionRASLatAll">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionRASSAElevationRange">
+   <property name="text">
+    <string>Elevation Range</string>
+   </property>
+  </action>
+  <action name="actionRASAElevationVolumeData">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dSAElevVolume.svg</normaloff>:/rivergis/icons/ras1dSAElevVolume.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Elevation-Volume Data</string>
+   </property>
+   <property name="iconText">
+    <string>SA Elevation-Volume Data</string>
+   </property>
+  </action>
+  <action name="actionRASSATerrainPointExtraction">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dSATerPtExtract.svg</normaloff>:/rivergis/icons/ras1dSATerPtExtract.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Terrain Point Extraction</string>
+   </property>
+   <property name="iconText">
+    <string>SA Terrain Point Extraction</string>
+   </property>
+  </action>
+  <action name="actionRASSAAll">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionRASSacAssignNearestSA">
+   <property name="text">
+    <string>Assign Nearest SA</string>
+   </property>
+  </action>
+  <action name="actionRASSacElevations">
+   <property name="text">
+    <string>Elevations</string>
+   </property>
+  </action>
+  <action name="actionRASSacAll">
+   <property name="text">
+    <string>All</string>
    </property>
   </action>
  </widget>
