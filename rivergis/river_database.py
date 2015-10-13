@@ -338,7 +338,7 @@ class RiverDatabase(object):
         qry += 'geom) \nVALUES\n\t'
         # list of attributes data
         feats_def = []
-        singleToMultiConversion = False
+        single2multi = False
 
         for feat in features:
             # field values of the feature
@@ -353,7 +353,7 @@ class RiverDatabase(object):
                 self.rgis.addInfo('WARNING:<br>Source geometry is of type MULTI but the target is a {0} --- skipping the layer.'.format(hecobject.geom_type))
                 qry = ''
             elif target_multi and not src_multi:
-                singleToMultiConversion = True
+                single2multi = True
                 geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, SRID)
             else:
                 geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID)
@@ -367,7 +367,7 @@ class RiverDatabase(object):
             vals.append(geometry)
             feats_def.append('({0})'.format(', '.join(vals)))
         qry += '{0};'.format(',\n\t'.join(feats_def))
-        if singleToMultiConversion:
+        if single2multi:
             self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
             self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI - check the results!')
         if self.rgis.DEBUG:

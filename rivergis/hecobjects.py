@@ -315,7 +315,8 @@ WHERE
 DROP INDEX IF EXISTS "{0}"."{0}_XSCutLines_order_idx";
 CREATE INDEX "{0}_XSCutLines_order_idx" ON "{0}"."XSCutLines" ("RiverCode", "Station");
 CLUSTER "{0}"."XSCutLines" USING "{0}_XSCutLines_order_idx";
-'''.format(self.schema)
+'''
+            index = index.format(self.schema)
         else:
             pass
         if line_type == 'Left':
@@ -373,7 +374,69 @@ DROP FUNCTION IF EXISTS "{0}".downstream_reach_lengths ();
         qry = qry.format(self.schema, line_type, column, index)
         return qry
 
-    def pg_update_banks(self, area='Channel', xsTol=0):
+    def pg_xs_elevations(self):
+        qry = '''
+WITH line AS
+    (SELECT DISTINCT ON (xs."XsecID")
+        xs."XsecID" as "XsecID",
+        dtm."CellSize" as "CellSize",
+        (ST_Dump(xs.geom)).geom AS geom
+    FROM
+        "{0}"."XSCutLines" as xs,
+        "{0}"."DTMs" as dtm
+    WHERE
+        xs.geom && dtm.geom AND
+        ST_Intersects(xs.geom, dtm.geom)
+    ORDER BY
+        xs."XsecID",
+        dtm."CellSize"),
+    linemeasure AS
+    (SELECT
+        "XsecID",
+        ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
+        generate_series(0, (ST_Length(line.geom)*100)::int, (line."CellSize"*100)::int) AS "Station"
+    FROM line),
+    geometries AS
+    (SELECT
+        "XsecID",
+        "Station",
+        (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
+    FROM linemeasure)
+
+INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station", "DtmID")
+    SELECT DISTINCT ON (g.geom)
+        ST_SetSRID(ST_MakePoint(ST_X(g.geom), ST_Y(g.geom)), {1}) AS geom,
+        g."XsecID",
+        g."Station"/100,
+        dtm."DtmID"
+    FROM
+        geometries as g,
+        "{0}"."DTMs" as dtm
+    WHERE
+        ST_Within(g.geom, dtm.geom)
+    ORDER BY
+        g.geom,
+        dtm."CellSize";
+
+INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station", "DtmID")
+    SELECT DISTINCT ON (xs.geom)
+        ST_Endpoint(xs.geom),
+        xs."XsecID",
+        ST_Length(xs.geom),
+        dtm."DtmID"
+    FROM
+        "{0}"."XSCutLines" as xs,
+        "{0}"."DTMs" as dtm
+    WHERE
+        ST_Within(ST_Endpoint(xs.geom), dtm.geom)
+    ORDER BY
+        xs.geom,
+        dtm."CellSize";
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+    def pg_update_banks(self, area='Channel', xs_tol=0):
         """Update XSSurface points using bathymetry points data.
         The update extents is defined by bank lines and choice of the xsection part: channel, left or right overbank.
         """
@@ -395,11 +458,10 @@ FROM
 WHERE
 b."XsecID" IS NOT NULL AND
 b."XsecID" = xs."XsecID";
-'''.format(self.schema, xsTol)
-
+'''
+        qry = qry.format(self.schema, xs_tol)
         if area == 'Channel':
-            cond = '''p."Station" > xs."LeftBank" * ST_Length(xs.geom) AND
-p."Station" < xs."RightBank" * ST_Length(xs.geom)'''
+            cond = 'p."Station" > xs."LeftBank" * ST_Length(xs.geom) AND p."Station" < xs."RightBank" * ST_Length(xs.geom)'
         elif area == 'Left':
             cond = 'p."Station" < xs."LeftBank" * ST_Length(xs.geom)'
         else:
@@ -444,14 +506,14 @@ INSERT INTO "{0}"."XSSurface" (
 geom
 )
 (SELECT * FROM bathy);
-'''.format(self.schema, cond)
+'''
+        qry = qry.format(self.schema, cond)
         return qry
 
-    def pg_update_polygons(self, xsTol=0):
+    def pg_update_polygons(self, xs_tol=0):
         """Update XSSurface points using bathymetry points data.
         Only points inside the polygons of bathymetry extents will be updated.
         """
-
         qry = '''
 UPDATE "{0}"."Bathymetry" b SET
   "XsecID" = xs."XsecID"
@@ -512,7 +574,8 @@ INSERT INTO "{0}"."XSSurface" (
 geom
 )
 (SELECT * FROM bathy);
-'''.format(self.schema, xsTol)
+'''
+        qry = qry.format(self.schema, xs_tol)
         return qry
 
 
@@ -527,6 +590,7 @@ class XSSurface(HecRasObject):
             ('"XsecID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"Elevation"', 'double precision'),
+            ('"DtmID"', 'integer'),
             ('"CoverCode"', 'text'),
             ('"SrcId"', 'integer'),
             ('"Notes"', 'text')]

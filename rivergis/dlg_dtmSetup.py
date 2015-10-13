@@ -42,7 +42,6 @@ class DlgDTMSetup(QDialog):
 
         self.ui.dtmListView.setModel(self.rgis.dtmModel)
 
-
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         self.rgis.addInfo('<br><b>New DTM setup: </b>\n')
@@ -56,10 +55,8 @@ class DlgDTMSetup(QDialog):
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 
-
     def displayHelp(self):
         pass
-
 
     def allChboxToggled(self):
         allChecked = self.ui.allChbox.isChecked()

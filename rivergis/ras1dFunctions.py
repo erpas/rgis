@@ -18,13 +18,13 @@ email                : rpasiok@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
-from ras_gis_import import *
 import hecobjects as heco
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from os.path import dirname
-
+from ras_gis_import import RasGisImport
+from rasElevations import prepare_DTMs, probe_DTMs
 from dlg_rasXSUpdate import DlgXSUpdateInsertMeasuredPts
 
 def ras1dStreamCenterlineTopology(rgis):
@@ -113,149 +113,18 @@ def ras1dStreamCenterlines2Flowpaths(rgis):
         rgis.addInfo('Done.')
 
 
-
 def ras1dXSElevations(rgis):
     """Probe a DTM to find cross-section vertical shape"""
+    # Prepare DTMs
+    prepare_DTMs(rgis)
     QApplication.setOverrideCursor(Qt.WaitCursor)
 
-    rgis.addInfo('<br><b>Creating cross-section points:</b>')
-    # # Create xsection points table
-    rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
-
-    # Create DTMs table
-    rgis.rdb.process_hecobject(heco.DTMs, 'pg_create_table')
-
-    # insert DTMs parameters into the DTMs table
-    if not rgis.dtms:
-        rgis.rasDTMSetup()
-    if not rgis.dtms:
-        rgis.addInfo('<br>  Choose a DTM for cross-section points elevation.')
-        return
-    dtmsParams = []
-    for layerId in rgis.dtms:
-        rlayer = rgis.mapRegistry.mapLayer(layerId)
-        name = '\'{0}\''.format(rlayer.name())
-        uri = '\'{0}\''.format(rlayer.dataProvider().dataSourceUri())
-        dp = '\'{0}\''.format(rlayer.dataProvider().name())
-        lid = '\'{0}\''.format(rlayer.id())
-        pixelSize = min(rlayer.rasterUnitsPerPixelX(), rlayer.rasterUnitsPerPixelY())
-        bboxWkt = rlayer.extent().asWktPolygon()
-        geom = 'ST_GeomFromText(\'{0}\', {1})'.format(bboxWkt, rgis.rdb.SRID)
-        params = '({0})'.format(',\n'.join([geom, name, uri, dp, lid, str(pixelSize)]))
-        dtmsParams.append(params)
-    qry = '''
-        INSERT INTO "{0}"."DTMs" (geom, "Name","DtmUri", "Provider", "LayerID", "CellSize") VALUES \n  {1};
-    '''.format(rgis.rdb.SCHEMA, '{0}'.format(',\n'.join(dtmsParams)))
-    rgis.rdb.run_query(qry)
-
-    # get the smallest cell size DTM covering each xsection
-    qry = '''
-    WITH data AS (
-    SELECT DISTINCT ON (xs."XsecID")
-      xs."XsecID" as "XsecID",
-      dtm."DtmID" as "DtmID",
-      dtm."CellSize" as "CellSize"
-    FROM
-      "{0}"."XSCutLines" as xs,
-      "{0}"."DTMs" as dtm
-    WHERE
-      xs.geom && dtm.geom AND
-      ST_Contains(dtm.geom, xs.geom)
-    ORDER BY xs."XsecID", dtm."CellSize" ASC)
-    UPDATE "{0}"."XSCutLines" as xs
-    SET
-      "DtmID" = data."DtmID"
-    FROM data
-    WHERE
-      data."XsecID" = xs."XsecID";
-    SELECT "XsecID", "DtmID"
-    FROM "{0}"."XSCutLines";
-    '''.format(rgis.rdb.SCHEMA)
-    rgis.rdb.run_query(qry)
-
     # insert xs points along each xsection
-    qry = '''
-    WITH line AS
-      (SELECT
-        xs."XsecID" as "XsecID",
-        dtm."CellSize" as "CellSize",
-        (ST_Dump(xs.geom)).geom AS geom
-      FROM
-        "{0}"."XSCutLines" as xs,
-        "{0}"."DTMs" as dtm
-      WHERE
-        xs."DtmID" = dtm."DtmID"),
-    linemeasure AS
-      (SELECT
-        "XsecID",
-        ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
-        generate_series(0, (ST_Length(line.geom)*100)::int, (line."CellSize"*100)::int) AS "Station"
-      FROM line),
-    geometries AS (
-      SELECT
-        "XsecID",
-        "Station",
-        (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
-      FROM linemeasure)
+    obj = rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_xs_elevations')
 
-    INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station")
-    SELECT
-      ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
-      "XsecID",
-      "Station"/100
-    FROM geometries;
-
-    INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station")
-    SELECT
-      ST_Endpoint(geom),
-      "XsecID",
-      ST_Length(geom)
-    FROM "{0}"."XSCutLines";
-    '''
-    qry = qry.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
-    rgis.rdb.run_query(qry)
-
-    # probe a DTM at each xsection point
-    qry = 'SELECT * FROM "{0}"."DTMs";'.format(rgis.rdb.SCHEMA)
-    dtms = rgis.rdb.run_query(qry, fetch=True)
-    for dtm in dtms:
-        dtmId = dtm['DtmID']
-        lid = dtm['LayerID']
-        rlayer = rgis.mapRegistry.mapLayer(lid)
-        qry = '''
-        WITH xsids AS (
-        SELECT "XsecID" FROM "{0}"."XSCutLines" WHERE "DtmID" = {1} ORDER BY "XsecID"
-        )
-        SELECT
-          pts."PtID" as "PtID",
-          ST_X(pts.geom) as x,
-          ST_Y(pts.geom) as y
-        FROM
-          "{0}"."XSSurface" as pts,
-          xsids
-        WHERE
-          pts."XsecID" = xsids."XsecID";
-        '''.format(rgis.rdb.SCHEMA, dtmId)
-        pts = rgis.rdb.run_query(qry, fetch=True)
-
-        if pts:
-            qry = ''
-            for pt in pts:
-                ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
-                if rgis.DEBUG > 1:
-                    rgis.addInfo('Wartosc rastra w ({1}, {2}): {0}'.format(ident.results()[1], pt[1], pt[2]))
-                if ident.isValid():
-                    pt.append(round(ident.results()[1], 2))
-                    if rgis.DEBUG > 1:
-                        rgis.addInfo('{0}'.format(', '.join([str(a) for a in pt])))
-                    qry += 'UPDATE "{0}"."XSSurface" SET "Elevation" = {1} WHERE "PtID" = {2};\n'\
-                        .format(rgis.rdb.SCHEMA, pt[3], pt[0])
-            if rgis.DEBUG:
-                rgis.addInfo(qry)
-            rgis.rdb.run_query(qry)
-        else:
-            pass
-
+    # probe a DTM at each point
+    probe_DTMs(rgis, obj.name)
     QApplication.restoreOverrideCursor()
     rgis.addInfo('Done')
 
