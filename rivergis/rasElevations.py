@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__author__ = 'ldebek'
+__author__ = 'Łukasz Dębek'
 
 from hecobjects import DTMs
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
@@ -14,7 +14,7 @@ def prepare_DTMs(rgis):
     if not rgis.dtms:
         rgis.rasDTMSetup()
     if not rgis.dtms:
-        rgis.addInfo('<br>  Choose a DTM for elevation sampling.')
+        rgis.addInfo('<br> Choose a DTM for elevation sampling.')
         return
     dtms_params = []
     for layer_id in rgis.dtms:

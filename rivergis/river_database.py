@@ -89,7 +89,17 @@ class RiverDatabase(object):
         else:
             hydro_object.SRID = srid
 
-    def run_query(self, qry, fetch=False):
+    @staticmethod
+    def result_iter(cursor, arraysize):
+        while True:
+            results = cursor.fetchmany(arraysize)
+            if not results:
+                break
+            else:
+                pass
+            yield results
+
+    def run_query(self, qry, fetch=False, arraysize=0):
         """
         Running PostgreSQL queries.
 
@@ -102,8 +112,10 @@ class RiverDatabase(object):
             if self.con:
                 cur = self.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
                 cur.execute(qry)
-                if fetch is True:
+                if fetch is True and arraysize == 0:
                     result = cur.fetchall()
+                elif fetch is True and arraysize > 0:
+                    result = RiverDatabase.result_iter(cur, arraysize)
                 else:
                     result = []
                 self.con.commit()
@@ -129,7 +141,7 @@ class RiverDatabase(object):
         else:
             SCHEMA = schema
         qry = 'SELECT table_name FROM information_schema.tables WHERE table_schema = \'{0}\''.format(SCHEMA)
-        tabs = self.run_query(qry, True)
+        tabs = self.run_query(qry, fetch=True)
         return tabs
 
     def register_object(self, obj):

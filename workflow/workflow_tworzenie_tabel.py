@@ -50,7 +50,7 @@ FROM
 '''
 
 rlayer = QgsMapLayerRegistry.instance().mapLayers().values()[0]
-pts = rgis.rdb.run_query(qry, fetch=True)
+pts = rgis.rdb.run_query(qry, fetch=True, arraysize=100)
 qry = ''
 for pt in pts:
     ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
