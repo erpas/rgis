@@ -124,7 +124,7 @@ def ras1dXSElevations(rgis):
     rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_xs_elevations')
 
     # probe a DTM at each point
-    probe_DTMs(rgis, obj.name)
+    probe_DTMs(rgis, obj.name, chunksize=100)
     QApplication.restoreOverrideCursor()
     rgis.addInfo('Done')
 

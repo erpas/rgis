@@ -33,7 +33,7 @@ def prepare_DTMs(rgis):
     rgis.rdb.run_query(qry)
 
 
-def probe_DTMs(rgis, surface):
+def probe_DTMs(rgis, surface, chunksize=0):
     # probe a DTM at each point
     qry = 'SELECT * FROM "{0}"."DTMs";'.format(rgis.rdb.SCHEMA)
     dtms = rgis.rdb.run_query(qry, fetch=True)
@@ -43,20 +43,23 @@ def probe_DTMs(rgis, surface):
         rlayer = rgis.mapRegistry.mapLayer(lid)
         qry = 'SELECT "PtID", ST_X(geom) as x, ST_Y(geom) as y FROM "{0}"."{1}" WHERE "DtmID" = {2};'
         qry = qry.format(rgis.rdb.SCHEMA, surface, dtm_id)
-        pts = rgis.rdb.run_query(qry, fetch=True)
-        if pts:
+        if chunksize <= 0:
+            chunk = [rgis.rdb.run_query(qry, fetch=True)]
+        else:
+            chunk = rgis.rdb.run_query(qry, fetch=True, arraysize=chunksize)
+        if not chunk:
+            continue
+        else:
+            pass
+        for pts in chunk:
+            if not pts:
+                continue
+            else:
+                pass
             qry = ''
             for pt in pts:
                 ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
-                if rgis.DEBUG > 1:
-                    rgis.addInfo('Raster value in ({1}, {2}): {0}'.format(ident.results()[1], pt[1], pt[2]))
                 if ident.isValid():
                     pt.append(round(ident.results()[1], 2))
-                    if rgis.DEBUG > 1:
-                        rgis.addInfo('{0}'.format(', '.join([str(a) for a in pt])))
                     qry += 'UPDATE "{0}"."{1}" SET "Elevation" = {2} WHERE "PtID" = {3};\n'.format(rgis.rdb.SCHEMA, surface, pt[3], pt[0])
-            if rgis.DEBUG:
-                rgis.addInfo(qry)
             rgis.rdb.run_query(qry)
-        else:
-            pass

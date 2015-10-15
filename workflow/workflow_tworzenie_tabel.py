@@ -46,17 +46,7 @@ SELECT
   ST_X(pts.geom) AS x,
   ST_Y(pts.geom) AS y
 FROM
-  "Pasleka"."SASurface" AS pts
+  example."SASurface" AS pts
 '''
 
-rlayer = QgsMapLayerRegistry.instance().mapLayers().values()[0]
 pts = rgis.rdb.run_query(qry, fetch=True, arraysize=100)
-qry = ''
-for pt in pts:
-    ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
-    if ident.isValid():
-        pt.append(round(ident.results()[1], 2))
-        qry += 'UPDATE "Pasleka"."SASurface" SET "Elevation" = {1} WHERE "PtID" = {2};\n'.format(rgis.rdb.SCHEMA, pt[3], pt[0])
-    else:
-        pass
-rgis.rdb.run_query(qry)

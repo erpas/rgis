@@ -91,6 +91,13 @@ class RiverDatabase(object):
 
     @staticmethod
     def result_iter(cursor, arraysize):
+        """
+        Generator for getting partial results from query.
+
+        Args:
+            cursor (psycopg2 cursor object): cursor with query
+            arraysize (int): Number of items returned from query
+        """
         while True:
             results = cursor.fetchmany(arraysize)
             if not results:
@@ -106,16 +113,17 @@ class RiverDatabase(object):
         Args:
             qry (str): Query for database
             fetch (bool): Flag for returning result from query
+            arraysize (int): Number of items returned from query
         """
         result = None
         try:
             if self.con:
                 cur = self.con.cursor(cursor_factory=psycopg2.extras.DictCursor)
                 cur.execute(qry)
-                if fetch is True and arraysize == 0:
+                if fetch is True and arraysize <= 0:
                     result = cur.fetchall()
                 elif fetch is True and arraysize > 0:
-                    result = RiverDatabase.result_iter(cur, arraysize)
+                    result = self.result_iter(cur, arraysize)
                 else:
                     result = []
                 self.con.commit()

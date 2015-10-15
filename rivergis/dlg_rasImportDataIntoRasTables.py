@@ -231,7 +231,7 @@ class DlgImportDataIntoRasTables(QDialog):
                         layer,
                         self.rgis.rdb.register[data['className']],
                         attr_map=attrMap,
-                        onlySelected=self.onlySel
+                        only_selected=self.onlySel
             )
             self.importInfo.append(name)
             if self.rgis.iface.mapCanvas().isCachingEnabled():
@@ -250,7 +250,7 @@ class DlgImportDataIntoRasTables(QDialog):
 
 
     def populateCbos(self):
-        allCbosByGeomType = {0:[], 1:[], 2:[]}
+        allCbosByGeomType = {0: [], 1: [], 2: []}
         for impLayer, data in self.layers.iteritems():
             data['cbo'].clear()
             data['cbo'].addItem('')
