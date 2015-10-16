@@ -899,6 +899,48 @@ class Bridges(HecRasObject):
             ('"TopWidth"', 'double precision'),
             ('"NodeName"', 'text')]
 
+    def pg_river_reach_names(self):
+        qry = '''
+UPDATE "{0}"."Bridges" AS br
+SET
+  "RiverCode" = riv."RiverCode",
+  "ReachCode" = riv."ReachCode"
+FROM
+  "{0}"."StreamCenterlines" AS riv
+WHERE
+  br.geom && riv.geom AND
+  ST_Intersects(br.geom, riv.geom);
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_stationing(self):
+        qry = '''
+WITH brpts AS (
+  SELECT
+    br."BridgeID" AS "BridgeID",
+    riv."ReachID" AS "ReachID",
+    ST_LineLocatePoint(riv.geom, ST_Intersection(br.geom, riv.geom)) AS "Fraction"
+  FROM
+    "{0}"."StreamCenterlines" AS riv,
+    "{0}"."Bridges" AS br
+  WHERE
+    br.geom && riv.geom AND
+    ST_Intersects(br.geom, riv.geom)
+)
+UPDATE "{0}"."Bridges" AS br
+SET
+  "Station" = riv."ToSta" + brpts."Fraction" * (riv."FromSta" - riv."ToSta")
+FROM
+  brpts,
+  "{0}"."StreamCenterlines" AS riv
+WHERE
+  brpts."ReachID" = riv."ReachID" AND
+  brpts."BridgeID" = br."BridgeID";
+'''
+        qry = qry.format(self.schema)
+        return qry
+
 
 class InlineStructures(HecRasObject):
     def __init__(self):
@@ -912,6 +954,48 @@ class InlineStructures(HecRasObject):
             ('"USDistance"', 'double precision'),
             ('"TopWidth"', 'double precision'),
             ('"NodeName"', 'text')]
+
+    def pg_river_reach_names(self):
+        qry = '''
+UPDATE "{0}"."InlineStructures" AS ins
+SET
+  "RiverCode" = riv."RiverCode",
+  "ReachCode" = riv."ReachCode"
+FROM
+  "{0}"."StreamCenterlines" AS riv
+WHERE
+  ins.geom && riv.geom AND
+  ST_Intersects(ins.geom, riv.geom);
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_stationing(self):
+        qry = '''
+WITH ispts AS (
+  SELECT
+    ins."InlineSID" AS "InlineSID",
+    riv."ReachID" AS "ReachID",
+    ST_LineLocatePoint(riv.geom, ST_Intersection(ins.geom, riv.geom)) AS "Fraction"
+  FROM
+    "{0}"."StreamCenterlines" AS riv,
+    "{0}"."InlineStructures" AS ins
+  WHERE
+    ins.geom && riv.geom AND
+    ST_Intersects(ins.geom, riv.geom)
+)
+UPDATE "{0}"."InlineStructures" AS ins
+SET
+  "Station" = riv."ToSta" + ispts."Fraction" * (riv."FromSta" - riv."ToSta")
+FROM
+  ispts,
+  "{0}"."StreamCenterlines" AS riv
+WHERE
+  ispts."ReachID" = riv."ReachID" AND
+  ispts."InlineSID" = ins."InlineSID";
+'''
+        qry = qry.format(self.schema)
+        return qry
 
 
 class LateralStructures(HecRasObject):
@@ -1016,7 +1100,16 @@ BEGIN
         h := (emax-emin)/slices;
         FOR i IN 1..slices LOOP
             INSERT INTO "{0}"."SAVolume" ("StorageID", start_level, end_level, volume)
-            SELECT r."StorageID", lev, lev+h, COUNT("Elevation")*area*h FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID" AND "Elevation" BETWEEN lev AND lev+h;
+            SELECT
+                r."StorageID",
+                lev,
+                lev+h,
+                COUNT("Elevation")*area*h
+            FROM
+                "{0}"."SASurface"
+            WHERE
+                "StorageID" = r."StorageID" AND
+                "Elevation" BETWEEN lev AND lev+h;
             lev := lev+h;
         END LOOP;
     END LOOP;
@@ -1028,6 +1121,24 @@ $BODY$
 DROP TABLE IF EXISTS "{0}"."SAVolume";
 CREATE TABLE "{0}"."SAVolume"("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
 SELECT "{0}".storage_calculator ({1});
+
+WITH data AS
+    (SELECT
+        "StorageID",
+        MAX(end_level),
+        MIN(start_level)
+    FROM
+        "{0}"."SAVolume"
+    GROUP BY
+        "StorageID")
+UPDATE "{0}"."StorageAreas" AS sa
+SET
+    "MaxElev" = data.max,
+    "MinElev" = data.min
+FROM
+    data
+WHERE
+    sa."StorageID" = data."StorageID";
 '''
         qry = qry.format(self.schema, slices)
         return qry
