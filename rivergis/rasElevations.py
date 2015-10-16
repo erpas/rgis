@@ -33,16 +33,57 @@ def prepare_DTMs(rgis):
     rgis.rdb.run_query(qry)
 
 
-def probe_DTMs(rgis, surface, chunksize=0):
+def update_DtmID(rgis, parent_obj):
+    parent_id = parent_obj.attrs[0][0]
+    qry = '''
+-- get the smallest cell size DTM covering each feature --
+WITH data AS
+    (SELECT DISTINCT ON (par.{2})
+        par.{2} as {2},
+        dtm."DtmID" as "DtmID",
+        dtm."CellSize" as "CellSize"
+    FROM
+        "{0}"."{1}" as par,
+        "{0}"."DTMs" as dtm
+    WHERE
+        ST_Contains(dtm.geom, par.geom)
+    ORDER BY
+        par.{2},
+        dtm."CellSize")
+UPDATE "{0}"."{1}" as par
+SET
+    "DtmID" = data."DtmID"
+FROM
+    data
+WHERE
+    data.{2} = par.{2};
+'''
+    qry = qry.format(rgis.rdb.SCHEMA, parent_obj.name, parent_id)
+    rgis.rdb.run_query(qry)
+
+
+def probe_DTMs(rgis, surface_obj, parent_obj, chunksize=0):
     # probe a DTM at each point
     qry = 'SELECT * FROM "{0}"."DTMs";'.format(rgis.rdb.SCHEMA)
     dtms = rgis.rdb.run_query(qry, fetch=True)
+    parent_id = parent_obj.attrs[0][0]
     for dtm in dtms:
         dtm_id = dtm['DtmID']
         lid = dtm['LayerID']
         rlayer = rgis.mapRegistry.mapLayer(lid)
-        qry = 'SELECT "PtID", ST_X(geom) as x, ST_Y(geom) as y FROM "{0}"."{1}" WHERE "DtmID" = {2};'
-        qry = qry.format(rgis.rdb.SCHEMA, surface, dtm_id)
+        qry = '''
+SELECT
+    surf."PtID" AS "PtID",
+    ST_X(surf.geom) AS x,
+    ST_Y(surf.geom) AS y
+FROM
+    "{0}"."{1}" AS surf,
+    "{0}"."{2}" AS par
+WHERE
+    surf.{3} = par.{3} AND
+    par."DtmID" = {4};
+'''
+        qry = qry.format(rgis.rdb.SCHEMA, surface_obj.name, parent_obj.name, parent_id, dtm_id)
         if chunksize <= 0:
             chunk = [rgis.rdb.run_query(qry, fetch=True)]
         else:
@@ -59,7 +100,10 @@ def probe_DTMs(rgis, surface, chunksize=0):
             qry = ''
             for pt in pts:
                 ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
-                if ident.isValid():
-                    pt.append(round(ident.results()[1], 2))
-                    qry += 'UPDATE "{0}"."{1}" SET "Elevation" = {2} WHERE "PtID" = {3};\n'.format(rgis.rdb.SCHEMA, surface, pt[3], pt[0])
+                try:
+                    if ident.isValid():
+                        pt.append(round(ident.results()[1], 2))
+                        qry += 'UPDATE "{0}"."{1}" SET "Elevation" = {2} WHERE "PtID" = {3};\n'.format(rgis.rdb.SCHEMA, surface_obj.name, pt[3], pt[0])
+                except:
+                    rgis.addInfo('Problem with getting raster value for point with PtID {0}'.format(pt[0]))
             rgis.rdb.run_query(qry)

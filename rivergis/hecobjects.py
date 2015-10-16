@@ -374,10 +374,11 @@ DROP FUNCTION IF EXISTS "{0}".downstream_reach_lengths ();
         qry = qry.format(self.schema, line_type, column, index)
         return qry
 
-    def pg_xs_elevations(self):
+    def pg_surface_points(self):
         qry = '''
+-- insert xs points along each xsection --
 WITH line AS
-    (SELECT DISTINCT ON (xs."XsecID")
+    (SELECT
         xs."XsecID" as "XsecID",
         dtm."CellSize" as "CellSize",
         (ST_Dump(xs.geom)).geom AS geom
@@ -385,11 +386,7 @@ WITH line AS
         "{0}"."XSCutLines" as xs,
         "{0}"."DTMs" as dtm
     WHERE
-        xs.geom && dtm.geom AND
-        ST_Intersects(xs.geom, dtm.geom)
-    ORDER BY
-        xs."XsecID",
-        dtm."CellSize"),
+        xs."DtmID" = dtm."DtmID"),
     linemeasure AS
     (SELECT
         "XsecID",
@@ -403,41 +400,26 @@ WITH line AS
         (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
     FROM linemeasure)
 
-INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station", "DtmID")
-    SELECT DISTINCT ON (g.geom)
-        ST_SetSRID(ST_MakePoint(ST_X(g.geom), ST_Y(g.geom)), {1}) AS geom,
-        g."XsecID",
-        g."Station"/100,
-        dtm."DtmID"
-    FROM
-        geometries as g,
-        "{0}"."DTMs" as dtm
-    WHERE
-        ST_Within(g.geom, dtm.geom)
-    ORDER BY
-        g.geom,
-        dtm."CellSize";
+    INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station")
+    SELECT
+        ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
+        "XsecID",
+        "Station"/100
+    FROM geometries;
 
-INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station", "DtmID")
-    SELECT DISTINCT ON (xs.geom)
-        ST_Endpoint(xs.geom),
-        xs."XsecID",
-        ST_Length(xs.geom),
-        dtm."DtmID"
-    FROM
-        "{0}"."XSCutLines" as xs,
-        "{0}"."DTMs" as dtm
-    WHERE
-        ST_Within(ST_Endpoint(xs.geom), dtm.geom)
-    ORDER BY
-        xs.geom,
-        dtm."CellSize";
+    INSERT INTO "{0}"."XSSurface" (geom, "XsecID", "Station")
+    SELECT
+        ST_Endpoint(geom),
+        "XsecID",
+        ST_Length(geom)
+    FROM "{0}"."XSCutLines";
 '''
         qry = qry.format(self.schema, self.srid)
         return qry
 
     def pg_update_banks(self, area='Channel', xs_tol=0):
-        """Update XSSurface points using bathymetry points data.
+        """
+        Update XSSurface points using bathymetry points data.
         The update extents is defined by bank lines and choice of the xsection part: channel, left or right overbank.
         """
         qry = '''
@@ -511,7 +493,8 @@ geom
         return qry
 
     def pg_update_polygons(self, xs_tol=0):
-        """Update XSSurface points using bathymetry points data.
+        """
+        Update XSSurface points using bathymetry points data.
         Only points inside the polygons of bathymetry extents will be updated.
         """
         qry = '''
@@ -590,7 +573,6 @@ class XSSurface(HecRasObject):
             ('"XsecID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"Elevation"', 'double precision'),
-            ('"DtmID"', 'integer'),
             ('"CoverCode"', 'text'),
             ('"SrcId"', 'integer'),
             ('"Notes"', 'text')]
@@ -954,7 +936,112 @@ class StorageAreas(HecRasObject):
             ('"StorageID"', 'serial primary key'),
             ('"MaxElev"', 'double precision'),
             ('"MinElev"', 'double precision'),
-            ('"UserElev"', 'double precision')]
+            ('"UserElev"', 'double precision'),
+            ('"DtmID"', 'integer')]
+
+    def pg_surface_points(self):
+        qry = '''
+CREATE OR REPLACE FUNCTION "{0}".point_grid ()
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM "{0}"."StorageAreas";
+    r "{0}"."StorageAreas"%ROWTYPE;
+    x double precision;
+    y double precision;
+    pnt geometry;
+    inside boolean;
+    sa_id integer;
+    row_nr integer;
+    col_nr integer;
+    cellsize double precision;
+    min_x double precision;
+    max_x double precision;
+    min_y double precision;
+    max_y double precision;
+BEGIN
+    FOR r IN c LOOP
+        SELECT dtm."CellSize" INTO cellsize FROM "{0}"."DTMs" AS dtm WHERE dtm."DtmID" = r."DtmID";
+        min_x := ST_Xmin(ST_Extent(r.geom));
+        max_x := ST_Xmax(ST_Extent(r.geom));
+        min_y := ST_Ymin(ST_Extent(r.geom));
+        max_y := ST_Ymax(ST_Extent(r.geom));
+        row_nr := ceiling((max_x - min_x) / cellsize);
+        col_nr := ceiling((max_y - min_y) / cellsize);
+        x := min_x;
+        FOR i IN 1..row_nr LOOP
+            y := min_y;
+            FOR j IN 1..col_nr LOOP
+                pnt := (ST_SetSRID(ST_Point(x, y), {1}));
+                SELECT ST_Within(pnt, r.geom), r."StorageID" INTO inside, sa_id WHERE ST_Within(pnt, r.geom) IS True;
+                IF inside IS True THEN
+                    INSERT INTO "{0}"."SASurface"(geom, "StorageID")
+                    VALUES (pnt, sa_id);
+                END IF;
+                y := y + cellsize;
+            END LOOP;
+            x := x + cellsize;
+        END LOOP;
+    END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+
+
+SELECT "{0}".point_grid ();
+ALTER TABLE "{0}"."SASurface" ADD COLUMN "PtID" bigserial primary key;
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+    def pg_storage_calculator(self, slices=5):
+        qry = '''
+CREATE OR REPLACE FUNCTION "{0}".storage_calculator (slices integer)
+    RETURNS VOID AS
+$BODY$
+DECLARE
+    c cursor FOR SELECT * FROM "{0}"."StorageAreas";
+    r "{0}"."StorageAreas"%ROWTYPE;
+    area double precision;
+    emin double precision;
+    emax double precision;
+    lev double precision;
+    h double precision;
+BEGIN
+    FOR r IN c LOOP
+        area := (SELECT dtm."CellSize" FROM "{0}"."DTMs" AS dtm WHERE dtm."DtmID" = r."DtmID")^2;
+        emin := (SELECT MIN("Elevation") FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID");
+        emax := (SELECT MAX("Elevation") FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID");
+        lev := emin;
+        h := (emax-emin)/slices;
+        FOR i IN 1..slices LOOP
+            INSERT INTO "{0}"."SAVolume" ("StorageID", start_level, end_level, volume)
+            SELECT r."StorageID", lev, lev+h, COUNT("Elevation")*area*h FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID" AND "Elevation" BETWEEN lev AND lev+h;
+            lev := lev+h;
+        END LOOP;
+    END LOOP;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+
+
+DROP TABLE IF EXISTS "{0}"."SAVolume";
+CREATE TABLE "{0}"."SAVolume"("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
+SELECT "{0}".storage_calculator ({1});
+'''
+        qry = qry.format(self.schema, slices)
+        return qry
+
+
+class SASurface(HecRasObject):
+    def __init__(self):
+        super(SASurface, self).__init__()
+        self.main = False
+        self.spatial_index = False
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"StorageID"', 'integer'),
+            ('"Elevation"', 'double precision')]
 
 
 class SAConnections(HecRasObject):
