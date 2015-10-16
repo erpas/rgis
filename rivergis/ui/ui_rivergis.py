@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Wed Oct 14 00:30:45 2015
+# Created: Fri Oct 16 08:44:37 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!

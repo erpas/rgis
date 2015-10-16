@@ -50,10 +50,6 @@ class RiverGIS(QMainWindow):
         self.dtms = []
         self.DEBUG = 0
 
-        # create status bar
-        self.statusBar = QStatusBar(self)
-        self.setStatusBar(self.statusBar)
-
         # MENU Actions
 
         # DB
