@@ -24,7 +24,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from os.path import dirname
 from ras_gis_import import RasGisImport
-from rasElevations import prepare_DTMs, probe_DTMs
+from rasElevations import prepare_DTMs, update_DtmID, probe_DTMs
 from dlg_rasXSUpdate import DlgXSUpdateInsertMeasuredPts
 
 def ras1dStreamCenterlineTopology(rgis):
@@ -114,19 +114,25 @@ def ras1dStreamCenterlines2Flowpaths(rgis):
 
 
 def ras1dXSElevations(rgis):
+    # TODO: Retrieve chunksize from user.
     """Probe a DTM to find cross-section vertical shape"""
     # Prepare DTMs
+    surface_obj = heco.XSSurface()
+    parent_obj = heco.XSCutLines()
     prepare_DTMs(rgis)
-    QApplication.setOverrideCursor(Qt.WaitCursor)
+    update_DtmID(rgis, parent_obj)
 
     # insert xs points along each xsection
-    obj = rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
-    rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_xs_elevations')
+    rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_surface_points')
 
     # probe a DTM at each point
-    probe_DTMs(rgis, obj.name, chunksize=100)
-    QApplication.restoreOverrideCursor()
-    rgis.addInfo('Done')
+    QApplication.setOverrideCursor(Qt.WaitCursor)
+    try:
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=10000)
+        rgis.addInfo('Done')
+    finally:
+        QApplication.restoreOverrideCursor()
 
 
 def ras1dXSAll(rgis):
@@ -165,9 +171,38 @@ def ras1dObstructions(rgis):
         rgis.addInfo('Done.')
 
 
+def ras1dSAElevations(rgis):
+    """Probe a DTM to find storage area vertical shape"""
+    # TODO: Retrieve chunksize from user.
+    # Prepare DTMs
+    surface_obj = heco.SASurface()
+    parent_obj = heco.StorageAreas()
+    prepare_DTMs(rgis)
+    update_DtmID(rgis, parent_obj)
+
+    # probe a DTM at each point
+    QApplication.setOverrideCursor(Qt.WaitCursor)
+    try:
+        rgis.addInfo('<br><b>Creating point grid inside Storage Areas...</b>')
+        rgis.rdb.process_hecobject(heco.SASurface, 'pg_create_table')
+        rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_surface_points')
+        rgis.addInfo('Done')
+        rgis.addInfo('<br><b>Extracting values from raster...</b>')
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=10000)
+        rgis.addInfo('Done')
+    finally:
+        QApplication.restoreOverrideCursor()
+
+
+def ras1dSAVolumeData(rgis):
+    # TODO: Retrieve number of slices from user.
+    rgis.addInfo('<br><b>Calculating elevation-volume data for Storage Areas...</b>')
+    rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_storage_calculator', slices=5)
+    rgis.addInfo('Done')
+
+
 def ras1dXSUpdateInsertMeasuredPts(rgis):
     rgis.addInfo('<br><b>Updating cross-sections - inserting measured points...</b>')
-
     dlg = DlgXSUpdateInsertMeasuredPts(rgis)
     dlg.exec_()
 

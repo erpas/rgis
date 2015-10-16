@@ -350,9 +350,7 @@ class RiverGIS(QMainWindow):
         self.rdb.load_registered()
 
     def rasImportLayersIntoRdbTables(self):
-        '''
-        Import chosen layers into PostGIS database.
-        '''
+        """Import chosen layers into PostGIS database."""
         from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
         self.addInfo("<br><b>Import data into RAS PostGIS tables...</b>")
         if not self.curConnName or not self.schema:
@@ -457,16 +455,18 @@ class RiverGIS(QMainWindow):
     
     def ras1dLatAll(self):
         pass
-    
+
     def ras1dSAElevationRange(self):
         pass
-    
-    def ras1dAElevationVolumeData(self):
-        pass
-    
+
     def ras1dSATerrainPointExtraction(self):
-        pass
-    
+        from ras1dFunctions import ras1dSAElevations
+        ras1dSAElevations(self)
+
+    def ras1dAElevationVolumeData(self):
+        from ras1dFunctions import ras1dSAVolumeData
+        ras1dSAVolumeData(self)
+
     def actionRASSAAll(self):
         pass
     
