@@ -421,10 +421,12 @@ class RiverGIS(QMainWindow):
         ras1dXSUpdateInsertMeasuredPts(self)
 
     def ras1dBRRiverReachNames(self):
-        pass
+        from ras1dFunctions import ras1dBRRiverReachNames
+        ras1dBRRiverReachNames(self)
 
     def ras1dBRStationing(self):
-        pass
+        from ras1dFunctions import ras1dBRStationing
+        ras1dBRStationing(self)
 
     def ras1dBRElevations(self):
         pass
@@ -433,10 +435,12 @@ class RiverGIS(QMainWindow):
         pass
 
     def ras1dInlRiverReachNames(self):
-        pass
+        from ras1dFunctions import ras1dISRiverReachNames
+        ras1dISRiverReachNames(self)
 
     def ras1dInlStationing(self):
-        pass
+        from ras1dFunctions import ras1dISStationing
+        ras1dISStationing(self)
 
     def ras1dInlElevations(self):
         pass

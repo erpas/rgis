@@ -30,8 +30,8 @@ from dlg_rasXSUpdate import DlgXSUpdateInsertMeasuredPts
 def ras1dStreamCenterlineTopology(rgis):
     """Create river network topology. Create nodes at reach ends and find the direction of flow (fromNode, toNode)"""
     # check if streamlines table is registered
-    scExist = 'StreamCenterlines' in rgis.rdb.register.keys()
-    if not scExist:
+    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
+    if not sc_exist:
         rgis.addInfo('<br>StreamCenterlines are not registered in the river database. Import or create stream centerlines. <br>Cancelling...')
         return
 
@@ -62,9 +62,9 @@ def ras1dStreamCenterlineAll(rgis):
 def ras1dXSRiverReachNames(rgis):
     """Finds river and reach name for each cross-section"""
     # check if streamlines  and xsec tables are registered
-    scExist = 'StreamCenterlines' in rgis.rdb.register.keys()
-    xsExist = 'XSCutLines' in rgis.rdb.register.keys()
-    if not scExist or not xsExist:
+    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
+    xs_exist = 'XSCutLines' in rgis.rdb.register.keys()
+    if not sc_exist or not xs_exist:
         rgis.addInfo('<br>StreamCenterlines or XSCutLines table is not registered in the river database. Cancelling...')
         return
     rgis.addInfo('<br><b>Setting river and reach names for each cross-section...</b>')
@@ -74,21 +74,21 @@ def ras1dXSRiverReachNames(rgis):
 
 def ras1dXSStationing(rgis):
     """Finds cross-sections' stationing (chainages) along its river reach"""
-    rgis.addInfo('<br><b>Calculating cross-sections\' stationing...</b>')
+    rgis.addInfo('<br><b>Calculating cross-sections stationing...</b>')
     if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_stationing'):
         rgis.addInfo('Done.')
 
 
 def ras1dXSBankStations(rgis):
     """Find banks stations for each cross-section. Based on intersection of banks and xs lines"""
-    rgis.addInfo('<br><b>Calculating cross-sections\' banks stations...</b>')
+    rgis.addInfo('<br><b>Calculating cross-sections banks stations...</b>')
     if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_bank_stations'):
         rgis.addInfo('Done.')
 
 
 def ras1dXSDownstreamLengths(rgis):
     """Calculates downstream reach lengths from each cross-section along the 3 flow paths (channel, left and right overbank)"""
-    rgis.addInfo('<br><b>Calculating cross-sections\' distances to the next cross-section downstream ...</b>')
+    rgis.addInfo('<br><b>Calculating cross-sections distances to the next cross-section downstream ...</b>')
     # check the flowpaths line type if not empty
     qry = 'SELECT "LineType" FROM "{0}"."Flowpaths";'.format(rgis.rdb.SCHEMA)
     lineTypes = rgis.rdb.run_query(qry, fetch=True)
@@ -154,6 +154,44 @@ def ras1dLevees(rgis):
     rgis.addInfo('<br><b>Calculating levees stations for cross-sections...</b>')
     rgis.rdb.process_hecobject(heco.LeveePoints, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.LeveeAlignment, 'pg_levee_positions'):
+        rgis.addInfo('Done.')
+
+
+def ras1dBRRiverReachNames(rgis):
+    """Finds river and reach name for each bridge"""
+    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
+    br_exist = 'Bridges' in rgis.rdb.register.keys()
+    if not sc_exist or not br_exist:
+        rgis.addInfo('<br>StreamCenterlines or Bridges table is not registered in the river database. Cancelling...')
+        return
+    rgis.addInfo('<br><b>Setting river and reach names for each bridge...</b>')
+    if rgis.rdb.process_hecobject(heco.Bridges, 'pg_river_reach_names'):
+        rgis.addInfo('Done.')
+
+
+def ras1dBRStationing(rgis):
+    """Finds bridges stationing (chainages) along its river reach"""
+    rgis.addInfo('<br><b>Calculating bridges stationing...</b>')
+    if rgis.rdb.process_hecobject(heco.Bridges, 'pg_stationing'):
+        rgis.addInfo('Done.')
+
+
+def ras1dISRiverReachNames(rgis):
+    """Finds river and reach name for each inline structure"""
+    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
+    is_exist = 'InlineStructures' in rgis.rdb.register.keys()
+    if not sc_exist or not is_exist:
+        rgis.addInfo('<br>StreamCenterlines or InlineStructures table is not registered in the river database. Cancelling...')
+        return
+    rgis.addInfo('<br><b>Setting river and reach names for each inline structure...</b>')
+    if rgis.rdb.process_hecobject(heco.InlineStructures, 'pg_river_reach_names'):
+        rgis.addInfo('Done.')
+
+
+def ras1dISStationing(rgis):
+    """Finds inline structures stationing (chainages) along its river reach"""
+    rgis.addInfo('<br><b>Calculating inline structures stationing...</b>')
+    if rgis.rdb.process_hecobject(heco.InlineStructures, 'pg_stationing'):
         rgis.addInfo('Done.')
 
 
