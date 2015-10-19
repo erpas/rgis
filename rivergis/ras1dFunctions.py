@@ -43,7 +43,7 @@ def ras1dStreamCenterlineTopology(rgis):
 
 
 def ras1dStreamCenterlineLengthsStations(rgis):
-    """Calculate river reaches lenght and their endpoints stations"""
+    """Calculate river reaches length and their endpoints stations"""
     ntExist = 'NodesTable' in [t[0] for t in rgis.rdb.list_tables()]
     if not ntExist:
         rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build stream centerlines topology first.<br>Cancelling...')
