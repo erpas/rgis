@@ -27,6 +27,7 @@ from ras_gis_import import RasGisImport
 from rasElevations import prepare_DTMs, update_DtmID, probe_DTMs
 from dlg_rasXSUpdate import DlgXSUpdateInsertMeasuredPts
 
+
 def ras1dStreamCenterlineTopology(rgis):
     """Create river network topology. Create nodes at reach ends and find the direction of flow (fromNode, toNode)"""
     # check if streamlines table is registered
@@ -157,6 +158,20 @@ def ras1dLevees(rgis):
         rgis.addInfo('Done.')
 
 
+def ras1dIneffective(rgis):
+    rgis.addInfo('<br><b>Finding ineffective flow areas for cross-sections</b>')
+    rgis.rdb.process_hecobject(heco.IneffLines, 'pg_create_table')
+    if rgis.rdb.process_hecobject(heco.IneffAreas, 'pg_ineffective_positions'):
+        rgis.addInfo('Done.')
+
+
+def ras1dObstructions(rgis):
+    rgis.addInfo('<br><b>Finding blocked obstructions for cross-sections</b>')
+    rgis.rdb.process_hecobject(heco.BlockLines, 'pg_create_table')
+    if rgis.rdb.process_hecobject(heco.BlockedObs, 'pg_blocked_positions'):
+        rgis.addInfo('Done.')
+
+
 def ras1dBRRiverReachNames(rgis):
     """Finds river and reach name for each bridge"""
     sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
@@ -174,6 +189,16 @@ def ras1dBRStationing(rgis):
     rgis.addInfo('<br><b>Calculating bridges stationing...</b>')
     if rgis.rdb.process_hecobject(heco.Bridges, 'pg_stationing'):
         rgis.addInfo('Done.')
+
+
+def ras1dBRElevations(rgis):
+    rgis.addInfo('<br><b>Running Elevations for Bridges/Culverts...</b>')
+    # TODO
+
+
+def ras1dRASBRAll(rgis):
+    rgis.addInfo('<br><b>Running All Functions for Bridges/Culverts...</b>')
+    # TODO
 
 
 def ras1dISRiverReachNames(rgis):
@@ -195,42 +220,25 @@ def ras1dISStationing(rgis):
         rgis.addInfo('Done.')
 
 
-def ras1dIneffective(rgis):
-    rgis.addInfo('<br><b>Finding ineffective flow areas for cross-sections</b>')
-    rgis.rdb.process_hecobject(heco.IneffLines, 'pg_create_table')
-    if rgis.rdb.process_hecobject(heco.IneffAreas, 'pg_ineffective_positions'):
-        rgis.addInfo('Done.')
-
-
-def ras1dObstructions(rgis):
-    rgis.addInfo('<br><b>Finding blocked obstructions for cross-sections</b>')
-    rgis.rdb.process_hecobject(heco.BlockLines, 'pg_create_table')
-    if rgis.rdb.process_hecobject(heco.BlockedObs, 'pg_blocked_positions'):
-        rgis.addInfo('Done.')
-
-def ras1dBRElevations(rgis):
-    rgis.addInfo('<br><b>Running Elevations for Bridges/Culverts...</b>')
-    # TODO
-
-def ras1dRASBRAll(rgis):
-    rgis.addInfo('<br><b>Running All Functions for Bridges/Culverts...</b>')
-    # TODO
-
 def ras1dISElevations(rgis):
     rgis.addInfo('<br><b>Running Elevations for Inline Structures...</b>')
     # TODO
+
 
 def ras1dISAll(rgis):
     rgis.addInfo('<br><b>Running All Functions for Inline Structures...</b>')
     # TODO
 
+
 def ras1dLatRiverReachNames(rgis):
     rgis.addInfo('<br><b>Running River Reach Names for Lateral Structures...</b>')
     # TODO
 
+
 def ras1dLatStationing(rgis):
     rgis.addInfo('<br><b>Running Stationing for Lateral Structures...</b>')
     # TODO
+
 
 def ras1dLatElevations(rgis):
     rgis.addInfo('<br><b>Running Elevations for Lateral Structures...</b>')
@@ -240,6 +248,7 @@ def ras1dLatElevations(rgis):
 def ras1dLatAll(rgis):
     rgis.addInfo('<br><b>Running All Functions for Lateral Structures...</b>')
     # TODO
+
 
 def ras1dSAElevations(rgis):
     """Probe a DTM to later find storage area volume"""
@@ -270,6 +279,7 @@ def ras1dSAVolumeData(rgis):
     rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_storage_calculator', slices=5)
     rgis.addInfo('Done')
 
+
 def ras1dSAAll(rgis):
     ras1dSAElevations(rgis)
     ras1dSAVolumeData(rgis)
@@ -280,7 +290,8 @@ def ras1dSACAssignNearestSA(rgis):
 
 
 def ras1dSACElevations(rgis):
-    rgis.addInfo('<br><b>Running Elevations for Starage Areas Connections...</b>')
+    rgis.addInfo('<br><b>Running Elevations for Storage Areas Connections...</b>')
+
 
 def ras1dSACAll(rgis):
     ras1dSAElevations(rgis)
