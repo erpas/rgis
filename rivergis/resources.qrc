@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/ras1dSAConnections.svg</file>
+    <file>icons/rasImportHdfIntoRdb.svg</file>
+    <file>icons/rasImportSdfIntoRdb.svg</file>
     <file>icons/ras1dStreamCenterlines.svg</file>
     <file>icons/ras1dSAConnections.svg</file>
     <file>icons/ras1dXs.svg</file>

@@ -208,14 +208,6 @@ def ras1dObstructions(rgis):
     if rgis.rdb.process_hecobject(heco.BlockedObs, 'pg_blocked_positions'):
         rgis.addInfo('Done.')
 
-def ras1dBRRiverReachNames(rgis):
-    rgis.addInfo('<br><b>Running River Reach Names for Bridges/Culverts...</b>')
-    # TODO
-
-def ras1dBRStationing(rgis):
-    rgis.addInfo('<br><b>Running Stationing for Bridges/Culverts...</b>')
-    # TODO
-
 def ras1dBRElevations(rgis):
     rgis.addInfo('<br><b>Running Elevations for Bridges/Culverts...</b>')
     # TODO
@@ -224,19 +216,11 @@ def ras1dRASBRAll(rgis):
     rgis.addInfo('<br><b>Running All Functions for Bridges/Culverts...</b>')
     # TODO
 
-def ras1dInlRiverReachNames(rgis):
-    rgis.addInfo('<br><b>Running River Reach Names for Inline Structures...</b>')
-    # TODO
-
-def ras1dInlStationing(rgis):
-    rgis.addInfo('<br><b>Running Stationing for Inline Structures...</b>')
-    # TODO
-
-def ras1dInlElevations(rgis):
+def ras1dISElevations(rgis):
     rgis.addInfo('<br><b>Running Elevations for Inline Structures...</b>')
     # TODO
 
-def ras1dInlAll(rgis):
+def ras1dISAll(rgis):
     rgis.addInfo('<br><b>Running All Functions for Inline Structures...</b>')
     # TODO
 
@@ -258,7 +242,7 @@ def ras1dLatAll(rgis):
     # TODO
 
 def ras1dSAElevations(rgis):
-    """Probe a DTM to find storage area vertical shape"""
+    """Probe a DTM to later find storage area volume"""
     # TODO: Retrieve chunksize from user.
     # Prepare DTMs
     surface_obj = heco.SASurface()
@@ -285,6 +269,22 @@ def ras1dSAVolumeData(rgis):
     rgis.addInfo('<br><b>Calculating elevation-volume data for Storage Areas...</b>')
     rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_storage_calculator', slices=5)
     rgis.addInfo('Done')
+
+def ras1dSAAll(rgis):
+    ras1dSAElevations(rgis)
+    ras1dSAVolumeData(rgis)
+
+
+def ras1dSACAssignNearestSA(rgis):
+    rgis.addInfo('<br><b>Finding nearest Storage Areas for the connection...</b>')
+
+
+def ras1dSACElevations(rgis):
+    rgis.addInfo('<br><b>Running Elevations for Starage Areas Connections...</b>')
+
+def ras1dSACAll(rgis):
+    ras1dSAElevations(rgis)
+    ras1dSAVolumeData(rgis)
 
 
 def ras1dXSUpdateInsertMeasuredPts(rgis):
