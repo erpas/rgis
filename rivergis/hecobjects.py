@@ -742,13 +742,9 @@ class LanduseAreas(HecRasObject):
 ------------------------------------------------------------------------------------------------------------------------
 DROP TABLE IF EXISTS "{0}"."Manning";
 
-SELECT "LUID", "LUCode", "N_Value", ST_AsText((ST_Dump(geom)).geom) AS geom
+SELECT "LUID", "LUCode", "N_Value", (ST_Dump(geom)).geom::geometry(POLYGON, {1}) AS geom
 INTO "{0}".ludump
 FROM "{0}"."LanduseAreas";
-
-ALTER TABLE "{0}".ludump
-ALTER COLUMN geom TYPE geometry(POLYGON, {1})
-USING ST_SetSRID(geom, {1});
 
 CREATE INDEX idx_ludump
 ON "{0}".ludump
@@ -756,37 +752,28 @@ USING gist(geom);
 
 ------------------------------------------------------------------------------------------------------------------------
 SELECT "XSCutLines"."XsecID", ludump."N_Value", ludump."LUCode", ST_Intersection(ludump.geom, "XSCutLines".geom) AS geom
-INTO "{0}".intercrossection
+INTO "{0}".inter_xs
 FROM "{0}".ludump, "{0}"."XSCutLines"
 WHERE
     ludump.geom && "XSCutLines".geom AND
     ST_Intersects(ludump.geom, "XSCutLines".geom)
 ORDER BY "XSCutLines"."XsecID";
 
-SELECT "XsecID","N_Value","LUCode" ,ST_AsText((ST_Dump(geom)).geom) AS geom
-INTO "{0}".intercrossectiondump
-FROM "{0}".intercrossection;
+SELECT "XsecID","N_Value","LUCode", (ST_Dump(geom)).geom::geometry(LINESTRING, {1}) AS geom
+INTO "{0}".inter_xs_dump
+FROM "{0}".inter_xs;
 
-
-ALTER TABLE "{0}".intercrossectiondump
-ALTER COLUMN geom TYPE geometry(LINESTRING, {1})
-USING ST_SetSRID(geom, {1});
-
-CREATE INDEX idx_intercrossectiondump
-ON"{0}".intercrossectiondump
+CREATE INDEX idx_inter_xs_dump
+ON"{0}".inter_xs_dump
 USING gist(geom);
 
 ------------------------------------------------------------------------------------------------------------------------
 -- Multilinestring to line string --
 ------------------------------------------------------------------------------------------------------------------------
-SELECT "XsecID", ST_AsText((ST_Dump("XSCutLines".geom)).geom) AS geom
+SELECT "XsecID", (ST_Dump("XSCutLines".geom)).geom::geometry(LINESTRING, {1}) AS geom
 INTO "{0}".single_line
 FROM "{0}"."XSCutLines"
 ORDER BY "XsecID";
-
-ALTER TABLE "{0}".single_line
-ALTER COLUMN geom TYPE geometry(LINESTRING, {1})
-USING ST_SetSRID(geom, {1});
 
 CREATE INDEX idx_single_line
 ON "{0}".single_line
@@ -795,14 +782,10 @@ USING gist(geom);
 ------------------------------------------------------------------------------------------------------------------------
 -- Creation of points on the line start points, 5 mm shifting for appropriate "N_Value" application    --
 ------------------------------------------------------------------------------------------------------------------------
-SELECT "XsecID", "N_Value", "LUCode", ST_Line_Interpolate_Point(intercrossectiondump.geom, 0.00005) AS geom
+SELECT "XsecID", "N_Value", "LUCode", ST_Line_Interpolate_Point(inter_xs_dump.geom, 0.00005)::geometry(POINT, {1}) AS geom
 INTO "{0}".shiftpoints
-FROM "{0}".intercrossectiondump
+FROM "{0}".inter_xs_dump
 ORDER BY "XsecID";
-
-ALTER TABLE "{0}".shiftpoints
-ALTER COLUMN geom TYPE geometry(POINT, {1})
-USING ST_SetSRID(geom, {1});
 
 CREATE INDEX idx_shiftpoints
 ON "{0}".shiftpoints
@@ -811,8 +794,8 @@ USING gist(geom);
 ------------------------------------------------------------------------------------------------------------------------
 -- Calculation of fraction along line cross sections  --
 ------------------------------------------------------------------------------------------------------------------------
-SELECT  b."XsecID", b."N_Value", b."LUCode", ST_LineLocatePoint(a.geom,b.geom) AS "Fraction"
-INTO "{0}".tempmann
+SELECT  b."XsecID", b."N_Value", b."LUCode", ST_LineLocatePoint(a.geom, b.geom) AS "Fraction"
+INTO "{0}".tmpman
 FROM "{0}".single_line AS a, "{0}".shiftpoints AS b
 WHERE a."XsecID" = b."XsecID"
 ORDER BY "XsecID", "Fraction";
@@ -830,14 +813,14 @@ SELECT
     "N_Value",
     "LUCode"
 INTO "{0}"."Manning"
-FROM "{0}".tempmann;
+FROM "{0}".tmpman;
 
 DROP TABLE
-    "{0}".intercrossection,
-    "{0}".intercrossectiondump,
+    "{0}".inter_xs,
+    "{0}".inter_xs_dump,
     "{0}".single_line,
     "{0}".shiftpoints,
-    "{0}".tempmann,
+    "{0}".tmpman,
     "{0}".ludump;
 
 ------------------------------------------------------------------------------------------------------------------------
