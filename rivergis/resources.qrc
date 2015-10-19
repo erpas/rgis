@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/ras1dStreamCenterlines.svg</file>
+    <file>icons/ras1dSAConnections.svg</file>
+    <file>icons/ras1dXs.svg</file>
+    <file>icons/ras1dStorageAreas.svg</file>
     <file>icons/ras1dSAElevVolume.svg</file>
     <file>icons/ras1dBridges.svg</file>
     <file>icons/ras1dInlineStruct.svg</file>
@@ -25,13 +29,12 @@
     <file>icons/ras1dStreamCenterlinesTopology.svg</file>
     <file>icons/createPgTables.svg</file>
     <file>icons/loadRdbTablesIntoQgis.svg</file>
-    <file>icons/loadWselHdf.svg</file>
     <file>icons/createDepthsAndRange.svg</file>
+    <file>icons/rasImportHdfIntoRdb.svg</file>
+    <file>icons/rasImportSdfIntoRdb.svg</file>
     <file>icons/createWselRaster.svg</file>
     <file>icons/importFromIsok.svg</file>
-    <file>icons/correctLateralWeir.svg</file>
     <file>icons/rivergis.svg</file>
-    <file>icons/loadVelHdf.svg</file>
     <file>icons/ras2dareaCreate.svg</file>
     <file>icons/ras2dareaPreview.svg</file>
     <file>icons/ras2dareaSaveToGeo.svg</file>

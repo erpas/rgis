@@ -1018,6 +1018,7 @@ class StorageAreas(HecRasObject):
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"StorageID"', 'serial primary key'),
+            ('"Name"', 'text'),
             ('"MaxElev"', 'double precision'),
             ('"MinElev"', 'double precision'),
             ('"UserElev"', 'double precision'),
@@ -1161,6 +1162,7 @@ class SAConnections(HecRasObject):
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"SAconID"', 'serial primary key'),
+            ('"Name"', 'text'),
             ('"USSA"', 'integer'),
             ('"DSSA"', 'integer'),
             ('"TopWidth"', 'double precision')]

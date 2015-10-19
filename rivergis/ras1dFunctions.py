@@ -170,6 +170,54 @@ def ras1dObstructions(rgis):
     if rgis.rdb.process_hecobject(heco.BlockedObs, 'pg_blocked_positions'):
         rgis.addInfo('Done.')
 
+def ras1dBRRiverReachNames(rgis):
+    rgis.addInfo('<br><b>Running River Reach Names for Bridges/Culverts...</b>')
+    # TODO
+
+def ras1dBRStationing(rgis):
+    rgis.addInfo('<br><b>Running Stationing for Bridges/Culverts...</b>')
+    # TODO
+
+def ras1dBRElevations(rgis):
+    rgis.addInfo('<br><b>Running Elevations for Bridges/Culverts...</b>')
+    # TODO
+
+def ras1dRASBRAll(rgis):
+    rgis.addInfo('<br><b>Running All Functions for Bridges/Culverts...</b>')
+    # TODO
+
+def ras1dInlRiverReachNames(rgis):
+    rgis.addInfo('<br><b>Running River Reach Names for Inline Structures...</b>')
+    # TODO
+
+def ras1dInlStationing(rgis):
+    rgis.addInfo('<br><b>Running Stationing for Inline Structures...</b>')
+    # TODO
+
+def ras1dInlElevations(rgis):
+    rgis.addInfo('<br><b>Running Elevations for Inline Structures...</b>')
+    # TODO
+
+def ras1dInlAll(rgis):
+    rgis.addInfo('<br><b>Running All Functions for Inline Structures...</b>')
+    # TODO
+
+def ras1dLatRiverReachNames(rgis):
+    rgis.addInfo('<br><b>Running River Reach Names for Lateral Structures...</b>')
+    # TODO
+
+def ras1dLatStationing(rgis):
+    rgis.addInfo('<br><b>Running Stationing for Lateral Structures...</b>')
+    # TODO
+
+def ras1dLatElevations(rgis):
+    rgis.addInfo('<br><b>Running Elevations for Lateral Structures...</b>')
+    # TODO
+
+
+def ras1dLatAll(rgis):
+    rgis.addInfo('<br><b>Running All Functions for Lateral Structures...</b>')
+    # TODO
 
 def ras1dSAElevations(rgis):
     """Probe a DTM to find storage area vertical shape"""
@@ -229,3 +277,4 @@ def ras1dCreateRasGisImportFile(rgis):
     with open(importFileName, 'w') as importFile:
         importFile.write(sdf)
     rgis.addInfo('Done.')
+

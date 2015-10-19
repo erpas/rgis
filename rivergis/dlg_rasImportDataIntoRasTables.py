@@ -208,6 +208,30 @@ class DlgImportDataIntoRasTables(QDialog):
                     }
                 },
                 'geomType': 1 # lines
+            },
+
+            'Storage Areas': {
+                'cbo': self.ui.cboSALayer,
+                'className': 'StorageAreas',
+                'attrs': {
+                    'Name': {
+                        'cbo': self.ui.cboSAName,
+                        'checkName': ['name', 'nodename', 'desc']
+                    }
+                },
+                'geomType': 2 # polygons
+            },
+
+            'Storage Area Connections': {
+                'cbo': self.ui.cboSacLayer,
+                'className': 'SAConnections',
+                'attrs': {
+                    'Name': {
+                        'cbo': self.ui.cboSacName,
+                        'checkName': ['name', 'nodename', 'desc']
+                    }
+                },
+                'geomType': 1 # lines
             }
         }
 

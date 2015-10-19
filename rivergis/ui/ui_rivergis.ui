@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
+    <width>601</width>
     <height>350</height>
    </rect>
   </property>
@@ -130,7 +130,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>615</width>
+     <width>601</width>
      <height>18</height>
     </rect>
    </property>
@@ -157,6 +157,10 @@
      <property name="title">
       <string>XS Cut Line Attributes</string>
      </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/rivergis/icons/ras1dXs.svg</normaloff>:/rivergis/icons/ras1dXs.svg</iconset>
+     </property>
      <addaction name="actionRASXSRiverReachNames"/>
      <addaction name="actionRASXSStationing"/>
      <addaction name="actionRASXSBankStations"/>
@@ -171,6 +175,10 @@
     <widget class="QMenu" name="menuStreamCenterlineAttributes">
      <property name="title">
       <string>Stream Centerline Attributes</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/rivergis/icons/ras1dStreamCenterlines.svg</normaloff>:/rivergis/icons/ras1dStreamCenterlines.svg</iconset>
      </property>
      <addaction name="actionRASTopology1D"/>
      <addaction name="actionRASLengthsStations"/>
@@ -226,25 +234,28 @@
      <property name="title">
       <string>Storage Areas</string>
      </property>
-     <addaction name="actionRASSAElevationRange"/>
-     <addaction name="actionRASAElevationVolumeData"/>
-     <addaction name="separator"/>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/rivergis/icons/ras1dStorageAreas.svg</normaloff>:/rivergis/icons/ras1dStorageAreas.svg</iconset>
+     </property>
      <addaction name="actionRASSATerrainPointExtraction"/>
+     <addaction name="actionRASAElevationVolumeData"/>
      <addaction name="separator"/>
      <addaction name="actionRASSAAll"/>
     </widget>
     <widget class="QMenu" name="menuStorage_Areas_Connections">
      <property name="title">
-      <string>Storage Areas Connections</string>
+      <string>Storage Area Connections</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources.qrc">
+       <normaloff>:/rivergis/icons/ras1dSAConnections.svg</normaloff>:/rivergis/icons/ras1dSAConnections.svg</iconset>
      </property>
      <addaction name="actionRASSacAssignNearestSA"/>
      <addaction name="actionRASSacElevations"/>
      <addaction name="separator"/>
      <addaction name="actionRASSacAll"/>
     </widget>
-    <addaction name="actionRASCreateRdbTables"/>
-    <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
-    <addaction name="actionRASImportLayersIntoRdbTables"/>
     <addaction name="menuStreamCenterlineAttributes"/>
     <addaction name="menuXS_Cut_Line_Attributes"/>
     <addaction name="actionRASManningsNValues"/>
@@ -263,13 +274,15 @@
     <addaction name="actionRASCreate2dAreaPoints"/>
     <addaction name="actionRASPreview2DMesh"/>
     <addaction name="actionRASSave2DPointsToHECRASGeometry"/>
-    <addaction name="actionRASCorrectLateralWeirs"/>
    </widget>
    <widget class="QMenu" name="menuDB">
     <property name="title">
      <string>Database</string>
     </property>
     <addaction name="actionRefreshConnections"/>
+    <addaction name="actionRASCreateRdbTables"/>
+    <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
+    <addaction name="actionRASImportLayersIntoRdbTables"/>
     <addaction name="actionImportRiverFromIsokp"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
@@ -286,6 +299,137 @@
    <addaction name="menuRASMapping"/>
    <addaction name="menuHelp"/>
   </widget>
+  <widget class="QToolBar" name="settingsToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRefreshConnections"/>
+   <addaction name="actionRASCreateRdbTables"/>
+   <addaction name="actionRASImportLayersIntoRdbTables"/>
+   <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
+  </widget>
+  <widget class="QToolBar" name="dbToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRASDTMSetup"/>
+  </widget>
+  <widget class="QToolBar" name="rasGeomToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRASTopology1D"/>
+   <addaction name="actionRASLengthsStations"/>
+   <addaction name="actionRASStreamCenterlineAll"/>
+   <addaction name="actionRASXSRiverReachNames"/>
+   <addaction name="actionRASXSStationing"/>
+   <addaction name="actionRASXSBankStations"/>
+   <addaction name="actionRASXSDownstreamReachLengths"/>
+   <addaction name="actionRASXSElevations"/>
+   <addaction name="actionRASXSAll"/>
+  </widget>
+  <widget class="QToolBar" name="rasOptGeomToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+   <addaction name="actionRASManningsNValues"/>
+   <addaction name="actionRASIneffectiveFlowAreas"/>
+   <addaction name="actionRASBlockedObstructions"/>
+   <addaction name="actionRASXSUpdateInsertMeasuredPoints"/>
+  </widget>
+  <widget class="QToolBar" name="rasImportExportToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRASCreateRASGISImport"/>
+   <addaction name="actionRASImportRasData"/>
+  </widget>
+  <widget class="QToolBar" name="rasSAToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRASSATerrainPointExtraction"/>
+   <addaction name="actionRASAElevationVolumeData"/>
+  </widget>
+  <widget class="QToolBar" name="rasMappingToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRASWaterSurfaceGeneration"/>
+   <addaction name="actionRASFloodplainDelineation"/>
+  </widget>
+  <widget class="QToolBar" name="ras2dToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRASCreate2dAreaPoints"/>
+   <addaction name="actionRASPreview2DMesh"/>
+   <addaction name="actionRASSave2DPointsToHECRASGeometry"/>
+  </widget>
+  <widget class="QToolBar" name="rasStructuresToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRASBRAll"/>
+   <addaction name="actionRASInlAll"/>
+   <addaction name="actionRASLatAll"/>
+   <addaction name="actionRASSAAll"/>
+   <addaction name="actionRASSacAll"/>
+  </widget>
   <action name="actionCreate2dAreaPerimeter">
    <property name="icon">
     <iconset>
@@ -293,18 +437,6 @@
    </property>
    <property name="text">
     <string>2D Area (Perimeter)</string>
-   </property>
-  </action>
-  <action name="actionRASCorrectLateralWeirs">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/correctLateralWeir.svg</normaloff>:/rivergis/icons/correctLateralWeir.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Correct Lateral Weirs</string>
    </property>
   </action>
   <action name="actionRASCreate2dAreaPoints">
@@ -328,7 +460,7 @@
   </action>
   <action name="actionLoad_2D_WSEL_from_HDF">
    <property name="icon">
-    <iconset resource="../resources.qrc">
+    <iconset>
      <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
    </property>
    <property name="text">
@@ -371,7 +503,7 @@
      <normaloff>:/rivergis/icons/createDepthsAndRange.svg</normaloff>:/rivergis/icons/createDepthsAndRange.svg</iconset>
    </property>
    <property name="text">
-    <string>Floodplain Delineation Using Rasters</string>
+    <string>Floodplain Delineation</string>
    </property>
   </action>
   <action name="actionLoad_1D_WSEL_from_HDF">
@@ -382,10 +514,10 @@
   <action name="actionRASImportRasData">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/loadWselHdf.svg</normaloff>:/rivergis/icons/loadWselHdf.svg</iconset>
+     <normaloff>:/rivergis/icons/rasImportHdfIntoRdb.svg</normaloff>:/rivergis/icons/rasImportHdfIntoRdb.svg</iconset>
    </property>
    <property name="text">
-    <string>Import RAS Data</string>
+    <string>Import RAS Results From HDF</string>
    </property>
   </action>
   <action name="actionCreate_1d_PostGIS_Tables">
@@ -474,17 +606,6 @@
    </property>
    <property name="toolTip">
     <string>RAS 1D Stream Centerlines Lengths/Stations</string>
-   </property>
-  </action>
-  <action name="actionRASCenterlineElevations">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Elevations</string>
-   </property>
-   <property name="toolTip">
-    <string>RAS 1D Stream Centerlines Elevations</string>
    </property>
   </action>
   <action name="actionRASStreamCenterlineAll">
@@ -619,14 +740,6 @@
     <string>RAS 1D Blocked Obstructions</string>
    </property>
   </action>
-  <action name="actionRASFlipXSDirection">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Flip Cross Sections</string>
-   </property>
-  </action>
   <action name="actionRASLoadRdbTablesIntoQGIS">
    <property name="icon">
     <iconset resource="../resources.qrc">
@@ -697,8 +810,15 @@
    </property>
   </action>
   <action name="actionRASBRAll">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dBridges.svg</normaloff>:/rivergis/icons/ras1dBridges.svg</iconset>
+   </property>
    <property name="text">
     <string>All</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS Bridges/Culverts - All</string>
    </property>
   </action>
   <action name="actionRASInlRiverReachNames">
@@ -717,8 +837,15 @@
    </property>
   </action>
   <action name="actionRASInlAll">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dInlineStruct.svg</normaloff>:/rivergis/icons/ras1dInlineStruct.svg</iconset>
+   </property>
    <property name="text">
     <string>All</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS Inline Structures - All</string>
    </property>
   </action>
   <action name="actionRASLatRiverReachNames">
@@ -737,13 +864,15 @@
    </property>
   </action>
   <action name="actionRASLatAll">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dLateralStruct.svg</normaloff>:/rivergis/icons/ras1dLateralStruct.svg</iconset>
+   </property>
    <property name="text">
     <string>All</string>
    </property>
-  </action>
-  <action name="actionRASSAElevationRange">
-   <property name="text">
-    <string>Elevation Range</string>
+   <property name="toolTip">
+    <string>RAS Lateral Structures - All</string>
    </property>
   </action>
   <action name="actionRASAElevationVolumeData">
@@ -771,8 +900,15 @@
    </property>
   </action>
   <action name="actionRASSAAll">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dStorageAreas.svg</normaloff>:/rivergis/icons/ras1dStorageAreas.svg</iconset>
+   </property>
    <property name="text">
     <string>All</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS Storage Areas - All</string>
    </property>
   </action>
   <action name="actionRASSacAssignNearestSA">
@@ -786,8 +922,15 @@
    </property>
   </action>
   <action name="actionRASSacAll">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/ras1dSAConnections.svg</normaloff>:/rivergis/icons/ras1dSAConnections.svg</iconset>
+   </property>
    <property name="text">
     <string>All</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS SA Connections - All</string>
    </property>
   </action>
   <action name="actionAaa_2">
