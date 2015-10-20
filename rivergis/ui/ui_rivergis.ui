@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
+    <width>675</width>
     <height>350</height>
    </rect>
   </property>
@@ -106,7 +106,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true">
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -130,7 +130,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>601</width>
+     <width>675</width>
      <height>18</height>
     </rect>
    </property>
@@ -239,7 +239,7 @@
        <normaloff>:/rivergis/icons/ras1dStorageAreas.svg</normaloff>:/rivergis/icons/ras1dStorageAreas.svg</iconset>
      </property>
      <addaction name="actionRASSATerrainPointExtraction"/>
-     <addaction name="actionRASAElevationVolumeData"/>
+     <addaction name="actionRASSAElevationVolumeData"/>
      <addaction name="separator"/>
      <addaction name="actionRASSAAll"/>
     </widget>
@@ -385,7 +385,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionRASSATerrainPointExtraction"/>
-   <addaction name="actionRASAElevationVolumeData"/>
+   <addaction name="actionRASSAElevationVolumeData"/>
   </widget>
   <widget class="QToolBar" name="rasMappingToolBar">
    <property name="windowTitle">
@@ -875,7 +875,7 @@
     <string>RAS Lateral Structures - All</string>
    </property>
   </action>
-  <action name="actionRASAElevationVolumeData">
+  <action name="actionRASSAElevationVolumeData">
    <property name="icon">
     <iconset resource="../resources.qrc">
      <normaloff>:/rivergis/icons/ras1dSAElevVolume.svg</normaloff>:/rivergis/icons/ras1dSAElevVolume.svg</iconset>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Oct 19 14:30:18 2015
+# Created: Mon Oct 19 19:54:50 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,7 @@ class Ui_RiverGIS(object):
     def setupUi(self, RiverGIS):
         RiverGIS.setObjectName(_fromUtf8("RiverGIS"))
         RiverGIS.setEnabled(True)
-        RiverGIS.resize(601, 350)
+        RiverGIS.resize(675, 350)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/rivergis.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         RiverGIS.setWindowIcon(icon)
@@ -74,7 +74,7 @@ class Ui_RiverGIS(object):
         self.gridLayout_2.addLayout(self.horizontalLayout, 2, 0, 1, 1)
         RiverGIS.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(RiverGIS)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 601, 18))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 675, 18))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
@@ -343,11 +343,11 @@ class Ui_RiverGIS(object):
         self.actionRASLatAll = QtGui.QAction(RiverGIS)
         self.actionRASLatAll.setIcon(icon5)
         self.actionRASLatAll.setObjectName(_fromUtf8("actionRASLatAll"))
-        self.actionRASAElevationVolumeData = QtGui.QAction(RiverGIS)
+        self.actionRASSAElevationVolumeData = QtGui.QAction(RiverGIS)
         icon37 = QtGui.QIcon()
         icon37.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras1dSAElevVolume.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionRASAElevationVolumeData.setIcon(icon37)
-        self.actionRASAElevationVolumeData.setObjectName(_fromUtf8("actionRASAElevationVolumeData"))
+        self.actionRASSAElevationVolumeData.setIcon(icon37)
+        self.actionRASSAElevationVolumeData.setObjectName(_fromUtf8("actionRASSAElevationVolumeData"))
         self.actionRASSATerrainPointExtraction = QtGui.QAction(RiverGIS)
         icon38 = QtGui.QIcon()
         icon38.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras1dSATerPtExtract.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -403,7 +403,7 @@ class Ui_RiverGIS(object):
         self.menuLateral_Structures.addAction(self.actionRASLatElevations)
         self.menuLateral_Structures.addAction(self.actionRASLatAll)
         self.menuStorage_Areas.addAction(self.actionRASSATerrainPointExtraction)
-        self.menuStorage_Areas.addAction(self.actionRASAElevationVolumeData)
+        self.menuStorage_Areas.addAction(self.actionRASSAElevationVolumeData)
         self.menuStorage_Areas.addSeparator()
         self.menuStorage_Areas.addAction(self.actionRASSAAll)
         self.menuStorage_Areas_Connections.addAction(self.actionRASSacAssignNearestSA)
@@ -462,7 +462,7 @@ class Ui_RiverGIS(object):
         self.rasImportExportToolBar.addAction(self.actionRASCreateRASGISImport)
         self.rasImportExportToolBar.addAction(self.actionRASImportRasData)
         self.rasSAToolBar.addAction(self.actionRASSATerrainPointExtraction)
-        self.rasSAToolBar.addAction(self.actionRASAElevationVolumeData)
+        self.rasSAToolBar.addAction(self.actionRASSAElevationVolumeData)
         self.rasMappingToolBar.addAction(self.actionRASWaterSurfaceGeneration)
         self.rasMappingToolBar.addAction(self.actionRASFloodplainDelineation)
         self.ras2dToolBar.addAction(self.actionRASCreate2dAreaPoints)
@@ -571,8 +571,8 @@ class Ui_RiverGIS(object):
         self.actionRASLatElevations.setText(_translate("RiverGIS", "Elevations", None))
         self.actionRASLatAll.setText(_translate("RiverGIS", "All", None))
         self.actionRASLatAll.setToolTip(_translate("RiverGIS", "RAS Lateral Structures - All", None))
-        self.actionRASAElevationVolumeData.setText(_translate("RiverGIS", "Elevation-Volume Data", None))
-        self.actionRASAElevationVolumeData.setIconText(_translate("RiverGIS", "SA Elevation-Volume Data", None))
+        self.actionRASSAElevationVolumeData.setText(_translate("RiverGIS", "Elevation-Volume Data", None))
+        self.actionRASSAElevationVolumeData.setIconText(_translate("RiverGIS", "SA Elevation-Volume Data", None))
         self.actionRASSATerrainPointExtraction.setText(_translate("RiverGIS", "Terrain Point Extraction", None))
         self.actionRASSATerrainPointExtraction.setIconText(_translate("RiverGIS", "SA Terrain Point Extraction", None))
         self.actionRASSAAll.setText(_translate("RiverGIS", "All", None))

@@ -84,21 +84,21 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASBRStationing.triggered.connect(lambda: r1d.ras1dBRStationing(self))
         self.ui.actionRASBRElevations.triggered.connect(lambda: r1d.ras1dBRElevations(self))
         self.ui.actionRASBRAll.triggered.connect(lambda: r1d.ras1dRASBRAll(self))
-        self.ui.actionRASInlRiverReachNames.triggered.connect(lambda: r1d.ras1dInlRiverReachNames(self))
-        self.ui.actionRASInlStationing.triggered.connect(lambda: r1d.ras1dInlStationing(self))
-        self.ui.actionRASInlElevations.triggered.connect(lambda: r1d.ras1dInlElevations(self))
-        self.ui.actionRASInlAll.triggered.connect(lambda: r1d.ras1dInlAll(self))
+        self.ui.actionRASInlRiverReachNames.triggered.connect(lambda: r1d.ras1dISRiverReachNames(self))
+        self.ui.actionRASInlStationing.triggered.connect(lambda: r1d.ras1dISStationing(self))
+        self.ui.actionRASInlElevations.triggered.connect(lambda: r1d.ras1dISElevations(self))
+        self.ui.actionRASInlAll.triggered.connect(lambda: r1d.ras1dISAll(self))
         self.ui.actionRASLatRiverReachNames.triggered.connect(lambda: r1d.ras1dLatRiverReachNames(self))
         self.ui.actionRASLatStationing.triggered.connect(lambda: r1d.ras1dLatStationing(self))
         self.ui.actionRASLatElevations.triggered.connect(lambda: r1d.ras1dLatElevations(self))
         self.ui.actionRASLatAll.triggered.connect(lambda: r1d.ras1dLatAll(self))
-        self.ui.actionRASSAElevationVolumeData.triggered.connect(self.ras1dSAElevationVolumeData)
-        self.ui.actionRASSATerrainPointExtraction.triggered.connect(self.ras1dSATerrainPointExtraction)
-        self.ui.actionRASSAAll.triggered.connect(self.actionRASSAAll)
-        self.ui.actionRASSacAssignNearestSA.triggered.connect(self.ras1dSacAssignNearestSA)
-        self.ui.actionRASSacElevations.triggered.connect(self.ras1dSacElevations)
-        self.ui.actionRASSacAll.triggered.connect(self.ras1dSacAll)
-        self.ui.actionRASCreateRASGISImport.triggered.connect(self.ras1dCreateRasGisImport)
+        self.ui.actionRASSAElevationVolumeData.triggered.connect(lambda: r1d.ras1dSAElevations(self))
+        self.ui.actionRASSATerrainPointExtraction.triggered.connect(lambda: r1d.ras1dSAVolumeData(self))
+        self.ui.actionRASSAAll.triggered.connect(lambda: r1d.ras1dSAAll(self))
+        self.ui.actionRASSacAssignNearestSA.triggered.connect(lambda: r1d.ras1dSACAssignNearestSA(self))
+        self.ui.actionRASSacElevations.triggered.connect(lambda: r1d.ras1dSACElevations(self))
+        self.ui.actionRASSacAll.triggered.connect(lambda: r1d.ras1dSACAll(self))
+        self.ui.actionRASCreateRASGISImport.triggered.connect(lambda: r1d.ras1dCreateRasGisImportFile(self))
         # 2D
         self.ui.actionRASCreate2dAreaPoints.triggered.connect(self.ras2dCreate2dAreaPoints)
         self.ui.actionRASPreview2DMesh.triggered.connect(self.ras2dPreview2DMesh)
@@ -283,33 +283,32 @@ class RiverGIS(QMainWindow):
         if not self.curConnName or not self.schema:
             self.addInfo("No PostGIS database or schema selected. Choose a connection and schema.")
             return
-
         importData = DlgImportDataIntoRasTables(self)
         importData.exec_()
-
-    def ras1dSATerrainPointExtraction(self):
-        from ras1dFunctions import ras1dSAElevations
-        ras1dSAElevations(self)
-
-    def ras1dAElevationVolumeData(self):
-        from ras1dFunctions import ras1dSAVolumeData
-        ras1dSAVolumeData(self)
-
-    def actionRASSAAll(self):
-        pass
-    
-    def ras1dSacAssignNearestSA(self):
-        pass
-    
-    def ras1dSacElevations(self):
-        pass
-    
-    def ras1dSacAll(self):
-        pass
-    
-    def ras1dCreateRasGisImport(self):
-        from ras1dFunctions import ras1dCreateRasGisImportFile
-        ras1dCreateRasGisImportFile(self)
+    #
+    # def ras1dSATerrainPointExtraction(self):
+    #     from ras1dFunctions import ras1dSAElevations
+    #     ras1dSAElevations(self)
+    #
+    # def ras1dAElevationVolumeData(self):
+    #     from ras1dFunctions import ras1dSAVolumeData
+    #     ras1dSAVolumeData(self)
+    #
+    # def actionRASSAAll(self):
+    #     pass
+    #
+    # def ras1dSacAssignNearestSA(self):
+    #     pass
+    #
+    # def ras1dSacElevations(self):
+    #     pass
+    #
+    # def ras1dSacAll(self):
+    #     pass
+    #
+    # def ras1dCreateRasGisImport(self):
+    #     from ras1dFunctions import ras1dCreateRasGisImportFile
+    #     ras1dCreateRasGisImportFile(self)
 
     # 2D HEC-RAS Geometry Functions
 
