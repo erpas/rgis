@@ -4,7 +4,7 @@
 
 DROP TABLE IF EXISTS "Dzierzgon".riverclosestpoint1;
 SELECT
-    ST_ClosestPoint(a.geom,ST_StartPoint(b.geom)) AS geom,
+    ST_ClosestPoint(a.geom, ST_StartPoint(b.geom)) AS geom,
     ST_Distance(a.geom,ST_StartPoint(b.geom)) AS dist,
     a."RiverCode",
     a."ReachCode",
@@ -39,7 +39,7 @@ FROM
         "ReachCode",
         dist,
         geom,
-        RANK() OVER (PARTITION BY "LateralSID"  ORDER BY dist) AS rnk
+        RANK() OVER (PARTITION BY "LateralSID" ORDER BY dist) AS rnk
     FROM
         "Dzierzgon".riverclosestpoint1) AS temp
 WHERE

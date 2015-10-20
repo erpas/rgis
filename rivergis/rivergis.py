@@ -92,8 +92,8 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASLatStationing.triggered.connect(lambda: r1d.ras1dLatStationing(self))
         self.ui.actionRASLatElevations.triggered.connect(lambda: r1d.ras1dLatElevations(self))
         self.ui.actionRASLatAll.triggered.connect(lambda: r1d.ras1dLatAll(self))
-        self.ui.actionRASSAElevationVolumeData.triggered.connect(lambda: r1d.ras1dSAElevations(self))
-        self.ui.actionRASSATerrainPointExtraction.triggered.connect(lambda: r1d.ras1dSAVolumeData(self))
+        self.ui.actionRASSAElevationVolumeData.triggered.connect(lambda: r1d.ras1dSAVolumeData(self))
+        self.ui.actionRASSATerrainPointExtraction.triggered.connect(lambda: r1d.ras1dSAElevations(self))
         self.ui.actionRASSAAll.triggered.connect(lambda: r1d.ras1dSAAll(self))
         self.ui.actionRASSacAssignNearestSA.triggered.connect(lambda: r1d.ras1dSACAssignNearestSA(self))
         self.ui.actionRASSacElevations.triggered.connect(lambda: r1d.ras1dSACElevations(self))
@@ -175,7 +175,7 @@ class RiverGIS(QMainWindow):
         pass
         
     def showHelp(self, page='index.html'):
-        helpFile = 'file:///%s/help/%s' % (self.rivergisPath, page)
+        helpFile = 'file:///{0}/help/{1}'.format(self.rivergisPath, page)
         QDesktopServices.openUrl(QUrl(helpFile))
     
     def showRGisHelp(self):
@@ -188,7 +188,7 @@ class RiverGIS(QMainWindow):
         self.crs = self.ui.crsWidget.crs()
         if self.rdb:
             self.rdb.SRID = int(self.crs.postgisSrid())
-        self.addInfo('\nDefault CRS is: %s' % self.crs.authid() )
+        self.addInfo('\nDefault CRS is: {0}'.format(self.crs.authid()))
 
     # Database Functions
 
@@ -210,7 +210,7 @@ class RiverGIS(QMainWindow):
             return
         connName = self.ui.connsCbo.currentText()
         s.endGroup()
-        s.beginGroup('/PostgreSQL/connections/%s' % connName)
+        s.beginGroup('/PostgreSQL/connections/{0}'.format(connName))
         self.host = s.value('host')
         self.port = s.value('port')
         self.database = s.value('database')
@@ -249,7 +249,7 @@ class RiverGIS(QMainWindow):
         self.rdb.register.clear()
         if not self.ui.schemasCbo.currentText() == '':
             self.schema = self.ui.schemasCbo.currentText()
-            self.addInfo('Current DB schema is: %s' % self.schema)
+            self.addInfo('Current DB schema is: {0}'.format(self.schema))
             # change river database parameters
             self.rdb.SCHEMA = self.schema
             self.rdb.register_existing(heco)
@@ -372,7 +372,7 @@ class RiverGIS(QMainWindow):
         self.threadWselHecRas = thread
 
     def rasImportRasDataFinish(self, res):
-            if not res == None:
+            if res is not None:
                 processing.load(res, 'WSEL_temp_points')
             else:
                 self.addInfo('Loading max WSEL failed or was cancelled, check the log...')
@@ -388,7 +388,7 @@ class RiverGIS(QMainWindow):
 
     def rasWaterSurfaceGeneration(self):
         from dlg_rasWaterSurfaceGeneration import DlgRasWaterSurfaceGeneration
-        self.addInfo('<br><b>Running Create Water Surface Raster</b>' )
+        self.addInfo('<br><b>Running Create Water Surface Raster</b>')
         dlg = DlgRasWaterSurfaceGeneration(self)
         dlg.exec_()
 
