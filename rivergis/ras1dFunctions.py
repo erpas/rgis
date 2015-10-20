@@ -262,12 +262,14 @@ def ras1dSAElevations(rgis):
     # probe a DTM at each point
     QApplication.setOverrideCursor(Qt.WaitCursor)
     try:
-        rgis.addInfo('<br><b>Creating point grid inside Storage Areas...</b>')
+        rgis.addInfo('<br><b>Calculating Storage Areas elevation values...</b>')
         rgis.rdb.process_hecobject(heco.SASurface, 'pg_create_table')
+        rgis.addInfo('Creating point grid inside Storage Areas...')
         rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_surface_points')
-        rgis.addInfo('Done')
-        rgis.addInfo('<br><b>Extracting values from raster...</b>')
+        rgis.addInfo('Extracting values from raster...')
         probe_DTMs(rgis, surface_obj, parent_obj, chunksize=10000)
+        rgis.addInfo('Updating maximum and minimum elevation values in Storage Areas...')
+        rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_maxmin')
         rgis.addInfo('Done')
     finally:
         QApplication.restoreOverrideCursor()

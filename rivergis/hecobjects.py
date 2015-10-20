@@ -1062,6 +1062,29 @@ ALTER TABLE "{0}"."SASurface" ADD COLUMN "PtID" bigserial primary key;
         qry = qry.format(self.schema, self.srid)
         return qry
 
+    def pg_maxmin(self):
+        qry = '''
+WITH data AS
+    (SELECT
+        "StorageID",
+        MAX("Elevation"),
+        MIN("Elevation")
+    FROM
+        "{0}"."SASurface"
+    GROUP BY
+        "StorageID")
+UPDATE "{0}"."StorageAreas" AS sa
+SET
+    "MaxElev" = data.max,
+    "MinElev" = data.min
+FROM
+    data
+WHERE
+    sa."StorageID" = data."StorageID";
+'''
+        qry = qry.format(self.schema)
+        return qry
+
     def pg_storage_calculator(self, slices=5):
         qry = '''
 CREATE OR REPLACE FUNCTION "{0}".storage_calculator (slices integer)
@@ -1079,21 +1102,21 @@ BEGIN
     FOR r IN c LOOP
         area := (SELECT dtm."CellSize" FROM "{0}"."DTMs" AS dtm WHERE dtm."DtmID" = r."DtmID")^2;
         emin := (SELECT MIN("Elevation") FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID");
-        emax := (SELECT MAX("Elevation") FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID");
-        lev := emin;
+        emax := (SELECT CASE WHEN r."UserElev" IS NULL THEN MAX("Elevation") ELSE r."UserElev" END FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID");
         h := (emax-emin)/slices;
+        lev := emin+h;
+        INSERT INTO "{0}"."SAVolume" VALUES (r."StorageID", emin, 0);
         FOR i IN 1..slices LOOP
-            INSERT INTO "{0}"."SAVolume" ("StorageID", start_level, end_level, volume)
+            INSERT INTO "{0}"."SAVolume" ("StorageID", level, volume)
             SELECT
                 r."StorageID",
                 lev,
-                lev+h,
                 COUNT("Elevation")*area*h
             FROM
                 "{0}"."SASurface"
             WHERE
                 "StorageID" = r."StorageID" AND
-                "Elevation" BETWEEN lev AND lev+h;
+                "Elevation" <= lev+h;
             lev := lev+h;
         END LOOP;
     END LOOP;
@@ -1103,26 +1126,8 @@ $BODY$
 
 
 DROP TABLE IF EXISTS "{0}"."SAVolume";
-CREATE TABLE "{0}"."SAVolume"("StorageID" integer, start_level double precision, end_level double precision, volume double precision);
+CREATE TABLE "{0}"."SAVolume"("StorageID" integer, level double precision, volume double precision);
 SELECT "{0}".storage_calculator ({1});
-
-WITH data AS
-    (SELECT
-        "StorageID",
-        MAX(end_level),
-        MIN(start_level)
-    FROM
-        "{0}"."SAVolume"
-    GROUP BY
-        "StorageID")
-UPDATE "{0}"."StorageAreas" AS sa
-SET
-    "MaxElev" = data.max,
-    "MinElev" = data.min
-FROM
-    data
-WHERE
-    sa."StorageID" = data."StorageID";
 '''
         qry = qry.format(self.schema, slices)
         return qry
