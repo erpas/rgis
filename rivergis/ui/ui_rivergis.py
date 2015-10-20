@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Oct 19 19:54:50 2015
+# Created: Tue Oct 20 10:52:57 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,7 @@ class Ui_RiverGIS(object):
     def setupUi(self, RiverGIS):
         RiverGIS.setObjectName(_fromUtf8("RiverGIS"))
         RiverGIS.setEnabled(True)
-        RiverGIS.resize(675, 350)
+        RiverGIS.resize(601, 350)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/rivergis.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         RiverGIS.setWindowIcon(icon)
@@ -74,7 +74,7 @@ class Ui_RiverGIS(object):
         self.gridLayout_2.addLayout(self.horizontalLayout, 2, 0, 1, 1)
         RiverGIS.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(RiverGIS)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 675, 18))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 601, 18))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
@@ -557,30 +557,43 @@ class Ui_RiverGIS(object):
         self.actionAlwaysOnTop.setText(_translate("RiverGIS", "Always on top", None))
         self.actionRASXSUpdateInsertMeasuredPoints.setText(_translate("RiverGIS", "Update - Insert Measured Points", None))
         self.actionRASBRRiverReachNames.setText(_translate("RiverGIS", "River/Reach Names", None))
+        self.actionRASBRRiverReachNames.setToolTip(_translate("RiverGIS", "Bridges/Culverts River Reach Names", None))
         self.actionRASBRStationing.setText(_translate("RiverGIS", "Stationing", None))
+        self.actionRASBRStationing.setToolTip(_translate("RiverGIS", "Bridges/Culverts Stationing", None))
         self.actionRASBRElevations.setText(_translate("RiverGIS", "Elevations", None))
+        self.actionRASBRElevations.setToolTip(_translate("RiverGIS", "Bridges/Culverts Elevations", None))
         self.actionRASBRAll.setText(_translate("RiverGIS", "All", None))
-        self.actionRASBRAll.setToolTip(_translate("RiverGIS", "RAS Bridges/Culverts - All", None))
+        self.actionRASBRAll.setToolTip(_translate("RiverGIS", "RAS 1D Bridges/Culverts - All", None))
         self.actionRASInlRiverReachNames.setText(_translate("RiverGIS", "River/Reach Names", None))
+        self.actionRASInlRiverReachNames.setToolTip(_translate("RiverGIS", "RAS 1D Inline Structures River/Reach Names", None))
         self.actionRASInlStationing.setText(_translate("RiverGIS", "Stationing", None))
+        self.actionRASInlStationing.setToolTip(_translate("RiverGIS", "RAS 1D Inline Structures Stationing", None))
         self.actionRASInlElevations.setText(_translate("RiverGIS", "Elevations", None))
+        self.actionRASInlElevations.setToolTip(_translate("RiverGIS", "RAS 1D Inline Structures Elevations", None))
         self.actionRASInlAll.setText(_translate("RiverGIS", "All", None))
-        self.actionRASInlAll.setToolTip(_translate("RiverGIS", "RAS Inline Structures - All", None))
+        self.actionRASInlAll.setToolTip(_translate("RiverGIS", "RAS 1D Inline Structures - All", None))
         self.actionRASLatRiverReachNames.setText(_translate("RiverGIS", "River/Reach Names", None))
+        self.actionRASLatRiverReachNames.setToolTip(_translate("RiverGIS", "RAS 1D Lateral Structures River/Reach Names", None))
         self.actionRASLatStationing.setText(_translate("RiverGIS", "Stationing", None))
+        self.actionRASLatStationing.setToolTip(_translate("RiverGIS", "RAS 1D Lateral Structures Stationing", None))
         self.actionRASLatElevations.setText(_translate("RiverGIS", "Elevations", None))
+        self.actionRASLatElevations.setToolTip(_translate("RiverGIS", "RAS 1D Lateral Structures Elevations", None))
         self.actionRASLatAll.setText(_translate("RiverGIS", "All", None))
-        self.actionRASLatAll.setToolTip(_translate("RiverGIS", "RAS Lateral Structures - All", None))
+        self.actionRASLatAll.setToolTip(_translate("RiverGIS", "RAS 1D Lateral Structures - All", None))
         self.actionRASSAElevationVolumeData.setText(_translate("RiverGIS", "Elevation-Volume Data", None))
         self.actionRASSAElevationVolumeData.setIconText(_translate("RiverGIS", "SA Elevation-Volume Data", None))
+        self.actionRASSAElevationVolumeData.setToolTip(_translate("RiverGIS", "RAS 1D SA Elevation-Volume Data", None))
         self.actionRASSATerrainPointExtraction.setText(_translate("RiverGIS", "Terrain Point Extraction", None))
         self.actionRASSATerrainPointExtraction.setIconText(_translate("RiverGIS", "SA Terrain Point Extraction", None))
+        self.actionRASSATerrainPointExtraction.setToolTip(_translate("RiverGIS", "RAS 1D SA Terrain Point Extraction", None))
         self.actionRASSAAll.setText(_translate("RiverGIS", "All", None))
-        self.actionRASSAAll.setToolTip(_translate("RiverGIS", "RAS Storage Areas - All", None))
+        self.actionRASSAAll.setToolTip(_translate("RiverGIS", "RAS 1D Storage Areas - All", None))
         self.actionRASSacAssignNearestSA.setText(_translate("RiverGIS", "Assign Nearest SA", None))
+        self.actionRASSacAssignNearestSA.setToolTip(_translate("RiverGIS", "RAS 1D SA Conn Assign Nearest SA", None))
         self.actionRASSacElevations.setText(_translate("RiverGIS", "Elevations", None))
+        self.actionRASSacElevations.setToolTip(_translate("RiverGIS", "RAS 1D SA Conn - Elevations", None))
         self.actionRASSacAll.setText(_translate("RiverGIS", "All", None))
-        self.actionRASSacAll.setToolTip(_translate("RiverGIS", "RAS SA Connections - All", None))
+        self.actionRASSacAll.setToolTip(_translate("RiverGIS", "RAS 1D SA Connections - All", None))
         self.actionAaa_2.setText(_translate("RiverGIS", "aaa", None))
 
 from qgsprojectionselectionwidget import QgsProjectionSelectionWidget

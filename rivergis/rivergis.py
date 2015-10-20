@@ -115,6 +115,11 @@ class RiverGIS(QMainWindow):
         self.ui.connsCbo.activated.connect(self.connChanged)
         self.ui.schemasCbo.activated.connect(self.schemaChanged)
 
+        # keep some actions inactive until the connection is ready
+
+
+
+
         # Some info
         self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please, start with choosing a <b>connection to a PostGIS database and a schema</b> from the above lists.')
         self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
@@ -128,10 +133,34 @@ class RiverGIS(QMainWindow):
 
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
+        self.enableActions(False)
 
         # set project CRS as a default projection
         self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
         self.updateDefaultCrs()
+
+    def enableActions(self, enable):
+        menus = self.ui.menubar.findChildren(QMenu)
+        toolbars = self.findChildren(QToolBar)
+
+        if enable:
+
+            for m in menus:
+                for a in m.findChildren(QAction):
+                    a.setEnabled(True)
+            for t in toolbars:
+                for b in t.findChildren(QToolButton):
+                    b.setEnabled(True)
+        else:
+
+            for m in menus:
+                if not m.title() == 'Help':
+                    for a in m.findChildren(QAction):
+                        a.setDisabled(True)
+            for t in toolbars:
+                for b in t.findChildren(QToolButton):
+                    b.setDisabled(True)
+
 
     def closeEvent(self, e):
         # save the window state
@@ -231,6 +260,7 @@ class RiverGIS(QMainWindow):
                 self.addInfo('You can load them now using RAS Geometry > Load River Database Tables Into QGIS')
             else:
                 self.addInfo('There are some objects registered in the database.')
+            self.enableActions(True)
 
     def importRiverIsokp(self):
         from dlg_importRiverFromIsokp import DlgImportRiverFromIsokp

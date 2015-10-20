@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
+    <width>601</width>
     <height>350</height>
    </rect>
   </property>
@@ -106,7 +106,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -130,7 +130,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>675</width>
+     <width>601</width>
      <height>18</height>
     </rect>
    </property>
@@ -798,15 +798,24 @@
    <property name="text">
     <string>River/Reach Names</string>
    </property>
+   <property name="toolTip">
+    <string>Bridges/Culverts River Reach Names</string>
+   </property>
   </action>
   <action name="actionRASBRStationing">
    <property name="text">
     <string>Stationing</string>
    </property>
+   <property name="toolTip">
+    <string>Bridges/Culverts Stationing</string>
+   </property>
   </action>
   <action name="actionRASBRElevations">
    <property name="text">
     <string>Elevations</string>
+   </property>
+   <property name="toolTip">
+    <string>Bridges/Culverts Elevations</string>
    </property>
   </action>
   <action name="actionRASBRAll">
@@ -818,22 +827,31 @@
     <string>All</string>
    </property>
    <property name="toolTip">
-    <string>RAS Bridges/Culverts - All</string>
+    <string>RAS 1D Bridges/Culverts - All</string>
    </property>
   </action>
   <action name="actionRASInlRiverReachNames">
    <property name="text">
     <string>River/Reach Names</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D Inline Structures River/Reach Names</string>
+   </property>
   </action>
   <action name="actionRASInlStationing">
    <property name="text">
     <string>Stationing</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D Inline Structures Stationing</string>
+   </property>
   </action>
   <action name="actionRASInlElevations">
    <property name="text">
     <string>Elevations</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS 1D Inline Structures Elevations</string>
    </property>
   </action>
   <action name="actionRASInlAll">
@@ -845,22 +863,31 @@
     <string>All</string>
    </property>
    <property name="toolTip">
-    <string>RAS Inline Structures - All</string>
+    <string>RAS 1D Inline Structures - All</string>
    </property>
   </action>
   <action name="actionRASLatRiverReachNames">
    <property name="text">
     <string>River/Reach Names</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D Lateral Structures River/Reach Names</string>
+   </property>
   </action>
   <action name="actionRASLatStationing">
    <property name="text">
     <string>Stationing</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D Lateral Structures Stationing</string>
+   </property>
   </action>
   <action name="actionRASLatElevations">
    <property name="text">
     <string>Elevations</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS 1D Lateral Structures Elevations</string>
    </property>
   </action>
   <action name="actionRASLatAll">
@@ -872,7 +899,7 @@
     <string>All</string>
    </property>
    <property name="toolTip">
-    <string>RAS Lateral Structures - All</string>
+    <string>RAS 1D Lateral Structures - All</string>
    </property>
   </action>
   <action name="actionRASSAElevationVolumeData">
@@ -886,6 +913,9 @@
    <property name="iconText">
     <string>SA Elevation-Volume Data</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D SA Elevation-Volume Data</string>
+   </property>
   </action>
   <action name="actionRASSATerrainPointExtraction">
    <property name="icon">
@@ -898,6 +928,9 @@
    <property name="iconText">
     <string>SA Terrain Point Extraction</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D SA Terrain Point Extraction</string>
+   </property>
   </action>
   <action name="actionRASSAAll">
    <property name="icon">
@@ -908,17 +941,23 @@
     <string>All</string>
    </property>
    <property name="toolTip">
-    <string>RAS Storage Areas - All</string>
+    <string>RAS 1D Storage Areas - All</string>
    </property>
   </action>
   <action name="actionRASSacAssignNearestSA">
    <property name="text">
     <string>Assign Nearest SA</string>
    </property>
+   <property name="toolTip">
+    <string>RAS 1D SA Conn Assign Nearest SA</string>
+   </property>
   </action>
   <action name="actionRASSacElevations">
    <property name="text">
     <string>Elevations</string>
+   </property>
+   <property name="toolTip">
+    <string>RAS 1D SA Conn - Elevations</string>
    </property>
   </action>
   <action name="actionRASSacAll">
@@ -930,7 +969,7 @@
     <string>All</string>
    </property>
    <property name="toolTip">
-    <string>RAS SA Connections - All</string>
+    <string>RAS 1D SA Connections - All</string>
    </property>
   </action>
   <action name="actionAaa_2">
