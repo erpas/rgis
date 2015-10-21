@@ -305,6 +305,53 @@ FROM
         return xsec_all
 
 
+class BridgesBuilder(object):
+    """
+    Return BRIDGES part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_bridges(self):
+        qry = '''
+SELECT
+    "RiverCode",
+    "ReachCode",
+    "Station",
+    "USDistance",
+    "TopWidth",
+    "NodeName"
+    ST_AsText(geom) AS wkt
+FROM
+    "{0}"."Bridges";
+'''
+        qry = qry.format(self.schema)
+        bridges = self.rgis.rdb.run_query(qry, fetch=True)
+        if bridges is None:
+            return []
+        else:
+            return bridges
+
+    def build_bridges(self):
+        bridges_all = 'BEGIN BRIDGES/CULVERTS:\n'
+        bridge_obj = '''
+   BRIDGE/CULVERT:
+      STREAM ID: {0}
+      REACH ID: {1}
+      STATION: {2}
+      NODE NAME: {3}
+      US DISTANCE: {4}
+      TOP WIDTH: {5}
+      CUT LINE:
+{6}   SURFACE LINE:
+{7}   END:
+'''
+        bridge_cut = '         {0}, {1}\n'
+        bridge_surf = '         {0}, {1}, {2}\n'
+        bridges_end = '\nEND BRIDGES/CULVERTS:\n\n'
+
+
 class LeveesBuilder(object):
     """
      Return LEVEES part of RAS GIS Import file.
