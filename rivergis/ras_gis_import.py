@@ -351,7 +351,6 @@ FROM
         bridge_surf = '         {0}, {1}, {2}\n'
         bridges_end = '\nEND BRIDGES/CULVERTS:\n\n'
 
-
 class LeveesBuilder(object):
     """
      Return LEVEES part of RAS GIS Import file.
