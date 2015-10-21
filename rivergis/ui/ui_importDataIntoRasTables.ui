@@ -43,48 +43,79 @@
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QLabel" name="label">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Rivers Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboStreamCenterlines"/>
+          <widget class="QComboBox" name="cboStreamCenterlines">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_2">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Cross-sections Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboXsecs"/>
+          <widget class="QComboBox" name="cboXsecs">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_4">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Banks Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboBanks"/>
+          <widget class="QComboBox" name="cboBanks">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_7">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Flow Paths Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboFlowPaths"/>
+          <widget class="QComboBox" name="cboFlowPaths">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QLabel" name="label_8">
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
              <property name="text">
               <string>Type attribute</string>
              </property>
@@ -104,34 +135,54 @@
                <height>0</height>
               </size>
              </property>
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
             </widget>
            </item>
           </layout>
          </item>
          <item>
           <widget class="QLabel" name="label_3">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Levees Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboLevees"/>
+          <widget class="QComboBox" name="cboLevees">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_5">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Ineffective Flow Areas Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboIneffective"/>
+          <widget class="QComboBox" name="cboIneffective">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
             <widget class="QLabel" name="label_10">
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
              <property name="text">
               <string>Elevation attribute</string>
              </property>
@@ -145,24 +196,37 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
             </widget>
            </item>
           </layout>
          </item>
          <item>
           <widget class="QLabel" name="label_6">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Blocked Obstructions Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboObstructions"/>
+          <widget class="QComboBox" name="cboObstructions">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <widget class="QLabel" name="label_11">
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
              <property name="text">
               <string>Elevation attribute</string>
              </property>
@@ -176,24 +240,37 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
             </widget>
            </item>
           </layout>
          </item>
          <item>
           <widget class="QLabel" name="label_12">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
            <property name="text">
             <string>Landuse Areas Layer</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="cboLanduse"/>
+          <widget class="QComboBox" name="cboLanduse">
+           <property name="locale">
+            <locale language="English" country="UnitedStates"/>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
             <widget class="QLabel" name="label_13">
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
              <property name="text">
               <string>Land Cover Code attribute</string>
              </property>
@@ -207,6 +284,9 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
             </widget>
            </item>
           </layout>
@@ -215,6 +295,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QLabel" name="label_14">
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
+             </property>
              <property name="text">
               <string>Manning's n attribute</string>
              </property>
@@ -227,6 +310,9 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="locale">
+              <locale language="English" country="UnitedStates"/>
              </property>
             </widget>
            </item>
@@ -1039,6 +1125,9 @@
    </item>
    <item row="2" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
@@ -1046,6 +1135,9 @@
    </item>
    <item row="0" column="0">
     <widget class="QCheckBox" name="chkOnlySelected">
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
      <property name="text">
       <string>Use selected features if selection exists</string>
      </property>
