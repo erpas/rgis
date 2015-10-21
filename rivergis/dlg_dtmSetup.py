@@ -52,6 +52,7 @@ class DlgDTMSetup(QDialog):
                 self.rgis.addInfo('{0}'.format(item.data()[0]))
                 self.rgis.dtms.append(item.data()[1]) # append layerId
 
+        self.rgis.dtm_chunksize = int(self.ui.chunksize.text())
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 

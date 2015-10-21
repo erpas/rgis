@@ -115,13 +115,16 @@ def ras1dStreamCenterlines2Flowpaths(rgis):
 
 
 def ras1dXSElevations(rgis):
-    # TODO: Retrieve chunksize from user.
     """Probe a DTM to find cross-section vertical shape"""
     # Prepare DTMs
     surface_obj = heco.XSSurface()
     parent_obj = heco.XSCutLines()
     prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
+    try:
+        chunk = rgis.dtm_chunksize
+    except:
+        chunk = 10000
 
     # insert xs points along each xsection
     rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
@@ -130,7 +133,7 @@ def ras1dXSElevations(rgis):
     # probe a DTM at each point
     QApplication.setOverrideCursor(Qt.WaitCursor)
     try:
-        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=10000)
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
         rgis.addInfo('Done')
     finally:
         QApplication.restoreOverrideCursor()
@@ -263,12 +266,15 @@ def ras1dLatAll(rgis):
 
 def ras1dSAElevations(rgis):
     """Probe a DTM to later find storage area volume"""
-    # TODO: Retrieve chunksize from user.
     # Prepare DTMs
     surface_obj = heco.SASurface()
     parent_obj = heco.StorageAreas()
     prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
+    try:
+        chunk = rgis.dtm_chunksize
+    except:
+        chunk = 10000
 
     # probe a DTM at each point
     QApplication.setOverrideCursor(Qt.WaitCursor)
@@ -278,7 +284,7 @@ def ras1dSAElevations(rgis):
         rgis.addInfo('Creating point grid inside Storage Areas...')
         rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_surface_points')
         rgis.addInfo('Extracting values from raster...')
-        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=10000)
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
         rgis.addInfo('Updating maximum and minimum elevation values in Storage Areas...')
         rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_maxmin')
         rgis.addInfo('Done')
