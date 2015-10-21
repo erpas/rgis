@@ -197,8 +197,9 @@ def ras1dBRElevations(rgis):
 
 
 def ras1dRASBRAll(rgis):
-    rgis.addInfo('<br><b>Running All Functions for Bridges/Culverts...</b>')
-    # TODO
+    # TODO: Add Elevation calculations.
+    ras1dBRRiverReachNames(rgis)
+    ras1dBRStationing(rgis)
 
 
 def ras1dISRiverReachNames(rgis):
@@ -226,18 +227,27 @@ def ras1dISElevations(rgis):
 
 
 def ras1dISAll(rgis):
-    rgis.addInfo('<br><b>Running All Functions for Inline Structures...</b>')
-    # TODO
-
+    # TODO: Add Elevation calculations.
+    ras1dISRiverReachNames(rgis)
+    ras1dISStationing(rgis)
 
 def ras1dLatRiverReachNames(rgis):
-    rgis.addInfo('<br><b>Running River Reach Names for Lateral Structures...</b>')
-    # TODO
+    """Finds river and reach name for each lateral structure"""
+    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
+    ls_exist = 'LateralStructures' in rgis.rdb.register.keys()
+    if not sc_exist or not ls_exist:
+        rgis.addInfo('<br>StreamCenterlines or LateralStructures table is not registered in the river database. Cancelling...')
+        return
+    rgis.addInfo('<br><b>Setting river and reach names for each lateral structure...</b>')
+    if rgis.rdb.process_hecobject(heco.LateralStructures, 'pg_river_reach_names'):
+        rgis.addInfo('Done.')
 
 
 def ras1dLatStationing(rgis):
-    rgis.addInfo('<br><b>Running Stationing for Lateral Structures...</b>')
-    # TODO
+    """Finds lateral structures stationing (chainages) along its river reach"""
+    rgis.addInfo('<br><b>Calculating lateral structures stationing...</b>')
+    if rgis.rdb.process_hecobject(heco.LateralStructures, 'pg_stationing'):
+        rgis.addInfo('Done.')
 
 
 def ras1dLatElevations(rgis):
@@ -246,8 +256,9 @@ def ras1dLatElevations(rgis):
 
 
 def ras1dLatAll(rgis):
-    rgis.addInfo('<br><b>Running All Functions for Lateral Structures...</b>')
-    # TODO
+    # TODO: Add Elevation calculations.
+    ras1dLatRiverReachNames(rgis)
+    ras1dLatStationing(rgis)
 
 
 def ras1dSAElevations(rgis):
@@ -328,4 +339,3 @@ def ras1dCreateRasGisImportFile(rgis):
     with open(importFileName, 'w') as importFile:
         importFile.write(sdf)
     rgis.addInfo('Done.')
-
