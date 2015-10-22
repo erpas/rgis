@@ -14,17 +14,25 @@ class RasGisImport(object):
         self.header = HeaderBuilder(rgis)
         self.network = NetworkBuilder(rgis)
         self.xsections = XSBuilder(rgis)
+        self.bridges = BridgesBuilder(rgis)
+        self.inline_str = InlineStrBuilder(rgis)
+        self.lateral_str = LateralStrBuilder(rgis)
         self.levees = LeveesBuilder(rgis)
         self.ineff_areas = IneffAreasBuilder(rgis)
         self.blocked_obs = BlockedObsBuilder(rgis)
+        self.storage_areas = StorageAreasBuilder(rgis)
 
     def gis_import_file(self):
         imp = self.header.build_header()
         imp += self.network.build_network()
         imp += self.xsections.build_cross_sections()
+        imp += self.bridges.build_bridges()
+        imp += self.inline_str.build_inline_str()
+        imp += self.lateral_str.build_lateral_str()
         imp += self.levees.build_levees()
         imp += self.ineff_areas.build_ineff_areas()
         imp += self.blocked_obs.build_blocked_obs()
+        imp += self.storage_areas.build_storage_areas()
         return imp
 
     @staticmethod
@@ -305,6 +313,174 @@ FROM
         return xsec_all
 
 
+class BridgesBuilder(object):
+    """
+    Return BRIDGES part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_bridges(self):
+        qry = '''
+SELECT
+    "RiverCode",
+    "ReachCode",
+    "Station",
+    "USDistance",
+    "TopWidth",
+    "NodeName",
+    ST_AsText(geom) AS wkt
+FROM
+    "{0}"."Bridges";
+'''
+        qry = qry.format(self.schema)
+        bridges = self.rgis.rdb.run_query(qry, fetch=True)
+        if bridges is None:
+            return []
+        else:
+            return bridges
+
+    def build_bridges(self):
+        # TODO: Surface points in future
+        bridges_all = 'BEGIN BRIDGES/CULVERTS:\n'
+        bridge_cut = '         {0}, {1}\n'
+        bridge_object = '''
+   BRIDGE/CULVERT:
+      STREAM ID: {0}
+      REACH ID: {1}
+      STATION: {2}
+      NODE NAME: {3}
+      US DISTANCE: {4}
+      TOP WIDTH: {5}
+      CUT LINE:
+{6}   SURFACE LINE:
+   END:
+'''
+        bridges_end = '\nEND BRIDGES/CULVERTS:\n\n'
+        for br in self.get_bridges():
+            cuts = ''
+            pnts = RasGisImport.unpack_wkt(br['wkt'])
+            for pt in pnts:
+                x, y = pt
+                cuts += bridge_cut.format(x, y)
+            bridges_all += bridge_object.format(br['RiverCode'], br['ReachCode'], br['Station'], br['NodeName'], br['USDistance'], br['TopWidth'], cuts)
+        bridges_all += bridges_end
+        return bridges_all
+
+
+class InlineStrBuilder(object):
+    """
+    Return INLINE STRUCTURES part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_inline_str(self):
+        qry = '''
+SELECT
+    "RiverCode",
+    "ReachCode",
+    "Station",
+    "USDistance",
+    "TopWidth",
+    "NodeName",
+    ST_AsText(geom) AS wkt
+FROM
+    "{0}"."InlineStructures";
+'''
+        qry = qry.format(self.schema)
+        inline_str = self.rgis.rdb.run_query(qry, fetch=True)
+        if inline_str is None:
+            return []
+        else:
+            return inline_str
+
+    def build_inline_str(self):
+        # TODO: Surface points in future
+        inline_str_all = 'BEGIN INLINE STRUCTURES:\n'
+        inline_str_cut = '         {0}, {1}\n'
+        inline_str_object = '''
+   INLINE STRUCTURE:
+      STREAM ID: {0}
+      REACH ID: {1}
+      STATION: {2}
+      NODE NAME: {3}
+      US DISTANCE: {4}
+      TOP WIDTH: {5}
+      CUT LINE:
+{6}   SURFACE LINE:
+   END:
+'''
+        inline_str_end = '\nEND INLINE STRUCTURES:\n\n'
+        for ins in self.get_inline_str():
+            cuts = ''
+            pnts = RasGisImport.unpack_wkt(ins['wkt'])
+            for pt in pnts:
+                x, y = pt
+                cuts += inline_str_cut.format(x, y)
+            inline_str_all += inline_str_object.format(ins['RiverCode'], ins['ReachCode'], ins['Station'], ins['NodeName'], ins['USDistance'], ins['TopWidth'], cuts)
+        inline_str_all += inline_str_end
+        return inline_str_all
+
+
+class LateralStrBuilder(object):
+    """
+    Return LATERAL STRUCTURES part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_lateral_str(self):
+        qry = '''
+SELECT
+    "RiverCode",
+    "ReachCode",
+    "Station",
+    "USDistance",
+    "TopWidth",
+    "NodeName",
+    ST_AsText(geom) AS wkt
+FROM
+    "{0}"."LateralStructures";
+'''
+        qry = qry.format(self.schema)
+        lateral_str = self.rgis.rdb.run_query(qry, fetch=True)
+        if lateral_str is None:
+            return []
+        else:
+            return lateral_str
+
+    def build_lateral_str(self):
+        # TODO: Surface points in future
+        lateral_str_all = 'BEGIN LATERAL STRUCTURES:\n'
+        lateral_str_cut = '         {0}, {1}\n'
+        lateral_str_object = '''
+   LATERAL STRUCTURE:
+      STREAM ID: {0}
+      REACH ID: {1}
+      STATION: {2}
+      NODE NAME: {3}
+      US DISTANCE: {4}
+      TOP WIDTH: {5}
+      CUT LINE:
+{6}   SURFACE LINE:
+   END:
+'''
+        lateral_str_end = '\nEND LATERAL STRUCTURES:\n\n'
+        for ls in self.get_lateral_str():
+            cuts = ''
+            pnts = RasGisImport.unpack_wkt(ls['wkt'])
+            for pt in pnts:
+                x, y = pt
+                cuts += lateral_str_cut.format(x, y)
+            lateral_str_all += lateral_str_object.format(ls['RiverCode'], ls['ReachCode'], ls['Station'], ls['NodeName'], ls['USDistance'], ls['TopWidth'], cuts)
+        lateral_str_all += lateral_str_end
+        return lateral_str_all
+
+
 class LeveesBuilder(object):
     """
      Return LEVEES part of RAS GIS Import file.
@@ -417,3 +593,59 @@ class BlockedObsBuilder(object):
             block_all += block_poly.format(block_id, vertices)
         block_all += block_end
         return block_all
+
+
+class StorageAreasBuilder(object):
+    """
+    Return STORAGE AREAS part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_storage_areas(self):
+        qry = 'SELECT "StorageID", ST_AsText(geom) AS wkt FROM "{0}"."StorageAreas";'
+        qry = qry.format(self.schema)
+        storage_areas = self.rgis.rdb.run_query(qry, fetch=True)
+        if storage_areas is None:
+            return []
+        else:
+            return storage_areas
+
+    def get_storage_volume(self, sa_id):
+        qry = 'SELECT "level", "volume" FROM "{0}"."SAVolume" WHERE "StorageID" = {1} ORDER BY "level";'
+        qry = qry.format(self.schema, sa_id)
+        storage_volume = self.rgis.rdb.run_query(qry, fetch=True)
+        if storage_volume is None:
+            return []
+        else:
+            return storage_volume
+
+    def build_storage_areas(self):
+        sa_all = 'BEGIN STORAGE AREAS:\n'
+        sa_poly = '''
+      SA ID: {0}
+      POLYGON:
+{1}      END:
+      ELEVATION-VOLUME:
+{2}      END:
+      TERRAIN:
+      END:
+'''
+        sa_vertex = '         {0}, {1}\n'
+        sa_elev = '         {0}, {1}\n'
+        sa_end = '\nEND STORAGE AREAS:\n\n'
+        for s in self.get_storage_areas():
+            vertices = ''
+            elev = ''
+            sa_id = s['StorageID']
+            pnts = RasGisImport.unpack_wkt(s['wkt'])
+            for pt in pnts:
+                x, y = pt
+                vertices += sa_vertex.format(x, y)
+
+            for v in self.get_storage_volume(sa_id):
+                elev += sa_elev.format(v['level'], v['volume'])
+            sa_all += sa_poly.format(sa_id, vertices, elev)
+        sa_all += sa_end
+        return sa_all

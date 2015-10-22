@@ -192,7 +192,7 @@ class DlgImportDataIntoRasTables(QDialog):
 
             'Lateral Structures': {
                 'cbo': self.ui.cboLateralStrLayer,
-                'className': 'InlineStructures',
+                'className': 'LateralStructures',
                 'attrs': {
                     'NodeName': {
                         'cbo': self.ui.cboLateralStrName,
