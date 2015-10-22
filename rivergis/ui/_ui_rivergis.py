@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Thu Oct 22 12:33:06 2015
+# Created: Thu Oct 22 23:16:10 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -10,6 +10,7 @@
 from PyQt4 import QtCore, QtGui
 from qgis.gui import QgsProjectionSelectionWidget
 from ..resources import *
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:

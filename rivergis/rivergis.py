@@ -24,7 +24,8 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.utils import *
 
-import processing # TODO: try to not use the processing
+# TODO: try to not use the processing
+import processing
 from ui._ui_rivergis import Ui_RiverGIS
 import river_database as rivdb
 import hecobjects as heco
