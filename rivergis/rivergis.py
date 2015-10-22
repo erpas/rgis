@@ -108,8 +108,11 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASImportRasData.triggered.connect(self.rasImportRasDataStart)
         self.ui.actionRASWaterSurfaceGeneration.triggered.connect(self.rasWaterSurfaceGeneration)
         self.ui.actionRASFloodplainDelineation.triggered.connect(self.rasFloodplainDelineation)
-        self.ui.actionAbout.triggered.connect(self.about)
+
         self.ui.actionHelpContents.triggered.connect(self.showRGisHelp)
+        self.ui.actionWebsite.triggered.connect(self.showWebsite)
+        self.ui.actionAbout.triggered.connect(self.about)
+
 
         self.ui.crsWidget.crsChanged.connect(self.updateDefaultCrs)
         self.ui.connsCbo.activated.connect(self.connChanged)
@@ -173,13 +176,6 @@ class RiverGIS(QMainWindow):
 
     def finishUi(self):
         pass
-        
-    def showHelp(self, page='index.html'):
-        helpFile = 'file:///{0}/help/{1}'.format(self.rivergisPath, page)
-        QDesktopServices.openUrl(QUrl(helpFile))
-    
-    def showRGisHelp(self):
-        self.showHelp('index.html')
 
     def addInfo(self, text):
         self.ui.textEdit.append(text)
@@ -396,6 +392,16 @@ class RiverGIS(QMainWindow):
         from dlg_rasFloodplainDelineation import DlgRasFloodplainDelineation
         dialog = DlgRasFloodplainDelineation(self)
         dialog.exec_()
+
+    def showHelp(self, page='index.html'):
+        helpFile = 'file:///{0}/help/{1}'.format(self.rivergisPath, page)
+        QDesktopServices.openUrl(QUrl(helpFile))
+
+    def showRGisHelp(self):
+        self.showHelp('index.html')
+
+    def showWebsite(self):
+        QDesktopServices.openUrl(QUrl('http://rivergis.com'))
 
     def about(self):
         self.showHelp('index.html')

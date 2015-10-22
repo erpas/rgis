@@ -54,7 +54,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="toolTip">
-          <string>Maximum number of raster cell values fetched at once by a database query. If number of cells exceeds the chunk size they are fetched successively.</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of raster cell values fetched at once by a database query. &lt;/p&gt;&lt;p&gt;If the number of raster cells exceeds the chunk size they are fetched successively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Chunk size</string>
@@ -63,6 +63,9 @@
        </item>
        <item>
         <widget class="QLineEdit" name="chunksize">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of raster cell values fetched at once by a database query. &lt;/p&gt;&lt;p&gt;If the number of raster cells exceeds the chunk size they are fetched successively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>10000</string>
          </property>

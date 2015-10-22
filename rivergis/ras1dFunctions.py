@@ -293,9 +293,13 @@ def ras1dSAElevations(rgis):
 
 
 def ras1dSAVolumeData(rgis):
-    # TODO: Retrieve number of slices from user.
+    nr_slices, ok = QInputDialog.getInteger(rgis, 'Number of slices',
+                        'Number of slices for volume calculation:', 10, 3, 30, 1)
+    if not ok:
+        rgis.addInfo("  Incorrect number of slices. Cancelling...")
+        return
     rgis.addInfo('<br><b>Calculating elevation-volume data for Storage Areas...</b>')
-    rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_storage_calculator', slices=5)
+    rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_storage_calculator', slices=nr_slices)
     rgis.addInfo('Done')
 
 
