@@ -124,7 +124,7 @@ def ras1dXSElevations(rgis):
     try:
         chunk = rgis.dtm_chunksize
     except:
-        chunk = 10000
+        chunk = 0
 
     # insert xs points along each xsection
     rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
@@ -274,7 +274,7 @@ def ras1dSAElevations(rgis):
     try:
         chunk = rgis.dtm_chunksize
     except:
-        chunk = 10000
+        chunk = 0
 
     # probe a DTM at each point
     QApplication.setOverrideCursor(Qt.WaitCursor)
