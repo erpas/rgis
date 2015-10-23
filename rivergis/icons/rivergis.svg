@@ -2,161 +2,58 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="24"
-   height="24"
-   id="svg5692"
+   width="300"
+   height="300"
+   viewBox="0 0 300.00001 300"
+   id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="rivergis.svg"
-   inkscape:export-filename="/media/home1/robert/svn/graphics/trunk/toolbar-icons/32x32/layer-vector.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
-  <title
-     id="title2829">GIS icon theme 0.2</title>
+   sodipodi:docname="rivergis.svg">
   <defs
-     id="defs5694">
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible;"
-       id="marker4628"
-       refX="0.0"
-       refY="0.0"
-       orient="auto"
-       inkscape:stockid="Arrow2Send">
-      <path
-         transform="scale(0.3) rotate(180) translate(-2.3,0)"
-         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
-         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         id="path4630" />
-    </marker>
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible;"
-       id="marker4460"
-       refX="0.0"
-       refY="0.0"
-       orient="auto"
-       inkscape:stockid="Arrow2Send">
-      <path
-         transform="scale(0.3) rotate(180) translate(-2.3,0)"
-         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
-         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         id="path4462" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow2Send"
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="Arrow2Send"
-       style="overflow:visible;"
-       inkscape:isstock="true">
-      <path
-         id="path4201"
-         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
-         transform="scale(0.3) rotate(180) translate(-2.3,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow2Mend"
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="Arrow2Mend"
-       style="overflow:visible;"
-       inkscape:isstock="true">
-      <path
-         id="path4195"
-         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
-         transform="scale(0.6) rotate(180) translate(0,0)" />
-    </marker>
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 16 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="32 : 16 : 1"
-       inkscape:persp3d-origin="16 : 10.666667 : 1"
-       id="perspective3486" />
-    <inkscape:perspective
-       id="perspective3496"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective3600"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective7871"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective8710"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective9811"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective4762"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible"
-       id="marker4628-2"
-       refX="0"
-       refY="0"
-       orient="auto"
-       inkscape:stockid="Arrow2Send">
-      <path
-         inkscape:connector-curvature="0"
-         transform="matrix(-0.3,0,0,-0.3,0.69,0)"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         style="fill:#0000ff;fill-opacity:1;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
-         id="path4630-1" />
-    </marker>
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible"
-       id="marker4460-8"
-       refX="0"
-       refY="0"
-       orient="auto"
-       inkscape:stockid="Arrow2Send">
-      <path
-         inkscape:connector-curvature="0"
-         transform="matrix(-0.3,0,0,-0.3,0.69,0)"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         style="fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
-         id="path4462-7" />
-    </marker>
+     id="defs4">
+    <linearGradient
+       id="linearGradient5637"
+       osb:paint="gradient">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5639" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop5641" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5649"
+       id="linearGradient5657"
+       x1="29.008167"
+       y1="153.30779"
+       x2="287.98886"
+       y2="153.30779"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.97291809,0,0,0.97881856,5.9538895,-3.2312246)" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient5649">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5651" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop5653" />
+    </linearGradient>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -165,120 +62,79 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4.0000001"
-     inkscape:cx="13.24255"
-     inkscape:cy="2.4553793"
-     inkscape:current-layer="layer2"
-     showgrid="false"
-     inkscape:grid-bbox="true"
+     inkscape:zoom="1.979899"
+     inkscape:cx="174.59485"
+     inkscape:cy="97.367084"
      inkscape:document-units="px"
-     borderlayer="false"
-     inkscape:window-width="1440"
-     inkscape:window-height="837"
-     inkscape:window-x="-4"
-     inkscape:window-y="-4"
-     inkscape:window-maximized="1"
-     inkscape:snap-global="false"
+     inkscape:current-layer="g4724"
+     showgrid="true"
      showguides="false"
-     inkscape:guide-bbox="true"
-     inkscape:snap-object-midpoints="false"
-     inkscape:snap-grids="false"
-     inkscape:snap-nodes="true"
-     inkscape:object-paths="true"
-     inkscape:object-nodes="true"
-     inkscape:snap-smooth-nodes="true">
+     inkscape:window-width="1920"
+     inkscape:window-height="1178"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-grids="true"
+     units="px"
+     borderlayer="true">
     <inkscape:grid
        type="xygrid"
-       id="grid5700"
-       empspacing="5"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true"
-       dotted="true"
-       originx="2.5px"
-       originy="2.5px" />
+       id="grid3365" />
   </sodipodi:namedview>
   <metadata
-     id="metadata5697">
+     id="metadata7">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>GIS icon theme 0.2</dc:title>
-        <dc:creator>
-          <cc:Agent>
-            <dc:title>Arnaud Morvan</dc:title>
-          </cc:Agent>
-        </dc:creator>
-        <dc:rights>
-          <cc:Agent>
-            <dc:title>Arnaud Morvan</dc:title>
-          </cc:Agent>
-        </dc:rights>
-        <dc:subject>
-          <rdf:Bag>
-            <rdf:li>GIS icons</rdf:li>
-          </rdf:Bag>
-        </dc:subject>
-        <dc:coverage>GIS icons</dc:coverage>
-        <dc:description />
-        <cc:license
-           rdf:resource="http://creativecommons.org/licenses/by-sa/3.0/" />
+        <dc:title></dc:title>
       </cc:Work>
-      <cc:License
-         rdf:about="http://creativecommons.org/licenses/by-sa/3.0/">
-        <cc:permits
-           rdf:resource="http://creativecommons.org/ns#Reproduction" />
-        <cc:permits
-           rdf:resource="http://creativecommons.org/ns#Distribution" />
-        <cc:requires
-           rdf:resource="http://creativecommons.org/ns#Notice" />
-        <cc:requires
-           rdf:resource="http://creativecommons.org/ns#Attribution" />
-        <cc:permits
-           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
-        <cc:requires
-           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
-      </cc:License>
     </rdf:RDF>
   </metadata>
   <g
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Layer"
-     style="display:inline"
-     transform="translate(0,-8)">
+     id="layer1"
+     transform="translate(0,-752.36206)">
     <g
-       id="g4167"
-       style="fill:#0008c4;fill-opacity:1">
-      <path
-         sodipodi:nodetypes="ccccsssccscczcccccc"
-         inkscape:connector-curvature="0"
-         id="path4181"
-         d="m 2.5005111,10.174994 0,13.636602 C 2.5684831,26.449711 5.64206,25.952031 8.3657056,25.978922 9.653557,25.742504 10.152922,24.96274 10.072904,24.385465 10.001764,23.421964 7.8782362,22.824482 7.7124535,21.403776 7.608222,20.510544 10.178977,19.793501 10.656172,19.03931 10.887713,18.67337 8.158315,18.090278 8.4912644,17.204987 c 0.2536748,-0.67451 4.7452876,-1.301331 4.8066706,-2.564672 0.06323,-1.025667 -3.339394,-1.676991 -6.1246471,-2.255844 3.5357071,0.677948 6.7018991,1.080303 7.4663461,2.431914 0.559193,0.988708 -2.884596,1.937335 -3.750547,2.509782 -0.276313,0.568426 2.645829,0.765716 2.799129,1.410543 0.119686,0.873647 -3.615204,1.811438 -3.33896,2.697918 0.276243,0.886479 5.848228,1.213635 5.935351,4.511475 l 4.8036,0.03453 C 25.138901,23.771743 19.399848,20.108522 17.269111,18.143903 24.211217,18.076435 23.024982,7.9736872 14.94627,8.0000512 l -10.0195099,0 C 3.1534483,8.2803453 2.4786912,9.0671023 2.5005111,10.174994 Z"
-         style="fill:#0008c4;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <text
-         transform="scale(1.4818673,0.67482424)"
-         sodipodi:linespacing="125%"
-         id="text4183"
-         y="47.352711"
-         x="-0.34361035"
-         style="font-style:normal;font-weight:normal;font-size:1.71637559px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#0008c4;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.16375732px;line-height:125%;font-family:LilyUPC;-inkscape-font-specification:'LilyUPC, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#0008c4;fill-opacity:1"
-           y="47.352711"
-           x="-0.34361035"
-           id="tspan4185"
-           sodipodi:role="line">GIS</tspan></text>
-      <rect
-         y="29.5625"
-         x="4.53125"
-         height="0.6875"
-         width="5.25"
-         id="rect4165"
-         style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#0008c4;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+       id="g4186"
+       transform="matrix(1.1521195,0,0,1.1979024,-31.666481,723.04636)">
+      <g
+         id="g4724">
+        <path
+           d="M 272.94274,35.720402 C 214.91029,37.912056 242.4382,63.061035 262.32104,81.571875 364.76415,206.37771 121.22569,270.73633 41.21147,264.92004 m 0,0 -6.50143,-74.08449 C 164.62397,203.95293 309.70615,159.11389 227.73571,76.456244 204.83847,42.365601 241.1454,27.716368 269.95088,28.792228 l 2.99186,6.928174"
+           style="opacity:0.93599997;fill:#0066ff;fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient5657);stroke-width:0.99245352;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="path3346-9"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccccccc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:90.73110962px;line-height:125%;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.7024349;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;"
+           x="168.14738"
+           y="84.572189"
+           id="text3361"
+           sodipodi:linespacing="125%"
+           transform="scale(0.86217689,1.1598548)"><tspan
+             sodipodi:role="line"
+             id="tspan3363"
+             x="168.14738"
+             y="84.572189">GI</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:332.49487305px;line-height:125%;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.70243491;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+           x="20.075575"
+           y="233.4715"
+           id="text3357"
+           sodipodi:linespacing="125%"
+           transform="scale(0.87773478,1.1392963)"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Ubuntu Mono';-inkscape-font-specification:'Ubuntu Mono';fill:#000000;stroke-width:1.70243491;stroke-miterlimit:4;stroke-dasharray:none;stroke:#000000;stroke-opacity:1;"
+             sodipodi:role="line"
+             id="tspan3359"
+             x="20.075575"
+             y="233.4715">R</tspan></text>
+      </g>
     </g>
   </g>
 </svg>
