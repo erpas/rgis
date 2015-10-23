@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>272</width>
-    <height>394</height>
+    <width>278</width>
+    <height>405</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,17 +57,17 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of raster cell values fetched at once by a database query. &lt;/p&gt;&lt;p&gt;If the number of raster cells exceeds the chunk size they are fetched successively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Chunk size</string>
+          <string>Chunk size:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="chunksize">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Maximum number of raster cell values fetched at once by a database query. &lt;/p&gt;&lt;p&gt;If the number of raster cells exceeds the chunk size they are fetched successively.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <widget class="QSpinBox" name="chunksize">
+         <property name="maximum">
+          <number>999999999</number>
          </property>
-         <property name="text">
-          <string>10000</string>
+         <property name="singleStep">
+          <number>1000</number>
          </property>
         </widget>
        </item>

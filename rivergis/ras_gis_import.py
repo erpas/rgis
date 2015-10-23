@@ -21,6 +21,7 @@ class RasGisImport(object):
         self.ineff_areas = IneffAreasBuilder(rgis)
         self.blocked_obs = BlockedObsBuilder(rgis)
         self.storage_areas = StorageAreasBuilder(rgis)
+        self.sa_connections = SAConnectionsBuilder(rgis)
 
     def gis_import_file(self):
         imp = self.header.build_header()
@@ -33,6 +34,7 @@ class RasGisImport(object):
         imp += self.ineff_areas.build_ineff_areas()
         imp += self.blocked_obs.build_blocked_obs()
         imp += self.storage_areas.build_storage_areas()
+        imp += self.sa_connections.build_sa_connections()
         return imp
 
     @staticmethod
@@ -649,3 +651,47 @@ class StorageAreasBuilder(object):
             sa_all += sa_poly.format(sa_id, vertices, elev)
         sa_all += sa_end
         return sa_all
+
+
+class SAConnectionsBuilder(object):
+    """
+    Return SA CONNECTIONS part of RAS GIS Import file.
+    """
+    def __init__(self, rgis):
+        self.rgis = rgis
+        self.schema = rgis.rdb.SCHEMA
+
+    def get_sa_conn(self):
+        qry = 'SELECT "SAConnID", "USSA", "DSSA", "TopWidth", "NodeName", ST_AsText(geom) AS wkt FROM "{0}"."SAConnections";'
+        qry = qry.format(self.schema)
+        sa_connections = self.rgis.rdb.run_query(qry, fetch=True)
+        if sa_connections is None:
+            return []
+        else:
+            return sa_connections
+
+    def build_sa_connections(self):
+        # TODO: Surface points in future
+        sa_conn_all = 'BEGIN SA CONNECTIONS:\n'
+        sa_conn_cut = '         {0}, {1}\n'
+        sa_conn_object = '''
+   SA CONNECTION:
+      SACONN ID: {0}
+      NODE NAME: {1}
+      US SA: {2}
+      DS SA: {3}
+      TOP WIDTH: {4}
+      CUT LINE:
+{5}   SURFACE LINE:
+   END:
+'''
+        sa_conn_end = '\nEND SA CONNECTIONS:\n\n'
+        for sac in self.get_sa_conn():
+            cuts = ''
+            pnts = RasGisImport.unpack_wkt(sac['wkt'])
+            for pt in pnts:
+                x, y = pt
+                cuts += sa_conn_cut.format(x, y)
+            sa_conn_all += sa_conn_object.format(sac['SAConnID'], sac['USSA'], sac['DSSA'], sac['TopWidth'], sac['NodeName'], cuts)
+        sa_conn_all += sa_conn_end
+        return sa_conn_all

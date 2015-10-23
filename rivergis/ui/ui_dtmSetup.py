@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_dtmSetup.ui'
 #
-# Created: Thu Oct 22 23:12:45 2015
+# Created: Fri Oct 23 13:09:39 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DTMSelectionDialog(object):
     def setupUi(self, DTMSelectionDialog):
         DTMSelectionDialog.setObjectName(_fromUtf8("DTMSelectionDialog"))
-        DTMSelectionDialog.resize(272, 394)
+        DTMSelectionDialog.resize(278, 405)
         DTMSelectionDialog.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.gridLayout = QtGui.QGridLayout(DTMSelectionDialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -50,7 +50,9 @@ class Ui_DTMSelectionDialog(object):
         self.label_2 = QtGui.QLabel(DTMSelectionDialog)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout_2.addWidget(self.label_2)
-        self.chunksize = QtGui.QLineEdit(DTMSelectionDialog)
+        self.chunksize = QtGui.QSpinBox(DTMSelectionDialog)
+        self.chunksize.setMaximum(999999999)
+        self.chunksize.setSingleStep(1000)
         self.chunksize.setObjectName(_fromUtf8("chunksize"))
         self.horizontalLayout_2.addWidget(self.chunksize)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
@@ -79,8 +81,6 @@ class Ui_DTMSelectionDialog(object):
         self.label.setText(_translate("DTMSelectionDialog", "Choose DTM(s) for cross-section intepolation", None))
         self.allChbox.setText(_translate("DTMSelectionDialog", "Select all", None))
         self.label_2.setToolTip(_translate("DTMSelectionDialog", "<html><head/><body><p>Maximum number of raster cell values fetched at once by a database query. </p><p>If the number of raster cells exceeds the chunk size they are fetched successively.</p></body></html>", None))
-        self.label_2.setText(_translate("DTMSelectionDialog", "Chunk size", None))
-        self.chunksize.setToolTip(_translate("DTMSelectionDialog", "<html><head/><body><p>Maximum number of raster cell values fetched at once by a database query. </p><p>If the number of raster cells exceeds the chunk size they are fetched successively.</p></body></html>", None))
-        self.chunksize.setText(_translate("DTMSelectionDialog", "10000", None))
+        self.label_2.setText(_translate("DTMSelectionDialog", "Chunk size:", None))
         self.helpButton.setText(_translate("DTMSelectionDialog", "Help", None))
 
