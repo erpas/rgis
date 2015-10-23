@@ -39,7 +39,7 @@
     <file>icons/importFromIsok.svg</file>
     <file>icons/ras2dareaCreate.svg</file>
     <file>icons/ras2dareaPreview.svg</file>
-    <file>icons/rivergis.svg</file>
     <file>icons/ras2dareaSaveToGeo.svg</file>
+    <file>icons/rivergis.svg</file>
   </qresource>
 </RCC>

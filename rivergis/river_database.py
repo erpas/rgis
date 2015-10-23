@@ -168,7 +168,7 @@ class RiverDatabase(object):
 
     def register_existing(self, hydro_module, schema=None, srid=None):
         """
-        Registering hydrodynamic model objects which exists in schema.
+        Registering hydrodynamic model objects already existing in the schema.
 
         Args:
             hydro_module (module): hydrodynamic model module
