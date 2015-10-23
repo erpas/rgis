@@ -193,6 +193,7 @@ class NodesTable(HecRasObject):
     def __init__(self):
         super(NodesTable, self).__init__()
         self.main = False
+        self.visible = False
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
@@ -205,6 +206,7 @@ class Endpoints(HecRasObject):
     def __init__(self):
         super(Endpoints, self).__init__()
         self.main = False
+        self.visible = False
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
@@ -566,6 +568,7 @@ class XSSurface(HecRasObject):
     def __init__(self):
         super(XSSurface, self).__init__()
         self.main = False
+        self.visible = False
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
@@ -1209,6 +1212,7 @@ class SASurface(HecRasObject):
     def __init__(self):
         super(SASurface, self).__init__()
         self.main = False
+        self.visible = False
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
@@ -1221,11 +1225,11 @@ class SAConnections(HecRasObject):
         super(SAConnections, self).__init__()
         self.geom_type = 'LINESTRING'
         self.attrs = [
-            ('"SAconID"', 'serial primary key'),
-            ('"Name"', 'text'),
+            ('"SAConnID"', 'serial primary key'),
             ('"USSA"', 'integer'),
             ('"DSSA"', 'integer'),
-            ('"TopWidth"', 'double precision')]
+            ('"TopWidth"', 'double precision'),
+            ('"NodeName"', 'text')]
 
 
 class DTMs(HecRasObject):
