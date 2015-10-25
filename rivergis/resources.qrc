@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/rivergis.svg</file>
     <file>icons/ras1dSAConnections.svg</file>
     <file>icons/rasImportHdfIntoRdb.svg</file>
     <file>icons/rasImportSdfIntoRdb.svg</file>
@@ -40,6 +41,5 @@
     <file>icons/ras2dareaCreate.svg</file>
     <file>icons/ras2dareaPreview.svg</file>
     <file>icons/ras2dareaSaveToGeo.svg</file>
-    <file>icons/rivergis.svg</file>
   </qresource>
 </RCC>
