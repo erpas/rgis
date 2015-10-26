@@ -146,9 +146,11 @@ class RiverGIS(QMainWindow):
     def enableActions(self, enable):
         menus = self.ui.menubar.findChildren(QMenu)
         toolbars = self.findChildren(QToolBar)
-
+        menusAlwaysOn = ['Settings', 'RAS Mapping', 'Help']
+        toolsAlwaysOn = ['Water Surface Generation',
+                         'Floodplain Delineation',
+                         'DTM Setup']
         if enable:
-
             for m in menus:
                 for a in m.findChildren(QAction):
                     a.setEnabled(True)
@@ -156,14 +158,14 @@ class RiverGIS(QMainWindow):
                 for b in t.findChildren(QToolButton):
                     b.setEnabled(True)
         else:
-
             for m in menus:
-                if not m.title() == 'Help':
+                if not m.title() in menusAlwaysOn:
                     for a in m.findChildren(QAction):
                         a.setDisabled(True)
             for t in toolbars:
                 for b in t.findChildren(QToolButton):
-                    b.setDisabled(True)
+                    if not b.text() in toolsAlwaysOn:
+                        b.setDisabled(True)
 
 
     def closeEvent(self, e):
