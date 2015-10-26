@@ -927,6 +927,61 @@ WHERE
         qry = qry.format(self.schema)
         return qry
 
+    def pg_surface_points(self):
+        qry = '''
+WITH line AS
+    (SELECT
+        br."BridgeID" as "BridgeID",
+        dtm."CellSize" as "CellSize",
+        (ST_Dump(br.geom)).geom AS geom
+    FROM
+        "{0}"."Bridges" as br,
+        "{0}"."DTMs" as dtm
+    WHERE
+        br."DtmID" = dtm."DtmID"),
+    linemeasure AS
+    (SELECT
+        "BridgeID",
+        ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
+        generate_series(0, (ST_Length(line.geom)*100)::int, (line."CellSize"*100)::int) AS "Station"
+    FROM line),
+    geometries AS
+    (SELECT
+        "BridgeID",
+        "Station",
+        (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
+    FROM linemeasure)
+
+    INSERT INTO "{0}"."BRSurface" (geom, "BridgeID", "Station")
+    SELECT
+        ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
+        "BridgeID",
+        "Station"/100
+    FROM geometries;
+
+    INSERT INTO "{0}"."BRSurface" (geom, "BridgeID", "Station")
+    SELECT
+        ST_Endpoint(geom),
+        "BridgeID",
+        ST_Length(geom)
+    FROM "{0}"."Bridges";
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+
+class BRSurface(HecRasObject):
+    def __init__(self):
+        super(BRSurface, self).__init__()
+        self.main = False
+        self.visible = False
+        self.spatial_index = False
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"BridgeID"', 'integer'),
+            ('"Station"', 'double precision'),
+            ('"Elevation"', 'double precision')]
+
 
 class InlineStructures(HecRasObject):
     def __init__(self):
@@ -982,6 +1037,61 @@ WHERE
 '''
         qry = qry.format(self.schema)
         return qry
+
+    def pg_surface_points(self):
+        qry = '''
+WITH line AS
+    (SELECT
+        ins."InlineSID" as "InlineSID",
+        dtm."CellSize" as "CellSize",
+        (ST_Dump(ins.geom)).geom AS geom
+    FROM
+        "{0}"."InlineStructures" as ins,
+        "{0}"."DTMs" as dtm
+    WHERE
+        ins."DtmID" = dtm."DtmID"),
+    linemeasure AS
+    (SELECT
+        "InlineSID",
+        ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
+        generate_series(0, (ST_Length(line.geom)*100)::int, (line."CellSize"*100)::int) AS "Station"
+    FROM line),
+    geometries AS
+    (SELECT
+        "InlineSID",
+        "Station",
+        (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
+    FROM linemeasure)
+
+    INSERT INTO "{0}"."ISSurface" (geom, "InlineSID", "Station")
+    SELECT
+        ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
+        "InlineSID",
+        "Station"/100
+    FROM geometries;
+
+    INSERT INTO "{0}"."ISSurface" (geom, "InlineSID", "Station")
+    SELECT
+        ST_Endpoint(geom),
+        "InlineSID",
+        ST_Length(geom)
+    FROM "{0}"."InlineStructures";
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+
+class ISSurface(HecRasObject):
+    def __init__(self):
+        super(ISSurface, self).__init__()
+        self.main = False
+        self.visible = False
+        self.spatial_index = False
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"InlineSID"', 'integer'),
+            ('"Station"', 'double precision'),
+            ('"Elevation"', 'double precision')]
 
 
 class LateralStructures(HecRasObject):
@@ -1068,6 +1178,61 @@ WHERE
 '''
         qry = qry.format(self.schema, self.srid)
         return qry
+
+    def pg_surface_points(self):
+        qry = '''
+WITH line AS
+    (SELECT
+        ls."LateralSID" as "LateralSID",
+        dtm."CellSize" as "CellSize",
+        (ST_Dump(ls.geom)).geom AS geom
+    FROM
+        "{0}"."LateralStructures" as ls,
+        "{0}"."DTMs" as dtm
+    WHERE
+        ls."DtmID" = dtm."DtmID"),
+    linemeasure AS
+    (SELECT
+        "LateralSID",
+        ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
+        generate_series(0, (ST_Length(line.geom)*100)::int, (line."CellSize"*100)::int) AS "Station"
+    FROM line),
+    geometries AS
+    (SELECT
+        "LateralSID",
+        "Station",
+        (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
+    FROM linemeasure)
+
+    INSERT INTO "{0}"."LSSurface" (geom, "LateralSID", "Station")
+    SELECT
+        ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
+        "LateralSID",
+        "Station"/100
+    FROM geometries;
+
+    INSERT INTO "{0}"."LSSurface" (geom, "LateralSID", "Station")
+    SELECT
+        ST_Endpoint(geom),
+        "LateralSID",
+        ST_Length(geom)
+    FROM "{0}"."LateralStructures";
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+
+class LSSurface(HecRasObject):
+    def __init__(self):
+        super(LSSurface, self).__init__()
+        self.main = False
+        self.visible = False
+        self.spatial_index = False
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"LateralSID"', 'integer'),
+            ('"Station"', 'double precision'),
+            ('"Elevation"', 'double precision')]
 
 
 class StorageAreas(HecRasObject):
