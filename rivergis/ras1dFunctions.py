@@ -195,14 +195,34 @@ def ras1dBRStationing(rgis):
 
 
 def ras1dBRElevations(rgis):
-    rgis.addInfo('<br><b>Running Elevations for Bridges/Culverts...</b>')
-    # TODO
+    """Probe a DTM to find bridges vertical shape"""
+    # Prepare DTMs
+    surface_obj = heco.BRSurface()
+    parent_obj = heco.Bridges()
+    prepare_DTMs(rgis)
+    update_DtmID(rgis, parent_obj)
+    try:
+        chunk = rgis.dtm_chunksize
+    except:
+        chunk = 0
+
+    # insert xs points along each bridge
+    rgis.rdb.process_hecobject(heco.BRSurface, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.Bridges, 'pg_surface_points')
+
+    # probe a DTM at each point
+    QApplication.setOverrideCursor(Qt.WaitCursor)
+    try:
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.addInfo('Done')
+    finally:
+        QApplication.restoreOverrideCursor()
 
 
 def ras1dRASBRAll(rgis):
-    # TODO: Add Elevation calculations.
     ras1dBRRiverReachNames(rgis)
     ras1dBRStationing(rgis)
+    ras1dBRElevations(rgis)
 
 
 def ras1dISRiverReachNames(rgis):
@@ -225,14 +245,35 @@ def ras1dISStationing(rgis):
 
 
 def ras1dISElevations(rgis):
-    rgis.addInfo('<br><b>Running Elevations for Inline Structures...</b>')
-    # TODO
+    """Probe a DTM to find inline structure vertical shape"""
+    # Prepare DTMs
+    surface_obj = heco.ISSurface()
+    parent_obj = heco.InlineStructures()
+    prepare_DTMs(rgis)
+    update_DtmID(rgis, parent_obj)
+    try:
+        chunk = rgis.dtm_chunksize
+    except:
+        chunk = 0
+
+    # insert xs points along each inline structure
+    rgis.rdb.process_hecobject(heco.ISSurface, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.InlineStructures, 'pg_surface_points')
+
+    # probe a DTM at each point
+    QApplication.setOverrideCursor(Qt.WaitCursor)
+    try:
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.addInfo('Done')
+    finally:
+        QApplication.restoreOverrideCursor()
 
 
 def ras1dISAll(rgis):
-    # TODO: Add Elevation calculations.
     ras1dISRiverReachNames(rgis)
     ras1dISStationing(rgis)
+    ras1dISElevations(rgis)
+
 
 def ras1dLatRiverReachNames(rgis):
     """Finds river and reach name for each lateral structure"""
@@ -254,14 +295,34 @@ def ras1dLatStationing(rgis):
 
 
 def ras1dLatElevations(rgis):
-    rgis.addInfo('<br><b>Running Elevations for Lateral Structures...</b>')
-    # TODO
+    """Probe a DTM to find lateral structure vertical shape"""
+    # Prepare DTMs
+    surface_obj = heco.LSSurface()
+    parent_obj = heco.LateralStructures()
+    prepare_DTMs(rgis)
+    update_DtmID(rgis, parent_obj)
+    try:
+        chunk = rgis.dtm_chunksize
+    except:
+        chunk = 0
+
+    # insert xs points along each lateral structure
+    rgis.rdb.process_hecobject(heco.LSSurface, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.LateralStructures, 'pg_surface_points')
+
+    # probe a DTM at each point
+    QApplication.setOverrideCursor(Qt.WaitCursor)
+    try:
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.addInfo('Done')
+    finally:
+        QApplication.restoreOverrideCursor()
 
 
 def ras1dLatAll(rgis):
-    # TODO: Add Elevation calculations.
     ras1dLatRiverReachNames(rgis)
     ras1dLatStationing(rgis)
+    ras1dLatElevations(rgis)
 
 
 def ras1dSAElevations(rgis):
