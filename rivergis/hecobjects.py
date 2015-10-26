@@ -762,7 +762,7 @@ WHERE
     ST_Intersects(ludump.geom, "XSCutLines".geom)
 ORDER BY "XSCutLines"."XsecID";
 
-SELECT "XsecID","N_Value","LUCode", (ST_Dump(geom)).geom::geometry(LINESTRING, {1}) AS geom
+SELECT "XsecID", "N_Value", "LUCode", (ST_Dump(geom)).geom::geometry(LINESTRING, {1}) AS geom
 INTO "{0}".inter_xs_dump
 FROM "{0}".inter_xs;
 
@@ -815,8 +815,10 @@ SELECT
     END AS "Fraction",
     "N_Value",
     "LUCode"
-INTO "{0}"."Manning"
-FROM "{0}".tmpman;
+INTO
+    "{0}"."Manning"
+FROM
+    "{0}".tmpman;
 
 DROP TABLE
     "{0}".inter_xs,
