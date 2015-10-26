@@ -165,7 +165,6 @@ class RiverGIS(QMainWindow):
                 for b in t.findChildren(QToolButton):
                     b.setDisabled(True)
 
-
     def closeEvent(self, e):
         # save the window state
         settings = QSettings()
@@ -232,7 +231,7 @@ class RiverGIS(QMainWindow):
         # refresh schemas combo
         schemaName = self.ui.schemasCbo.currentText()
         qry = "SELECT nspname FROM pg_namespace WHERE nspname !~ '^pg_' AND nspname != 'information_schema' ORDER BY nspname"
-        schemas = self.rdb.run_query(qry,fetch=True)
+        schemas = self.rdb.run_query(qry, fetch=True)
         self.ui.schemasCbo.clear()
         self.ui.schemasCbo.addItem('')
         for schema in schemas:
@@ -312,30 +311,6 @@ class RiverGIS(QMainWindow):
             return
         importData = DlgImportDataIntoRasTables(self)
         importData.exec_()
-    #
-    # def ras1dSATerrainPointExtraction(self):
-    #     from ras1dFunctions import ras1dSAElevations
-    #     ras1dSAElevations(self)
-    #
-    # def ras1dAElevationVolumeData(self):
-    #     from ras1dFunctions import ras1dSAVolumeData
-    #     ras1dSAVolumeData(self)
-    #
-    # def actionRASSAAll(self):
-    #     pass
-    #
-    # def ras1dSacAssignNearestSA(self):
-    #     pass
-    #
-    # def ras1dSacElevations(self):
-    #     pass
-    #
-    # def ras1dSacAll(self):
-    #     pass
-    #
-    # def ras1dCreateRasGisImport(self):
-    #     from ras1dFunctions import ras1dCreateRasGisImportFile
-    #     ras1dCreateRasGisImportFile(self)
 
     # 2D HEC-RAS Geometry Functions
 

@@ -64,6 +64,7 @@ WHERE
 
 def probe_DTMs(rgis, surface_obj, parent_obj, chunksize=0):
     # probe a DTM at each point
+    rgis.addInfo('Probing DTM along {0}...'.format(parent_obj.name))
     qry = 'SELECT * FROM "{0}"."DTMs";'.format(rgis.rdb.SCHEMA)
     dtms = rgis.rdb.run_query(qry, fetch=True)
     parent_id = parent_obj.attrs[0][0]

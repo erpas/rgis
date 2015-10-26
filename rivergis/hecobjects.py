@@ -883,7 +883,8 @@ class Bridges(HecRasObject):
             ('"Station"', 'double precision'),
             ('"USDistance"', 'double precision'),
             ('"TopWidth"', 'double precision'),
-            ('"NodeName"', 'text')]
+            ('"NodeName"', 'text'),
+            ('"DtmID"', 'integer')]
 
     def pg_river_reach_names(self):
         qry = '''
@@ -978,6 +979,7 @@ class BRSurface(HecRasObject):
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
+            ('"PtID"', 'bigserial primary key'),
             ('"BridgeID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"Elevation"', 'double precision')]
@@ -994,7 +996,8 @@ class InlineStructures(HecRasObject):
             ('"Station"', 'double precision'),
             ('"USDistance"', 'double precision'),
             ('"TopWidth"', 'double precision'),
-            ('"NodeName"', 'text')]
+            ('"NodeName"', 'text'),
+            ('"DtmID"', 'integer')]
 
     def pg_river_reach_names(self):
         qry = '''
@@ -1089,6 +1092,7 @@ class ISSurface(HecRasObject):
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
+            ('"PtID"', 'bigserial primary key'),
             ('"InlineSID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"Elevation"', 'double precision')]
@@ -1105,7 +1109,8 @@ class LateralStructures(HecRasObject):
             ('"Station"', 'double precision'),
             ('"USDistance"', 'double precision'),
             ('"TopWidth"', 'double precision'),
-            ('"NodeName"', 'text')]
+            ('"NodeName"', 'text'),
+            ('"DtmID"', 'integer')]
 
     def pg_river_reach_names(self):
         qry = '''
@@ -1230,6 +1235,7 @@ class LSSurface(HecRasObject):
         self.spatial_index = False
         self.geom_type = 'POINT'
         self.attrs = [
+            ('"PtID"', 'bigserial primary key'),
             ('"LateralSID"', 'integer'),
             ('"Station"', 'double precision'),
             ('"Elevation"', 'double precision')]
