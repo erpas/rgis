@@ -53,7 +53,18 @@ Optional geometry data:
 
   * name of 2D Flow Area (text) and
   * cell size (whole number) --- a default mesh points spacing in layer's CRS units.
-  
 
+--------------------------------------
+2. Extract Manning's values
+--------------------------------------
 
+To prepare Manning’s value table you need to prepare two layers:
 
+* LanduseAreas layer
+* XSCutLines layer
+
+Land use layer should contain “LUID”, “LUCode” and “N_Value” attributes
+
+  .. _fig_man_luatttable:
+  .. figure:: img/lu_att_table.png
+     :align: center
