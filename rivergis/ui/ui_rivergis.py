@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Oct 26 08:34:15 2015
+# Created: Mon Oct 26 17:29:04 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -308,7 +308,7 @@ class Ui_RiverGIS(object):
         self.actionRASBRStationing = QtGui.QAction(RiverGIS)
         self.actionRASBRStationing.setObjectName(_fromUtf8("actionRASBRStationing"))
         self.actionRASBRElevations = QtGui.QAction(RiverGIS)
-        self.actionRASBRElevations.setEnabled(False)
+        self.actionRASBRElevations.setEnabled(True)
         self.actionRASBRElevations.setObjectName(_fromUtf8("actionRASBRElevations"))
         self.actionRASBRAll = QtGui.QAction(RiverGIS)
         self.actionRASBRAll.setIcon(icon3)
@@ -318,7 +318,7 @@ class Ui_RiverGIS(object):
         self.actionRASInlStationing = QtGui.QAction(RiverGIS)
         self.actionRASInlStationing.setObjectName(_fromUtf8("actionRASInlStationing"))
         self.actionRASInlElevations = QtGui.QAction(RiverGIS)
-        self.actionRASInlElevations.setEnabled(False)
+        self.actionRASInlElevations.setEnabled(True)
         self.actionRASInlElevations.setObjectName(_fromUtf8("actionRASInlElevations"))
         self.actionRASInlAll = QtGui.QAction(RiverGIS)
         self.actionRASInlAll.setIcon(icon4)
@@ -328,7 +328,7 @@ class Ui_RiverGIS(object):
         self.actionRASLatStationing = QtGui.QAction(RiverGIS)
         self.actionRASLatStationing.setObjectName(_fromUtf8("actionRASLatStationing"))
         self.actionRASLatElevations = QtGui.QAction(RiverGIS)
-        self.actionRASLatElevations.setEnabled(False)
+        self.actionRASLatElevations.setEnabled(True)
         self.actionRASLatElevations.setObjectName(_fromUtf8("actionRASLatElevations"))
         self.actionRASLatAll = QtGui.QAction(RiverGIS)
         self.actionRASLatAll.setIcon(icon5)

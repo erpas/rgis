@@ -787,7 +787,7 @@
   </action>
   <action name="actionRASBRElevations">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Elevations</string>
@@ -826,7 +826,7 @@
   </action>
   <action name="actionRASInlElevations">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Elevations</string>
@@ -865,7 +865,7 @@
   </action>
   <action name="actionRASLatElevations">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Elevations</string>
