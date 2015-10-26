@@ -326,6 +326,7 @@ class BridgesBuilder(object):
     def get_bridges(self):
         qry = '''
 SELECT
+    "BridgeID",
     "RiverCode",
     "ReachCode",
     "Station",
@@ -343,10 +344,19 @@ FROM
         else:
             return bridges
 
+    def get_surf(self, br_id):
+        qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."BRSurface" WHERE "BridgeID" = {1} ORDER BY "Station";'
+        qry = qry.format(self.schema, br_id)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        if surfs is None:
+            return []
+        else:
+            return surfs
+
     def build_bridges(self):
-        # TODO: Surface points in future
         bridges_all = 'BEGIN BRIDGES/CULVERTS:\n'
         bridge_cut = '         {0}, {1}\n'
+        bridge_surf = '         {0}, {1}, {2}\n'
         bridge_object = '''
    BRIDGE/CULVERT:
       STREAM ID: {0}
@@ -357,16 +367,20 @@ FROM
       TOP WIDTH: {5}
       CUT LINE:
 {6}   SURFACE LINE:
-   END:
+{7}   END:
 '''
         bridges_end = '\nEND BRIDGES/CULVERTS:\n\n'
         for br in self.get_bridges():
+            br_id = br['BridgeID']
             cuts = ''
+            surfs = ''
             pnts = RasGisImport.unpack_wkt(br['wkt'])
             for pt in pnts:
                 x, y = pt
                 cuts += bridge_cut.format(x, y)
-            bridges_all += bridge_object.format(br['RiverCode'], br['ReachCode'], br['Station'], br['NodeName'], br['USDistance'], br['TopWidth'], cuts)
+            for s in self.get_surf(br_id):
+                surfs += bridge_surf.format(s['x'], s['y'], s['Elevation'])
+            bridges_all += bridge_object.format(br['RiverCode'], br['ReachCode'], br['Station'], br['NodeName'], br['USDistance'], br['TopWidth'], cuts, surfs)
         bridges_all += bridges_end
         return bridges_all
 
@@ -382,6 +396,7 @@ class InlineStrBuilder(object):
     def get_inline_str(self):
         qry = '''
 SELECT
+    "InlineSID",
     "RiverCode",
     "ReachCode",
     "Station",
@@ -399,10 +414,19 @@ FROM
         else:
             return inline_str
 
+    def get_surf(self, ins_id):
+        qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."ISSurface" WHERE "InlineSID" = {1} ORDER BY "Station";'
+        qry = qry.format(self.schema, ins_id)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        if surfs is None:
+            return []
+        else:
+            return surfs
+
     def build_inline_str(self):
-        # TODO: Surface points in future
         inline_str_all = 'BEGIN INLINE STRUCTURES:\n'
         inline_str_cut = '         {0}, {1}\n'
+        inline_str_surf = '         {0}, {1}, {2}\n'
         inline_str_object = '''
    INLINE STRUCTURE:
       STREAM ID: {0}
@@ -413,16 +437,20 @@ FROM
       TOP WIDTH: {5}
       CUT LINE:
 {6}   SURFACE LINE:
-   END:
+{7}   END:
 '''
         inline_str_end = '\nEND INLINE STRUCTURES:\n\n'
         for ins in self.get_inline_str():
+            ins_id = ins['InlineSID']
             cuts = ''
+            surfs = ''
             pnts = RasGisImport.unpack_wkt(ins['wkt'])
             for pt in pnts:
                 x, y = pt
                 cuts += inline_str_cut.format(x, y)
-            inline_str_all += inline_str_object.format(ins['RiverCode'], ins['ReachCode'], ins['Station'], ins['NodeName'], ins['USDistance'], ins['TopWidth'], cuts)
+            for s in self.get_surf(ins_id):
+                surfs += inline_str_surf.format(s['x'], s['y'], s['Elevation'])
+            inline_str_all += inline_str_object.format(ins['RiverCode'], ins['ReachCode'], ins['Station'], ins['NodeName'], ins['USDistance'], ins['TopWidth'], cuts, surfs)
         inline_str_all += inline_str_end
         return inline_str_all
 
@@ -438,6 +466,7 @@ class LateralStrBuilder(object):
     def get_lateral_str(self):
         qry = '''
 SELECT
+    "LateralSID",
     "RiverCode",
     "ReachCode",
     "Station",
@@ -455,10 +484,19 @@ FROM
         else:
             return lateral_str
 
+    def get_surf(self, ls_id):
+        qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."LSSurface" WHERE "LateralSID" = {1} ORDER BY "Station";'
+        qry = qry.format(self.schema, ls_id)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        if surfs is None:
+            return []
+        else:
+            return surfs
+
     def build_lateral_str(self):
-        # TODO: Surface points in future
         lateral_str_all = 'BEGIN LATERAL STRUCTURES:\n'
         lateral_str_cut = '         {0}, {1}\n'
+        lateral_str_surf = '         {0}, {1}, {2}\n'
         lateral_str_object = '''
    LATERAL STRUCTURE:
       STREAM ID: {0}
@@ -469,16 +507,20 @@ FROM
       TOP WIDTH: {5}
       CUT LINE:
 {6}   SURFACE LINE:
-   END:
+{7}   END:
 '''
         lateral_str_end = '\nEND LATERAL STRUCTURES:\n\n'
         for ls in self.get_lateral_str():
+            ls_id = ls['LateralSID']
             cuts = ''
+            surfs = ''
             pnts = RasGisImport.unpack_wkt(ls['wkt'])
             for pt in pnts:
                 x, y = pt
                 cuts += lateral_str_cut.format(x, y)
-            lateral_str_all += lateral_str_object.format(ls['RiverCode'], ls['ReachCode'], ls['Station'], ls['NodeName'], ls['USDistance'], ls['TopWidth'], cuts)
+            for s in self.get_surf(ls_id):
+                surfs += lateral_str_surf.format(s['x'], s['y'], s['Elevation'])
+            lateral_str_all += lateral_str_object.format(ls['RiverCode'], ls['ReachCode'], ls['Station'], ls['NodeName'], ls['USDistance'], ls['TopWidth'], cuts, surfs)
         lateral_str_all += lateral_str_end
         return lateral_str_all
 
