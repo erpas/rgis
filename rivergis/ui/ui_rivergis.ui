@@ -287,7 +287,6 @@
     <addaction name="actionRASCreateRdbTables"/>
     <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
     <addaction name="actionRASImportLayersIntoRdbTables"/>
-    <addaction name="actionImportRiverFromIsokp"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">

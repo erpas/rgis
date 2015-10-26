@@ -119,11 +119,6 @@ class RiverGIS(QMainWindow):
         self.ui.connsCbo.activated.connect(self.connChanged)
         self.ui.schemasCbo.activated.connect(self.schemaChanged)
 
-        # keep some actions inactive until the connection is ready
-
-
-
-
         # Some info
         self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please, start with choosing a <b>connection to a PostGIS database and a schema</b> from the above lists.')
         self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
@@ -137,9 +132,11 @@ class RiverGIS(QMainWindow):
 
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
+
+        # disable some actions until a connection to river database is established
         self.enableActions(False)
 
-        # set project CRS as a default projection
+        # set QGIS projection CRS as a default for RiverGIS
         self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
         self.updateDefaultCrs()
 
@@ -173,11 +170,7 @@ class RiverGIS(QMainWindow):
         settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
         settings.setValue("/rivergis/mainWindow/geometry", self.saveGeometry())
         settings.setValue("/rivergis/mainWindow/flags", self.windowFlags())
-
         QMainWindow.closeEvent(self, e)
-
-    def finishUi(self):
-        pass
 
     def addInfo(self, text):
         self.ui.textEdit.append(text)

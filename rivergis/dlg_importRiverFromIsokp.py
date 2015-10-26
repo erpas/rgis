@@ -27,8 +27,8 @@ class DlgImportRiverFromIsokp(QDialog):
     QObject.connect(self.ui.cboRivers,SIGNAL("currentIndexChanged(int)"),self.cboRiversChanged)
 
     # self.ui.cboRivers.addItem("")
-    self.ui.lineEdConnection.setText( rgis.ui.connsCbo.currentText() )
-    self.ui.lineEdSchema.setText( rgis.ui.schemasCbo.currentText() )
+    self.ui.lineEdConnection.setText( self.rgis.ui.connsCbo.currentText() )
+    self.ui.lineEdSchema.setText( self.rgis.ui.schemasCbo.currentText() )
     self.populateCboRivers()
     self.riv_id = None
 
@@ -39,7 +39,7 @@ class DlgImportRiverFromIsokp(QDialog):
     try:
       import MySQLdb
     except:
-      rgis.addInfo("\n\nQGIS couldn't import mysql-python Python package and cannot connect to ISOKP Database. Download compiled module mysql-python from\nhttp://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python\nand install with:\npip install module_name.whl")
+      self.rgis.addInfo("\n\nQGIS couldn't import mysql-python Python package and cannot connect to ISOKP Database. Download compiled module mysql-python from\nhttp://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python\nand install with:\npip install module_name.whl")
       QMessageBox.warning(self.rgis, "Import River From ISOKP", "QGIS couldn't import mysql-python Python package and cannot connect to ISOKP Database. Download compiled module mysql-python from\nhttp://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python\nand install with:\npip install module_name.whl")
       return
     self.mydb = None
@@ -89,12 +89,8 @@ class DlgImportRiverFromIsokp(QDialog):
     if not self.srid:
       return
     QApplication.setOverrideCursor(Qt.WaitCursor)
-    # PostGIS connection
-    # connParams = "host='%s' port='%s' database='%s' user='%s' password='%s' sslmode='%s'" % \
-    #              (self.rgis.host,self.rgis.port,self.rgis.dbname,self.rgis.user,self.rgis.passwd,self.rgis.sslmode)
     conn = self.rgis.conn
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    createPgFunctionCreateIndexIfNotExists(self.rgis)
     schema = self.ui.lineEdSchema.text()
     self.rgis.addInfo("  Creating tables...")
     # create rivers table
@@ -128,7 +124,7 @@ class DlgImportRiverFromIsokp(QDialog):
     for riv in self.rivers:
       if riv['name'] == self.riv_mikeName and riv['full_name'] == self.riv_name:
         self.riv_gid = riv['gid']
-        addInfo(self.rgis, "  River %s already exists" % self.riv_mikeName)
+        self.rgis.addInfo(self.rgis, "  River %s already exists" % self.riv_mikeName)
         break
     if not self.riv_gid:
       qry = '''insert into %s.rivers (topo_id, name, full_name) select %i, \'%s\', \'%s\'
