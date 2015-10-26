@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Oct 26 17:26:50 2015
+# Created: Mon Oct 26 20:32:36 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -80,8 +80,6 @@ class Ui_RiverGIS(object):
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
-        self.menuRASMapping = QtGui.QMenu(self.menubar)
-        self.menuRASMapping.setObjectName(_fromUtf8("menuRASMapping"))
         self.menu_Geometry = QtGui.QMenu(self.menubar)
         self.menu_Geometry.setObjectName(_fromUtf8("menu_Geometry"))
         self.menuXS_Cut_Line_Attributes = QtGui.QMenu(self.menu_Geometry)
@@ -149,9 +147,6 @@ class Ui_RiverGIS(object):
         self.ras2dToolBar = QtGui.QToolBar(RiverGIS)
         self.ras2dToolBar.setObjectName(_fromUtf8("ras2dToolBar"))
         RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.ras2dToolBar)
-        self.rasMappingToolBar = QtGui.QToolBar(RiverGIS)
-        self.rasMappingToolBar.setObjectName(_fromUtf8("rasMappingToolBar"))
-        RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasMappingToolBar)
         self.actionCreate2dAreaPerimeter = QtGui.QAction(RiverGIS)
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/2darea_perimeter.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -362,10 +357,6 @@ class Ui_RiverGIS(object):
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuHelp.addAction(self.actionWebsite)
         self.menuHelp.addAction(self.actionAbout)
-        self.menuRASMapping.addAction(self.actionRASImportRasData)
-        self.menuRASMapping.addSeparator()
-        self.menuRASMapping.addAction(self.actionRASWaterSurfaceGeneration)
-        self.menuRASMapping.addAction(self.actionRASFloodplainDelineation)
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSRiverReachNames)
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSStationing)
         self.menuXS_Cut_Line_Attributes.addAction(self.actionRASXSBankStations)
@@ -428,16 +419,14 @@ class Ui_RiverGIS(object):
         self.menu_Geometry.addAction(self.actionRASSave2DPointsToHECRASGeometry)
         self.menuDB.addAction(self.actionRefreshConnections)
         self.menuDB.addAction(self.actionRASCreateRdbTables)
-        self.menuDB.addAction(self.actionRASLoadRdbTablesIntoQGIS)
         self.menuDB.addAction(self.actionRASImportLayersIntoRdbTables)
-        self.menuDB.addAction(self.actionImportRiverFromIsokp)
+        self.menuDB.addAction(self.actionRASLoadRdbTablesIntoQGIS)
         self.menuSettings.addAction(self.actionRASDTMSetup)
         self.menuSettings.addAction(self.actionDebugMode)
         self.menuSettings.addAction(self.actionAlwaysOnTop)
         self.menubar.addAction(self.menuDB.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menu_Geometry.menuAction())
-        self.menubar.addAction(self.menuRASMapping.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.dbToolBar.addAction(self.actionRefreshConnections)
         self.dbToolBar.addAction(self.actionRASCreateRdbTables)
@@ -454,7 +443,6 @@ class Ui_RiverGIS(object):
         self.rasGeomToolBar.addAction(self.actionRASXSElevations)
         self.rasGeomToolBar.addAction(self.actionRASXSAll)
         self.rasImportExportToolBar.addAction(self.actionRASCreateRASGISImport)
-        self.rasImportExportToolBar.addAction(self.actionRASImportRasData)
         self.rasOptGeomToolBar.addAction(self.actionRASManningsNValues)
         self.rasOptGeomToolBar.addAction(self.actionRASIneffectiveFlowAreas)
         self.rasOptGeomToolBar.addAction(self.actionRASBlockedObstructions)
@@ -469,8 +457,6 @@ class Ui_RiverGIS(object):
         self.ras2dToolBar.addAction(self.actionRASCreate2dAreaPoints)
         self.ras2dToolBar.addAction(self.actionRASPreview2DMesh)
         self.ras2dToolBar.addAction(self.actionRASSave2DPointsToHECRASGeometry)
-        self.rasMappingToolBar.addAction(self.actionRASWaterSurfaceGeneration)
-        self.rasMappingToolBar.addAction(self.actionRASFloodplainDelineation)
 
         self.retranslateUi(RiverGIS)
         QtCore.QMetaObject.connectSlotsByName(RiverGIS)
@@ -481,7 +467,6 @@ class Ui_RiverGIS(object):
         self.labelCurDatabase.setText(_translate("RiverGIS", "DB Connection:", None))
         self.label.setText(_translate("RiverGIS", "Projection", None))
         self.menuHelp.setTitle(_translate("RiverGIS", "Help", None))
-        self.menuRASMapping.setTitle(_translate("RiverGIS", "RAS Mapping", None))
         self.menu_Geometry.setTitle(_translate("RiverGIS", "RAS Geometry", None))
         self.menuXS_Cut_Line_Attributes.setTitle(_translate("RiverGIS", "XS Cut Line Attributes", None))
         self.menuStreamCenterlineAttributes.setTitle(_translate("RiverGIS", "Stream Centerline Attributes", None))
@@ -500,7 +485,6 @@ class Ui_RiverGIS(object):
         self.rasStructuresToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.rasSAToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.ras2dToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
-        self.rasMappingToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.actionCreate2dAreaPerimeter.setText(_translate("RiverGIS", "2D Area (Perimeter)", None))
         self.actionRASCreate2dAreaPoints.setText(_translate("RiverGIS", "Create 2D Computational Points", None))
         self.actionHelpContents.setText(_translate("RiverGIS", "Contents", None))
