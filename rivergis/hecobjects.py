@@ -838,7 +838,7 @@ DROP TABLE
 class Manning(HecRasObject):
     def __init__(self):
         super(Manning, self).__init__()
-        self.visible = True
+        self.visible = False
         self.spatial_index = False
         self.attrs = [
             ('"XsecID"', 'integer'),
