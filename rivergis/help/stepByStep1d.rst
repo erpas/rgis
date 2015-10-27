@@ -55,16 +55,27 @@ Optional geometry data:
   * cell size (whole number) --- a default mesh points spacing in layer's CRS units.
 
 --------------------------------------
-2. Extract Manning's values
+2. Manning's values extraction
 --------------------------------------
 
 To prepare Manning’s value table you need to prepare two layers:
 
-* LanduseAreas layer
-* XSCutLines layer
+* LanduseAreas polygon layer
+* XSCutLines  polyline layer
 
-Land use layer should contain “LUID”, “LUCode” and “N_Value” attributes
+Land use layer must contain “LUID”, “LUCode” and “N_Value” attributes and it should contain multipart polygons
 
   .. _fig_man_luatttable:
   .. figure:: img/lu_att_table.png
      :align: center
+
+     Exemplary Land use attribute table
+
+For correct Manning's values extraction all of the cross sections in XSCutLines layer have to cover land use polygons
+
+  .. _fig_man_xslupic:
+  .. figure:: img/xs_lu_pic.png
+     :align: center
+
+     Cross sections and Land use layers coverage
+
