@@ -39,18 +39,21 @@ def ras1dStreamCenterlineTopology(rgis):
     rgis.addInfo('<br><b>Building stream centerlines topology...</b>')
     rgis.rdb.process_hecobject(heco.NodesTable, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_topology'):
+        rgis.rdb.add_to_view(heco.NodesTable())
         rgis.addInfo('Done.')
 
 
 def ras1dStreamCenterlineLengthsStations(rgis):
     """Calculate river reaches length and their endpoints stations"""
-    ntExist = 'NodesTable' in [t[0] for t in rgis.rdb.list_tables()]
-    if not ntExist:
+    nt_exists = 'NodesTable' in [t[0] for t in rgis.rdb.list_tables()]
+    if not nt_exists:
         rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build stream centerlines topology first.<br>Cancelling...')
-        qry = ''
+        return
+
     rgis.addInfo('<br><b>Calculating river reach(es) lenghts and their end stations...</b>')
     rgis.rdb.process_hecobject(heco.Endpoints, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations'):
+        rgis.rdb.add_to_view(heco.Endpoints())
         rgis.addInfo('Done.')
 
 
@@ -68,6 +71,7 @@ def ras1dXSRiverReachNames(rgis):
     if not sc_exist or not xs_exist:
         rgis.addInfo('<br>StreamCenterlines or XSCutLines table is not registered in the river database. Cancelling...')
         return
+
     rgis.addInfo('<br><b>Setting river and reach names for each cross-section...</b>')
     if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_river_reach_names'):
         rgis.addInfo('Done.')
@@ -92,12 +96,13 @@ def ras1dXSDownstreamLengths(rgis):
     rgis.addInfo('<br><b>Calculating cross-sections distances to the next cross-section downstream ...</b>')
     # check the flowpaths line type if not empty
     qry = 'SELECT "LineType" FROM "{0}"."Flowpaths";'.format(rgis.rdb.SCHEMA)
-    lineTypes = rgis.rdb.run_query(qry, fetch=True)
-    for row in lineTypes:
+    line_types = rgis.rdb.run_query(qry, fetch=True)
+    for row in line_types:
         if row[0].lower() not in ['channel', 'right', 'left', 'c', 'l', 'r']:
             rgis.addInfo(row[0])
             rgis.addInfo('Check the Flowpaths LineType attribute values - it should be one of: Channel, Right, Left, C, L, or r')
             return
+
     if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Channel', sort=True):
         rgis.addInfo('Channel flowpaths done.')
     if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Left', sort=False):
@@ -159,6 +164,7 @@ def ras1dLevees(rgis):
     rgis.addInfo('<br><b>Calculating levees stations for cross-sections...</b>')
     rgis.rdb.process_hecobject(heco.LeveePoints, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.LeveeAlignment, 'pg_levee_positions'):
+        rgis.rdb.add_to_view(heco.LeveePoints())
         rgis.addInfo('Done.')
 
 
@@ -183,6 +189,7 @@ def ras1dBRRiverReachNames(rgis):
     if not sc_exist or not br_exist:
         rgis.addInfo('<br>StreamCenterlines or Bridges table is not registered in the river database. Cancelling...')
         return
+
     rgis.addInfo('<br><b>Setting river and reach names for each bridge...</b>')
     if rgis.rdb.process_hecobject(heco.Bridges, 'pg_river_reach_names'):
         rgis.addInfo('Done.')
@@ -234,6 +241,7 @@ def ras1dISRiverReachNames(rgis):
     if not sc_exist or not is_exist:
         rgis.addInfo('<br>StreamCenterlines or InlineStructures table is not registered in the river database. Cancelling...')
         return
+
     rgis.addInfo('<br><b>Setting river and reach names for each inline structure...</b>')
     if rgis.rdb.process_hecobject(heco.InlineStructures, 'pg_river_reach_names'):
         rgis.addInfo('Done.')
@@ -285,6 +293,7 @@ def ras1dLatRiverReachNames(rgis):
     if not sc_exist or not ls_exist:
         rgis.addInfo('<br>StreamCenterlines or LateralStructures table is not registered in the river database. Cancelling...')
         return
+
     rgis.addInfo('<br><b>Setting river and reach names for each lateral structure...</b>')
     if rgis.rdb.process_hecobject(heco.LateralStructures, 'pg_river_reach_names'):
         rgis.addInfo('Done.')
@@ -358,11 +367,11 @@ def ras1dSAElevations(rgis):
 
 
 def ras1dSAVolumeData(rgis):
-    nr_slices, ok = QInputDialog.getInteger(rgis, 'Number of slices',
-                        'Number of slices for volume calculation:', 10, 3, 30, 1)
+    nr_slices, ok = QInputDialog.getInteger(rgis, 'Number of slices', 'Number of slices for volume calculation:', 10, 3, 30, 1)
     if not ok:
         rgis.addInfo("  Incorrect number of slices. Cancelling...")
         return
+
     rgis.addInfo('<br><b>Calculating elevation-volume data for Storage Areas...</b>')
     rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_storage_calculator', slices=nr_slices)
     rgis.addInfo('Done')
@@ -382,8 +391,8 @@ def ras1dSACElevations(rgis):
 
 
 def ras1dSACAll(rgis):
-    ras1dSAElevations(rgis)
-    ras1dSAVolumeData(rgis)
+    ras1dSACAssignNearestSA(rgis)
+    ras1dSACElevations(rgis)
 
 
 def ras1dXSUpdateInsertMeasuredPts(rgis):
@@ -398,19 +407,20 @@ def ras1dCreateRasGisImportFile(rgis):
     """
     rgis.addInfo('<br><b>Creating RAS GIS Import file from HEC-RAS model geometry...</b>')
     s = QSettings()
-    lastRasGisImportFileDir = s.value("rivergis/lastRasGisImportDir", "")
-    importFileName = QFileDialog.getSaveFileName(None,
+    last_dir = s.value("rivergis/lastRasGisImportDir", "")
+    import_fname = QFileDialog.getSaveFileName(None,
                      'Target HEC-RAS GIS Import file',
-                     directory=lastRasGisImportFileDir,
+                     directory=last_dir,
                      filter='HEC-RAS GIS Import (*.sdf)')
-    if not importFileName:
+    if not import_fname:
         rgis.addInfo('Creating RAS GIS Import file cancelled.')
         return
-    s.setValue("rivergis/lastRasGisImportDir", dirname(importFileName))
+
+    s.setValue("rivergis/lastRasGisImportDir", dirname(import_fname))
     rgi = RasGisImport(rgis)
     sdf = rgi.gis_import_file()
     if rgis.DEBUG:
         rgis.addInfo(sdf)
-    with open(importFileName, 'w') as importFile:
-        importFile.write(sdf)
+    with open(import_fname, 'w') as import_file:
+        import_file.write(sdf)
     rgis.addInfo('Done.')

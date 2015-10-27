@@ -16,6 +16,7 @@ class RiverDatabase(object):
     """
     SCHEMA = 'start'
     SRID = 2180
+    LOAD_ALL = False
     CHECK_URI = True
 
     def __init__(self, rgis, dbname, host, port, user, password):
@@ -193,7 +194,7 @@ class RiverDatabase(object):
         """
         for k in sorted(self.register.keys()):
             obj = self.register[k]
-            if obj.visible is True:
+            if obj.visible is True or self.LOAD_ALL is True:
                 self.add_to_view(obj)
             else:
                 pass
