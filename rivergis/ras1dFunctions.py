@@ -134,6 +134,7 @@ def ras1dXSElevations(rgis):
     QApplication.setOverrideCursor(Qt.WaitCursor)
     try:
         probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.rdb.add_to_view(surface_obj)
         rgis.addInfo('Done')
     finally:
         QApplication.restoreOverrideCursor()
@@ -214,6 +215,7 @@ def ras1dBRElevations(rgis):
     QApplication.setOverrideCursor(Qt.WaitCursor)
     try:
         probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.rdb.add_to_view(surface_obj)
         rgis.addInfo('Done')
     finally:
         QApplication.restoreOverrideCursor()
@@ -264,6 +266,7 @@ def ras1dISElevations(rgis):
     QApplication.setOverrideCursor(Qt.WaitCursor)
     try:
         probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.rdb.add_to_view(surface_obj)
         rgis.addInfo('Done')
     finally:
         QApplication.restoreOverrideCursor()
@@ -314,6 +317,7 @@ def ras1dLatElevations(rgis):
     QApplication.setOverrideCursor(Qt.WaitCursor)
     try:
         probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.rdb.add_to_view(surface_obj)
         rgis.addInfo('Done')
     finally:
         QApplication.restoreOverrideCursor()
