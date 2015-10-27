@@ -97,10 +97,36 @@ Main RiverGIS window should display following message if the extraction was done
 
      Correct Manning's values extraction
 
-You should obtain table with "XsecID", "Fraction", "N_Value" and "LUCode"
+You should obtain table with "XsecID", "Fraction", "N_Value" and "LUCode" attributes. Table will be added to view and in this form is ready for SDF export.
 
   .. _fig_man_mantable:
   .. figure:: img/man_table.png
      :align: center
 
      Exemplary Manning's values table
+
+--------------------------------------
+3. Bridges/Culverts
+--------------------------------------
+
+This chapter describes processing of bridges/culverts layer. There are three layers required for complete extraction of the data:
+
+* StreamCenterline polyline layer
+* Bridges/Culverts polyline layer
+* DTM layer (optional)
+
+Both StreamCenterline and Bridges/Culverts you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attrubutes are filled. We will focus on Bridges/Culverts layer and its functionality.
+
+  .. |createbutton| image:: img/create_ico.png
+
+  .. note::
+
+     For more information about creation and edition of StreamCenterline layer please look :download:`HERE <HEC_help/HEC_GeoRAS_10_for_ArcGIS_10.pdf>`
+
+
+  .. _fig_man_create:
+  .. figure:: img/create_2.png
+  .. figure:: img/create_1.png
+     :align: center
+
+Bridges/Culverts layer should contain "BridgeID", "RiverCode", "ReachCode", "Station", "USDistance", "TopWidth", "NodeName" and DtmId" attributes. First four attributes are
