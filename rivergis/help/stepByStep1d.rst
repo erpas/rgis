@@ -97,3 +97,10 @@ Main RiverGIS window should display following message if the extraction was done
 
      Correct Manning's values extraction
 
+You should obtain table with "XsecID", "Fraction", "N_Value" and "LUCode"
+
+  .. _fig_man_mantable:
+  .. figure:: img/man_table.png
+     :align: center
+
+     Exemplary Manning's values table
