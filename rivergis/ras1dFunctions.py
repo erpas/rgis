@@ -156,7 +156,9 @@ def ras1dXSAll(rgis):
 
 def ras1dXSExtractMannings(rgis):
     rgis.addInfo('<br><b>Extracting Manning\'s n values for cross-sections</b>')
+    rgis.rdb.process_hecobject(heco.Manning, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.LanduseAreas, 'pg_extract_manning'):
+        rgis.rdb.add_to_view(heco.Manning())
         rgis.addInfo('Done.')
 
 
@@ -373,7 +375,9 @@ def ras1dSAVolumeData(rgis):
         return
 
     rgis.addInfo('<br><b>Calculating elevation-volume data for Storage Areas...</b>')
+    rgis.rdb.process_hecobject(heco.SAVolume, 'pg_create_table')
     rgis.rdb.process_hecobject(heco.StorageAreas, 'pg_storage_calculator', slices=nr_slices)
+    rgis.rdb.add_to_view(heco.SAVolume())
     rgis.addInfo('Done')
 
 

@@ -24,7 +24,10 @@ class HecRasObject(object):
 
     def pg_create_table(self):
         schema_name = '"{0}"."{1}"'.format(self.schema, self.name)
-        attrs = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
+        if self.geom_type is not None:
+            attrs = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
+        else:
+            attrs = []
         attrs += [' '.join(field) for field in self.attrs]
         if self.overwrite is True:
             qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(schema_name, schema_name, ',\n\t'.join(attrs))
@@ -744,8 +747,6 @@ class LanduseAreas(HecRasObject):
 ------------------------------------------------------------------------------------------------------------------------
 -- Intersect of land use layer with cross section layer  --
 ------------------------------------------------------------------------------------------------------------------------
-DROP TABLE IF EXISTS "{0}"."Manning";
-
 SELECT "LUID", "LUCode", "N_Value", (ST_Dump(geom)).geom::geometry(POLYGON, {1}) AS geom
 INTO "{0}".ludump
 FROM "{0}"."LanduseAreas";
@@ -807,6 +808,7 @@ ORDER BY "XsecID", "Fraction";
 ------------------------------------------------------------------------------------------------------------------------
 -- Creation of table with Manning's coefficients  --
 ------------------------------------------------------------------------------------------------------------------------
+INSERT INTO "{0}"."Manning" ("XsecID", "Fraction", "N_Value", "LUCode")
 SELECT
     "XsecID",
     CASE WHEN
@@ -816,8 +818,6 @@ SELECT
     END AS "Fraction",
     "N_Value",
     "LUCode"
-INTO
-    "{0}"."Manning"
 FROM
     "{0}".tmpman;
 
@@ -833,6 +833,18 @@ DROP TABLE
 '''
         qry = qry.format(self.schema, self.srid)
         return qry
+
+
+class Manning(HecRasObject):
+    def __init__(self):
+        super(Manning, self).__init__()
+        self.visible = True
+        self.spatial_index = False
+        self.attrs = [
+            ('"XsecID"', 'integer'),
+            ('"Fraction"', 'double precision'),
+            ('"N_Value"', 'double precision'),
+            ('"LUCode"', 'text')]
 
 
 class LeveeAlignment(HecRasObject):
@@ -1374,8 +1386,6 @@ $BODY$
     LANGUAGE plpgsql;
 
 
-DROP TABLE IF EXISTS "{0}"."SAVolume";
-CREATE TABLE "{0}"."SAVolume"("StorageID" integer, level double precision, volume double precision);
 SELECT "{0}".storage_calculator ({1});
 '''
         qry = qry.format(self.schema, slices)
@@ -1392,6 +1402,17 @@ class SASurface(HecRasObject):
         self.attrs = [
             ('"StorageID"', 'integer'),
             ('"Elevation"', 'double precision')]
+
+
+class SAVolume(HecRasObject):
+    def __init__(self):
+        super(SAVolume, self).__init__()
+        self.visible = False
+        self.spatial_index = False
+        self.attrs = [
+            ('"StorageID"', 'integer'),
+            ('"level"', 'double precision'),
+            ('"volume"', 'double precision')]
 
 
 class SAConnections(HecRasObject):
