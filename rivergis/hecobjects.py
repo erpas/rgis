@@ -44,7 +44,7 @@ class HecRasObject(object):
 class StreamCenterlines(HecRasObject):
     def __init__(self):
         super(StreamCenterlines, self).__init__()
-        self.order = 7
+        self.order = 6
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"ReachID"', 'serial primary key'),
@@ -227,7 +227,7 @@ class Endpoints(HecRasObject):
 class XSCutLines(HecRasObject):
     def __init__(self):
         super(XSCutLines, self).__init__()
-        self.order = 9
+        self.order = 7
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"XsecID"', 'serial primary key'),
@@ -594,7 +594,7 @@ class XSSurface(HecRasObject):
 class BankLines(HecRasObject):
     def __init__(self):
         super(BankLines, self).__init__()
-        self.order = 10
+        self.order = 9
         self.geom_type = 'LINESTRING'
         self.attrs = [('"BankID"', 'serial primary key')]
 
@@ -643,7 +643,7 @@ INSERT INTO "{0}"."Flowpaths"(geom, "LineType")
 class IneffAreas(HecRasObject):
     def __init__(self):
         super(IneffAreas, self).__init__()
-        self.order = 5
+        self.order = 4
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"IneffID"', 'serial primary key'),
@@ -696,7 +696,7 @@ class IneffLines(HecRasObject):
 class BlockedObs(HecRasObject):
     def __init__(self):
         super(BlockedObs, self).__init__()
-        self.order = 4
+        self.order = 5
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"BlockID"', 'serial primary key'),
@@ -733,7 +733,7 @@ WHERE
 class BlockLines(HecRasObject):
     def __init__(self):
         super(BlockLines, self).__init__()
-        self.order = 14
+        self.order = 16
         self.main = False
         self.visible = False
         self.geom_type = 'LINESTRING'
@@ -852,6 +852,7 @@ DROP TABLE
 class Manning(HecRasObject):
     def __init__(self):
         super(Manning, self).__init__()
+        self.order = 25
         self.visible = False
         self.spatial_index = False
         self.attrs = [
@@ -864,7 +865,7 @@ class Manning(HecRasObject):
 class LeveeAlignment(HecRasObject):
     def __init__(self):
         super(LeveeAlignment, self).__init__()
-        self.order = 6
+        self.order = 10
         self.geom_type = 'LINESTRING'
         self.attrs = [('"LeveeID"', 'serial primary key')]
 
@@ -890,7 +891,7 @@ INSERT INTO "{0}"."LeveePoints"(geom, "LeveeID", "XsecID", "Fraction")
 class LeveePoints(HecRasObject):
     def __init__(self):
         super(LeveePoints, self).__init__()
-        self.order = 16
+        self.order = 21
         self.main = False
         self.spatial_index = False
         self.visible = False
@@ -1006,7 +1007,7 @@ WITH line AS
 class BRSurface(HecRasObject):
     def __init__(self):
         super(BRSurface, self).__init__()
-        self.order = 23
+        self.order = 24
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1121,7 +1122,7 @@ WITH line AS
 class ISSurface(HecRasObject):
     def __init__(self):
         super(ISSurface, self).__init__()
-        self.order = 22
+        self.order = 23
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1266,7 +1267,7 @@ WITH line AS
 class LSSurface(HecRasObject):
     def __init__(self):
         super(LSSurface, self).__init__()
-        self.order = 21
+        self.order = 22
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1430,6 +1431,7 @@ class SASurface(HecRasObject):
 class SAVolume(HecRasObject):
     def __init__(self):
         super(SAVolume, self).__init__()
+        self.order = 26
         self.visible = False
         self.spatial_index = False
         self.attrs = [
@@ -1441,6 +1443,7 @@ class SAVolume(HecRasObject):
 class SAConnections(HecRasObject):
     def __init__(self):
         super(SAConnections, self).__init__()
+        self.order = 14
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"SAConnID"', 'serial primary key'),
