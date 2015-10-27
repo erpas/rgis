@@ -12,6 +12,7 @@ class HecRasObject(object):
     OVERWRITE = None
 
     def __init__(self):
+        self.order = 0
         self.main = True
         self.visible = True
         self.spatial_index = True
@@ -43,6 +44,7 @@ class HecRasObject(object):
 class StreamCenterlines(HecRasObject):
     def __init__(self):
         super(StreamCenterlines, self).__init__()
+        self.order = 7
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"ReachID"', 'serial primary key'),
@@ -196,6 +198,7 @@ DROP FUNCTION IF EXISTS "{0}".from_to_stations ();
 class NodesTable(HecRasObject):
     def __init__(self):
         super(NodesTable, self).__init__()
+        self.order = 17
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -209,6 +212,7 @@ class NodesTable(HecRasObject):
 class Endpoints(HecRasObject):
     def __init__(self):
         super(Endpoints, self).__init__()
+        self.order = 18
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -223,6 +227,7 @@ class Endpoints(HecRasObject):
 class XSCutLines(HecRasObject):
     def __init__(self):
         super(XSCutLines, self).__init__()
+        self.order = 9
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"XsecID"', 'serial primary key'),
@@ -571,6 +576,7 @@ geom
 class XSSurface(HecRasObject):
     def __init__(self):
         super(XSSurface, self).__init__()
+        self.order = 19
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -588,6 +594,7 @@ class XSSurface(HecRasObject):
 class BankLines(HecRasObject):
     def __init__(self):
         super(BankLines, self).__init__()
+        self.order = 10
         self.geom_type = 'LINESTRING'
         self.attrs = [('"BankID"', 'serial primary key')]
 
@@ -595,6 +602,7 @@ class BankLines(HecRasObject):
 class BankPoints(HecRasObject):
     def __init__(self):
         super(BankPoints, self).__init__()
+        self.order = 20
         self.main = False
         self.spatial_index = False
         self.visible = False
@@ -608,6 +616,7 @@ class BankPoints(HecRasObject):
 class Flowpaths(HecRasObject):
     def __init__(self):
         super(Flowpaths, self).__init__()
+        self.order = 8
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"FpID"', 'serial primary key'),
@@ -634,6 +643,7 @@ INSERT INTO "{0}"."Flowpaths"(geom, "LineType")
 class IneffAreas(HecRasObject):
     def __init__(self):
         super(IneffAreas, self).__init__()
+        self.order = 5
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"IneffID"', 'serial primary key'),
@@ -670,6 +680,7 @@ WHERE
 class IneffLines(HecRasObject):
     def __init__(self):
         super(IneffLines, self).__init__()
+        self.order = 15
         self.main = False
         self.visible = False
         self.geom_type = 'LINESTRING'
@@ -685,6 +696,7 @@ class IneffLines(HecRasObject):
 class BlockedObs(HecRasObject):
     def __init__(self):
         super(BlockedObs, self).__init__()
+        self.order = 4
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"BlockID"', 'serial primary key'),
@@ -721,6 +733,7 @@ WHERE
 class BlockLines(HecRasObject):
     def __init__(self):
         super(BlockLines, self).__init__()
+        self.order = 14
         self.main = False
         self.visible = False
         self.geom_type = 'LINESTRING'
@@ -736,6 +749,7 @@ class BlockLines(HecRasObject):
 class LanduseAreas(HecRasObject):
     def __init__(self):
         super(LanduseAreas, self).__init__()
+        self.order = 2
         self.geom_type = 'MULTIPOLYGON'
         self.attrs = [
             ('"LUID"', 'serial primary key'),
@@ -850,6 +864,7 @@ class Manning(HecRasObject):
 class LeveeAlignment(HecRasObject):
     def __init__(self):
         super(LeveeAlignment, self).__init__()
+        self.order = 6
         self.geom_type = 'LINESTRING'
         self.attrs = [('"LeveeID"', 'serial primary key')]
 
@@ -875,6 +890,7 @@ INSERT INTO "{0}"."LeveePoints"(geom, "LeveeID", "XsecID", "Fraction")
 class LeveePoints(HecRasObject):
     def __init__(self):
         super(LeveePoints, self).__init__()
+        self.order = 16
         self.main = False
         self.spatial_index = False
         self.visible = False
@@ -890,6 +906,7 @@ class LeveePoints(HecRasObject):
 class Bridges(HecRasObject):
     def __init__(self):
         super(Bridges, self).__init__()
+        self.order = 13
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"BridgeID"', 'serial primary key'),
@@ -989,6 +1006,7 @@ WITH line AS
 class BRSurface(HecRasObject):
     def __init__(self):
         super(BRSurface, self).__init__()
+        self.order = 23
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1003,6 +1021,7 @@ class BRSurface(HecRasObject):
 class InlineStructures(HecRasObject):
     def __init__(self):
         super(InlineStructures, self).__init__()
+        self.order = 12
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"InlineSID"', 'serial primary key'),
@@ -1102,6 +1121,7 @@ WITH line AS
 class ISSurface(HecRasObject):
     def __init__(self):
         super(ISSurface, self).__init__()
+        self.order = 22
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1116,6 +1136,7 @@ class ISSurface(HecRasObject):
 class LateralStructures(HecRasObject):
     def __init__(self):
         super(LateralStructures, self).__init__()
+        self.order = 11
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"LateralSID"', 'serial primary key'),
@@ -1245,6 +1266,7 @@ WITH line AS
 class LSSurface(HecRasObject):
     def __init__(self):
         super(LSSurface, self).__init__()
+        self.order = 21
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1259,6 +1281,7 @@ class LSSurface(HecRasObject):
 class StorageAreas(HecRasObject):
     def __init__(self):
         super(StorageAreas, self).__init__()
+        self.order = 3
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"StorageID"', 'serial primary key'),
@@ -1430,6 +1453,7 @@ class SAConnections(HecRasObject):
 class DTMs(HecRasObject):
     def __init__(self):
         super(DTMs, self).__init__()
+        self.order = 1
         self.main = False
         self.geom_type = 'POLYGON'
         self.attrs = [
@@ -1478,6 +1502,7 @@ class MeshPoints2d(HecRasObject):
     def __init__(self):
         super(MeshPoints2d, self).__init__()
         self.main = False
+        self.visible = False
         self.geom_type = 'POINT'
         self.attrs = [
             ('"MPID"', 'serial primary key'),

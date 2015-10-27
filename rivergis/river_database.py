@@ -25,7 +25,7 @@ class RiverDatabase(object):
         Constructor for databse object
 
         Args:
-            iface (QgsInterface instance): Instance of QGIS interface
+            rgis (QgsInterface instance): Instance of QGIS interface
             dbname (str): Name of the database
             host (str): Host of the database
             port (str): Port of the database
@@ -199,7 +199,7 @@ class RiverDatabase(object):
         """
         Load hydrodynamic model objects from register.
         """
-        for k in sorted(self.register.keys()):
+        for k in sorted(self.register.keys(), key=lambda x: self.register[x].order):
             obj = self.register[k]
             if obj.visible is True or self.LOAD_ALL is True:
                 self.add_to_view(obj)
