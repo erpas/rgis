@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Tue Oct 27 10:46:19 2015
+# Created: Tue Oct 27 12:16:50 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,8 +29,9 @@ class Ui_RiverGIS(object):
         RiverGIS.setEnabled(True)
         RiverGIS.resize(586, 438)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/rivergis.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/rivergis_big.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         RiverGIS.setWindowIcon(icon)
+        RiverGIS.setIconSize(QtCore.QSize(24, 24))
         self.centralwidget = QtGui.QWidget(RiverGIS)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.gridLayout_2 = QtGui.QGridLayout(self.centralwidget)
@@ -337,7 +338,9 @@ class Ui_RiverGIS(object):
         self.actionWebsite.setIcon(icon35)
         self.actionWebsite.setObjectName(_fromUtf8("actionWebsite"))
         self.actionAbout = QtGui.QAction(RiverGIS)
-        self.actionAbout.setIcon(icon)
+        icon36 = QtGui.QIcon()
+        icon36.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/rivergis.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionAbout.setIcon(icon36)
         self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuHelp.addAction(self.actionWebsite)

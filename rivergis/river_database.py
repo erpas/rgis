@@ -22,7 +22,7 @@ class RiverDatabase(object):
 
     def __init__(self, rgis, dbname, host, port, user, password):
         """
-        Constructor for databse object
+        Constructor for database object
 
         Args:
             iface (QgsInterface instance): Instance of QGIS interface
@@ -43,6 +43,7 @@ class RiverDatabase(object):
         self.queries = {}
         self.uris = []
         self.refresh_uris()
+        self.OVERWRITE = rgis.stgs
 
     def connect_pg(self):
         """

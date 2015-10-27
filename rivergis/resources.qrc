@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/rdb.svg</file>
+    <file>icons/rivergis_big.svg</file>
     <file>icons/webSite.svg</file>
     <file>icons/ras2dareaCreate.svg</file>
     <file>icons/ras2dareaPreview.svg</file>

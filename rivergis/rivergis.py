@@ -33,7 +33,10 @@ import ras1dFunctions as r1d
 import ras2dFunctions as r2d
 
 
+
 class RiverGIS(QMainWindow):
+
+    OPT_GENERAL, OPT_RDB, OPT_DTM = range(3)
 
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
@@ -61,7 +64,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
         # Settings
-        self.ui.actionRASDTMSetup.triggered.connect(self.rasDTMSetup)
+        self.ui.actionRASDTMSetup.triggered.connect(lambda: self.options(self.OPT_DTM))
         self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
         self.ui.actionAlwaysOnTop.toggled.connect(self.toggleAlwaysOnTop)
         # RAS Geometry
@@ -118,10 +121,17 @@ class RiverGIS(QMainWindow):
         self.ui.textEdit.append('<br>If you can\'t see any connection, please, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
         self.ui.textEdit.append('----------------------------------------------------------------------------')
 
+        # restore settings
+        s = QSettings()
+        s.beginGroup('rivergis')
+        self.stgs = {}
+        for item in s.allKeys():
+            self.stgs[item] = s.value("rivergis/{}".format(item))
+        s.endGroup()
+
         # restore the window state
-        settings = QSettings()
-        self.restoreGeometry(settings.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
-        self.restoreState(settings.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
+        self.restoreGeometry(s.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
+        self.restoreState(s.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
 
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
@@ -133,13 +143,12 @@ class RiverGIS(QMainWindow):
         self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
         self.updateDefaultCrs()
 
+
     def enableActions(self, enable):
         menus = self.ui.menubar.findChildren(QMenu)
         toolbars = self.findChildren(QToolBar)
-        menusAlwaysOn = ['Settings', 'RAS Mapping', 'Help']
-        toolsAlwaysOn = ['Water Surface Generation',
-                         'Floodplain Delineation',
-                         'DTM Setup']
+        menusAlwaysOn = ['Settings', 'Help']
+        toolsAlwaysOn = ['DTM Setup']
         if enable:
             for m in menus:
                 for a in m.findChildren(QAction):
@@ -272,9 +281,9 @@ class RiverGIS(QMainWindow):
 
     # MENU Settings
 
-    def rasDTMSetup(self):
-        from dlg_dtmSetup import DlgDTMSetup
-        dlg = DlgDTMSetup(self)
+    def options(self, widget):
+        from dlg_settings import DlgSettings
+        dlg = DlgSettings(self, widget=widget)
         dlg.exec_()
 
     def toggleDebugMode(self):
