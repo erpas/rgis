@@ -9,7 +9,7 @@ class HecRasObject(object):
     """
     SCHEMA = None
     SRID = None
-    OVERWRITE = True
+    OVERWRITE = None
 
     def __init__(self):
         self.main = True
@@ -17,6 +17,7 @@ class HecRasObject(object):
         self.spatial_index = True
         self.schema = self.SCHEMA
         self.srid = self.SRID
+        self.overwrite = self.OVERWRITE
         self.name = self.__class__.__name__
         self.geom_type = None
         self.attrs = None
@@ -25,7 +26,7 @@ class HecRasObject(object):
         schema_name = '"{0}"."{1}"'.format(self.schema, self.name)
         attrs = ['geom geometry({0}, {1})'.format(self.geom_type, self.srid)]
         attrs += [' '.join(field) for field in self.attrs]
-        if self.OVERWRITE is True:
+        if self.overwrite is True:
             qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(schema_name, schema_name, ',\n\t'.join(attrs))
         else:
             qry = 'CREATE TABLE {0}(\n\t{1});\n'.format(schema_name, ',\n\t'.join(attrs))

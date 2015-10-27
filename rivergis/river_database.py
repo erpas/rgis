@@ -16,6 +16,7 @@ class RiverDatabase(object):
     """
     SCHEMA = 'start'
     SRID = 2180
+    OVERWRITE = True
     LOAD_ALL = False
     CHECK_URI = True
 
@@ -72,14 +73,15 @@ class RiverDatabase(object):
         else:
             self.rgis.addInfo('Can not disconnect. There is no opened connection!')
 
-    def setup_hydro_object(self, hydro_object, schema=None, srid=None):
+    def setup_hydro_object(self, hydro_object, schema=None, srid=None, overwrite=None):
         """
-        Setting SCHEMA and SRID on hydro object.
+        Setting SCHEMA, SRID and OVERWRITE on hydro object.
 
         Args:
             hydro_object (class): Hydro object class
             schema (str): Schema where tables will be created or processed
             srid (int): A Spatial Reference System Identifier
+            overwrite (bool): Flag deciding if objects can be overwrite
         """
         if schema is None:
             hydro_object.SCHEMA = self.SCHEMA
@@ -89,6 +91,10 @@ class RiverDatabase(object):
             hydro_object.SRID = self.SRID
         else:
             hydro_object.SRID = srid
+        if overwrite is None:
+            hydro_object.OVERWRITE = self.OVERWRITE
+        else:
+            hydro_object.OVERWRITE = overwrite
 
     @staticmethod
     def result_iter(cursor, arraysize):
