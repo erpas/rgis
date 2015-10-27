@@ -63,7 +63,7 @@ To prepare Manning’s value table you need to prepare two layers:
 * LanduseAreas polygon layer
 * XSCutLines  polyline layer
 
-Land use layer must contain “LUID”, “LUCode” and “N_Value” attributes and it should contain multipart polygons
+Land use layer must contain “LUID”, “LUCode” and “N_Value” attributes and it should contain multipart polygons. In this example "LUID" and "LUCode" is the same but it can be different.
 
   .. _fig_man_luatttable:
   .. figure:: img/lu_att_table.png
@@ -78,4 +78,22 @@ For correct Manning's values extraction all of the cross sections in XSCutLines 
      :align: center
 
      Cross sections and Land use layers coverage
+
+Next step is pushing a button |Mannbuton| which is located on main toolbar or you can find it also in context menu as is shown below
+
+  .. |Mannbuton| image:: img/Manning_ico.png
+
+  .. _fig_man_mancontextmenu:
+  .. figure:: img/man_context_menu.png
+     :align: center
+
+     RAS Geometry context menu
+
+Main RiverGIS window should display following message if the extraction was done properly
+
+  .. _fig_man_mandone:
+  .. figure:: img/man_done.png
+     :align: center
+
+     Correct Manning's values extraction
 
