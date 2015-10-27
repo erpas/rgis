@@ -180,6 +180,7 @@ class RiverDatabase(object):
         Args:
             hydro_module (module): hydrodynamic model module
             schema (str): Schema where tables will be created or processed
+            srid (int): A Spatial Reference System Identifier
         """
         tabs = self.list_tables(schema)
         for tab in tabs:
@@ -206,7 +207,7 @@ class RiverDatabase(object):
                 pass
         self.rgis.iface.mapCanvas().refresh()
 
-    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None, **kwargs):
+    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None, overwrite=None, **kwargs):
         """
         Creating and processing tables inside PostGIS database.
 
@@ -215,12 +216,13 @@ class RiverDatabase(object):
             pg_method (str): String representation of method that will be called on the hecobject class
             schema (str): Schema where tables will be created or processed
             srid (int): A Spatial Reference System Identifier
+            overwrite (bool): Flag deciding if objects can be overwrite
             **kwargs (dict): Additional keyword arguments passed to pg_method
 
         Returns:
             obj: Instance of HEC-RAS class object
         """
-        self.setup_hydro_object(hecobject, schema, srid)
+        self.setup_hydro_object(hecobject, schema, srid, overwrite)
         obj = hecobject()
         method = getattr(obj, pg_method)
         qry = method(**kwargs)
