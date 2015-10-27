@@ -16,6 +16,8 @@ class RiverDatabase(object):
     """
     SCHEMA = 'start'
     SRID = 2180
+    OVERWRITE = True
+    LOAD_ALL = False
     CHECK_URI = True
 
     def __init__(self, rgis, dbname, host, port, user, password):
@@ -71,14 +73,15 @@ class RiverDatabase(object):
         else:
             self.rgis.addInfo('Can not disconnect. There is no opened connection!')
 
-    def setup_hydro_object(self, hydro_object, schema=None, srid=None):
+    def setup_hydro_object(self, hydro_object, schema=None, srid=None, overwrite=None):
         """
-        Setting SCHEMA and SRID on hydro object.
+        Setting SCHEMA, SRID and OVERWRITE on hydro object.
 
         Args:
             hydro_object (class): Hydro object class
             schema (str): Schema where tables will be created or processed
             srid (int): A Spatial Reference System Identifier
+            overwrite (bool): Flag deciding if objects can be overwrite
         """
         if schema is None:
             hydro_object.SCHEMA = self.SCHEMA
@@ -88,6 +91,10 @@ class RiverDatabase(object):
             hydro_object.SRID = self.SRID
         else:
             hydro_object.SRID = srid
+        if overwrite is None:
+            hydro_object.OVERWRITE = self.OVERWRITE
+        else:
+            hydro_object.OVERWRITE = overwrite
 
     @staticmethod
     def result_iter(cursor, arraysize):
@@ -173,6 +180,7 @@ class RiverDatabase(object):
         Args:
             hydro_module (module): hydrodynamic model module
             schema (str): Schema where tables will be created or processed
+            srid (int): A Spatial Reference System Identifier
         """
         tabs = self.list_tables(schema)
         for tab in tabs:
@@ -193,13 +201,13 @@ class RiverDatabase(object):
         """
         for k in sorted(self.register.keys()):
             obj = self.register[k]
-            if obj.visible is True:
+            if obj.visible is True or self.LOAD_ALL is True:
                 self.add_to_view(obj)
             else:
                 pass
         self.rgis.iface.mapCanvas().refresh()
 
-    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None, **kwargs):
+    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None, overwrite=None, **kwargs):
         """
         Creating and processing tables inside PostGIS database.
 
@@ -208,12 +216,13 @@ class RiverDatabase(object):
             pg_method (str): String representation of method that will be called on the hecobject class
             schema (str): Schema where tables will be created or processed
             srid (int): A Spatial Reference System Identifier
+            overwrite (bool): Flag deciding if objects can be overwrite
             **kwargs (dict): Additional keyword arguments passed to pg_method
 
         Returns:
             obj: Instance of HEC-RAS class object
         """
-        self.setup_hydro_object(hecobject, schema, srid)
+        self.setup_hydro_object(hecobject, schema, srid, overwrite)
         obj = hecobject()
         method = getattr(obj, pg_method)
         qry = method(**kwargs)
