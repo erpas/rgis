@@ -30,9 +30,13 @@ from ui._ui_rivergis import Ui_RiverGIS
 import river_database as rivdb
 import hecobjects as heco
 import ras1dFunctions as r1d
+import ras2dFunctions as r2d
+
 
 
 class RiverGIS(QMainWindow):
+
+    OPT_GENERAL, OPT_RDB, OPT_DTM = range(3)
 
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
@@ -60,7 +64,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
         # Settings
-        self.ui.actionRASDTMSetup.triggered.connect(self.rasDTMSetup)
+        self.ui.actionRASDTMSetup.triggered.connect(lambda: self.options(self.OPT_DTM))
         self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
         self.ui.actionAlwaysOnTop.toggled.connect(self.toggleAlwaysOnTop)
         # RAS Geometry
@@ -100,9 +104,9 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASSacAll.triggered.connect(lambda: r1d.ras1dSACAll(self))
         self.ui.actionRASCreateRASGISImport.triggered.connect(lambda: r1d.ras1dCreateRasGisImportFile(self))
         # 2D
-        self.ui.actionRASCreate2dAreaPoints.triggered.connect(self.ras2dCreate2dAreaPoints)
-        self.ui.actionRASPreview2DMesh.triggered.connect(self.ras2dPreview2DMesh)
-        self.ui.actionRASSave2DPointsToHECRASGeometry.triggered.connect(self.ras2dSaveMeshPtsToHecrasGeo)
+        self.ui.actionRASCreate2dAreaPoints.triggered.connect(lambda: r2d.ras2dCreate2dPoints(self))
+        self.ui.actionRASPreview2DMesh.triggered.connect(lambda: r2d.ras2dPreviewMesh(self))
+        self.ui.actionRASSave2DPointsToHECRASGeometry.triggered.connect(lambda: r2d.ras2dSaveMeshPtsToGeometry(self))
         # HELP
         self.ui.actionHelpContents.triggered.connect(self.showRGisHelp)
         self.ui.actionWebsite.triggered.connect(self.showWebsite)
@@ -113,14 +117,21 @@ class RiverGIS(QMainWindow):
         self.ui.schemasCbo.activated.connect(self.schemaChanged)
 
         # Welcome message
-        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please, start with choosing a <b>connection to a PostGIS database and a schema</b> from the above lists.')
-        self.ui.textEdit.append('If you can\'t see any connection, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
-        self.ui.textEdit.append('<br>----------------------------------------------------------------------------')
+        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please start with choosing:<br>1. a <b>connection</b> to a PostGIS database<br>2. a database <b>schema</b> (schema = model container)<br>3. <b>projection</b> for river database objects (projection = Coordinate Reference System, CRS).')
+        self.ui.textEdit.append('<br>If you can\'t see any connection, please, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
+        self.ui.textEdit.append('----------------------------------------------------------------------------')
+
+        # restore settings
+        s = QSettings()
+        s.beginGroup('rivergis')
+        self.stgs = {}
+        for item in s.allKeys():
+            self.stgs[item] = s.value("rivergis/{}".format(item))
+        s.endGroup()
 
         # restore the window state
-        settings = QSettings()
-        self.restoreGeometry(settings.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
-        self.restoreState(settings.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
+        self.restoreGeometry(s.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
+        self.restoreState(s.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
 
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
@@ -132,13 +143,12 @@ class RiverGIS(QMainWindow):
         self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
         self.updateDefaultCrs()
 
+
     def enableActions(self, enable):
         menus = self.ui.menubar.findChildren(QMenu)
         toolbars = self.findChildren(QToolBar)
-        menusAlwaysOn = ['Settings', 'RAS Mapping', 'Help']
-        toolsAlwaysOn = ['Water Surface Generation',
-                         'Floodplain Delineation',
-                         'DTM Setup']
+        menusAlwaysOn = ['Settings', 'Help']
+        toolsAlwaysOn = ['DTM Setup']
         if enable:
             for m in menus:
                 for a in m.findChildren(QAction):
@@ -171,7 +181,7 @@ class RiverGIS(QMainWindow):
         self.crs = self.ui.crsWidget.crs()
         if self.rdb:
             self.rdb.SRID = int(self.crs.postgisSrid())
-        self.addInfo('\nDefault CRS is: {0}'.format(self.crs.authid()))
+        self.addInfo('\nCurrent projection changed to {0}'.format(self.crs.authid()))
 
     # Database Functions
 
@@ -245,28 +255,7 @@ class RiverGIS(QMainWindow):
                 self.addInfo('There are some objects registered in the database.')
             self.enableActions(True)
 
-
-    # 1D HEC-RAS Geometry Functions
-
-    def rasDTMSetup(self):
-        from dlg_dtmSetup import DlgDTMSetup
-        dlg = DlgDTMSetup(self)
-        dlg.exec_()
-
-    def toggleDebugMode(self):
-        if self.ui.actionDebugMode.isChecked():
-            self.DEBUG = 1
-        else:
-            self.DEBUG = 0
-
-    def toggleAlwaysOnTop(self):
-        if self.ui.actionAlwaysOnTop.isChecked():
-            flags = self.windowFlags()
-            self.setWindowFlags(flags | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
-        else:
-            flags = self.windowFlags()
-            self.setWindowFlags(flags & ~Qt.CustomizeWindowHint & ~Qt.WindowStaysOnTopHint)
-        self.show()
+    # MENU Database
 
     def rasCreateRdbTables(self):
         from dlg_rasCreateRasLayers import DlgCreateRasLayers
@@ -290,26 +279,29 @@ class RiverGIS(QMainWindow):
         importData = DlgImportDataIntoRasTables(self)
         importData.exec_()
 
+    # MENU Settings
 
-    # 2D HEC-RAS Geometry Functions
+    def options(self, widget):
+        from dlg_settings import DlgSettings
+        dlg = DlgSettings(self, widget=widget)
+        dlg.exec_()
 
-    def ras2dCreate2dAreaPoints(self):
-        from ras2dFunctions import ras2dCreate2dPoints
-        ras2dCreate2dPoints(self)
+    def toggleDebugMode(self):
+        if self.ui.actionDebugMode.isChecked():
+            self.DEBUG = 1
+        else:
+            self.DEBUG = 0
 
-    def ras2dPreview2DMesh(self):
-        if self.rdb.SCHEMA is '':
-            QMessageBox.warning(None, "Preview 2D Area", "Please, choose a connection and schema.")
-            return
-        from ras2dFunctions import ras2dPreviewMesh
-        ras2dPreviewMesh(self)
+    def toggleAlwaysOnTop(self):
+        if self.ui.actionAlwaysOnTop.isChecked():
+            flags = self.windowFlags()
+            self.setWindowFlags(flags | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
+        else:
+            flags = self.windowFlags()
+            self.setWindowFlags(flags & ~Qt.CustomizeWindowHint & ~Qt.WindowStaysOnTopHint)
+        self.show()
 
-    def ras2dSaveMeshPtsToHecrasGeo(self):
-        from ras2dFunctions import ras2dSaveMeshPtsToGeometry
-        ras2dSaveMeshPtsToGeometry(self)
-
-
-    # HELP
+    # MENU Help
 
     def showHelp(self, page='index.html'):
         helpFile = 'file:///{0}/help/{1}'.format(self.rivergisPath, page)

@@ -18,7 +18,13 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../resources.qrc">
-    <normaloff>:/rivergis/icons/rivergis.svg</normaloff>:/rivergis/icons/rivergis.svg</iconset>
+    <normaloff>:/rivergis/icons/rivergis_big.svg</normaloff>:/rivergis/icons/rivergis_big.svg</iconset>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>24</width>
+    <height>24</height>
+   </size>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -106,7 +112,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -362,6 +368,7 @@
     <bool>true</bool>
    </attribute>
    <addaction name="actionRASManningsNValues"/>
+   <addaction name="actionRASLevees"/>
    <addaction name="actionRASIneffectiveFlowAreas"/>
    <addaction name="actionRASBlockedObstructions"/>
    <addaction name="actionRASXSUpdateInsertMeasuredPoints"/>
@@ -409,15 +416,6 @@
    <addaction name="actionRASPreview2DMesh"/>
    <addaction name="actionRASSave2DPointsToHECRASGeometry"/>
   </widget>
-  <action name="actionCreate2dAreaPerimeter">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/rivergis/icons/2darea_perimeter.svg</normaloff>:/rivergis/icons/2darea_perimeter.svg</iconset>
-   </property>
-   <property name="text">
-    <string>2D Area (Perimeter)</string>
-   </property>
-  </action>
   <action name="actionRASCreate2dAreaPoints">
    <property name="icon">
     <iconset resource="../resources.qrc">
@@ -428,6 +426,10 @@
    </property>
   </action>
   <action name="actionHelpContents">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/helpContents.svg</normaloff>:/rivergis/icons/helpContents.svg</iconset>
+   </property>
    <property name="text">
     <string>Contents</string>
    </property>
@@ -444,15 +446,6 @@
     <string>Water Surface Generation</string>
    </property>
   </action>
-  <action name="actionImportRiverFromIsokp">
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/importFromIsok.svg</normaloff>:/rivergis/icons/importFromIsok.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Import River Data From ISOKP Database</string>
-   </property>
-  </action>
   <action name="actionRefreshConnections">
    <property name="icon">
     <iconset resource="../resources.qrc">
@@ -460,24 +453,6 @@
    </property>
    <property name="text">
     <string>Refresh Connections List</string>
-   </property>
-  </action>
-  <action name="actionRASFloodplainDelineation">
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/createDepthsAndRange.svg</normaloff>:/rivergis/icons/createDepthsAndRange.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Floodplain Delineation</string>
-   </property>
-  </action>
-  <action name="actionRASImportRasData">
-   <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/rasImportHdfIntoRdb.svg</normaloff>:/rivergis/icons/rasImportHdfIntoRdb.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Import RAS Results From HDF</string>
    </property>
   </action>
   <action name="actionRASSave2DPointsToHECRASGeometry">
@@ -932,11 +907,19 @@
    </property>
   </action>
   <action name="actionWebsite">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/webSite.svg</normaloff>:/rivergis/icons/webSite.svg</iconset>
+   </property>
    <property name="text">
     <string>Web site</string>
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/rivergis.svg</normaloff>:/rivergis/icons/rivergis.svg</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
