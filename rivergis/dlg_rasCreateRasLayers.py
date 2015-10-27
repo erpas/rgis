@@ -36,7 +36,7 @@ class DlgCreateRasLayers(QDialog):
             (self.ui.leveeChbox, heco.LeveeAlignment),
             (self.ui.leveeChbox, heco.LeveePoints),
             (self.ui.storageAreasChbox, heco.StorageAreas),
-            (self.ui.storageAreasChbox, heco.SAConnections),
+            (self.ui.saConnectionsChbox, heco.SAConnections),
             (self.ui.xsCutLinesChbox, heco.XSCutLines)
         ]
 
