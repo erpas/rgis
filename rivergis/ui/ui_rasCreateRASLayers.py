@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rasCreateRASLayers.ui'
 #
-# Created: Wed Sep 23 21:38:16 2015
+# Created: Tue Oct 27 10:43:15 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -79,15 +79,18 @@ class Ui_CreateRasLayers(object):
         self.storageAreasChbox = QtGui.QCheckBox(CreateRasLayers)
         self.storageAreasChbox.setObjectName(_fromUtf8("storageAreasChbox"))
         self.gridLayout_2.addWidget(self.storageAreasChbox, 6, 1, 1, 1)
-        self.flowAreas2DChbox = QtGui.QCheckBox(CreateRasLayers)
-        self.flowAreas2DChbox.setObjectName(_fromUtf8("flowAreas2DChbox"))
-        self.gridLayout_2.addWidget(self.flowAreas2DChbox, 7, 1, 1, 1)
-        self.breaklines2DChbox = QtGui.QCheckBox(CreateRasLayers)
-        self.breaklines2DChbox.setObjectName(_fromUtf8("breaklines2DChbox"))
-        self.gridLayout_2.addWidget(self.breaklines2DChbox, 8, 1, 1, 1)
         self.breakpoints2DChbox = QtGui.QCheckBox(CreateRasLayers)
         self.breakpoints2DChbox.setObjectName(_fromUtf8("breakpoints2DChbox"))
-        self.gridLayout_2.addWidget(self.breakpoints2DChbox, 9, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.breakpoints2DChbox, 10, 1, 1, 1)
+        self.breaklines2DChbox = QtGui.QCheckBox(CreateRasLayers)
+        self.breaklines2DChbox.setObjectName(_fromUtf8("breaklines2DChbox"))
+        self.gridLayout_2.addWidget(self.breaklines2DChbox, 9, 1, 1, 1)
+        self.flowAreas2DChbox = QtGui.QCheckBox(CreateRasLayers)
+        self.flowAreas2DChbox.setObjectName(_fromUtf8("flowAreas2DChbox"))
+        self.gridLayout_2.addWidget(self.flowAreas2DChbox, 8, 1, 1, 1)
+        self.saConnectionsChbox = QtGui.QCheckBox(CreateRasLayers)
+        self.saConnectionsChbox.setObjectName(_fromUtf8("saConnectionsChbox"))
+        self.gridLayout_2.addWidget(self.saConnectionsChbox, 7, 1, 1, 1)
         self.gridLayout.addLayout(self.gridLayout_2, 2, 0, 1, 1)
         self.label = QtGui.QLabel(CreateRasLayers)
         self.label.setObjectName(_fromUtf8("label"))
@@ -114,9 +117,10 @@ class Ui_CreateRasLayers(object):
         self.leveeChbox.setText(_translate("CreateRasLayers", "Levee Alignment", None))
         self.lateralStructChbox.setText(_translate("CreateRasLayers", "Lateral Structures", None))
         self.storageAreasChbox.setText(_translate("CreateRasLayers", "Storage Areas", None))
-        self.flowAreas2DChbox.setText(_translate("CreateRasLayers", "2D Flow Areas", None))
-        self.breaklines2DChbox.setText(_translate("CreateRasLayers", "2D Breaklines", None))
         self.breakpoints2DChbox.setText(_translate("CreateRasLayers", "2D Breakpoints", None))
+        self.breaklines2DChbox.setText(_translate("CreateRasLayers", "2D Breaklines", None))
+        self.flowAreas2DChbox.setText(_translate("CreateRasLayers", "2D Flow Areas", None))
+        self.saConnectionsChbox.setText(_translate("CreateRasLayers", "Storage Area Connections", None))
         self.label.setText(_translate("CreateRasLayers", "Select Layers to create:", None))
         self.allChbox.setText(_translate("CreateRasLayers", "Select All", None))
 
