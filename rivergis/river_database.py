@@ -244,7 +244,10 @@ class RiverDatabase(object):
         """
         uri = QgsDataSourceURI()
         uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
-        uri.setDataSource(obj.schema, obj.name, 'geom')
+        if obj.geom_type is not None:
+            uri.setDataSource(obj.schema, obj.name, 'geom')
+        else:
+            uri.setDataSource(obj.schema, obj.name, None)
         vlayer = QgsVectorLayer(uri.uri(), obj.name, 'postgres')
         return vlayer
 
