@@ -45,6 +45,14 @@ class DlgSettings(QDialog):
 
         self.ui.dtm_listView.setModel(self.rgis.dtmModel)
 
+        # set options according to current variable values
+        self.ui.debugModeChbox.setChecked(self.rgis.DEBUG)
+        self.ui.rgisAlwaysOnTopChbox.setChecked(self.rgis.always_on_top)
+        self.ui.db_overwriteChbox.setChecked(self.rgis.rdb.OVERWRITE)
+        self.ui.db_loadAllChbox.setChecked(self.rgis.rdb.LOAD_ALL)
+
+
+
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
@@ -52,7 +60,7 @@ class DlgSettings(QDialog):
         # General
 
         self.rgis.DEBUG = self.ui.debugModeChbox.isChecked()
-        self.rgis.ALWAYSONTOP = self.ui.rgisAlwaysOnTopChbox.isChecked()
+        self.rgis.always_on_top = self.ui.rgisAlwaysOnTopChbox.isChecked()
         self.rgis.toggleAlwaysOnTop()
 
         # River DB
@@ -72,6 +80,10 @@ class DlgSettings(QDialog):
 
         self.rgis.dtm_chunksize = self.ui.dtm_chunksize.value()
 
+        self.rgis.writeQSettings()
+
+
+
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 
@@ -86,3 +98,5 @@ class DlgSettings(QDialog):
                 item.setCheckState(Qt.Checked)
             else:
                 item.setCheckState(Qt.Unchecked)
+
+

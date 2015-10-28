@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Wed Oct 28 08:54:35 2015
+# Created: Wed Oct 28 11:54:07 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -263,11 +263,11 @@ class Ui_RiverGIS(object):
         icon30.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/loadRdbTablesIntoQgis.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionRASLoadRdbTablesIntoQGIS.setIcon(icon30)
         self.actionRASLoadRdbTablesIntoQGIS.setObjectName(_fromUtf8("actionRASLoadRdbTablesIntoQGIS"))
-        self.actionRASDTMSetup = QtGui.QAction(RiverGIS)
+        self.actionOptions = QtGui.QAction(RiverGIS)
         icon31 = QtGui.QIcon()
-        icon31.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/dtmSetup.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.actionRASDTMSetup.setIcon(icon31)
-        self.actionRASDTMSetup.setObjectName(_fromUtf8("actionRASDTMSetup"))
+        icon31.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/options.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionOptions.setIcon(icon31)
+        self.actionOptions.setObjectName(_fromUtf8("actionOptions"))
         self.actionDebugMode = QtGui.QAction(RiverGIS)
         self.actionDebugMode.setCheckable(True)
         self.actionDebugMode.setChecked(False)
@@ -409,9 +409,7 @@ class Ui_RiverGIS(object):
         self.menuDB.addAction(self.actionRASCreateRdbTables)
         self.menuDB.addAction(self.actionRASImportLayersIntoRdbTables)
         self.menuDB.addAction(self.actionRASLoadRdbTablesIntoQGIS)
-        self.menuSettings.addAction(self.actionRASDTMSetup)
-        self.menuSettings.addAction(self.actionDebugMode)
-        self.menuSettings.addAction(self.actionAlwaysOnTop)
+        self.menuSettings.addAction(self.actionOptions)
         self.menubar.addAction(self.menuDB.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menu_Geometry.menuAction())
@@ -420,7 +418,7 @@ class Ui_RiverGIS(object):
         self.dbToolBar.addAction(self.actionRASCreateRdbTables)
         self.dbToolBar.addAction(self.actionRASImportLayersIntoRdbTables)
         self.dbToolBar.addAction(self.actionRASLoadRdbTablesIntoQGIS)
-        self.settingsToolBar.addAction(self.actionRASDTMSetup)
+        self.settingsToolBar.addAction(self.actionOptions)
         self.rasGeomToolBar.addAction(self.actionRASTopology1D)
         self.rasGeomToolBar.addAction(self.actionRASLengthsStations)
         self.rasGeomToolBar.addAction(self.actionRASStreamCenterlineAll)
@@ -513,7 +511,7 @@ class Ui_RiverGIS(object):
         self.actionRASBlockedObstructions.setToolTip(_translate("RiverGIS", "RAS 1D Blocked Obstructions", None))
         self.actionRASLoadRdbTablesIntoQGIS.setText(_translate("RiverGIS", "Load River Database Tables Into QGIS", None))
         self.actionRASLoadRdbTablesIntoQGIS.setToolTip(_translate("RiverGIS", "RAS 1D Load River Database Tables Into QGIS", None))
-        self.actionRASDTMSetup.setText(_translate("RiverGIS", "DTM Setup", None))
+        self.actionOptions.setText(_translate("RiverGIS", "Options", None))
         self.actionDebugMode.setText(_translate("RiverGIS", "Debug mode", None))
         self.actionCopyStreamCenterlines2Flowpaths.setText(_translate("RiverGIS", "Copy Stream Centerlines to Flowpaths", None))
         self.actionAlwaysOnTop.setText(_translate("RiverGIS", "Always on top", None))

@@ -12,7 +12,7 @@ def prepare_DTMs(rgis):
     rgis.rdb.process_hecobject(DTMs, 'pg_create_table')
     # insert DTMs parameters into the DTMs table
     if not rgis.dtms:
-        rgis.rasDTMSetup()
+        rgis.options(rgis.OPT_DTM)
     if not rgis.dtms:
         rgis.addInfo('<br> Choose a DTM for elevation sampling.')
         return

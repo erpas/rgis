@@ -38,6 +38,19 @@ class RiverGIS(QMainWindow):
 
     OPT_GENERAL, OPT_RDB, OPT_DTM = range(3)
 
+    # options saved to QSettings
+    opts = {'rgis': {
+                'DEBUG': False,
+                'always_on_top': False,
+                'dtm_chunksize': 0
+            },
+            'rdb':{
+                'OVERWRITE': True,
+                'LOAD_ALL': True
+            }
+
+    }
+
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
         if QApplication.overrideCursor():
@@ -54,8 +67,7 @@ class RiverGIS(QMainWindow):
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
         self.dtms = []
-        self.DEBUG = 0
-        self.ALWAYSONTOP = False
+        self.readQSettings()
 
         # MENU Actions
 
@@ -65,9 +77,10 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
         # Settings
-        self.ui.actionRASDTMSetup.triggered.connect(lambda: self.options(self.OPT_DTM))
-        self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
-        self.ui.actionAlwaysOnTop.toggled.connect(self.toggleAlwaysOnTop)
+        self.ui.actionOptions.triggered.connect(self.options)
+        # self.ui.actionRASDTMSetup.triggered.connect(lambda: self.options(self.OPT_DTM))
+        # self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
+        # self.ui.actionAlwaysOnTop.toggled.connect(self.toggleAlwaysOnTop)
         # RAS Geometry
         # 1D
         self.ui.actionRASTopology1D.triggered.connect(lambda: r1d.ras1dStreamCenterlineTopology(self))
@@ -123,14 +136,13 @@ class RiverGIS(QMainWindow):
         self.ui.textEdit.append('----------------------------------------------------------------------------')
 
         # restore settings
-        s = QSettings()
-        s.beginGroup('rivergis')
-        self.stgs = {}
-        for item in s.allKeys():
-            self.stgs[item] = s.value("rivergis/{}".format(item))
-        s.endGroup()
+        # TODO
+
+
+
 
         # restore the window state
+        s = QSettings()
         self.restoreGeometry(s.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
         self.restoreState(s.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
 
@@ -148,8 +160,8 @@ class RiverGIS(QMainWindow):
     def enableActions(self, enable):
         menus = self.ui.menubar.findChildren(QMenu)
         toolbars = self.findChildren(QToolBar)
-        menusAlwaysOn = ['Settings', 'Help']
-        toolsAlwaysOn = ['DTM Setup']
+        menusAlwaysOn = ['Help']
+        toolsAlwaysOn = []
         if enable:
             for m in menus:
                 for a in m.findChildren(QAction):
@@ -173,7 +185,9 @@ class RiverGIS(QMainWindow):
         settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
         settings.setValue("/rivergis/mainWindow/geometry", self.saveGeometry())
         settings.setValue("/rivergis/mainWindow/flags", self.windowFlags())
+        self.writeQSettings()
         QMainWindow.closeEvent(self, e)
+
 
     def addInfo(self, text):
         self.ui.textEdit.append(text)
@@ -182,7 +196,7 @@ class RiverGIS(QMainWindow):
         self.crs = self.ui.crsWidget.crs()
         if self.rdb:
             self.rdb.SRID = int(self.crs.postgisSrid())
-        self.addInfo('\nCurrent projection changed to {0}'.format(self.crs.authid()))
+        self.addInfo('\nCurrent projection is {0}'.format(self.crs.authid()))
 
     # Database Functions
 
@@ -294,8 +308,8 @@ class RiverGIS(QMainWindow):
             self.DEBUG = 0
 
     def toggleAlwaysOnTop(self):
-        self.ALWAYSONTOP = self.ui.actionAlwaysOnTop.isChecked()
-        if self.ALWAYSONTOP:
+        self.always_on_top = self.readQSetting('always_on_top')
+        if self.always_on_top:
             flags = self.windowFlags()
             self.setWindowFlags(flags | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         else:
@@ -317,3 +331,59 @@ class RiverGIS(QMainWindow):
 
     def about(self):
         self.showHelp('index.html')
+
+
+    def readQSetting(self, name):
+        s = QSettings()
+        try:
+            value =  s.value("rivergis/{}".format(name))
+        except KeyError:
+            value = None
+        return value
+
+    def writeQSetting(self, name, value):
+        s = QSettings()
+        s.setValue(name, value)
+
+
+    def readQSettings(self):
+        s = QSettings()
+        for group, options in self.opts.iteritems():
+            for name, defaultValue in options.iteritems():
+                if group == 'rgis' and s.contains("rivergis/rgis/{}".format(name)):
+                    setattr(self, name, s.value("rivergis/rgis/{}".format(name)))
+                    print
+                else:
+                    setattr(self, name, defaultValue)
+                    print "Couldn't read or set option rivergis/rgis/{}".format(name)
+                if group == 'rdb' and s.contains("rivergis/rdb/{}".format(name)):
+                    setattr(self, name, s.value("rivergis/rdb/{}".format(name)))
+                else:
+                    setattr(self, name, defaultValue)
+                    print "Couldn't read or set option rivergis/rdb/{}".format(name)
+
+
+    def writeQSettings(self):
+        s = QSettings()
+        for group, options in self.opts.iteritems():
+            for name, defaultValue in options.iteritems():
+                if group == 'rgis':
+                    try:
+                        curValue = getattr(self, name)
+                        s.setValue("rivergis/rgis/{}".format(name), curValue)
+                    except:
+                        print "Couldn't write option rivergis/rgis/{}".format(name)
+
+                elif group == 'rdb':
+                    try:
+                        curValue = getattr(self.rdb, name)
+                        s.setValue("rivergis/rdb/{}".format(name), curValue)
+                    except:
+                        print "Couldn't write option rivergis/rdb/{}".format(name)
+
+                else:
+                    pass
+
+
+
+

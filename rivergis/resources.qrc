@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/options.svg</file>
     <file>icons/rdb.svg</file>
     <file>icons/rivergis_big.svg</file>
     <file>icons/webSite.svg</file>

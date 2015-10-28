@@ -166,11 +166,11 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_28">
                <item>
-                <widget class="QgsCollapsibleGroupBox" name="groupBox">
+                <widget class="QGroupBox" name="groupBox_3">
                  <property name="title">
                   <string>Application</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
                   <item>
                    <widget class="QCheckBox" name="debugModeChbox">
                     <property name="text">
@@ -231,15 +231,18 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_6">
                <item>
-                <widget class="QgsCollapsibleGroupBox" name="mGroupBox">
+                <widget class="QGroupBox" name="groupBox_2">
                  <property name="title">
                   <string>Database</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <layout class="QVBoxLayout" name="verticalLayout_9">
                   <item>
                    <widget class="QCheckBox" name="db_overwriteChbox">
                     <property name="text">
                      <string>Overwrite existing objects</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -247,6 +250,9 @@
                    <widget class="QCheckBox" name="db_loadAllChbox">
                     <property name="text">
                      <string>Load all tables in preview</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -296,11 +302,11 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_29">
                <item>
-                <widget class="QgsCollapsibleGroupBox" name="groupBox_5">
+                <widget class="QGroupBox" name="groupBox">
                  <property name="title">
                   <string>Rasters selection</string>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                 <layout class="QVBoxLayout" name="verticalLayout_2">
                   <item>
                    <widget class="QCheckBox" name="dtm_selectAllChbox">
                     <property name="text">
@@ -381,14 +387,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QgsCollapsibleGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>qgscollapsiblegroupbox.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="../resources.qrc"/>
  </resources>

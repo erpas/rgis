@@ -112,7 +112,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true">
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -289,9 +289,7 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionRASDTMSetup"/>
-    <addaction name="actionDebugMode"/>
-    <addaction name="actionAlwaysOnTop"/>
+    <addaction name="actionOptions"/>
    </widget>
    <addaction name="menuDB"/>
    <addaction name="menuSettings"/>
@@ -323,7 +321,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionRASDTMSetup"/>
+   <addaction name="actionOptions"/>
   </widget>
   <widget class="QToolBar" name="rasGeomToolBar">
    <property name="windowTitle">
@@ -677,13 +675,13 @@
     <string>RAS 1D Load River Database Tables Into QGIS</string>
    </property>
   </action>
-  <action name="actionRASDTMSetup">
+  <action name="actionOptions">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/dtmSetup.svg</normaloff>:/rivergis/icons/dtmSetup.svg</iconset>
+     <normaloff>:/rivergis/icons/options.svg</normaloff>:/rivergis/icons/options.svg</iconset>
    </property>
    <property name="text">
-    <string>DTM Setup</string>
+    <string>Options</string>
    </property>
   </action>
   <action name="actionDebugMode">
