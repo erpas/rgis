@@ -17,7 +17,7 @@ class RiverDatabase(object):
     SCHEMA = 'start'
     SRID = 2180
     OVERWRITE = True
-    LOAD_ALL = False
+    LOAD_ALL = True
     CHECK_URI = True
 
     def __init__(self, rgis, dbname, host, port, user, password):
