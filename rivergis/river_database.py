@@ -43,7 +43,6 @@ class RiverDatabase(object):
         self.queries = {}
         self.uris = []
         self.refresh_uris()
-        self.OVERWRITE = rgis.stgs
 
     def connect_pg(self):
         """
