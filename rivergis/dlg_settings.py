@@ -14,9 +14,7 @@ class DlgSettings(QDialog):
         QDialog.__init__(self, parent)
         self.ui = Ui_Settings()
         self.ui.setupUi(self)
-        print "nr widgeta: ", widget
         self.ui.optionsList.setCurrentRow(widget)
-        print self.ui.optionsStackedWidget.currentIndex()
         self.rgis = parent
         self.rdb = parent.rdb
 
@@ -51,9 +49,20 @@ class DlgSettings(QDialog):
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
 
+        # General
+
+        self.rgis.DEBUG = self.ui.debugModeChbox.isChecked()
+        self.rgis.ALWAYSONTOP = self.ui.rgisAlwaysOnTopChbox.isChecked()
+        self.rgis.toggleAlwaysOnTop()
+
+        # River DB
+
+        self.rgis.rdb.OVERWRITE = self.ui.db_overwriteChbox.isChecked()
+        self.rgis.rdb.LOAD_ALL = self.ui.db_loadAllChbox.isChecked()
+
         # DTMs
 
-        self.rgis.addInfo('<br><b>New DTM setup: </b>\n')
+        # self.rgis.addInfo('<br><b>New DTM setup: </b>\n')
         self.rgis.dtms = []
         for row in range(self.rgis.dtmModel.rowCount()):
             item = self.rgis.dtmModel.item(row)

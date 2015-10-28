@@ -55,6 +55,7 @@ class RiverGIS(QMainWindow):
         self.rivergisPath = os.path.dirname(__file__)
         self.dtms = []
         self.DEBUG = 0
+        self.ALWAYSONTOP = False
 
         # MENU Actions
 
@@ -293,7 +294,8 @@ class RiverGIS(QMainWindow):
             self.DEBUG = 0
 
     def toggleAlwaysOnTop(self):
-        if self.ui.actionAlwaysOnTop.isChecked():
+        self.ALWAYSONTOP = self.ui.actionAlwaysOnTop.isChecked()
+        if self.ALWAYSONTOP:
             flags = self.windowFlags()
             self.setWindowFlags(flags | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         else:
