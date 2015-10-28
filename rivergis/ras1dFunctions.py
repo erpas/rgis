@@ -131,7 +131,7 @@ def ras1dXSElevations(rgis):
     except:
         chunk = 0
 
-    # insert xs points along each xsection
+    # insert points along each xsection
     rgis.rdb.process_hecobject(heco.XSSurface, 'pg_create_table')
     rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_surface_points')
 
@@ -216,7 +216,7 @@ def ras1dBRElevations(rgis):
     except:
         chunk = 0
 
-    # insert xs points along each bridge
+    # insert points along each bridge
     rgis.rdb.process_hecobject(heco.BRSurface, 'pg_create_table')
     rgis.rdb.process_hecobject(heco.Bridges, 'pg_surface_points')
 
@@ -268,7 +268,7 @@ def ras1dISElevations(rgis):
     except:
         chunk = 0
 
-    # insert xs points along each inline structure
+    # insert points along each inline structure
     rgis.rdb.process_hecobject(heco.ISSurface, 'pg_create_table')
     rgis.rdb.process_hecobject(heco.InlineStructures, 'pg_surface_points')
 
@@ -320,7 +320,7 @@ def ras1dLatElevations(rgis):
     except:
         chunk = 0
 
-    # insert xs points along each lateral structure
+    # insert points along each lateral structure
     rgis.rdb.process_hecobject(heco.LSSurface, 'pg_create_table')
     rgis.rdb.process_hecobject(heco.LateralStructures, 'pg_surface_points')
 
@@ -388,10 +388,34 @@ def ras1dSAAll(rgis):
 
 def ras1dSACAssignNearestSA(rgis):
     rgis.addInfo('<br><b>Finding nearest Storage Areas for the connection...</b>')
+    if rgis.rdb.process_hecobject(heco.SAConnections, 'pg_assign_nearest_sa'):
+        rgis.addInfo('Done.')
 
 
 def ras1dSACElevations(rgis):
-    rgis.addInfo('<br><b>Running Elevations for Storage Areas Connections...</b>')
+    """Probe a DTM to find storage areas connections vertical shape"""
+    # Prepare DTMs
+    surface_obj = heco.SACSurface()
+    parent_obj = heco.SAConnections()
+    prepare_DTMs(rgis)
+    update_DtmID(rgis, parent_obj)
+    try:
+        chunk = rgis.dtm_chunksize
+    except:
+        chunk = 0
+
+    # insert points along each sa connection
+    rgis.rdb.process_hecobject(heco.SACSurface, 'pg_create_table')
+    rgis.rdb.process_hecobject(heco.SAConnections, 'pg_surface_points')
+
+    # probe a DTM at each point
+    QApplication.setOverrideCursor(Qt.WaitCursor)
+    try:
+        probe_DTMs(rgis, surface_obj, parent_obj, chunksize=chunk)
+        rgis.rdb.add_to_view(surface_obj)
+        rgis.addInfo('Done')
+    finally:
+        QApplication.restoreOverrideCursor()
 
 
 def ras1dSACAll(rgis):

@@ -852,7 +852,7 @@ DROP TABLE
 class Manning(HecRasObject):
     def __init__(self):
         super(Manning, self).__init__()
-        self.order = 25
+        self.order = 26
         self.visible = False
         self.spatial_index = False
         self.attrs = [
@@ -1431,7 +1431,7 @@ class SASurface(HecRasObject):
 class SAVolume(HecRasObject):
     def __init__(self):
         super(SAVolume, self).__init__()
-        self.order = 26
+        self.order = 27
         self.visible = False
         self.spatial_index = False
         self.attrs = [
@@ -1450,7 +1450,83 @@ class SAConnections(HecRasObject):
             ('"USSA"', 'integer'),
             ('"DSSA"', 'integer'),
             ('"TopWidth"', 'double precision'),
-            ('"NodeName"', 'text')]
+            ('"NodeName"', 'text'),
+            ('"DtmID"', 'integer')]
+
+    def pg_assign_nearest_sa(self):
+        qry = '''
+WITH distances AS
+    (SELECT
+        "StorageID",
+        ST_Distance(sa.geom, ST_StartPoint(sac.geom)) AS usdist,
+        ST_Distance(sa.geom, ST_EndPoint(sac.geom)) AS dsdist
+    FROM
+        "{0}"."StorageAreas" AS sa,
+        "{0}"."SAConnections" AS sac)
+UPDATE "{0}"."SAConnections"
+SET
+    "USSA" = (SELECT "StorageID" FROM distances ORDER BY usdist LIMIT 1),
+    "DSSA" = (SELECT "StorageID" FROM distances ORDER BY dsdist LIMIT 1)
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_surface_points(self):
+        qry = '''
+WITH line AS
+    (SELECT
+        sac."SAConnID" as "SAConnID",
+        dtm."CellSize" as "CellSize",
+        (ST_Dump(sac.geom)).geom AS geom
+    FROM
+        "{0}"."SAConnections" as sac,
+        "{0}"."DTMs" as dtm
+    WHERE
+        sac."DtmID" = dtm."DtmID"),
+    linemeasure AS
+    (SELECT
+        "SAConnID",
+        ST_AddMeasure(line.geom, 0, ST_Length(line.geom)) AS linem,
+        generate_series(0, (ST_Length(line.geom)*100)::int, (line."CellSize"*100)::int) AS "Station"
+    FROM line),
+    geometries AS
+    (SELECT
+        "SAConnID",
+        "Station",
+        (ST_Dump(ST_GeometryN(ST_LocateAlong(linem, "Station"/100), 1))).geom AS geom
+    FROM linemeasure)
+
+    INSERT INTO "{0}"."SACSurface" (geom, "SAConnID", "Station")
+    SELECT
+        ST_SetSRID(ST_MakePoint(ST_X(geom), ST_Y(geom)), {1}) AS geom,
+        "SAConnID",
+        "Station"/100
+    FROM geometries;
+
+    INSERT INTO "{0}"."SACSurface" (geom, "SAConnID", "Station")
+    SELECT
+        ST_Endpoint(geom),
+        "SAConnID",
+        ST_Length(geom)
+    FROM "{0}"."SAConnections";
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+
+class SACSurface(HecRasObject):
+    def __init__(self):
+        super(SACSurface, self).__init__()
+        self.order = 25
+        self.main = False
+        self.visible = False
+        self.spatial_index = False
+        self.geom_type = 'POINT'
+        self.attrs = [
+            ('"PtID"', 'bigserial primary key'),
+            ('"SAConnID"', 'integer'),
+            ('"Station"', 'double precision'),
+            ('"Elevation"', 'double precision')]
 
 
 class DTMs(HecRasObject):

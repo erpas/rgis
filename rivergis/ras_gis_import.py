@@ -712,10 +712,19 @@ class SAConnectionsBuilder(object):
         else:
             return sa_connections
 
+    def get_surf(self, sac_id):
+        qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."SACSurface" WHERE "SAConnID" = {1} ORDER BY "Station";'
+        qry = qry.format(self.schema, sac_id)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        if surfs is None:
+            return []
+        else:
+            return surfs
+
     def build_sa_connections(self):
-        # TODO: Surface points in future
         sa_conn_all = 'BEGIN SA CONNECTIONS:\n'
         sa_conn_cut = '         {0}, {1}\n'
+        sa_conn_surf = '         {0}, {1}, {2}\n'
         sa_conn_object = '''
    SA CONNECTION:
       SACONN ID: {0}
@@ -725,15 +734,19 @@ class SAConnectionsBuilder(object):
       TOP WIDTH: {4}
       CUT LINE:
 {5}   SURFACE LINE:
-   END:
+{6}   END:
 '''
         sa_conn_end = '\nEND SA CONNECTIONS:\n\n'
         for sac in self.get_sa_conn():
+            sac_id = sac['SAConnID']
             cuts = ''
+            surfs = ''
             pnts = RasGisImport.unpack_wkt(sac['wkt'])
             for pt in pnts:
                 x, y = pt
                 cuts += sa_conn_cut.format(x, y)
-            sa_conn_all += sa_conn_object.format(sac['SAConnID'], sac['USSA'], sac['DSSA'], sac['TopWidth'], sac['NodeName'], cuts)
+            for s in self.get_surf(sac_id):
+                surfs += sa_conn_surf.format(s['x'], s['y'], s['Elevation'])
+            sa_conn_all += sa_conn_object.format(sac['SAConnID'], sac['NodeName'], sac['USSA'], sac['DSSA'], sac['TopWidth'], cuts, surfs)
         sa_conn_all += sa_conn_end
         return sa_conn_all
