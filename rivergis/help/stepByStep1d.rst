@@ -61,7 +61,22 @@ Optional geometry data:
 To prepare Manning’s value table you need to prepare two layers:
 
 * LanduseAreas polygon layer
-* XSCutLines  polyline layer
+* XSCutLines polyline layer
+
+Both LanduseAreas and XSCutLines you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that XSCutLines and LanduseAreas layers are already done and all attributes are filled.
+
+  .. |createbutton| image:: img/create_ico.png
+
+  .. note::
+
+     For more information about creation and edition of XSCutLines and LanduseAreas layers please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-11 and 4-28
+
+
+  .. _fig_man_create:
+  .. figure:: img/create_2.png
+  .. figure:: img/create_3.png
+     :align: center
+
 
 Land use layer must contain “LUID”, “LUCode” and “N_Value” attributes and it should contain multipart polygons. In this example "LUID" and "LUCode" is the same but it can be different.
 
@@ -115,13 +130,13 @@ This chapter describes processing of bridges/culverts layer. There are three lay
 * Bridges/Culverts polyline layer
 * DTM layer (optional)
 
-Both StreamCenterline and Bridges/Culverts you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attrubutes are filled. We will focus on Bridges/Culverts layer and its functionality.
+Both StreamCenterline and Bridges/Culverts you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on Bridges/Culverts layer and its functionality.
 
   .. |createbutton| image:: img/create_ico.png
 
   .. note::
 
-     For more information about creation and edition of StreamCenterline layer please look :download:`HERE <HEC_help/HEC_GeoRAS_10_for_ArcGIS_10.pdf>`
+     For more information about creation and edition of StreamCenterline layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
 
 
   .. _fig_man_create:
@@ -129,4 +144,11 @@ Both StreamCenterline and Bridges/Culverts you can create by clicking this butto
   .. figure:: img/create_1.png
      :align: center
 
-Bridges/Culverts layer should contain "BridgeID", "RiverCode", "ReachCode", "Station", "USDistance", "TopWidth", "NodeName" and DtmId" attributes. First four attributes are
+Bridges/Culverts layer should contain "BridgeID", "RiverCode", "ReachCode", "Station", "USDistance", "TopWidth", "NodeName" and DtmID" attributes. Edit layer and digitize bridges. "BridgeID" will be filed automatically while digitizing. Remember that drawing has to be performed from left bank to right bank looking downstream.
+
+
+
+The rest attributes are calculated by pushing this button |bridgebutton| in process of intersection with StreamCenterline layer excluding "USDistance", "TopWidth", "NodeName" and DtmID". "USDistance", "TopWidth", "NodeName" have to be filled manually by user.
+
+
+  .. |bridgebutton| image:: img/bridge_ico.png
