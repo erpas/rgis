@@ -80,7 +80,7 @@ class DlgSettings(QDialog):
 
         self.rgis.dtm_chunksize = self.ui.dtm_chunksize.value()
 
-        self.rgis.writeQSettings()
+        self.rgis.writeSettings()
 
 
 

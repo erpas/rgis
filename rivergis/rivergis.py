@@ -23,6 +23,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.utils import *
+import json
+from os.path import join
 
 # TODO: try to not use the processing
 import processing
@@ -37,19 +39,6 @@ import ras2dFunctions as r2d
 class RiverGIS(QMainWindow):
 
     OPT_GENERAL, OPT_RDB, OPT_DTM = range(3)
-
-    # options saved to QSettings
-    opts = {'rgis': {
-                'DEBUG': False,
-                'always_on_top': False,
-                'dtm_chunksize': 0
-            },
-            'rdb':{
-                'OVERWRITE': True,
-                'LOAD_ALL': True
-            }
-
-    }
 
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
@@ -67,7 +56,9 @@ class RiverGIS(QMainWindow):
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
         self.dtms = []
-        self.readQSettings()
+        # even some objects (rdb, for example) do not exist
+        # restore settings
+        self.readSettings()
 
         # MENU Actions
 
@@ -135,12 +126,6 @@ class RiverGIS(QMainWindow):
         self.ui.textEdit.append('<br>If you can\'t see any connection, please, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
         self.ui.textEdit.append('----------------------------------------------------------------------------')
 
-        # restore settings
-        # TODO
-
-
-
-
         # restore the window state
         s = QSettings()
         self.restoreGeometry(s.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
@@ -185,7 +170,7 @@ class RiverGIS(QMainWindow):
         settings.setValue("/rivergis/mainWindow/windowState", self.saveState())
         settings.setValue("/rivergis/mainWindow/geometry", self.saveGeometry())
         settings.setValue("/rivergis/mainWindow/flags", self.windowFlags())
-        self.writeQSettings()
+        self.writeSettings()
         QMainWindow.closeEvent(self, e)
 
 
@@ -253,6 +238,8 @@ class RiverGIS(QMainWindow):
             self.ui.schemasCbo.setCurrentIndex(schemaExists)
         self.schemaChanged()
 
+        self.readSettings()
+
     def schemaChanged(self):
         self.rdb.register.clear()
         if not self.ui.schemasCbo.currentText() == '':
@@ -308,7 +295,6 @@ class RiverGIS(QMainWindow):
             self.DEBUG = 0
 
     def toggleAlwaysOnTop(self):
-        self.always_on_top = self.readQSetting('always_on_top')
         if self.always_on_top:
             flags = self.windowFlags()
             self.setWindowFlags(flags | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
@@ -346,44 +332,37 @@ class RiverGIS(QMainWindow):
         s.setValue(name, value)
 
 
-    def readQSettings(self):
-        s = QSettings()
+    def readSettings(self):
+        sFile = join(self.rivergisPath, 'settings.json')
+        print sFile
+        with open(sFile, 'r') as f:
+            self.opts = json.load(f)
         for group, options in self.opts.iteritems():
             for name, defaultValue in options.iteritems():
-                if group == 'rgis' and s.contains("rivergis/rgis/{}".format(name)):
-                    setattr(self, name, s.value("rivergis/rgis/{}".format(name)))
-                    print
+                if group == 'rgis' and name in self.opts['rgis'].keys():
+                    setattr(self, name, self.opts['rgis'][name])
+                elif group == 'rdb' and name in self.opts['rdb'].keys():
+                    setattr(self, name, self.opts['rdb'][name])
                 else:
-                    setattr(self, name, defaultValue)
-                    print "Couldn't read or set option rivergis/rgis/{}".format(name)
-                if group == 'rdb' and s.contains("rivergis/rdb/{}".format(name)):
-                    setattr(self, name, s.value("rivergis/rdb/{}".format(name)))
-                else:
-                    setattr(self, name, defaultValue)
-                    print "Couldn't read or set option rivergis/rdb/{}".format(name)
+                    print "No key ['{}']['{}']".format(group, name)
 
 
-    def writeQSettings(self):
-        s = QSettings()
+    def writeSettings(self):
         for group, options in self.opts.iteritems():
             for name, defaultValue in options.iteritems():
                 if group == 'rgis':
                     try:
-                        curValue = getattr(self, name)
-                        s.setValue("rivergis/rgis/{}".format(name), curValue)
+                        self.opts['rgis'][name] = getattr(self, name)
                     except:
-                        print "Couldn't write option rivergis/rgis/{}".format(name)
-
+                        pass
                 elif group == 'rdb':
                     try:
-                        curValue = getattr(self.rdb, name)
-                        s.setValue("rivergis/rdb/{}".format(name), curValue)
+                        self.opts['rdb'][name] = getattr(self.rdb, name)
                     except:
-                        print "Couldn't write option rivergis/rdb/{}".format(name)
+                        pass
 
-                else:
-                    pass
-
+        with open(join(self.rivergisPath, 'settings.json'), 'w') as f:
+            json.dump(self.opts, f)
 
 
 
