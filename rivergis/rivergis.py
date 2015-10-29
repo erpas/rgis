@@ -141,7 +141,6 @@ class RiverGIS(QMainWindow):
         self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
         self.updateDefaultCrs()
 
-
     def enableActions(self, enable):
         menus = self.ui.menubar.findChildren(QMenu)
         toolbars = self.findChildren(QToolBar)
@@ -173,7 +172,6 @@ class RiverGIS(QMainWindow):
         self.writeSettings()
         QMainWindow.closeEvent(self, e)
 
-
     def addInfo(self, text):
         self.ui.textEdit.append(text)
 
@@ -184,7 +182,6 @@ class RiverGIS(QMainWindow):
         self.addInfo('\nCurrent projection is {0}'.format(self.crs.authid()))
 
     # Database Functions
-
     def connChanged(self):
         s = QSettings()
         s.beginGroup('/PostgreSQL/connections')
@@ -318,7 +315,6 @@ class RiverGIS(QMainWindow):
     def about(self):
         self.showHelp('index.html')
 
-
     def readQSetting(self, name):
         s = QSettings()
         try:
@@ -330,7 +326,6 @@ class RiverGIS(QMainWindow):
     def writeQSetting(self, name, value):
         s = QSettings()
         s.setValue(name, value)
-
 
     def readSettings(self):
         sFile = join(self.rivergisPath, 'settings.json')
@@ -345,7 +340,6 @@ class RiverGIS(QMainWindow):
                     setattr(self, name, self.opts['rdb'][name])
                 else:
                     print "No key ['{}']['{}']".format(group, name)
-
 
     def writeSettings(self):
         for group, options in self.opts.iteritems():
@@ -363,6 +357,3 @@ class RiverGIS(QMainWindow):
 
         with open(join(self.rivergisPath, 'settings.json'), 'w') as f:
             json.dump(self.opts, f)
-
-
-
