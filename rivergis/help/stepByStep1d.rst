@@ -73,11 +73,11 @@ Both LanduseAreas and XSCutLines you can create by clicking this button |createb
 
 
   .. _fig_man_create:
-  .. figure:: img/create_2.png
+  .. figure:: img/create_layer.png
 
      Database context menu
 
-  .. figure:: img/create_3.png
+  .. figure:: img/landuse_create.png
      :align: center
 
      Create RAS Layers window
@@ -99,9 +99,9 @@ For correct Manning's values extraction all of the cross sections in XSCutLines 
 
      Cross sections and Land use layers coverage
 
-Next step is pushing a button |Mannbuton| which is located on main toolbar or you can find it also in context menu as is shown below
+Next step is pushing a button |mannbuton| which is located on main toolbar or you can find it also in context menu as is shown below
 
-  .. |Mannbuton| image:: img/Manning_ico.png
+  .. |mannbuton| image:: img/man_ico.png
 
   .. _fig_man_mancontextmenu:
   .. figure:: img/man_context_menu.png
@@ -144,12 +144,12 @@ Both StreamCenterline and Bridges/Culverts you can create by clicking this butto
      For more information about creation and edition of StreamCenterline layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
 
 
-  .. _fig_bridge_create:
-  .. figure:: img/create_2.png
+  .. _fig_bridgecreate:
+  .. figure:: img/create_layer.png
 
      Database context menu
 
-  .. figure:: img/create_1.png
+  .. figure:: img/bridge_create.png
      :align: center
 
      Create RAS Layers window
@@ -157,7 +157,7 @@ Both StreamCenterline and Bridges/Culverts you can create by clicking this butto
 Bridges/Culverts layer should contain “BridgeID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize bridges. “BridgeID” will be filed automatically while digitizing. Remember that drawing has to be performed from left bank to right bank looking downstream.
 
   .. _fig_bridgeedit:
-  .. figure:: img/bridge_2.png
+  .. figure:: img/bridge_edit.png
      :align: center
 
      Exemplary bridge edition
@@ -165,7 +165,7 @@ Bridges/Culverts layer should contain “BridgeID”, “RiverCode”, “ReachC
 After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Bridges/Culverts position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”.
 
   .. _fig_bridgemenu:
-  .. figure:: img/bridge_1.png
+  .. figure:: img/bridge_submenu.png
      :align: center
 
      Bridge/Culvert menu
@@ -202,7 +202,7 @@ Both StreamCenterline and InlineStructures you can create by clicking this butto
 
 
   .. _fig_inline_create:
-  .. figure:: img/create_2.png
+  .. figure:: img/create_layer.png
 
      Database context menu
 
@@ -214,7 +214,7 @@ Both StreamCenterline and InlineStructures you can create by clicking this butto
 InlineStructures layer should contain “InlineSID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize inline structures. “InlineSID” will be filed automatically while digitizing. Remember that drawing has to be performed from left bank to right bank looking downstream.
 
   .. _fig_inlineedit:
-  .. figure:: img/inline_1.png
+  .. figure:: img/inline_edit.png
      :align: center
 
      Exemplary inline structures
@@ -222,7 +222,7 @@ InlineStructures layer should contain “InlineSID”, “RiverCode”, “Reach
 After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Inline Structures position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”.
 
   .. _fig_inlinemenu:
-  .. figure:: img/inline_2.png
+  .. figure:: img/inline_submenu.png
      :align: center
 
      Inline Structures menu
@@ -237,7 +237,7 @@ If particular function is done without any problem you will see message in main 
 
 You have also access to “All” function from main RiverGIS toolbar by clicking this |inlinebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all inline structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect inline structures elevation data.
 
-  .. |inlinebutton| image:: img/Inline_str_ico.png
+  .. |inlinebutton| image:: img/inline_ico.png
 
 --------------------------------------
 5. Lateral Structures
@@ -259,7 +259,7 @@ Both StreamCenterline and LateralStructures you can create by clicking this butt
 
 
   .. _fig_lateral_create:
-  .. figure:: img/create_2.png
+  .. figure:: img/create_layer.png
 
      Database context menu
 
@@ -270,16 +270,16 @@ Both StreamCenterline and LateralStructures you can create by clicking this butt
 
 LateralStructures layer should contain “LateralSID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize lateral structures. “LateralSID” will be filed automatically while digitizing. Remember that drawing has to be performed from upstream to downstream.
 
-  .. _fig_inlineedit:
-  .. figure:: img/lateral_1.png
+  .. _fig_lateraledit:
+  .. figure:: img/lateral_edit.png
      :align: center
 
      Exemplary lateral structure
 
 After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Lateral Structures position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”. If particular function is done without any problem you will see message in main RiverGIS window about successful processing.
 
-  .. _fig_inlinemenu:
-  .. figure:: img/lateral_2.png
+  .. _fig_lateralmenu:
+  .. figure:: img/lateral_submenu.png
      :align: center
 
      Lateral Structures menu
@@ -290,7 +290,7 @@ Stationing is calculated basing on upstream start point of lateral structure wit
 
      For more information about creation and edition of LateralStructures layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-37
 
-  .. _fig_inlinedtm:
+  .. _fig_lateraldtm:
   .. figure:: img/bridge_dtm.png
      :align: center
 
@@ -298,4 +298,4 @@ Stationing is calculated basing on upstream start point of lateral structure wit
 
 You have also access to “All” function from main RiverGIS toolbar by clicking this |lateralbutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all lateral structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect lateral structures elevation data.
 
-  .. |lateralbutton| image:: img/Lateral_str_ico.png
+  .. |lateralbutton| image:: img/lateral_ico.png
