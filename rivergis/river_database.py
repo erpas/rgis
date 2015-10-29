@@ -436,13 +436,3 @@ $BODY$
     LANGUAGE plpgsql;
 '''
         self.run_query(qry)
-
-
-if __name__ == '__main__':
-    baza = RiverDatabase('CMPiS_Gdynia', 'pzrpgeosrv.imgw.ad', '5432', 'ldebek', '')
-
-    baza.SCHEMA = 'public'
-    baza.SRID = 2180
-
-    baza.connect_pg()
-    baza.disconnect_pg()
