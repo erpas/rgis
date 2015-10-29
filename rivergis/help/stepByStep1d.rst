@@ -74,8 +74,13 @@ Both LanduseAreas and XSCutLines you can create by clicking this button |createb
 
   .. _fig_man_create:
   .. figure:: img/create_2.png
+
+     Database context menu
+
   .. figure:: img/create_3.png
      :align: center
+
+     Create RAS Layers window
 
 
 Land use layer must contain “LUID”, “LUCode” and “N_Value” attributes and it should contain multipart polygons. In this example "LUID" and "LUCode" is the same but it can be different.
@@ -141,11 +146,38 @@ Both StreamCenterline and Bridges/Culverts you can create by clicking this butto
 
   .. _fig_man_create:
   .. figure:: img/create_2.png
+
+     Database context menu
+
   .. figure:: img/create_1.png
      :align: center
 
-Bridges/Culverts layer should contain “BridgeID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize bridges. “BridgeID” will be filed automatically while digitizing. Remember that drawing has to be performed from left bank to right bank looking downstream. After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Bridges/Culverts position. You will see sub menu where you can extract River/Reach Names,
- calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”. If particular function is done without any problem you will see message in main RiverGIS window about successful processing. For elevation extraction you need DTM which covers bridges extent. After clicking “Elevation” or “All” functions there will be dialog window displayed with current DTM rasters. Choose any and click “OK”. You have also access to “All” function from main RiverGIS toolbar by clicking this |bridgebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user.
- DtmID will be filled after elevation extraction but for end user filled data are not important. For elevation control after processing point layer will be added to view where you can inspect bridge/culver elevation data.
+     Create RAS Layers window
+
+Bridges/Culverts layer should contain “BridgeID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize bridges. “BridgeID” will be filed automatically while digitizing. Remember that drawing has to be performed from left bank to right bank looking downstream.
+
+  .. _fig_man_bridgeedit:
+  .. figure:: img/bridge_2.png
+     :align: center
+
+     Exemplary bridge edition
+
+After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Bridges/Culverts position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”.
+
+  .. _fig_man_bridgemenu:
+  .. figure:: img/bridge_1.png
+     :align: center
+
+     Bridge/Culvert menu
+
+If particular function is done without any problem you will see message in main RiverGIS window about successful processing. For elevation extraction you need DTM which covers bridges extent. After clicking “Elevation” or “All” functions there will be dialog window displayed with current DTM rasters. Choose any and click “OK”.
+
+  .. _fig_man_bridgdtm:
+  .. figure:: img/bridge_dtm.png
+     :align: center
+
+     DTM option window
+
+You have also access to “All” function from main RiverGIS toolbar by clicking this |bridgebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. For elevation control after processing point layer will be added to view where you can inspect bridge/culver elevation data.
 
   .. |bridgebutton| image:: img/bridge_ico.png
