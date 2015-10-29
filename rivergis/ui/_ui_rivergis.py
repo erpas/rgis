@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Thu Oct 29 08:29:50 2015
+# Created: Thu Oct 29 13:01:02 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -344,6 +344,8 @@ class Ui_RiverGIS(object):
         icon36.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/rivergis.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionAbout.setIcon(icon36)
         self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
+        self.actionRestoreDefaultOptions = QtGui.QAction(RiverGIS)
+        self.actionRestoreDefaultOptions.setObjectName(_fromUtf8("actionRestoreDefaultOptions"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuHelp.addAction(self.actionWebsite)
         self.menuHelp.addAction(self.actionAbout)
@@ -412,6 +414,7 @@ class Ui_RiverGIS(object):
         self.menuDB.addAction(self.actionRASImportLayersIntoRdbTables)
         self.menuDB.addAction(self.actionRASLoadRdbTablesIntoQGIS)
         self.menuSettings.addAction(self.actionOptions)
+        self.menuSettings.addAction(self.actionRestoreDefaultOptions)
         self.menubar.addAction(self.menuDB.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menu_Geometry.menuAction())
@@ -558,4 +561,5 @@ class Ui_RiverGIS(object):
         self.actionRASSacAll.setToolTip(_translate("RiverGIS", "RAS 1D SA Connections - All", None))
         self.actionWebsite.setText(_translate("RiverGIS", "Web site", None))
         self.actionAbout.setText(_translate("RiverGIS", "About", None))
+        self.actionRestoreDefaultOptions.setText(_translate("RiverGIS", "Restore Default Options", None))
 

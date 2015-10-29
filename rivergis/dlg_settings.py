@@ -45,50 +45,46 @@ class DlgSettings(QDialog):
 
         self.ui.dtm_listView.setModel(self.rgis.dtmModel)
 
-        # set options according to current variable values
+        # set UI according to current variable values
+        # General
+        self.ui.open_lastChbox.setChecked(self.rgis.open_last_conn)
         self.ui.debugModeChbox.setChecked(self.rgis.DEBUG)
         self.ui.rgisAlwaysOnTopChbox.setChecked(self.rgis.always_on_top)
+        # DB
         self.ui.db_overwriteChbox.setChecked(self.rgis.rdb.OVERWRITE)
         self.ui.db_loadAllChbox.setChecked(self.rgis.rdb.LOAD_ALL)
-
-
 
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
 
         # General
-
+        self.rgis.open_last_conn = self.ui.open_lastChbox.isChecked()
         self.rgis.DEBUG = self.ui.debugModeChbox.isChecked()
         self.rgis.always_on_top = self.ui.rgisAlwaysOnTopChbox.isChecked()
         self.rgis.toggleAlwaysOnTop()
 
         # River DB
-
         self.rgis.rdb.OVERWRITE = self.ui.db_overwriteChbox.isChecked()
         self.rgis.rdb.LOAD_ALL = self.ui.db_loadAllChbox.isChecked()
 
         # DTMs
-
-        # self.rgis.addInfo('<br><b>New DTM setup: </b>\n')
         self.rgis.dtms = []
         for row in range(self.rgis.dtmModel.rowCount()):
             item = self.rgis.dtmModel.item(row)
             if item.checkState() == Qt.Checked:
-                self.rgis.addInfo('{0}'.format(item.data()[0]))
+                # self.rgis.addInfo('{0}'.format(item.data()[0]))
                 self.rgis.dtms.append(item.data()[1]) # append layerId
 
         self.rgis.dtm_chunksize = self.ui.dtm_chunksize.value()
 
+        # write settings to json
         self.rgis.writeSettings()
-
-
+        # print self.rgis.opts
 
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 
-    def displayHelp(self):
-        pass
 
     def dtm_selectAllToggled(self):
         allChecked = self.ui.dtm_selectAllChbox.isChecked()
