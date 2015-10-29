@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_settings.ui'
 #
-# Created: Thu Oct 29 08:10:59 2015
+# Created: Wed Oct 28 21:03:50 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_Settings(object):
     def setupUi(self, Settings):
         Settings.setObjectName(_fromUtf8("Settings"))
-        Settings.resize(604, 658)
+        Settings.resize(494, 418)
         Settings.setSizeGripEnabled(False)
         Settings.setModal(True)
         self.verticalLayout_4 = QtGui.QVBoxLayout(Settings)
@@ -95,7 +95,7 @@ class Ui_Settings(object):
         self.mOptionsScrollArea_01.setWidgetResizable(True)
         self.mOptionsScrollArea_01.setObjectName(_fromUtf8("mOptionsScrollArea_01"))
         self.mOptionsScrollAreaContents_01 = QtGui.QWidget()
-        self.mOptionsScrollAreaContents_01.setGeometry(QtCore.QRect(0, 0, 432, 609))
+        self.mOptionsScrollAreaContents_01.setGeometry(QtCore.QRect(0, 0, 322, 369))
         self.mOptionsScrollAreaContents_01.setObjectName(_fromUtf8("mOptionsScrollAreaContents_01"))
         self.verticalLayout_28 = QtGui.QVBoxLayout(self.mOptionsScrollAreaContents_01)
         self.verticalLayout_28.setObjectName(_fromUtf8("verticalLayout_28"))
@@ -103,6 +103,10 @@ class Ui_Settings(object):
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.verticalLayout_7 = QtGui.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
+        self.open_lastChbox = QtGui.QCheckBox(self.groupBox_3)
+        self.open_lastChbox.setChecked(True)
+        self.open_lastChbox.setObjectName(_fromUtf8("open_lastChbox"))
+        self.verticalLayout_7.addWidget(self.open_lastChbox)
         self.debugModeChbox = QtGui.QCheckBox(self.groupBox_3)
         self.debugModeChbox.setObjectName(_fromUtf8("debugModeChbox"))
         self.verticalLayout_7.addWidget(self.debugModeChbox)
@@ -125,7 +129,7 @@ class Ui_Settings(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName(_fromUtf8("scrollArea"))
         self.scrollAreaWidgetContents = QtGui.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 432, 609))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 322, 369))
         self.scrollAreaWidgetContents.setObjectName(_fromUtf8("scrollAreaWidgetContents"))
         self.verticalLayout_6 = QtGui.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
@@ -157,7 +161,7 @@ class Ui_Settings(object):
         self.mOptionsScrollArea_04.setWidgetResizable(True)
         self.mOptionsScrollArea_04.setObjectName(_fromUtf8("mOptionsScrollArea_04"))
         self.mOptionsScrollAreaContents_04 = QtGui.QWidget()
-        self.mOptionsScrollAreaContents_04.setGeometry(QtCore.QRect(0, 0, 432, 609))
+        self.mOptionsScrollAreaContents_04.setGeometry(QtCore.QRect(0, 0, 322, 369))
         self.mOptionsScrollAreaContents_04.setObjectName(_fromUtf8("mOptionsScrollAreaContents_04"))
         self.verticalLayout_29 = QtGui.QVBoxLayout(self.mOptionsScrollAreaContents_04)
         self.verticalLayout_29.setObjectName(_fromUtf8("verticalLayout_29"))
@@ -216,6 +220,7 @@ class Ui_Settings(object):
         item.setToolTip(_translate("Settings", "System", None))
         self.optionsList.setSortingEnabled(__sortingEnabled)
         self.groupBox_3.setTitle(_translate("Settings", "Application", None))
+        self.open_lastChbox.setText(_translate("Settings", "Load last river database when starting", None))
         self.debugModeChbox.setText(_translate("Settings", "Debugging mode", None))
         self.rgisAlwaysOnTopChbox.setText(_translate("Settings", "Plugin window always on top", None))
         self.groupBox_2.setTitle(_translate("Settings", "Database", None))

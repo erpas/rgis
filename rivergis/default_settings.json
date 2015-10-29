@@ -1,0 +1,14 @@
+{"rgis": {
+  "DEBUG": false,
+  "dtm_chunksize": 0,
+  "always_on_top": false,
+  "open_last_conn": true
+  },
+
+  "rdb": {
+    "LOAD_ALL": true,
+    "OVERWRITE": true,
+    "last_conn": "",
+    "last_schema": ""
+  }
+}

@@ -24,7 +24,7 @@ from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.utils import *
 import json
-from os.path import join
+from os.path import join, isfile
 
 # TODO: try to not use the processing
 import processing
@@ -41,7 +41,7 @@ class RiverGIS(QMainWindow):
     OPT_GENERAL, OPT_RDB, OPT_DTM = range(3)
 
     def __init__(self, iface, parent=None):
-        QMainWindow.__init__(self, parent) #, Qt.WindowStaysOnTopHint)
+        QMainWindow.__init__(self, parent)
         if QApplication.overrideCursor():
             QApplication.restoreOverrideCursor()
         self.setAttribute(Qt.WA_DeleteOnClose)
@@ -56,7 +56,6 @@ class RiverGIS(QMainWindow):
         self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
         self.dtms = []
-        # even some objects (rdb, for example) do not exist
         # restore settings
         self.readSettings()
 
@@ -69,9 +68,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
         # Settings
         self.ui.actionOptions.triggered.connect(self.options)
-        # self.ui.actionRASDTMSetup.triggered.connect(lambda: self.options(self.OPT_DTM))
-        # self.ui.actionDebugMode.toggled.connect(self.toggleDebugMode)
-        # self.ui.actionAlwaysOnTop.toggled.connect(self.toggleAlwaysOnTop)
+        self.ui.actionRestoreDefaultOptions.triggered.connect(lambda: self.readSettings(defaults=True))
         # RAS Geometry
         # 1D
         self.ui.actionRASTopology1D.triggered.connect(lambda: r1d.ras1dStreamCenterlineTopology(self))
@@ -134,12 +131,22 @@ class RiverGIS(QMainWindow):
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
 
-        # disable some actions until a connection to river database is established
-        self.enableActions(False)
+        # restore settings
+        self.readSettings()
 
         # set QGIS projection CRS as a default for RiverGIS
         self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
         self.updateDefaultCrs()
+
+        # check if we should connect to previuosly used RDB
+        if self.open_last_conn:
+            self.connChanged(conn_name=self.opts['rdb']['last_conn'],
+                             schema_name=self.opts['rdb']['last_schema'])
+
+        # disable some actions until a connection to river database is established
+        if not self.rdb:
+            self.enableActions(False)
+
 
     def enableActions(self, enable):
         menus = self.ui.menubar.findChildren(QMenu)
@@ -182,11 +189,17 @@ class RiverGIS(QMainWindow):
         self.addInfo('\nCurrent projection is {0}'.format(self.crs.authid()))
 
     # Database Functions
-    def connChanged(self):
+
+    def connChanged(self, conn_name='', schema_name=''):
         s = QSettings()
         s.beginGroup('/PostgreSQL/connections')
         connsNames = s.childGroups()
-        self.curConnName = self.ui.connsCbo.currentText()
+
+        if conn_name in connsNames:
+            self.curConnName = conn_name
+        else:
+            self.curConnName = self.ui.connsCbo.currentText()
+
         self.ui.connsCbo.clear()
         self.ui.connsCbo.addItem('')
         for conn in connsNames:
@@ -206,6 +219,7 @@ class RiverGIS(QMainWindow):
         self.database = s.value('database')
         self.user = s.value('username')
         self.passwd = s.value('password')
+        s.endGroup()
 
         # close any existing connection to a river database
         if self.rdb:
@@ -221,6 +235,7 @@ class RiverGIS(QMainWindow):
         self.rdb.create_spatial_index()
         self.addInfo('Created connection to river database: {0}@{1}'.format(
             self.rdb.dbname, self.rdb.host))
+        self.rdb.last_conn = connName
 
         # refresh schemas combo
         schemaName = self.ui.schemasCbo.currentText()
@@ -230,12 +245,15 @@ class RiverGIS(QMainWindow):
         self.ui.schemasCbo.addItem('')
         for schema in schemas:
             self.ui.schemasCbo.addItem(schema[0])
-        schemaExists = self.ui.schemasCbo.findText(schemaName)
+        if schema_name:
+            schemaExists = self.ui.schemasCbo.findText(schema_name)
+        else:
+            schemaExists = self.ui.schemasCbo.findText(schemaName)
         if schemaExists:
             self.ui.schemasCbo.setCurrentIndex(schemaExists)
         self.schemaChanged()
 
-        self.readSettings()
+
 
     def schemaChanged(self):
         self.rdb.register.clear()
@@ -244,6 +262,7 @@ class RiverGIS(QMainWindow):
             self.addInfo('Current DB schema is: {0}'.format(self.schema))
             # change river database parameters
             self.rdb.SCHEMA = self.schema
+            self.rdb.last_schema = self.schema
             self.rdb.register_existing(heco)
             reg = [self.rdb.register[k].name for k in sorted(self.rdb.register.keys())]
             if self.DEBUG:
@@ -315,21 +334,11 @@ class RiverGIS(QMainWindow):
     def about(self):
         self.showHelp('index.html')
 
-    def readQSetting(self, name):
-        s = QSettings()
-        try:
-            value =  s.value("rivergis/{}".format(name))
-        except KeyError:
-            value = None
-        return value
 
-    def writeQSetting(self, name, value):
-        s = QSettings()
-        s.setValue(name, value)
-
-    def readSettings(self):
+    def readSettings(self, defaults=False):
         sFile = join(self.rivergisPath, 'settings.json')
-        print sFile
+        if not isfile(sFile) or defaults:
+            sFile = join(self.rivergisPath, 'default_settings.json')
         with open(sFile, 'r') as f:
             self.opts = json.load(f)
         for group, options in self.opts.iteritems():
@@ -339,7 +348,7 @@ class RiverGIS(QMainWindow):
                 elif group == 'rdb' and name in self.opts['rdb'].keys():
                     setattr(self, name, self.opts['rdb'][name])
                 else:
-                    print "No key ['{}']['{}']".format(group, name)
+                    self.addInfo("Options have no key ['{}']['{}']".format(group, name))
 
     def writeSettings(self):
         for group, options in self.opts.iteritems():

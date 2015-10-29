@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>604</width>
-    <height>658</height>
+    <width>494</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -160,8 +160,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>432</width>
-                <height>609</height>
+                <width>322</width>
+                <height>369</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_28">
@@ -171,6 +171,16 @@
                   <string>Application</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <widget class="QCheckBox" name="open_lastChbox">
+                    <property name="text">
+                     <string>Load last river database when starting</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
                   <item>
                    <widget class="QCheckBox" name="debugModeChbox">
                     <property name="text">
@@ -225,8 +235,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>432</width>
-                <height>609</height>
+                <width>322</width>
+                <height>369</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -296,8 +306,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>432</width>
-                <height>609</height>
+                <width>322</width>
+                <height>369</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_29">

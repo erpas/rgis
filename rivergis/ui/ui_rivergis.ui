@@ -290,6 +290,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionOptions"/>
+    <addaction name="actionRestoreDefaultOptions"/>
    </widget>
    <addaction name="menuDB"/>
    <addaction name="menuSettings"/>
@@ -922,12 +923,18 @@
     <string>About</string>
    </property>
   </action>
+  <action name="actionRestoreDefaultOptions">
+   <property name="text">
+    <string>Restore Default Options</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
    <header>qgsprojectionselectionwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
