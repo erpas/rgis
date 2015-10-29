@@ -247,74 +247,70 @@ class XSCutLines(HecRasObject):
         qry = '''
 UPDATE "{0}"."XSCutLines" AS xs
 SET
-  "ReachID" = riv."ReachID",
-  "RiverCode" = riv."RiverCode",
-  "ReachCode" = riv."ReachCode"
+    "ReachID" = riv."ReachID",
+    "RiverCode" = riv."RiverCode",
+    "ReachCode" = riv."ReachCode"
 FROM
-  "{0}"."StreamCenterlines" AS riv
+    "{0}"."StreamCenterlines" AS riv
 WHERE
-  xs.geom && riv.geom AND
-  ST_Intersects(xs.geom, riv.geom);
+    ST_Intersects(xs.geom, riv.geom);
 '''
         qry = qry.format(self.schema)
         return qry
 
     def pg_stationing(self):
         qry = '''
-WITH xspts AS (
-  SELECT
-    xs."XsecID" AS "XsecID",
-    riv."ReachID" AS "ReachID",
-    ST_LineLocatePoint(riv.geom, ST_Intersection(xs.geom, riv.geom)) AS "Fraction"
-  FROM
-    "{0}"."StreamCenterlines" AS riv,
-    "{0}"."XSCutLines" AS xs
-  WHERE
-    xs.geom && riv.geom AND
-    ST_Intersects(xs.geom, riv.geom)
-)
+WITH xspts AS
+    (SELECT
+        xs."XsecID" AS "XsecID",
+        riv."ReachID" AS "ReachID",
+        ST_LineLocatePoint(riv.geom, ST_Intersection(xs.geom, riv.geom)) AS "Fraction"
+    FROM
+        "{0}"."StreamCenterlines" AS riv,
+        "{0}"."XSCutLines" AS xs
+    WHERE
+        ST_Intersects(xs.geom, riv.geom))
+
 UPDATE "{0}"."XSCutLines" AS xs
 SET
-  "Station" = riv."ToSta" + xspts."Fraction" * (riv."FromSta" - riv."ToSta")
+    "Station" = riv."ToSta" + xspts."Fraction" * (riv."FromSta" - riv."ToSta")
 FROM
-  xspts,
-  "{0}"."StreamCenterlines" AS riv
+    xspts,
+    "{0}"."StreamCenterlines" AS riv
 WHERE
-  xspts."ReachID" = riv."ReachID" AND
-  xspts."XsecID" = xs."XsecID";
+    xspts."ReachID" = riv."ReachID" AND
+    xspts."XsecID" = xs."XsecID";
 '''
         qry = qry.format(self.schema)
         return qry
 
     def pg_bank_stations(self):
         qry = '''
-WITH bankpts AS (
-  SELECT
-    xs."XsecID" AS "XsecID",
-    ST_LineLocatePoint(xs.geom, ST_Intersection(xs.geom, bl.geom)) AS "Fraction"
-  FROM
-    "{0}"."BankLines" AS bl,
-    "{0}"."XSCutLines" AS xs
-  WHERE
-    xs.geom && bl.geom AND
-    ST_Intersects(xs.geom, bl.geom)
-)
+WITH bankpts AS
+    (SELECT
+        xs."XsecID" AS "XsecID",
+        ST_LineLocatePoint(xs.geom, ST_Intersection(xs.geom, bl.geom)) AS "Fraction"
+    FROM
+        "{0}"."BankLines" AS bl,
+        "{0}"."XSCutLines" AS xs
+    WHERE
+        ST_Intersects(xs.geom, bl.geom))
+
 UPDATE "{0}"."XSCutLines" AS xs
 SET
-  "LeftBank" = minmax."minFrac",
-  "RightBank" = minmax."maxFrac"
+    "LeftBank" = minmax."minFrac",
+    "RightBank" = minmax."maxFrac"
 FROM
-  (
-  SELECT
-    "XsecID",
-    min("Fraction") AS "minFrac",
-    max("Fraction") AS "maxFrac"
-  FROM
-    bankpts AS bp
-  GROUP BY "XsecID"
-  ) minmax
+    (SELECT
+        "XsecID",
+        min("Fraction") AS "minFrac",
+        max("Fraction") AS "maxFrac"
+    FROM
+        bankpts AS bp
+    GROUP BY
+        "XsecID") AS minmax
 WHERE
-  xs."XsecID" = minmax."XsecID";
+    xs."XsecID" = minmax."XsecID";
 '''
         qry = qry.format(self.schema)
         return qry
@@ -359,7 +355,6 @@ FOR r IN c LOOP
         "{0}"."Flowpaths" AS path
     WHERE
         path."LineType" = '{1}' AND
-        r.geom && path.geom AND
         ST_Intersects(r.geom, path.geom);
     distance := station - prev_station;
     IF river_code <> r."RiverCode" OR distance <= 0 THEN
@@ -387,15 +382,17 @@ DROP FUNCTION IF EXISTS "{0}".downstream_reach_lengths ();
 
     def pg_surface_points(self):
         qry = '''
+------------------------------------------------------------------------------------------------------------------------
 -- insert xs points along each xsection --
+------------------------------------------------------------------------------------------------------------------------
 WITH line AS
     (SELECT
-        xs."XsecID" as "XsecID",
-        dtm."CellSize" as "CellSize",
+        xs."XsecID" AS "XsecID",
+        dtm."CellSize" AS "CellSize",
         (ST_Dump(xs.geom)).geom AS geom
     FROM
-        "{0}"."XSCutLines" as xs,
-        "{0}"."DTMs" as dtm
+        "{0}"."XSCutLines" AS xs,
+        "{0}"."DTMs" AS dtm
     WHERE
         xs."DtmID" = dtm."DtmID"),
     linemeasure AS
@@ -434,23 +431,26 @@ WITH line AS
         The update extents is defined by bank lines and choice of the xsection part: channel, left or right overbank.
         """
         qry = '''
--- check which xsections have some bathymetry points
--- points must be located within a given tolerance from xs
-UPDATE "{0}"."Bathymetry" b SET
-"XsecID" = xs."XsecID"
+------------------------------------------------------------------------------------------------------------------------
+-- check which xsections have some bathymetry points --
+-- points must be located within a given tolerance from xs --
+------------------------------------------------------------------------------------------------------------------------
+UPDATE "{0}"."Bathymetry" AS b
+SET
+    "XsecID" = xs."XsecID"
 FROM
-"{0}"."XSCutLines" as xs
+    "{0}"."XSCutLines" AS xs
 WHERE
-ST_DWithin(b.geom, xs.geom, {1});
+    ST_DWithin(b.geom, xs.geom, {1});
 
--- set points stations along a xscutline
-UPDATE "{0}"."Bathymetry" b SET
-"Station" = ST_LineLocatePoint(xs.geom, b.geom) * ST_Length(xs.geom)
+UPDATE "{0}"."Bathymetry" AS b
+SET
+    "Station" = ST_LineLocatePoint(xs.geom, b.geom) * ST_Length(xs.geom)
 FROM
-"{0}"."XSCutLines" as xs
+    "{0}"."XSCutLines" AS xs
 WHERE
-b."XsecID" IS NOT NULL AND
-b."XsecID" = xs."XsecID";
+    b."XsecID" IS NOT NULL AND
+    b."XsecID" = xs."XsecID";
 '''
         qry = qry.format(self.schema, xs_tol)
         if area == 'Channel':
@@ -460,44 +460,42 @@ b."XsecID" = xs."XsecID";
         else:
             cond = 'p."Station" > xs."RightBank" * ST_Length(xs.geom)'
         qry += '''
--- delete original xsec points
-WITH ids AS (
-SELECT DISTINCT
-    b."XsecID"
-FROM
-    "{0}"."Bathymetry" b
-WHERE
-    b."XsecID" IS NOT NULL
-)
-DELETE FROM "{0}"."XSSurface" p
-USING
-"{0}"."XSCutLines" as xs,
-ids
-WHERE
-ids."XsecID" = xs."XsecID" AND
-ids."XsecID" = p."XsecID" AND
-{1};
+------------------------------------------------------------------------------------------------------------------------
+-- delete original xsec points --
+------------------------------------------------------------------------------------------------------------------------
+WITH ids AS
+    (SELECT DISTINCT
+        b."XsecID"
+    FROM
+        "{0}"."Bathymetry" AS b
+    WHERE
+        b."XsecID" IS NOT NULL)
 
--- insert bathymetry points
-WITH bathy AS (
-SELECT
-    p."XsecID",
-    p."Station",
-    p."Elevation",
-    p.geom
-FROM
-    "{0}"."Bathymetry" p,
-    "{0}"."XSCutLines" as xs
+DELETE FROM "{0}"."XSSurface" AS p
+USING
+    "{0}"."XSCutLines" AS xs,
+    ids
 WHERE
-    p."XsecID" = xs."XsecID" AND
-    {1}
-)
-INSERT INTO "{0}"."XSSurface" (
-"XsecID",
-"Station",
-"Elevation",
-geom
-)
+    ids."XsecID" = xs."XsecID" AND
+    ids."XsecID" = p."XsecID" AND
+    {1};
+------------------------------------------------------------------------------------------------------------------------
+-- insert bathymetry points --
+------------------------------------------------------------------------------------------------------------------------
+WITH bathy AS
+    (SELECT
+        p."XsecID",
+        p."Station",
+        p."Elevation",
+        p.geom
+    FROM
+        "{0}"."Bathymetry" AS p,
+        "{0}"."XSCutLines" AS xs
+    WHERE
+        p."XsecID" = xs."XsecID" AND
+        {1})
+
+INSERT INTO "{0}"."XSSurface" ("XsecID", "Station", "Elevation", geom)
 (SELECT * FROM bathy);
 '''
         qry = qry.format(self.schema, cond)
@@ -509,64 +507,61 @@ geom
         Only points inside the polygons of bathymetry extents will be updated.
         """
         qry = '''
-UPDATE "{0}"."Bathymetry" b SET
-  "XsecID" = xs."XsecID"
+UPDATE "{0}"."Bathymetry" AS b
+SET
+    "XsecID" = xs."XsecID"
 FROM
-  "{0}"."XSCutLines" as xs,
-  "{0}"."BathymetryExtents" as be
+    "{0}"."XSCutLines" AS xs,
+    "{0}"."BathymetryExtents" AS be
 WHERE
-  b.geom && be.geom AND
-  ST_Intersects(b.geom, be.geom) AND
-  ST_DWithin(b.geom, xs.geom, {1});
+    ST_Intersects(b.geom, be.geom) AND
+    ST_DWithin(b.geom, xs.geom, {1});
+------------------------------------------------------------------------------------------------------------------------
+-- set points stations along a xscutline --
+------------------------------------------------------------------------------------------------------------------------
+UPDATE "{0}"."Bathymetry" b
+SET
+    "Station" = ST_LineLocatePoint(xs.geom, b.geom) * ST_Length(xs.geom)
+FROM
+    "{0}"."XSCutLines" AS xs
+WHERE
+    b."XsecID" IS NOT NULL AND
+    b."XsecID" = xs."XsecID";
+------------------------------------------------------------------------------------------------------------------------
+-- delete original xsec points --
+------------------------------------------------------------------------------------------------------------------------
+WITH ids AS
+    (SELECT DISTINCT
+        b."XsecID"
+    FROM
+        "{0}"."Bathymetry" AS b
+    WHERE
+        b."XsecID" IS NOT NULL)
 
--- set points stations along a xscutline
-UPDATE "{0}"."Bathymetry" b SET
-"Station" = ST_LineLocatePoint(xs.geom, b.geom) * ST_Length(xs.geom)
-FROM
-"{0}"."XSCutLines" as xs
-WHERE
-b."XsecID" IS NOT NULL AND
-b."XsecID" = xs."XsecID";
-
--- delete original xsec points
-WITH ids AS (
-SELECT DISTINCT
-    b."XsecID"
-FROM
-    "{0}"."Bathymetry" b
-WHERE
-    b."XsecID" IS NOT NULL
-)
-DELETE FROM "{0}"."XSSurface" p
+DELETE FROM "{0}"."XSSurface" AS p
 USING
-"{0}"."BathymetryExtents" as be,
-ids
+    "{0}"."BathymetryExtents" AS be,
+    ids
 WHERE
-ids."XsecID" = p."XsecID" AND
-p.geom && be.geom AND
-ST_Intersects(p.geom, be.geom);
+    ids."XsecID" = p."XsecID" AND
+    ST_Intersects(p.geom, be.geom);
+------------------------------------------------------------------------------------------------------------------------
+-- insert bathymetry points --
+------------------------------------------------------------------------------------------------------------------------
+WITH bathy AS
+    (SELECT
+        p."XsecID",
+        p."Station",
+        p."Elevation",
+        p.geom
+    FROM
+        "{0}"."Bathymetry" AS p,
+        "{0}"."BathymetryExtents" AS be
+    WHERE
+        p."XsecID" IS NOT NULL AND
+        ST_Intersects(p.geom, be.geom))
 
--- insert bathymetry points
-WITH bathy AS (
-SELECT
-    p."XsecID",
-    p."Station",
-    p."Elevation",
-    p.geom
-FROM
-    "{0}"."Bathymetry" p,
-    "{0}"."BathymetryExtents" as be
-WHERE
-    p."XsecID" IS NOT NULL AND
-    p.geom && be.geom AND
-    ST_Intersects(p.geom, be.geom)
-)
-INSERT INTO "{0}"."XSSurface" (
-"XsecID",
-"Station",
-"Elevation",
-geom
-)
+INSERT INTO "{0}"."XSSurface" ("XsecID", "Station", "Elevation", geom)
 (SELECT * FROM bathy);
 '''
         qry = qry.format(self.schema, xs_tol)
@@ -630,11 +625,18 @@ class Flowpaths(HecRasObject):
     def pg_channel_from_stream(self):
         qry = '''
 INSERT INTO "{0}"."Flowpaths"(geom, "LineType")
-    (SELECT (ST_Dump(geom)).geom AS geom, 'Channel'
-    FROM (SELECT ST_LineMerge(ST_Union(geom)) AS geom
-        FROM "{0}"."StreamCenterlines"
-        WHERE "ReachCode" IS NOT NULL
-        GROUP BY "RiverCode") AS river_union);
+    (SELECT
+        (ST_Dump(geom)).geom AS geom,
+        'Channel'
+    FROM
+        (SELECT
+            ST_LineMerge(ST_Union(geom)) AS geom
+        FROM
+            "{0}"."StreamCenterlines"
+        WHERE
+            "ReachCode" IS NOT NULL
+        GROUP BY
+            "RiverCode") AS river_union);
 '''
         qry = qry.format(self.schema)
         return qry
@@ -653,7 +655,7 @@ class IneffAreas(HecRasObject):
         qry = '''
 INSERT INTO "{0}"."IneffLines"(geom, "XsecID", "IneffID", "Elevation")
 SELECT
-    ST_Intersection(xs.geom, ineff.geom) as geom,
+    ST_Intersection(xs.geom, ineff.geom) AS geom,
     xs."XsecID",
     ineff."IneffID",
     ineff."Elevation"
@@ -661,7 +663,6 @@ FROM
     "{0}"."XSCutLines" AS xs,
     "{0}"."IneffAreas" AS ineff
 WHERE
-    xs.geom && ineff.geom AND
     ST_Intersects(xs.geom, ineff.geom);
 
 UPDATE "{0}"."IneffLines" AS il
@@ -706,7 +707,7 @@ class BlockedObs(HecRasObject):
         qry = '''
 INSERT INTO "{0}"."BlockLines"(geom, "XsecID", "BlockID", "Elevation")
 SELECT
-    ST_Intersection(xs.geom, block.geom) as geom,
+    ST_Intersection(xs.geom, block.geom) AS geom,
     xs."XsecID",
     block."BlockID",
     block."Elevation"
@@ -714,7 +715,6 @@ FROM
     "{0}"."XSCutLines" AS xs,
     "{0}"."BlockedObs" AS block
 WHERE
-    xs.geom && block.geom AND
     ST_Intersects(xs.geom, block.geom);
 
 UPDATE "{0}"."BlockLines" AS bl
@@ -761,64 +761,54 @@ class LanduseAreas(HecRasObject):
 ------------------------------------------------------------------------------------------------------------------------
 -- Intersect of land use layer with cross section layer  --
 ------------------------------------------------------------------------------------------------------------------------
-SELECT "LUID", "LUCode", "N_Value", (ST_Dump(geom)).geom::geometry(POLYGON, {1}) AS geom
-INTO "{0}".ludump
-FROM "{0}"."LanduseAreas";
+SELECT
+    "LUID",
+    "LUCode",
+    "N_Value",
+    (ST_Dump(geom)).geom::geometry(POLYGON, {1}) AS geom
+INTO
+    "{0}".ludump
+FROM
+    "{0}"."LanduseAreas";
 
-CREATE INDEX idx_ludump
-ON "{0}".ludump
-USING gist(geom);
-
+CREATE INDEX idx_ludump ON "{0}".ludump USING gist(geom);
 ------------------------------------------------------------------------------------------------------------------------
-SELECT "XSCutLines"."XsecID", ludump."N_Value", ludump."LUCode", ST_Intersection(ludump.geom, "XSCutLines".geom) AS geom
-INTO "{0}".inter_xs
-FROM "{0}".ludump, "{0}"."XSCutLines"
-WHERE
-    ludump.geom && "XSCutLines".geom AND
-    ST_Intersects(ludump.geom, "XSCutLines".geom)
-ORDER BY "XSCutLines"."XsecID";
-
-SELECT "XsecID", "N_Value", "LUCode", (ST_Dump(geom)).geom::geometry(LINESTRING, {1}) AS geom
-INTO "{0}".inter_xs_dump
-FROM "{0}".inter_xs;
-
-CREATE INDEX idx_inter_xs_dump
-ON"{0}".inter_xs_dump
-USING gist(geom);
-
-------------------------------------------------------------------------------------------------------------------------
--- Multilinestring to line string --
-------------------------------------------------------------------------------------------------------------------------
-SELECT "XsecID", (ST_Dump("XSCutLines".geom)).geom::geometry(LINESTRING, {1}) AS geom
-INTO "{0}".single_line
-FROM "{0}"."XSCutLines"
-ORDER BY "XsecID";
-
-CREATE INDEX idx_single_line
-ON "{0}".single_line
-USING gist(geom);
-
-------------------------------------------------------------------------------------------------------------------------
--- Creation of points on the line start points, 5 mm shifting for appropriate "N_Value" application    --
-------------------------------------------------------------------------------------------------------------------------
-SELECT "XsecID", "N_Value", "LUCode", ST_Line_Interpolate_Point(inter_xs_dump.geom, 0.00005)::geometry(POINT, {1}) AS geom
-INTO "{0}".shiftpoints
-FROM "{0}".inter_xs_dump
-ORDER BY "XsecID";
-
-CREATE INDEX idx_shiftpoints
-ON "{0}".shiftpoints
-USING gist(geom);
-
-------------------------------------------------------------------------------------------------------------------------
--- Calculation of fraction along line cross sections  --
-------------------------------------------------------------------------------------------------------------------------
-SELECT  b."XsecID", b."N_Value", b."LUCode", ST_LineLocatePoint(a.geom, b.geom) AS "Fraction"
-INTO "{0}".tmpman
-FROM "{0}".single_line AS a, "{0}".shiftpoints AS b
-WHERE a."XsecID" = b."XsecID"
-ORDER BY "XsecID", "Fraction";
-
+WITH inter_xs_dump AS
+    (SELECT
+        xs."XsecID",
+        lud."N_Value",
+        lud."LUCode",
+        (ST_Dump(ST_Intersection(lud.geom, xs.geom))).geom::geometry(LINESTRING, {1}) AS geom
+    FROM
+        "{0}".ludump AS lud,
+        "{0}"."XSCutLines" AS xs
+    WHERE
+        ST_Intersects(lud.geom, xs.geom)),
+    single_line AS
+    (SELECT
+        "XsecID",
+        (ST_Dump(xs.geom)).geom::geometry(LINESTRING, {1}) AS geom
+    FROM
+        "{0}"."XSCutLines" AS xs),
+    shiftpoints AS
+    (SELECT
+        "XsecID",
+        "N_Value",
+        "LUCode",
+        ST_Line_Interpolate_Point(inter_xs_dump.geom, 0.00005)::geometry(POINT, {1}) AS geom
+    FROM
+        inter_xs_dump),
+    tmpman AS
+    (SELECT
+         sp."XsecID",
+         sp."N_Value",
+         sp."LUCode",
+         ST_LineLocatePoint(sl.geom, sp.geom) AS "Fraction"
+    FROM
+        single_line AS sl,
+        shiftpoints AS sp
+    WHERE
+        sl."XsecID" = sp."XsecID")
 ------------------------------------------------------------------------------------------------------------------------
 -- Creation of table with Manning's coefficients  --
 ------------------------------------------------------------------------------------------------------------------------
@@ -833,16 +823,12 @@ SELECT
     "N_Value",
     "LUCode"
 FROM
-    "{0}".tmpman;
-
-DROP TABLE
-    "{0}".inter_xs,
-    "{0}".inter_xs_dump,
-    "{0}".single_line,
-    "{0}".shiftpoints,
-    "{0}".tmpman,
-    "{0}".ludump;
-
+    tmpman
+ORDER BY
+    "XsecID",
+    "Fraction";
+------------------------------------------------------------------------------------------------------------------------
+DROP TABLE "{0}".ludump;
 ------------------------------------------------------------------------------------------------------------------------
 '''
         qry = qry.format(self.schema, self.srid)
@@ -881,7 +867,6 @@ INSERT INTO "{0}"."LeveePoints"(geom, "LeveeID", "XsecID", "Fraction")
         "{0}"."LeveeAlignment" AS lev,
         "{0}"."XSCutLines" AS xs
     WHERE
-        xs.geom && lev.geom AND
         ST_Intersects(xs.geom, lev.geom);
 '''
         qry = qry.format(self.schema)
@@ -923,40 +908,38 @@ class Bridges(HecRasObject):
         qry = '''
 UPDATE "{0}"."Bridges" AS br
 SET
-  "RiverCode" = riv."RiverCode",
-  "ReachCode" = riv."ReachCode"
+    "RiverCode" = riv."RiverCode",
+    "ReachCode" = riv."ReachCode"
 FROM
-  "{0}"."StreamCenterlines" AS riv
+    "{0}"."StreamCenterlines" AS riv
 WHERE
-  br.geom && riv.geom AND
-  ST_Intersects(br.geom, riv.geom);
+    ST_Intersects(br.geom, riv.geom);
 '''
         qry = qry.format(self.schema)
         return qry
 
     def pg_stationing(self):
         qry = '''
-WITH brpts AS (
-  SELECT
-    br."BridgeID" AS "BridgeID",
-    riv."ReachID" AS "ReachID",
-    ST_LineLocatePoint(riv.geom, ST_Intersection(br.geom, riv.geom)) AS "Fraction"
-  FROM
-    "{0}"."StreamCenterlines" AS riv,
-    "{0}"."Bridges" AS br
-  WHERE
-    br.geom && riv.geom AND
-    ST_Intersects(br.geom, riv.geom)
-)
+WITH brpts AS
+    (SELECT
+        br."BridgeID" AS "BridgeID",
+        riv."ReachID" AS "ReachID",
+        ST_LineLocatePoint(riv.geom, ST_Intersection(br.geom, riv.geom)) AS "Fraction"
+    FROM
+        "{0}"."StreamCenterlines" AS riv,
+        "{0}"."Bridges" AS br
+    WHERE
+        ST_Intersects(br.geom, riv.geom))
+
 UPDATE "{0}"."Bridges" AS br
 SET
-  "Station" = riv."ToSta" + brpts."Fraction" * (riv."FromSta" - riv."ToSta")
+    "Station" = riv."ToSta" + brpts."Fraction" * (riv."FromSta" - riv."ToSta")
 FROM
-  brpts,
-  "{0}"."StreamCenterlines" AS riv
+    brpts,
+    "{0}"."StreamCenterlines" AS riv
 WHERE
-  brpts."ReachID" = riv."ReachID" AND
-  brpts."BridgeID" = br."BridgeID";
+    brpts."ReachID" = riv."ReachID" AND
+    brpts."BridgeID" = br."BridgeID";
 '''
         qry = qry.format(self.schema)
         return qry
@@ -965,12 +948,12 @@ WHERE
         qry = '''
 WITH line AS
     (SELECT
-        br."BridgeID" as "BridgeID",
-        dtm."CellSize" as "CellSize",
+        br."BridgeID" AS "BridgeID",
+        dtm."CellSize" AS "CellSize",
         (ST_Dump(br.geom)).geom AS geom
     FROM
-        "{0}"."Bridges" as br,
-        "{0}"."DTMs" as dtm
+        "{0}"."Bridges" AS br,
+        "{0}"."DTMs" AS dtm
     WHERE
         br."DtmID" = dtm."DtmID"),
     linemeasure AS
@@ -1038,40 +1021,38 @@ class InlineStructures(HecRasObject):
         qry = '''
 UPDATE "{0}"."InlineStructures" AS ins
 SET
-  "RiverCode" = riv."RiverCode",
-  "ReachCode" = riv."ReachCode"
+    "RiverCode" = riv."RiverCode",
+    "ReachCode" = riv."ReachCode"
 FROM
-  "{0}"."StreamCenterlines" AS riv
+    "{0}"."StreamCenterlines" AS riv
 WHERE
-  ins.geom && riv.geom AND
-  ST_Intersects(ins.geom, riv.geom);
+    ST_Intersects(ins.geom, riv.geom);
 '''
         qry = qry.format(self.schema)
         return qry
 
     def pg_stationing(self):
         qry = '''
-WITH ispts AS (
-  SELECT
-    ins."InlineSID" AS "InlineSID",
-    riv."ReachID" AS "ReachID",
-    ST_LineLocatePoint(riv.geom, ST_Intersection(ins.geom, riv.geom)) AS "Fraction"
-  FROM
-    "{0}"."StreamCenterlines" AS riv,
-    "{0}"."InlineStructures" AS ins
-  WHERE
-    ins.geom && riv.geom AND
-    ST_Intersects(ins.geom, riv.geom)
-)
+WITH ispts AS
+    (SELECT
+        ins."InlineSID" AS "InlineSID",
+        riv."ReachID" AS "ReachID",
+        ST_LineLocatePoint(riv.geom, ST_Intersection(ins.geom, riv.geom)) AS "Fraction"
+    FROM
+        "{0}"."StreamCenterlines" AS riv,
+        "{0}"."InlineStructures" AS ins
+    WHERE
+        ST_Intersects(ins.geom, riv.geom))
+
 UPDATE "{0}"."InlineStructures" AS ins
 SET
-  "Station" = riv."ToSta" + ispts."Fraction" * (riv."FromSta" - riv."ToSta")
+    "Station" = riv."ToSta" + ispts."Fraction" * (riv."FromSta" - riv."ToSta")
 FROM
-  ispts,
-  "{0}"."StreamCenterlines" AS riv
+    ispts,
+    "{0}"."StreamCenterlines" AS riv
 WHERE
-  ispts."ReachID" = riv."ReachID" AND
-  ispts."InlineSID" = ins."InlineSID";
+    ispts."ReachID" = riv."ReachID" AND
+    ispts."InlineSID" = ins."InlineSID";
 '''
         qry = qry.format(self.schema)
         return qry
@@ -1080,12 +1061,12 @@ WHERE
         qry = '''
 WITH line AS
     (SELECT
-        ins."InlineSID" as "InlineSID",
-        dtm."CellSize" as "CellSize",
+        ins."InlineSID" AS "InlineSID",
+        dtm."CellSize" AS "CellSize",
         (ST_Dump(ins.geom)).geom AS geom
     FROM
-        "{0}"."InlineStructures" as ins,
-        "{0}"."DTMs" as dtm
+        "{0}"."InlineStructures" AS ins,
+        "{0}"."DTMs" AS dtm
     WHERE
         ins."DtmID" = dtm."DtmID"),
     linemeasure AS
@@ -1225,12 +1206,12 @@ WHERE
         qry = '''
 WITH line AS
     (SELECT
-        ls."LateralSID" as "LateralSID",
-        dtm."CellSize" as "CellSize",
+        ls."LateralSID" AS "LateralSID",
+        dtm."CellSize" AS "CellSize",
         (ST_Dump(ls.geom)).geom AS geom
     FROM
-        "{0}"."LateralStructures" as ls,
-        "{0}"."DTMs" as dtm
+        "{0}"."LateralStructures" AS ls,
+        "{0}"."DTMs" AS dtm
     WHERE
         ls."DtmID" = dtm."DtmID"),
     linemeasure AS
@@ -1475,12 +1456,12 @@ SET
         qry = '''
 WITH line AS
     (SELECT
-        sac."SAConnID" as "SAConnID",
-        dtm."CellSize" as "CellSize",
+        sac."SAConnID" AS "SAConnID",
+        dtm."CellSize" AS "CellSize",
         (ST_Dump(sac.geom)).geom AS geom
     FROM
-        "{0}"."SAConnections" as sac,
-        "{0}"."DTMs" as dtm
+        "{0}"."SAConnections" AS sac,
+        "{0}"."DTMs" AS dtm
     WHERE
         sac."DtmID" = dtm."DtmID"),
     linemeasure AS
