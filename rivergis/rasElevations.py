@@ -8,14 +8,14 @@ from PyQt4.QtGui import *
 
 
 def prepare_DTMs(rgis):
-    # Create DTMs table
-    rgis.rdb.process_hecobject(DTMs, 'pg_create_table')
     # insert DTMs parameters into the DTMs table
     if not rgis.dtms:
         rgis.options(rgis.OPT_DTM)
     if not rgis.dtms:
         rgis.addInfo('<br> Choose a DTM for elevation sampling.')
         return
+    # Create DTMs table
+    rgis.rdb.process_hecobject(DTMs, 'pg_create_table')
     dtms_params = []
     for layer_id in rgis.dtms:
         rlayer = rgis.mapRegistry.mapLayer(layer_id)

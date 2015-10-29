@@ -122,9 +122,12 @@ def ras1dStreamCenterlines2Flowpaths(rgis):
 def ras1dXSElevations(rgis):
     """Probe a DTM to find cross-section vertical shape"""
     # Prepare DTMs
+    prepare_DTMs(rgis)
+    if not rgis.dtms:
+        rgis.addInfo('<br>No DTM for elevation sampling. Probing aborted!')
+        return
     surface_obj = heco.XSSurface()
     parent_obj = heco.XSCutLines()
-    prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
     try:
         chunk = rgis.dtm_chunksize
@@ -207,9 +210,12 @@ def ras1dBRStationing(rgis):
 def ras1dBRElevations(rgis):
     """Probe a DTM to find bridges vertical shape"""
     # Prepare DTMs
+    prepare_DTMs(rgis)
+    if not rgis.dtms:
+        rgis.addInfo('<br>No DTM for elevation sampling. Probing aborted!')
+        return
     surface_obj = heco.BRSurface()
     parent_obj = heco.Bridges()
-    prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
     try:
         chunk = rgis.dtm_chunksize
@@ -259,9 +265,12 @@ def ras1dISStationing(rgis):
 def ras1dISElevations(rgis):
     """Probe a DTM to find inline structure vertical shape"""
     # Prepare DTMs
+    prepare_DTMs(rgis)
+    if not rgis.dtms:
+        rgis.addInfo('<br>No DTM for elevation sampling. Probing aborted!')
+        return
     surface_obj = heco.ISSurface()
     parent_obj = heco.InlineStructures()
-    prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
     try:
         chunk = rgis.dtm_chunksize
@@ -311,9 +320,12 @@ def ras1dLatStationing(rgis):
 def ras1dLatElevations(rgis):
     """Probe a DTM to find lateral structure vertical shape"""
     # Prepare DTMs
+    prepare_DTMs(rgis)
+    if not rgis.dtms:
+        rgis.addInfo('<br>No DTM for elevation sampling. Probing aborted!')
+        return
     surface_obj = heco.LSSurface()
     parent_obj = heco.LateralStructures()
-    prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
     try:
         chunk = rgis.dtm_chunksize
@@ -343,9 +355,12 @@ def ras1dLatAll(rgis):
 def ras1dSAElevations(rgis):
     """Probe a DTM to later find storage area volume"""
     # Prepare DTMs
+    prepare_DTMs(rgis)
+    if not rgis.dtms:
+        rgis.addInfo('<br>No DTM for elevation sampling. Probing aborted!')
+        return False
     surface_obj = heco.SASurface()
     parent_obj = heco.StorageAreas()
-    prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
     try:
         chunk = rgis.dtm_chunksize
@@ -366,6 +381,7 @@ def ras1dSAElevations(rgis):
         rgis.addInfo('Done')
     finally:
         QApplication.restoreOverrideCursor()
+    return True
 
 
 def ras1dSAVolumeData(rgis):
@@ -382,8 +398,8 @@ def ras1dSAVolumeData(rgis):
 
 
 def ras1dSAAll(rgis):
-    ras1dSAElevations(rgis)
-    ras1dSAVolumeData(rgis)
+    if ras1dSAElevations(rgis) is True:
+        ras1dSAVolumeData(rgis)
 
 
 def ras1dSACAssignNearestSA(rgis):
@@ -395,9 +411,12 @@ def ras1dSACAssignNearestSA(rgis):
 def ras1dSACElevations(rgis):
     """Probe a DTM to find storage areas connections vertical shape"""
     # Prepare DTMs
+    prepare_DTMs(rgis)
+    if not rgis.dtms:
+        rgis.addInfo('<br>No DTM for elevation sampling. Probing aborted!')
+        return
     surface_obj = heco.SACSurface()
     parent_obj = heco.SAConnections()
-    prepare_DTMs(rgis)
     update_DtmID(rgis, parent_obj)
     try:
         chunk = rgis.dtm_chunksize

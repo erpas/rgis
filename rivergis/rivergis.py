@@ -179,7 +179,6 @@ class RiverGIS(QMainWindow):
         self.writeSettings()
         QMainWindow.closeEvent(self, e)
 
-
     def addInfo(self, text):
         self.ui.textEdit.append(text)
 
@@ -214,7 +213,6 @@ class RiverGIS(QMainWindow):
             return
         connName = self.ui.connsCbo.currentText()
         s.endGroup()
-
         s.beginGroup('/PostgreSQL/connections/{0}'.format(connName))
         self.host = s.value('host')
         self.port = s.value('port')
@@ -352,7 +350,6 @@ class RiverGIS(QMainWindow):
                 else:
                     self.addInfo("Options have no key ['{}']['{}']".format(group, name))
 
-
     def writeSettings(self):
         for group, options in self.opts.iteritems():
             for name, defaultValue in options.iteritems():
@@ -369,6 +366,3 @@ class RiverGIS(QMainWindow):
 
         with open(join(self.rivergisPath, 'settings.json'), 'w') as f:
             json.dump(self.opts, f)
-
-
-
