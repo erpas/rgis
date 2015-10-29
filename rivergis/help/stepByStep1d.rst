@@ -183,10 +183,10 @@ You have also access to “All” function from main RiverGIS toolbar by clickin
   .. |bridgebutton| image:: img/bridge_ico.png
 
 --------------------------------------
-4. Inline structures
+4. Inline Structures
 --------------------------------------
 
-This chapter describes processing of Inline structures layer. There are three layers required for complete extraction of the data:
+This chapter describes processing of Inline Structures layer. There are three layers required for complete extraction of the data:
 
 * StreamCenterline polyline layer
 * InlineStructures polyline layer
@@ -238,3 +238,64 @@ If particular function is done without any problem you will see message in main 
 You have also access to “All” function from main RiverGIS toolbar by clicking this |inlinebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all inline structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect inline structures elevation data.
 
   .. |inlinebutton| image:: img/Inline_str_ico.png
+
+--------------------------------------
+5. Lateral Structures
+--------------------------------------
+
+This chapter describes processing of Lateral Structures layer. There are three layers required for complete extraction of the data:
+
+* StreamCenterline polyline layer
+* LateralStructures polyline layer
+* DTM layer (optional)
+
+Both StreamCenterline and LateralStructures you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on LateralStructures layer and its functionality.
+
+  .. |createbutton| image:: img/create_ico.png
+
+  .. note::
+
+     For more information about creation and edition of StreamCenterline layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
+
+
+  .. _fig_lateral_create:
+  .. figure:: img/create_2.png
+
+     Database context menu
+
+  .. figure:: img/lateral_create.png
+     :align: center
+
+     Create RAS Layers window
+
+LateralStructures layer should contain “LateralSID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize lateral structures. “LateralSID” will be filed automatically while digitizing. Remember that drawing has to be performed from upstream to downstream.
+
+  .. _fig_inlineedit:
+  .. figure:: img/lateral_1.png
+     :align: center
+
+     Exemplary lateral structure
+
+After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Lateral Structures position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”. If particular function is done without any problem you will see message in main RiverGIS window about successful processing.
+
+  .. _fig_inlinemenu:
+  .. figure:: img/lateral_2.png
+     :align: center
+
+     Lateral Structures menu
+
+Stationing is calculated basing on upstream start point of lateral structure with shortest distance to StreamCenterline. Please inspect correctness of River/Reach Names and Stationing for lateral structures. There exist probability of mistake in a situation where other channel lie closer to upstream start point of lateral structure than channel to which lateral structure should be referenced to.  For elevation extraction you need DTM which covers lateral structures extent. After clicking “Elevation” or “All” functions there will be dialog window displayed with current DTM rasters. Choose any and click “OK”.
+
+  .. note::
+
+     For more information about creation and edition of LateralStructures layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-37
+
+  .. _fig_inlinedtm:
+  .. figure:: img/bridge_dtm.png
+     :align: center
+
+     DTM option window
+
+You have also access to “All” function from main RiverGIS toolbar by clicking this |lateralbutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all lateral structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect lateral structures elevation data.
+
+  .. |lateralbutton| image:: img/Lateral_str_ico.png
