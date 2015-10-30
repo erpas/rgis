@@ -111,7 +111,7 @@ Next step is pushing a button |mannbuton| which is located on main toolbar or yo
 
 Main RiverGIS window should display following message if the extraction was done properly
 
-  .. _fig_man_mandone:
+  .. _fig_manmandone:
   .. figure:: img/man_done.png
      :align: center
 
