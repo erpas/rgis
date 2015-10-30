@@ -63,7 +63,7 @@ class DlgXSUpdateInsertMeasuredPts(QDialog):
                 layer,
                 self.rgis.rdb.register[data['className']],
                 attr_map=attrMap,
-                onlySelected=self.ui.chkOnlySelected.isChecked())
+                selected=self.ui.chkOnlySelected.isChecked())
 
         # Update area defined by bank lines
 
@@ -88,7 +88,7 @@ xs."RightBank" IS NULL;
                 QApplication.restoreOverrideCursor()
                 return
             upArea = self.ui.cboInterpArea.currentText()
-            self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_banks', area=upArea, xsTol=tol)
+            self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_banks', area=upArea, xs_tol=tol)
 
 
         # Update area defined by bathymetry extents polygons
@@ -123,9 +123,9 @@ xs."RightBank" IS NULL;
                     self.rgis.rdb.register[data['className']],
                     attr_map=attrMap)
 
-            self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_polygons', xsTol=tol)
+            self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_polygons', xs_tol=tol)
 
-        self.rgis.addInfo("Done.")
+        self.rgis.addInfo("  Done.")
         self.rgis.iface.mapCanvas().refresh()
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)

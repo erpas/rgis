@@ -302,7 +302,7 @@ class RiverDatabase(object):
             srid (int): a Spatial Reference System Identifier
             selected (bool): flag for processing selected features only
         """
-        self.rgis.addInfo('Importing data from {0}...'.format(layer.name()))
+        self.rgis.addInfo('  Importing data from {0}...'.format(layer.name()))
         features = layer.selectedFeatures() if selected and layer.selectedFeatureCount() > 0 else layer.getFeatures()
         layer_fields = layer.dataProvider().fields().toList()
         field_names = ['{0}'.format(f.name()) for f in layer_fields]
@@ -410,7 +410,7 @@ class RiverDatabase(object):
         qry = self.layer_to_pgsql(features, imp_attrs, hecobject, SCHEMA, SRID)
         if qry is not None:
             self.run_query(qry)
-            self.rgis.addInfo('OK')
+            self.rgis.addInfo('  OK')
         else:
             pass
 
