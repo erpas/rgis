@@ -73,46 +73,6 @@ class RiverDatabase(object):
         else:
             self.rgis.addInfo('Can not disconnect. There is no opened connection!')
 
-    def setup_hydro_object(self, hydro_object, schema=None, srid=None, overwrite=None):
-        """
-        Setting SCHEMA, SRID and OVERWRITE on hydro object.
-
-        Args:
-            hydro_object (class): Hydro object class
-            schema (str): Schema where tables will be created or processed
-            srid (int): A Spatial Reference System Identifier
-            overwrite (bool): Flag deciding if objects can be overwrite
-        """
-        if schema is None:
-            hydro_object.SCHEMA = self.SCHEMA
-        else:
-            hydro_object.SCHEMA = schema
-        if srid is None:
-            hydro_object.SRID = self.SRID
-        else:
-            hydro_object.SRID = srid
-        if overwrite is None:
-            hydro_object.OVERWRITE = self.OVERWRITE
-        else:
-            hydro_object.OVERWRITE = overwrite
-
-    @staticmethod
-    def result_iter(cursor, arraysize):
-        """
-        Generator for getting partial results from query.
-
-        Args:
-            cursor (psycopg2 cursor object): cursor with query
-            arraysize (int): Number of items returned from query
-        """
-        while True:
-            results = cursor.fetchmany(arraysize)
-            if not results:
-                break
-            else:
-                pass
-            yield results
-
     def run_query(self, qry, fetch=False, arraysize=0):
         """
         Running PostgreSQL queries.
@@ -142,22 +102,72 @@ class RiverDatabase(object):
         finally:
             return result
 
-    def list_tables(self, schema=None):
+    @staticmethod
+    def result_iter(cursor, arraysize):
         """
-        Listing tables in schema.
+        Generator for getting partial results from query.
 
         Args:
+            cursor (psycopg2 cursor object): cursor with query
+            arraysize (int): Number of items returned from query
+        """
+        while True:
+            results = cursor.fetchmany(arraysize)
+            if not results:
+                break
+            else:
+                pass
+            yield results
+
+    def setup_hydro_object(self, hydro_object, schema=None, srid=None, overwrite=None):
+        """
+        Setting SCHEMA, SRID and OVERWRITE on hydro object.
+
+        Args:
+            hydro_object (class): Hydro object class
             schema (str): Schema where tables will be created or processed
-        Returns:
-            tabs (list): List of tuples with table names in schema
+            srid (int): A Spatial Reference System Identifier
+            overwrite (bool): Flag deciding if objects can be overwrite
         """
         if schema is None:
-            SCHEMA = self.SCHEMA
+            hydro_object.SCHEMA = self.SCHEMA
         else:
-            SCHEMA = schema
-        qry = 'SELECT table_name FROM information_schema.tables WHERE table_schema = \'{0}\''.format(SCHEMA)
-        tabs = self.run_query(qry, fetch=True)
-        return tabs
+            hydro_object.SCHEMA = schema
+        if srid is None:
+            hydro_object.SRID = self.SRID
+        else:
+            hydro_object.SRID = srid
+        if overwrite is None:
+            hydro_object.OVERWRITE = self.OVERWRITE
+        else:
+            hydro_object.OVERWRITE = overwrite
+
+    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None, overwrite=None, **kwargs):
+        """
+        Creating and processing tables inside PostGIS database.
+
+        Args:
+            hecobject (class): HEC-RAS class object
+            pg_method (str): String representation of method that will be called on the hecobject class
+            schema (str): Schema where tables will be created or processed
+            srid (int): A Spatial Reference System Identifier
+            overwrite (bool): Flag deciding if objects can be overwrite
+            **kwargs (dict): Additional keyword arguments passed to pg_method
+
+        Returns:
+            obj: Instance of HEC-RAS class object
+        """
+        self.setup_hydro_object(hecobject, schema, srid, overwrite)
+        obj = hecobject()
+        method = getattr(obj, pg_method)
+        qry = method(**kwargs)
+        result = self.run_query(qry)
+        if result is not None:
+            self.register_object(obj)
+            self.queries[method.__name__] = qry
+            return obj
+        else:
+            self.rgis.addInfo('Process aborted!')
 
     def register_object(self, obj):
         """
@@ -207,32 +217,30 @@ class RiverDatabase(object):
                 pass
         self.rgis.iface.mapCanvas().refresh()
 
-    def process_hecobject(self, hecobject, pg_method, schema=None, srid=None, overwrite=None, **kwargs):
+    def list_tables(self, schema=None):
         """
-        Creating and processing tables inside PostGIS database.
+        Listing tables in schema.
 
         Args:
-            hecobject (class): HEC-RAS class object
-            pg_method (str): String representation of method that will be called on the hecobject class
             schema (str): Schema where tables will be created or processed
-            srid (int): A Spatial Reference System Identifier
-            overwrite (bool): Flag deciding if objects can be overwrite
-            **kwargs (dict): Additional keyword arguments passed to pg_method
-
         Returns:
-            obj: Instance of HEC-RAS class object
+            tabs (list): List of tuples with table names in schema
         """
-        self.setup_hydro_object(hecobject, schema, srid, overwrite)
-        obj = hecobject()
-        method = getattr(obj, pg_method)
-        qry = method(**kwargs)
-        result = self.run_query(qry)
-        if result is not None:
-            self.register_object(obj)
-            self.queries[method.__name__] = qry
-            return obj
+        if schema is None:
+            SCHEMA = self.SCHEMA
         else:
-            self.rgis.addInfo('Process aborted!')
+            SCHEMA = schema
+        qry = 'SELECT table_name FROM information_schema.tables WHERE table_schema = \'{0}\''.format(SCHEMA)
+        tabs = self.run_query(qry, fetch=True)
+        return tabs
+
+    def refresh_uris(self):
+        """
+        Setting layers uris list from QgsMapLayerRegistry
+        """
+        self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
+        if self.rgis.DEBUG:
+            self.rgis.addInfo('Layers sources:\n    {0}'.format('\n    '.join(self.uris)))
 
     def make_vlayer(self, obj):
         """
@@ -266,14 +274,6 @@ class RiverDatabase(object):
             self.rgis.addInfo(vlayer.name())
             self.rgis.addInfo(repr(e))
 
-    def refresh_uris(self):
-        """
-        Setting layers uris list from QgsMapLayerRegistry
-        """
-        self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
-        if self.rgis.DEBUG:
-            self.rgis.addInfo('Layers sources:\n    {0}'.format('\n    '.join(self.uris)))
-
     def add_to_view(self, obj):
         """
         Handling adding layer process to QGIS view.
@@ -291,7 +291,87 @@ class RiverDatabase(object):
         else:
             self.add_vlayer(vlayer)
 
-    def insert_layer(self, layer, hecobject, schema=None, srid=None, attr_map=None, only_selected=False):
+    def import_layer(self, layer, fields, attr_map, selected):
+        """
+        Import a vector layer's features with attributes specified inside attr_map dictionary.
+        Args:
+            layer (QgsVectorLayer): source QGIS layer containing the features to insert
+            fields (list): list of tuples ('field_name', 'field_type') for hecobject attributes definition
+            attr_map (dict): attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}
+            schema (str): a target schema
+            srid (int): a Spatial Reference System Identifier
+            selected (bool): flag for processing selected features only
+        """
+        self.rgis.addInfo('Importing data from {0}...'.format(layer.name()))
+        features = layer.selectedFeatures() if selected and layer.selectedFeatureCount() > 0 else layer.getFeatures()
+        layer_fields = layer.dataProvider().fields().toList()
+        field_names = ['{0}'.format(f.name()) for f in layer_fields]
+
+        imp_attrs = []
+        for attr in fields[1:]:
+            attr_name = attr[0].strip('"')
+            if attr_map:
+                if attr_name in attr_map.keys():
+                    imp_attrs.append([attr[0], attr_map[attr_name], attr[1]])
+                else:
+                    pass
+            else:
+                if attr_name in field_names:
+                    imp_attrs.append([attr[0], attr[0], attr[1]])
+                else:
+                    pass
+        return features, imp_attrs
+
+    def layer_to_pgsql(self, features, fields, hecobject, schema, srid):
+        """
+        Create SQL for inserting the layer into PG database
+        Args:
+            features (list): list of wkt geometry objects
+            fields (list): list of fields imported from layer
+            hecobject (HecRasObject): target HEC-RAS object
+            schema (str): a target schema
+            srid (int): a Spatial Reference System Identifier
+        """
+        schema_name = '"{0}"."{1}"'.format(schema, hecobject.name)
+        attrs_names = ['{0}'.format(attr[0]) for attr in fields]
+        qry = 'INSERT INTO {0} \n\t({1}'.format(schema_name, ', '.join(attrs_names))
+        qry += ', ' if attrs_names else ''
+        qry += 'geom) \nVALUES\n\t'
+
+        feats_def = []
+        single2multi = False
+        for feat in features:
+            vals = []
+            geom_wkt = feat.geometry().exportToWkt()
+            target_multi = hecobject.geom_type.startswith('MULTI')
+            src_multi = feat.geometry().isMultipart()
+            if not target_multi and src_multi:
+                self.rgis.addInfo('WARNING:<br>Source geometry is of type MULTI but the target is a {0} --- skipping feature.'.format(hecobject.geom_type))
+                qry = ''
+                continue
+            elif target_multi and not src_multi:
+                single2multi = True
+                geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, srid)
+            else:
+                geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, srid)
+
+            for attr in fields:
+                val = feat.attribute(attr[1].strip('"'))
+                if not val == NULL:
+                    vals.append('\'{0}\'::{1}'.format(val, attr[2]))
+                else:
+                    vals.append('NULL')
+            vals.append(geometry)
+            feats_def.append('({0})'.format(', '.join(vals)))
+
+        qry += '{0};'.format(',\n\t'.join(feats_def))
+        if single2multi:
+            self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
+        else:
+            pass
+        return qry
+
+    def insert_layer(self, layer, hecobject, attr_map=None, schema=None, srid=None, selected=False):
         """
         Insert a vector layer's features into a PostGIS table of a hecras object.
         If an attribute map attr_map is specified, only the mapped attributes are imported. If attr_map
@@ -302,10 +382,11 @@ class RiverDatabase(object):
 
         Args:
             layer (QgsVectorLayer): source QGIS layer containing the features to insert
-            hecobject (class): target HEC-RAS class object
+            hecobject (HecRasObject): target HEC-RAS object
+            attr_map (dict): attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}
             schema (str): a target schema
             srid (int): a Spatial Reference System Identifier
-            attr_map(dict): attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}
+            selected (bool): flag for processing selected features only
         """
 
         if schema is None:
@@ -316,19 +397,6 @@ class RiverDatabase(object):
             SRID = self.SRID
         else:
             SRID = srid
-
-        # get the layer's features
-        # check if only selected features should be imported
-        # if selection exists on layer take that selection
-        # if nothing is selected take all features
-        if only_selected and layer.selectedFeatureCount():
-            # get only selected
-            features = layer.selectedFeatures()
-        else:
-            # get all features
-            features = layer.getFeatures()
-        layer_fields = layer.dataProvider().fields().toList()
-        field_names = ['{0}'.format(f.name()) for f in layer_fields]
 
         if self.rgis.DEBUG:
             if attr_map:
@@ -341,71 +409,9 @@ class RiverDatabase(object):
         else:
             pass
 
-        # list of imported attributes tuples (target_attr, src_attr, attr_type)
-        # check if the layer has attributes to import
-        # get all fields except the ID
-        imp_attrs = []
-        for attr in hecobject.attrs[1:]:
-            attr_name = attr[0].strip('"')
-            if attr_map:
-                if attr_name in attr_map.keys():
-                    imp_attrs.append([attr[0], attr_map[attr_name], attr[1]])
-                else:
-                    pass
-            else:
-                if attr_name in field_names:
-                    imp_attrs.append([attr[0], attr[0], attr[1]])
-                else:
-                    pass
+        features, imp_attrs = self.import_layer(layer, hecobject.attrs, attr_map, selected)
+        qry = self.layer_to_pgsql(features, imp_attrs, hecobject, SCHEMA, SRID)
 
-        self.rgis.addInfo('<br>  Importing {0}'.format(hecobject.name))
-        for i in imp_attrs:
-            self.rgis.addInfo('      {0} as {1} with type {2}'.format(i[0], i[1], i[2]))
-
-        # create SQL for inserting the layer into PG database
-        schema_name = '"{0}"."{1}"'.format(SCHEMA, hecobject.name)
-        attrs_names = ['{0}'.format(attr[0]) for attr in imp_attrs]
-        qry = 'INSERT INTO {0} \n\t({1}'.format(schema_name, ', '.join(attrs_names))
-        qry += ', ' if attrs_names else ''
-        qry += 'geom) \nVALUES\n\t'
-        # list of attributes data
-        feats_def = []
-        single2multi = False
-
-        for feat in features:
-            # field values of the feature
-            vals = []
-            geom_wkt = feat.geometry().exportToWkt()
-            # Geometry type check:
-            # is target geometry of type multi?
-            # is source layer geom multi?
-            target_multi = hecobject.geom_type.startswith('MULTI')
-            src_multi = feat.geometry().isMultipart()
-            if not target_multi and src_multi:
-                self.rgis.addInfo('WARNING:<br>Source geometry is of type MULTI but the target is a {0} --- skipping the layer.'.format(hecobject.geom_type))
-                qry = ''
-            elif target_multi and not src_multi:
-                single2multi = True
-                geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, SRID)
-            else:
-                geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, SRID)
-
-            for attr in imp_attrs:
-                val = feat.attribute(attr[1].strip('"'))
-                if not val == NULL:
-                    vals.append('\'{0}\'::{1}'.format(val, attr[2]))
-                else:
-                    vals.append('NULL')
-            vals.append(geometry)
-            feats_def.append('({0})'.format(', '.join(vals)))
-        qry += '{0};'.format(',\n\t'.join(feats_def))
-        if single2multi:
-            self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
-            self.rgis.addInfo('Will try to convert SINGLE geometries to MULTI - check the results!')
-        if self.rgis.DEBUG:
-            self.rgis.addInfo(qry)
-        else:
-            pass
         self.run_query(qry)
         self.rgis.addInfo('OK')
 

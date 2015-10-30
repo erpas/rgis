@@ -838,7 +838,7 @@ DROP TABLE "{0}".ludump;
 class Manning(HecRasObject):
     def __init__(self):
         super(Manning, self).__init__()
-        self.order = 26
+        self.order = 28
         self.visible = False
         self.spatial_index = False
         self.attrs = [
@@ -1400,6 +1400,7 @@ SELECT "{0}".storage_calculator ({1});
 class SASurface(HecRasObject):
     def __init__(self):
         super(SASurface, self).__init__()
+        self.order = 25
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1498,7 +1499,7 @@ WITH line AS
 class SACSurface(HecRasObject):
     def __init__(self):
         super(SACSurface, self).__init__()
-        self.order = 25
+        self.order = 26
         self.main = False
         self.visible = False
         self.spatial_index = False
@@ -1528,6 +1529,7 @@ class DTMs(HecRasObject):
 class FlowAreas2d(HecRasObject):
     def __init__(self):
         super(FlowAreas2d, self).__init__()
+        self.order = -5
         self.geom_type = 'POLYGON'
         self.attrs = [
             ('"AreaID"', 'serial primary key'),
@@ -1538,6 +1540,7 @@ class FlowAreas2d(HecRasObject):
 class BreakLines2d(HecRasObject):
     def __init__(self):
         super(BreakLines2d, self).__init__()
+        self.order = -4
         self.geom_type = 'LINESTRING'
         self.attrs = [
             ('"BLID"', 'serial primary key'),
@@ -1550,6 +1553,7 @@ class BreakLines2d(HecRasObject):
 class BreakPoints2d(HecRasObject):
     def __init__(self):
         super(BreakPoints2d, self).__init__()
+        self.order = -2
         self.geom_type = 'POINT'
         self.attrs = [
             ('"BPID"', 'serial primary key'),
@@ -1561,6 +1565,7 @@ class BreakPoints2d(HecRasObject):
 class MeshPoints2d(HecRasObject):
     def __init__(self):
         super(MeshPoints2d, self).__init__()
+        self.order = -1
         self.main = False
         self.visible = False
         self.geom_type = 'POINT'
@@ -1574,6 +1579,7 @@ class MeshPoints2d(HecRasObject):
 class Bathymetry(HecRasObject):
     def __init__(self):
         super(Bathymetry, self).__init__()
+        self.order = -3
         self.main = False
         self.visible = False
         self.geom_type = 'POINT'
@@ -1587,6 +1593,7 @@ class Bathymetry(HecRasObject):
 class BathymetryExtents(HecRasObject):
     def __init__(self):
         super(BathymetryExtents, self).__init__()
+        self.order = -6
         self.main = False
         self.visible = False
         self.geom_type = 'POLYGON'

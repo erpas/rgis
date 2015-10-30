@@ -240,7 +240,6 @@ class DlgImportDataIntoRasTables(QDialog):
             if data['attrs']:
                 data['cbo'].currentIndexChanged.connect(self.layerCboChanged)
 
-
     def processLayers(self, name, data):
         if not data['cbo'].currentText() == '':
             curInd = data['cbo'].currentIndex()
@@ -255,12 +254,11 @@ class DlgImportDataIntoRasTables(QDialog):
                         layer,
                         self.rgis.rdb.register[data['className']],
                         attr_map=attrMap,
-                        only_selected=self.onlySel
+                        selected=self.onlySel
             )
             self.importInfo.append(name)
             if self.rgis.iface.mapCanvas().isCachingEnabled():
                 layer.setCacheImage(None)
-
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
@@ -271,7 +269,6 @@ class DlgImportDataIntoRasTables(QDialog):
         self.rgis.iface.mapCanvas().refresh()
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)
-
 
     def populateCbos(self):
         allCbosByGeomType = {0: [], 1: [], 2: []}
@@ -294,7 +291,6 @@ class DlgImportDataIntoRasTables(QDialog):
                     cbo.addItem(layer.name(), layerId)
             if layer.type() == 1: # it's a raster
                 pass
-
 
     def layerCboChanged(self):
         layerCbo = self.sender()
@@ -323,12 +319,9 @@ class DlgImportDataIntoRasTables(QDialog):
                                 if attrIndex > 0:
                                     attrData['cbo'].setCurrentIndex(attrIndex)
 
-
     def rejectDlg(self):
         self.rgis.addInfo("  Import cancelled.")
         self.reject()
 
     def displayHelp(self):
         pass
-
-
