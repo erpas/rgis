@@ -346,15 +346,14 @@ class RiverDatabase(object):
             target_multi = hecobject.geom_type.startswith('MULTI')
             src_multi = feat.geometry().isMultipart()
             if not target_multi and src_multi:
-                self.rgis.addInfo('WARNING:<br>Source geometry is of type MULTI but the target is a {0} --- skipping feature.'.format(hecobject.geom_type))
+                self.rgis.addInfo('WARNING:<br>Source geometry is MULTIPART but target is SINGLEPART! Layer skipped.')
                 qry = ''
-                continue
+                break
             elif target_multi and not src_multi:
                 single2multi = True
                 geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, srid)
             else:
                 geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_wkt, srid)
-
             for attr in fields:
                 val = feat.attribute(attr[1].strip('"'))
                 if not val == NULL:
@@ -363,10 +362,9 @@ class RiverDatabase(object):
                     vals.append('NULL')
             vals.append(geometry)
             feats_def.append('({0})'.format(', '.join(vals)))
-
         qry += '{0};'.format(',\n\t'.join(feats_def))
-        if single2multi:
-            self.rgis.addInfo('Source geometry is of type SINGLE but the target is a {0}.'.format(hecobject.geom_type))
+        if single2multi is True:
+            self.rgis.addInfo('Source geometry is SINGLEPART but the target is MULTIPART!')
         else:
             pass
         return qry
@@ -411,9 +409,11 @@ class RiverDatabase(object):
 
         features, imp_attrs = self.import_layer(layer, hecobject.attrs, attr_map, selected)
         qry = self.layer_to_pgsql(features, imp_attrs, hecobject, SCHEMA, SRID)
-
-        self.run_query(qry)
-        self.rgis.addInfo('OK')
+        if qry is not None:
+            self.run_query(qry)
+            self.rgis.addInfo('OK')
+        else:
+            pass
 
     def create_spatial_index(self):
         """
