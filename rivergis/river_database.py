@@ -347,8 +347,7 @@ class RiverDatabase(object):
             src_multi = feat.geometry().isMultipart()
             if not target_multi and src_multi:
                 self.rgis.addInfo('WARNING:<br>Source geometry is MULTIPART but target is SINGLEPART! Layer skipped.')
-                qry = ''
-                break
+                return None
             elif target_multi and not src_multi:
                 single2multi = True
                 geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, srid)
