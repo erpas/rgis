@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Thu Oct 29 14:31:57 2015
+# Created: Tue Nov 03 17:07:52 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -344,6 +344,11 @@ class Ui_RiverGIS(object):
         self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
         self.actionRestoreDefaultOptions = QtGui.QAction(RiverGIS)
         self.actionRestoreDefaultOptions.setObjectName(_fromUtf8("actionRestoreDefaultOptions"))
+        self.actionCreateNewSchema = QtGui.QAction(RiverGIS)
+        icon37 = QtGui.QIcon()
+        icon37.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/dbCreateSchema.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionCreateNewSchema.setIcon(icon37)
+        self.actionCreateNewSchema.setObjectName(_fromUtf8("actionCreateNewSchema"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuHelp.addAction(self.actionWebsite)
         self.menuHelp.addAction(self.actionAbout)
@@ -408,6 +413,7 @@ class Ui_RiverGIS(object):
         self.menu_Geometry.addAction(self.actionRASPreview2DMesh)
         self.menu_Geometry.addAction(self.actionRASSave2DPointsToHECRASGeometry)
         self.menuDB.addAction(self.actionRefreshConnections)
+        self.menuDB.addAction(self.actionCreateNewSchema)
         self.menuDB.addAction(self.actionRASCreateRdbTables)
         self.menuDB.addAction(self.actionRASImportLayersIntoRdbTables)
         self.menuDB.addAction(self.actionRASLoadRdbTablesIntoQGIS)
@@ -418,6 +424,7 @@ class Ui_RiverGIS(object):
         self.menubar.addAction(self.menu_Geometry.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.dbToolBar.addAction(self.actionRefreshConnections)
+        self.dbToolBar.addAction(self.actionCreateNewSchema)
         self.dbToolBar.addAction(self.actionRASCreateRdbTables)
         self.dbToolBar.addAction(self.actionRASImportLayersIntoRdbTables)
         self.dbToolBar.addAction(self.actionRASLoadRdbTablesIntoQGIS)
@@ -560,6 +567,7 @@ class Ui_RiverGIS(object):
         self.actionWebsite.setText(_translate("RiverGIS", "Web site", None))
         self.actionAbout.setText(_translate("RiverGIS", "About", None))
         self.actionRestoreDefaultOptions.setText(_translate("RiverGIS", "Restore Default Options", None))
+        self.actionCreateNewSchema.setText(_translate("RiverGIS", "Create new schema", None))
 
 from qgsprojectionselectionwidget import QgsProjectionSelectionWidget
 import resources_rc

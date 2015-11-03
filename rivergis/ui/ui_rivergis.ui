@@ -281,6 +281,7 @@
      <string>Database</string>
     </property>
     <addaction name="actionRefreshConnections"/>
+    <addaction name="actionCreateNewSchema"/>
     <addaction name="actionRASCreateRdbTables"/>
     <addaction name="actionRASImportLayersIntoRdbTables"/>
     <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
@@ -308,6 +309,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionRefreshConnections"/>
+   <addaction name="actionCreateNewSchema"/>
    <addaction name="actionRASCreateRdbTables"/>
    <addaction name="actionRASImportLayersIntoRdbTables"/>
    <addaction name="actionRASLoadRdbTablesIntoQGIS"/>
@@ -926,6 +928,15 @@
   <action name="actionRestoreDefaultOptions">
    <property name="text">
     <string>Restore Default Options</string>
+   </property>
+  </action>
+  <action name="actionCreateNewSchema">
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/rivergis/icons/dbCreateSchema.svg</normaloff>:/rivergis/icons/dbCreateSchema.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Create new schema</string>
    </property>
   </action>
  </widget>
