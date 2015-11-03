@@ -272,8 +272,7 @@ class RiverDatabase(object):
             map_layer.loadNamedStyle(style_file)
         except Exception, e:
             self.rgis.addInfo(vlayer.name())
-            msg = repr(e).encode('cp-1250')
-            self.rgis.addInfo(msg)
+            self.rgis.addInfo(repr(e))
 
     def add_to_view(self, obj):
         """
