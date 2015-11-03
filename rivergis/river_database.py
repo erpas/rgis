@@ -272,7 +272,8 @@ class RiverDatabase(object):
             map_layer.loadNamedStyle(style_file)
         except Exception, e:
             self.rgis.addInfo(vlayer.name())
-            self.rgis.addInfo(repr(e))
+            msg = repr(e).encode('cp-1250')
+            self.rgis.addInfo(msg)
 
     def add_to_view(self, obj):
         """
@@ -302,7 +303,7 @@ class RiverDatabase(object):
             srid (int): a Spatial Reference System Identifier
             selected (bool): flag for processing selected features only
         """
-        self.rgis.addInfo('  Importing data from {0}...'.format(layer.name()))
+        self.rgis.addInfo('Importing data from {0}...'.format(layer.name()))
         features = layer.selectedFeatures() if selected and layer.selectedFeatureCount() > 0 else layer.getFeatures()
         layer_fields = layer.dataProvider().fields().toList()
         field_names = ['{0}'.format(f.name()) for f in layer_fields]
@@ -410,9 +411,21 @@ class RiverDatabase(object):
         qry = self.layer_to_pgsql(features, imp_attrs, hecobject, SCHEMA, SRID)
         if qry is not None:
             self.run_query(qry)
-            self.rgis.addInfo('  OK')
+            self.rgis.addInfo('OK')
         else:
             pass
+
+    def create_schema(self, schema_name):
+        """
+        Create new schema for new project.
+
+        Args:
+            schema_name (str): Name of new schema.
+        """
+        qry = '''CREATE SCHEMA "{0}";'''
+        qry = qry.format(schema_name)
+        self.run_query(qry)
+        self.rgis.addInfo('SCHEMA "{0}" created.'.format(schema_name))
 
     def create_spatial_index(self):
         """
@@ -429,9 +442,9 @@ BEGIN
     full_index_name = schema || '_' || t_name || '_' || 'geom_idx';
     IF NOT EXISTS (
         SELECT 1
-        FROM   pg_class c
-        JOIN   pg_namespace n ON n.oid = c.relnamespace
-        WHERE  c.relname = full_index_name AND n.nspname = schema
+        FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE c.relname = full_index_name AND n.nspname = schema
         )
     THEN
         EXECUTE 'CREATE INDEX "' || full_index_name || '" ON "' || schema || '"."' || t_name || '" USING GIST (geom)';

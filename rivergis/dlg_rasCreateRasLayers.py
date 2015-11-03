@@ -37,8 +37,9 @@ class DlgCreateRasLayers(QDialog):
             (self.ui.leveeChbox, heco.LeveePoints),
             (self.ui.storageAreasChbox, heco.StorageAreas),
             (self.ui.saConnectionsChbox, heco.SAConnections),
-            (self.ui.xsCutLinesChbox, heco.XSCutLines)
-        ]
+            (self.ui.xsCutLinesChbox, heco.XSCutLines)]
+
+        self.tables.sort(key=lambda x: x[1]().order)
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
