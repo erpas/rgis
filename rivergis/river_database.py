@@ -442,8 +442,10 @@ class RiverDatabase(object):
         """
         qry = '''CREATE SCHEMA "{0}";'''
         qry = qry.format(schema_name)
-        self.run_query(qry)
-        self.rgis.addInfo('<br>Schema "{0}" created.'.format(schema_name))
+        if self.run_query(qry) is None:
+            return
+        else:
+            self.rgis.addInfo('<br>Schema "{0}" created.'.format(schema_name))
 
     def create_spatial_index(self):
         """
