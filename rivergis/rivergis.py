@@ -63,6 +63,7 @@ class RiverGIS(QMainWindow):
 
         # DB
         self.ui.actionRefreshConnections.triggered.connect(self.connChanged)
+        self.ui.actionCreateNewSchema.triggered.connect(self.dbCreateSchema)
         self.ui.actionRASCreateRdbTables.triggered.connect(self.rasCreateRdbTables)
         self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
@@ -151,8 +152,8 @@ class RiverGIS(QMainWindow):
     def enableActions(self, enable):
         menus = self.ui.menubar.findChildren(QMenu)
         toolbars = self.findChildren(QToolBar)
-        menusAlwaysOn = ['Help']
-        toolsAlwaysOn = []
+        menusAlwaysOn = ['Database', 'Help']
+        toolsAlwaysOn = ['Create new schema']
         if enable:
             for m in menus:
                 for a in m.findChildren(QAction):
@@ -189,6 +190,18 @@ class RiverGIS(QMainWindow):
         self.addInfo('\nCurrent projection is {0}'.format(self.crs.authid()))
 
     # Database Functions
+
+    def dbCreateSchema(self):
+        schemaName, ok = QInputDialog.getText(self, 'New schema',
+                    'New schema name:')
+        if ok:
+            if self.rdb:
+                self.rdb.create_schema(schemaName)
+            else:
+                self.addInfo('Choose a connection to river database, then create a schema.')
+        else:
+            self.addInfo('Creating new schema cancelled.')
+        self.connChanged(self.curConnName, schema_name=schemaName)
 
     def connChanged(self, conn_name='', schema_name=''):
         s = QSettings()
@@ -270,7 +283,10 @@ class RiverGIS(QMainWindow):
                     '<br>  '.join(reg)))
                 self.addInfo('You can load them now using RAS Geometry > Load River Database Tables Into QGIS')
             else:
-                self.addInfo('There are some objects registered in the database.')
+                if reg:
+                    self.addInfo('There are some objects registered in the database.')
+                else:
+                    self.addInfo('River database is empty.<br>Create or import your river network data.')
             self.enableActions(True)
 
     # MENU Database
