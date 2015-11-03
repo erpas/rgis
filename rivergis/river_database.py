@@ -25,12 +25,12 @@ class RiverDatabase(object):
         Constructor for database object
 
         Args:
-            rgis (QgsInterface instance): Instance of QGIS interface
-            dbname (str): Name of the database
-            host (str): Host of the database
-            port (str): Port of the database
-            user (str): User login
-            password (str): Password for user
+            rgis (QgsInterface instance): Instance of QGIS interface.
+            dbname (str): Name of the database.
+            host (str): Host of the database.
+            port (str): Port of the database.
+            user (str): User login.
+            password (str): Password for user.
         """
         self.rgis = rgis
         self.dbname = dbname
@@ -47,10 +47,13 @@ class RiverDatabase(object):
     def connect_pg(self):
         """
         Method for setting up PostgreSQL connection object as RiverDatabase class instance attribute.
+        Connection parameters are passed using the dsn.
+
+        Returns:
+            str: String message.
         """
         msg = None
         try:
-            # connection parameters using the dsn
             conn_params = 'dbname={0} host={1} port={2} user={3} password={4}'.format(self.dbname, self.host, self.port, self.user, self.password)
             self.con = psycopg2.connect(conn_params)
             msg = 'Connection established.'
@@ -78,9 +81,12 @@ class RiverDatabase(object):
         Running PostgreSQL queries.
 
         Args:
-            qry (str): Query for database
-            fetch (bool): Flag for returning result from query
-            arraysize (int): Number of items returned from query
+            qry (str): Query for database.
+            fetch (bool): Flag for returning result from query.
+            arraysize (int): Number of items returned from query - default 0 mean using fetchall method.
+
+        Returns:
+            list/generator/None: Returned value depends on the 'fetch' and 'arraysize' parameters.
         """
         result = None
         try:
@@ -108,8 +114,11 @@ class RiverDatabase(object):
         Generator for getting partial results from query.
 
         Args:
-            cursor (psycopg2 cursor object): cursor with query
-            arraysize (int): Number of items returned from query
+            cursor (psycopg2 cursor object): Cursor with query.
+            arraysize (int): Number of items returned from query.
+
+        Yields:
+            list: Items returned from query which length <= arraysize.
         """
         while True:
             results = cursor.fetchmany(arraysize)
@@ -124,10 +133,10 @@ class RiverDatabase(object):
         Setting SCHEMA, SRID and OVERWRITE on hydro object.
 
         Args:
-            hydro_object (class): Hydro object class
-            schema (str): Schema where tables will be created or processed
-            srid (int): A Spatial Reference System Identifier
-            overwrite (bool): Flag deciding if objects can be overwrite
+            hydro_object (class): Hydro object class.
+            schema (str): Schema where tables will be created or processed.
+            srid (int): A Spatial Reference System Identifier.
+            overwrite (bool): Flag deciding if objects can be overwrite.
         """
         if schema is None:
             hydro_object.SCHEMA = self.SCHEMA
@@ -147,12 +156,12 @@ class RiverDatabase(object):
         Creating and processing tables inside PostGIS database.
 
         Args:
-            hecobject (class): HEC-RAS class object
-            pg_method (str): String representation of method that will be called on the hecobject class
-            schema (str): Schema where tables will be created or processed
-            srid (int): A Spatial Reference System Identifier
-            overwrite (bool): Flag deciding if objects can be overwrite
-            **kwargs (dict): Additional keyword arguments passed to pg_method
+            hecobject (class): HEC-RAS class object.
+            pg_method (str): String representation of method that will be called on the hecobject class.
+            schema (str): Schema where tables will be created or processed.
+            srid (int): A Spatial Reference System Identifier.
+            overwrite (bool): Flag deciding if objects can be overwrite.
+            **kwargs (dict): Additional keyword arguments passed to pg_method.
 
         Returns:
             obj: Instance of HEC-RAS class object
@@ -174,7 +183,7 @@ class RiverDatabase(object):
         Registering object in database as dictionary entry.
 
         Args:
-            obj: Instance of a hydrodynamic model object class
+            obj: Instance of a hydrodynamic model object class.
         """
         key = obj.name
         if key not in self.register:
@@ -185,12 +194,12 @@ class RiverDatabase(object):
 
     def register_existing(self, hydro_module, schema=None, srid=None):
         """
-        Registering hydrodynamic model objects already existing in the schema.
+        Registering hydrodynamic model objects which already exists inside schema.
 
         Args:
-            hydro_module (module): hydrodynamic model module
-            schema (str): Schema where tables will be created or processed
-            srid (int): A Spatial Reference System Identifier
+            hydro_module (module): hydrodynamic model module.
+            schema (str): Schema where tables will be created or processed.
+            srid (int): A Spatial Reference System Identifier.
         """
         tabs = self.list_tables(schema)
         for tab in tabs:
@@ -222,9 +231,10 @@ class RiverDatabase(object):
         Listing tables in schema.
 
         Args:
-            schema (str): Schema where tables will be created or processed
+            schema (str): Schema where tables will be created or processed.
+
         Returns:
-            tabs (list): List of tuples with table names in schema
+            list: List of tuples with table names in schema.
         """
         if schema is None:
             SCHEMA = self.SCHEMA
@@ -236,7 +246,7 @@ class RiverDatabase(object):
 
     def refresh_uris(self):
         """
-        Setting layers uris list from QgsMapLayerRegistry
+        Setting layers uris list from QgsMapLayerRegistry.
         """
         self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
         if self.rgis.DEBUG:
@@ -247,7 +257,10 @@ class RiverDatabase(object):
         Making layer from PostGIS table.
 
         Args:
-            obj: Instance of a hydrodynamic model object class
+            obj: Instance of a hydrodynamic model object class.
+
+        Returns:
+            QgsVectorLayer: QGIS Vector Layer object.
         """
         uri = QgsDataSourceURI()
         uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
@@ -263,7 +276,7 @@ class RiverDatabase(object):
         Handling adding layer process to QGIS view.
 
         Args:
-            vlayer (QgsVectorLayer): QgsVectorLayer object
+            vlayer (QgsVectorLayer): QgsVectorLayer object.
         """
         try:
             map_registry = QgsMapLayerRegistry.instance()
@@ -272,15 +285,14 @@ class RiverDatabase(object):
             map_layer.loadNamedStyle(style_file)
         except Exception, e:
             self.rgis.addInfo(vlayer.name())
-            msg = repr(e).encode('cp-1250')
-            self.rgis.addInfo(msg)
+            self.rgis.addInfo(repr(e))
 
     def add_to_view(self, obj):
         """
         Handling adding layer process to QGIS view.
 
         Args:
-            obj: Instance of a hydrodynamic model object class
+            obj: Instance of a hydrodynamic model object class.
         """
         vlayer = self.make_vlayer(obj)
         src = vlayer.source()
@@ -295,13 +307,15 @@ class RiverDatabase(object):
     def import_layer(self, layer, fields, attr_map, selected):
         """
         Import a vector layer's features with attributes specified inside attr_map dictionary.
+
         Args:
-            layer (QgsVectorLayer): source QGIS layer containing the features to insert
-            fields (list): list of tuples ('field_name', 'field_type') for hecobject attributes definition
-            attr_map (dict): attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}
-            schema (str): a target schema
-            srid (int): a Spatial Reference System Identifier
-            selected (bool): flag for processing selected features only
+            layer (QgsVectorLayer): Source QGIS layer containing the features to insert.
+            fields (list): List of tuples ('field_name', 'field_type') for hecobject attributes definition.
+            attr_map (dict): Attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}.
+            selected (bool): Flag for processing selected features only.
+
+        Returns:
+            tuple: Tuple of features and fields lists.
         """
         self.rgis.addInfo('Importing data from {0}...'.format(layer.name()))
         features = layer.selectedFeatures() if selected and layer.selectedFeatureCount() > 0 else layer.getFeatures()
@@ -325,13 +339,17 @@ class RiverDatabase(object):
 
     def layer_to_pgsql(self, features, fields, hecobject, schema, srid):
         """
-        Create SQL for inserting the layer into PG database
+        Create SQL for inserting the layer into PG database.
+
         Args:
-            features (list): list of wkt geometry objects
-            fields (list): list of fields imported from layer
-            hecobject (HecRasObject): target HEC-RAS object
-            schema (str): a target schema
-            srid (int): a Spatial Reference System Identifier
+            features (list): List of WKT geometry objects.
+            fields (list): List of fields imported from layer.
+            hecobject (HecRasObject): Target HEC-RAS object.
+            schema (str): Target schema.
+            srid (int): Spatial Reference System Identifier.
+
+        Returns:
+            str: Query for inserting features into a PostGIS table.
         """
         schema_name = '"{0}"."{1}"'.format(schema, hecobject.name)
         attrs_names = ['{0}'.format(attr[0]) for attr in fields]
@@ -372,19 +390,19 @@ class RiverDatabase(object):
     def insert_layer(self, layer, hecobject, attr_map=None, schema=None, srid=None, selected=False):
         """
         Insert a vector layer's features into a PostGIS table of a hecras object.
-        If an attribute map attr_map is specified, only the mapped attributes are imported. If attr_map
+        If an attribute map attr_map is specified, only the mapped attributes are imported. If 'attr_map'
         is None, it checks source layer's attribute names and compares them to column names of a target table.
         If the attribute has a corresponding name in target table then it is copied into table table.
 
         It can be used to copy hecobject table from one schema to another.
 
         Args:
-            layer (QgsVectorLayer): source QGIS layer containing the features to insert
-            hecobject (HecRasObject): target HEC-RAS object
-            attr_map (dict): attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}
-            schema (str): a target schema
-            srid (int): a Spatial Reference System Identifier
-            selected (bool): flag for processing selected features only
+            layer (QgsVectorLayer): Source QGIS layer containing the features to insert.
+            hecobject (HecRasObject): Target HEC-RAS object.
+            attr_map (dict): Attribute mapping dictionary, i.e. {'target_table_attr': 'src_layer_field', ...}.
+            schema (str): Target schema.
+            srid (int): Spatial Reference System Identifier.
+            selected (bool): Flag for processing selected features only.
         """
 
         if schema is None:
@@ -417,10 +435,10 @@ class RiverDatabase(object):
 
     def create_schema(self, schema_name):
         """
-        Create new schema for new project.
+        Create empty schema inside PostgreSQL database.
 
         Args:
-            schema_name (str): Name of new schema.
+            schema_name (str): Name of the new schema.
         """
         qry = '''CREATE SCHEMA "{0}";'''
         qry = qry.format(schema_name)
