@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Tue Nov 03 16:48:16 2015
+# Created: Wed Nov 04 12:21:02 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,7 +29,7 @@ class Ui_RiverGIS(object):
     def setupUi(self, RiverGIS):
         RiverGIS.setObjectName(_fromUtf8("RiverGIS"))
         RiverGIS.setEnabled(True)
-        RiverGIS.resize(586, 438)
+        RiverGIS.resize(617, 438)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/rivergis_big.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         RiverGIS.setWindowIcon(icon)
@@ -77,7 +77,7 @@ class Ui_RiverGIS(object):
         self.gridLayout_2.addLayout(self.horizontalLayout, 2, 0, 1, 1)
         RiverGIS.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(RiverGIS)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 586, 18))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 617, 18))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
@@ -132,9 +132,7 @@ class Ui_RiverGIS(object):
         self.rasGeomToolBar = QtGui.QToolBar(RiverGIS)
         self.rasGeomToolBar.setObjectName(_fromUtf8("rasGeomToolBar"))
         RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasGeomToolBar)
-        self.rasImportExportToolBar = QtGui.QToolBar(RiverGIS)
-        self.rasImportExportToolBar.setObjectName(_fromUtf8("rasImportExportToolBar"))
-        RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasImportExportToolBar)
+        RiverGIS.insertToolBarBreak(self.rasGeomToolBar)
         self.rasOptGeomToolBar = QtGui.QToolBar(RiverGIS)
         self.rasOptGeomToolBar.setObjectName(_fromUtf8("rasOptGeomToolBar"))
         RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasOptGeomToolBar)
@@ -148,6 +146,10 @@ class Ui_RiverGIS(object):
         self.ras2dToolBar = QtGui.QToolBar(RiverGIS)
         self.ras2dToolBar.setObjectName(_fromUtf8("ras2dToolBar"))
         RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.ras2dToolBar)
+        self.rasImportExportToolBar = QtGui.QToolBar(RiverGIS)
+        self.rasImportExportToolBar.setObjectName(_fromUtf8("rasImportExportToolBar"))
+        RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasImportExportToolBar)
+        RiverGIS.insertToolBarBreak(self.rasImportExportToolBar)
         self.actionRASCreate2dAreaPoints = QtGui.QAction(RiverGIS)
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras2dareaCreate.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -351,6 +353,11 @@ class Ui_RiverGIS(object):
         icon37.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/dbCreateSchema.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionCreateNewSchema.setIcon(icon37)
         self.actionCreateNewSchema.setObjectName(_fromUtf8("actionCreateNewSchema"))
+        self.actionDeleteSchema = QtGui.QAction(RiverGIS)
+        icon38 = QtGui.QIcon()
+        icon38.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/dbDeleteSchema.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionDeleteSchema.setIcon(icon38)
+        self.actionDeleteSchema.setObjectName(_fromUtf8("actionDeleteSchema"))
         self.menuHelp.addAction(self.actionHelpContents)
         self.menuHelp.addAction(self.actionWebsite)
         self.menuHelp.addAction(self.actionAbout)
@@ -416,6 +423,7 @@ class Ui_RiverGIS(object):
         self.menu_Geometry.addAction(self.actionRASSave2DPointsToHECRASGeometry)
         self.menuDB.addAction(self.actionRefreshConnections)
         self.menuDB.addAction(self.actionCreateNewSchema)
+        self.menuDB.addAction(self.actionDeleteSchema)
         self.menuDB.addAction(self.actionRASCreateRdbTables)
         self.menuDB.addAction(self.actionRASImportLayersIntoRdbTables)
         self.menuDB.addAction(self.actionRASLoadRdbTablesIntoQGIS)
@@ -427,6 +435,7 @@ class Ui_RiverGIS(object):
         self.menubar.addAction(self.menuHelp.menuAction())
         self.dbToolBar.addAction(self.actionRefreshConnections)
         self.dbToolBar.addAction(self.actionCreateNewSchema)
+        self.dbToolBar.addAction(self.actionDeleteSchema)
         self.dbToolBar.addAction(self.actionRASCreateRdbTables)
         self.dbToolBar.addAction(self.actionRASImportLayersIntoRdbTables)
         self.dbToolBar.addAction(self.actionRASLoadRdbTablesIntoQGIS)
@@ -440,7 +449,6 @@ class Ui_RiverGIS(object):
         self.rasGeomToolBar.addAction(self.actionRASXSDownstreamReachLengths)
         self.rasGeomToolBar.addAction(self.actionRASXSElevations)
         self.rasGeomToolBar.addAction(self.actionRASXSAll)
-        self.rasImportExportToolBar.addAction(self.actionRASCreateRASGISImport)
         self.rasOptGeomToolBar.addAction(self.actionRASManningsNValues)
         self.rasOptGeomToolBar.addAction(self.actionRASLevees)
         self.rasOptGeomToolBar.addAction(self.actionRASIneffectiveFlowAreas)
@@ -456,6 +464,7 @@ class Ui_RiverGIS(object):
         self.ras2dToolBar.addAction(self.actionRASCreate2dAreaPoints)
         self.ras2dToolBar.addAction(self.actionRASPreview2DMesh)
         self.ras2dToolBar.addAction(self.actionRASSave2DPointsToHECRASGeometry)
+        self.rasImportExportToolBar.addAction(self.actionRASCreateRASGISImport)
 
         self.retranslateUi(RiverGIS)
         QtCore.QMetaObject.connectSlotsByName(RiverGIS)
@@ -479,11 +488,11 @@ class Ui_RiverGIS(object):
         self.dbToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.settingsToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.rasGeomToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
-        self.rasImportExportToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.rasOptGeomToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.rasStructuresToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.rasSAToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.ras2dToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
+        self.rasImportExportToolBar.setWindowTitle(_translate("RiverGIS", "toolBar", None))
         self.actionRASCreate2dAreaPoints.setText(_translate("RiverGIS", "Create 2D Computational Points", None))
         self.actionHelpContents.setText(_translate("RiverGIS", "Contents", None))
         self.actionRASWaterSurfaceGeneration.setText(_translate("RiverGIS", "Water Surface Generation", None))
@@ -569,5 +578,5 @@ class Ui_RiverGIS(object):
         self.actionWebsite.setText(_translate("RiverGIS", "Web site", None))
         self.actionAbout.setText(_translate("RiverGIS", "About", None))
         self.actionRestoreDefaultOptions.setText(_translate("RiverGIS", "Restore Default Options", None))
-        self.actionCreateNewSchema.setText(_translate("RiverGIS", "Create new schema", None))
-
+        self.actionCreateNewSchema.setText(_translate("RiverGIS", "Create New Schema", None))
+        self.actionDeleteSchema.setText(_translate("RiverGIS", "Delete Schema", None))

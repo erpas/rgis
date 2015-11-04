@@ -58,12 +58,15 @@ class RiverGIS(QMainWindow):
         self.dtms = []
         # restore settings
         self.readSettings()
+        self.menus = self.ui.menubar.findChildren(QMenu)
+        self.toolbars = self.findChildren(QToolBar)
 
         # MENU Actions
 
         # DB
         self.ui.actionRefreshConnections.triggered.connect(self.connChanged)
         self.ui.actionCreateNewSchema.triggered.connect(self.dbCreateSchema)
+        self.ui.actionDeleteSchema.triggered.connect(self.dbDeleteSchema)
         self.ui.actionRASCreateRdbTables.triggered.connect(self.rasCreateRdbTables)
         self.ui.actionRASLoadRdbTablesIntoQGIS.triggered.connect(self.rasLoadRdbTablesIntoQGIS)
         self.ui.actionRASImportLayersIntoRdbTables.triggered.connect(self.rasImportLayersIntoRdbTables)
@@ -146,30 +149,39 @@ class RiverGIS(QMainWindow):
 
         # disable some actions until a connection to river database is established
         if not self.rdb:
-            self.enableActions(False)
+            self.disableActions()
 
-
-    def enableActions(self, enable):
-        menus = self.ui.menubar.findChildren(QMenu)
-        toolbars = self.findChildren(QToolBar)
-        menusAlwaysOn = ['Database', 'Help']
-        toolsAlwaysOn = ['Create new schema']
-        if enable:
-            for m in menus:
+    def disableActions(self):
+        menusAlwaysOn = ['Help']
+        for m in self.menus:
+            if not m.title() in menusAlwaysOn:
                 for a in m.findChildren(QAction):
-                    a.setEnabled(True)
-            for t in toolbars:
-                for b in t.findChildren(QToolButton):
-                    b.setEnabled(True)
-        else:
-            for m in menus:
-                if not m.title() in menusAlwaysOn:
-                    for a in m.findChildren(QAction):
+                    a.setDisabled(True)
+        for t in self.toolbars:
+            for b in t.findChildren(QToolButton):
+                b.setDisabled(True)
+
+    def enableDBActions(self):
+        actionsNoSchema = ['Database', 'Create New Schema', 'Delete Schema']
+        for m in self.menus:
+            if m.title() == 'Database':
+                for a in m.findChildren(QAction):
+                    if a.text() in actionsNoSchema:
+                        a.setEnabled(True)
+                    else:
                         a.setDisabled(True)
-            for t in toolbars:
-                for b in t.findChildren(QToolButton):
-                    if not b.text() in toolsAlwaysOn:
-                        b.setDisabled(True)
+        for t in self.toolbars:
+            for b in t.findChildren(QToolButton):
+                if b.text() in actionsNoSchema:
+                    b.setEnabled(True)
+
+    def enableAllActions(self):
+        for m in self.menus:
+            for a in m.findChildren(QAction):
+                a.setEnabled(True)
+        for t in self.toolbars:
+            for b in t.findChildren(QToolButton):
+                b.setEnabled(True)
 
     def closeEvent(self, e):
         # save the window state
@@ -192,16 +204,36 @@ class RiverGIS(QMainWindow):
     # Database Functions
 
     def dbCreateSchema(self):
-        schemaName, ok = QInputDialog.getText(self, 'New schema',
-                    'New schema name:')
-        if ok:
-            if self.rdb:
-                self.rdb.create_schema(schemaName)
-            else:
-                self.addInfo('Choose a connection to river database, then create a schema.')
+        if not self.rdb:
+            info = QMessageBox.information (self, 'Not connected',
+                    "Choose a connection to river database, then create a schema",
+                    buttons = QMessageBox.Ok)
+            self.addInfo('Choose a connection to river database, then create a schema.')
         else:
-            self.addInfo('Creating new schema cancelled.')
-        self.connChanged(self.curConnName, schema_name=schemaName)
+            schemaName, ok = QInputDialog.getText(self, 'New schema',
+                        'New schema name:')
+            if ok:
+                self.rdb.create_schema(schemaName)
+                self.connChanged(self.curConnName, schema_name=schemaName)
+            else:
+                self.addInfo('Creating new schema cancelled.')
+
+    def dbDeleteSchema(self):
+        if not self.rdb:
+            info = QMessageBox.information (self, 'Not connected',
+                    "Choose a connection to river database, then delete a schema",
+                    buttons = QMessageBox.Ok)
+            self.addInfo('Choose a connection to river database, then create a schema.')
+        else:
+            schemaName, ok = QInputDialog.getText(self, 'Delete schema',
+                        'Schema name:')
+            if ok:
+                self.rdb.drop_schema(schemaName, cascade=True)
+                if self.rdb.SCHEMA == schemaName:
+                    self.connChanged()
+            else:
+                self.addInfo('Droping schema cancelled.')
+
 
     def connChanged(self, conn_name='', schema_name=''):
         s = QSettings()
@@ -264,6 +296,7 @@ class RiverGIS(QMainWindow):
             schemaExists = self.ui.schemasCbo.findText(schemaName)
         if schemaExists:
             self.ui.schemasCbo.setCurrentIndex(schemaExists)
+        self.enableDBActions()
         self.schemaChanged()
 
 
@@ -287,7 +320,7 @@ class RiverGIS(QMainWindow):
                     self.addInfo('There are some objects registered in the database.')
                 else:
                     self.addInfo('River database is empty.<br>Create or import your river network data.')
-            self.enableActions(True)
+            self.enableAllActions()
 
     # MENU Database
 

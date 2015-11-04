@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/dbDeleteSchema.svg</file>
     <file>icons/dbCreateSchema.svg</file>
     <file>icons/options.svg</file>
     <file>icons/rdb.svg</file>
