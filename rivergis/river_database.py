@@ -447,6 +447,21 @@ class RiverDatabase(object):
         else:
             self.rgis.addInfo('<br>Schema "{0}" created.'.format(schema_name))
 
+    def drop_schema(self, schema_name, cascade=False):
+        """
+        Delete schema inside PostgreSQL database.
+
+        Args:
+            schema_name (str): Name of the schema which will be deleted.
+            cascade (bool): Flag forcing cascade delete.
+        """
+        qry = '''DROP SCHEMA "{0}" CASCADE;''' if cascade is True else '''DROP SCHEMA "{0}";'''
+        qry = qry.format(schema_name)
+        if self.run_query(qry) is None:
+            return
+        else:
+            self.rgis.addInfo('<br>Schema "{0}" deleted.'.format(schema_name))
+
     def create_spatial_index(self):
         """
         Create PostgreSQL function create_st_index_if_not_exists(schema, table).
