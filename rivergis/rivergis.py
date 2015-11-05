@@ -159,18 +159,18 @@ class RiverGIS(QMainWindow):
                 b.setDisabled(True)
 
     def enableDBActions(self):
-        actionsNoSchema = ['Database', 'Create New Schema', 'Delete Schema']
-        for m in self.menus:
-            if m.title() == 'Database':
-                for a in m.findChildren(QAction):
-                    if a.text() in actionsNoSchema:
-                        a.setEnabled(True)
-                    else:
-                        a.setDisabled(True)
-        for t in self.toolbars:
-            for b in t.findChildren(QToolButton):
-                if b.text() in actionsNoSchema:
-                    b.setEnabled(True)
+        self.toolsNoSchema = ['Refresh Connections List',
+                            'Create New Schema',
+                            'Delete Schema']
+        self.actions2Disable = [self.ui.actionRASCreateRdbTables,
+                           self.ui.actionRASImportLayersIntoRdbTables,
+                           self.ui.actionRASLoadRdbTablesIntoQGIS]
+        self.ui.menuDB.findChildren(QAction)[0].setEnabled(True)
+        for a in self.actions2Disable:
+            a.setDisabled(True)
+        for t in self.ui.dbToolBar.findChildren(QToolButton):
+            if t.text() in self.toolsNoSchema:
+                t.setEnabled(True)
 
     def enableAllActions(self):
         for m in self.menus:
@@ -179,6 +179,8 @@ class RiverGIS(QMainWindow):
         for t in self.toolbars:
             for b in t.findChildren(QToolButton):
                 b.setEnabled(True)
+        for a in self.actions2Disable:
+            a.setEnabled(True)
 
     def closeEvent(self, e):
         # save the window state
