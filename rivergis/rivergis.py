@@ -23,17 +23,14 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.utils import *
-import json
 from os.path import join, isfile
+import json
 
-# TODO: try to not use the processing
-import processing
 from ui._ui_rivergis import Ui_RiverGIS
 import river_database as rivdb
 import hecobjects as heco
 import ras1dFunctions as r1d
 import ras2dFunctions as r2d
-
 
 
 class RiverGIS(QMainWindow):
@@ -204,36 +201,23 @@ class RiverGIS(QMainWindow):
     # Database Functions
 
     def dbCreateSchema(self):
-        if not self.rdb:
-            info = QMessageBox.information (self, 'Not connected',
-                    "Choose a connection to river database, then create a schema",
-                    buttons = QMessageBox.Ok)
-            self.addInfo('Choose a connection to river database, then create a schema.')
+        schemaName, ok = QInputDialog.getText(self, 'New schema', 'New schema name:')
+        if ok:
+            self.rdb.create_schema(schemaName)
+            self.connChanged(self.curConnName, schema_name=schemaName)
         else:
-            schemaName, ok = QInputDialog.getText(self, 'New schema',
-                        'New schema name:')
-            if ok:
-                self.rdb.create_schema(schemaName)
-                self.connChanged(self.curConnName, schema_name=schemaName)
-            else:
-                self.addInfo('Creating new schema cancelled.')
+            self.addInfo('Creating new schema cancelled.')
 
     def dbDeleteSchema(self):
-        if not self.rdb:
-            info = QMessageBox.information (self, 'Not connected',
-                    "Choose a connection to river database, then delete a schema",
-                    buttons = QMessageBox.Ok)
-            self.addInfo('Choose a connection to river database, then create a schema.')
-        else:
-            schemaName, ok = QInputDialog.getText(self, 'Delete schema',
-                        'Schema name:')
-            if ok:
-                self.rdb.drop_schema(schemaName, cascade=True)
-                if self.rdb.SCHEMA == schemaName:
-                    self.connChanged()
+        schemaName, ok = QInputDialog.getText(self, 'Delete schema', 'Schema name:')
+        if ok:
+            self.rdb.drop_schema(schemaName, cascade=True)
+            if self.rdb.SCHEMA == schemaName:
+                self.connChanged()
             else:
-                self.addInfo('Droping schema cancelled.')
-
+                self.ui.schemasCbo.removeItem(self.ui.schemasCbo.findText(schemaName))
+        else:
+            self.addInfo('Droping schema cancelled.')
 
     def connChanged(self, conn_name='', schema_name=''):
         s = QSettings()
@@ -298,8 +282,6 @@ class RiverGIS(QMainWindow):
             self.ui.schemasCbo.setCurrentIndex(schemaExists)
         self.enableDBActions()
         self.schemaChanged()
-
-
 
     def schemaChanged(self):
         self.rdb.register.clear()
@@ -382,7 +364,6 @@ class RiverGIS(QMainWindow):
 
     def about(self):
         self.showHelp('index.html')
-
 
     def readSettings(self, defaults=False):
         sFile = join(self.rivergisPath, 'settings.json')
