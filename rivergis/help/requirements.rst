@@ -1,4 +1,10 @@
-.. _install_req:
+.. _requirements:
+
+-------------
+Requirements
+-------------
+
+ RiverGIS needs an active connection to a PostGIS database. You can create a new connection from QGIS menu :menuselection:`Layer --> Add layer --> Add PostGIS layers...`.
 
 Installation of required Python packages
 ----------------------------------------
