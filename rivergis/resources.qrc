@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/ras1dXsRiverNames.svg</file>
     <file>icons/dbDeleteSchema.svg</file>
     <file>icons/dbCreateSchema.svg</file>
     <file>icons/options.svg</file>
@@ -21,10 +22,9 @@
     <file>icons/ras1dSAElevVolume.svg</file>
     <file>icons/ras1dBridges.svg</file>
     <file>icons/ras1dInlineStruct.svg</file>
-    <file>icons/ras1dXsRiverNames.svg</file>
     <file>icons/ras1dLateralStruct.svg</file>
-    <file>icons/ras1dSATerPtExtract.svg</file>
     <file>icons/ras1dXsStationing.svg</file>
+    <file>icons/ras1dSATerPtExtract.svg</file>
     <file>icons/ras1dCreateRASImport.svg</file>
     <file>icons/ras1dXsLevees.svg</file>
     <file>icons/ras1dXsMannings.svg</file>
@@ -41,8 +41,8 @@
     <file>icons/ras1dXsAll.svg</file>
     <file>icons/refreshConnections.svg</file>
     <file>icons/ras1dStreamCenterlinesTopology.svg</file>
-    <file>icons/createPgTables.svg</file>
     <file>icons/loadRdbTablesIntoQgis.svg</file>
+    <file>icons/dbCreateRasTables.svg</file>
     <file>icons/createDepthsAndRange.svg</file>
     <file>icons/rasImportHdfIntoRdb.svg</file>
     <file>icons/rasImportSdfIntoRdb.svg</file>

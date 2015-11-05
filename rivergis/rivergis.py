@@ -120,7 +120,7 @@ class RiverGIS(QMainWindow):
         self.ui.schemasCbo.activated.connect(self.schemaChanged)
 
         # Welcome message
-        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Please start with choosing:<br>1. a <b>connection</b> to a PostGIS database<br>2. a database <b>schema</b> (schema = model container)<br>3. <b>projection</b> for river database objects (projection = Coordinate Reference System, CRS).')
+        self.ui.textEdit.append('<b>Welcome to RiverGIS!</b><br><br>Start building your model with 3 simple steps:<br>1. <b>Choose a connection</b> to PostGIS database<br>2. choose or create database <b>schema</b> (schema = model container or folder)<br>3. select a <b>projection</b> for the river database objects (projection = Coordinate Reference System, CRS).')
         self.ui.textEdit.append('<br>If you can\'t see any connection, please, create a new one from menu Layer > Add layer > Add PostGIS layers... <br>')
         self.ui.textEdit.append('----------------------------------------------------------------------------')
 

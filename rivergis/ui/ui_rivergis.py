@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Wed Nov 04 12:22:09 2015
+# Created: Thu Nov 05 21:49:52 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -130,7 +130,6 @@ class Ui_RiverGIS(object):
         self.rasGeomToolBar = QtGui.QToolBar(RiverGIS)
         self.rasGeomToolBar.setObjectName(_fromUtf8("rasGeomToolBar"))
         RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasGeomToolBar)
-        RiverGIS.insertToolBarBreak(self.rasGeomToolBar)
         self.rasOptGeomToolBar = QtGui.QToolBar(RiverGIS)
         self.rasOptGeomToolBar.setObjectName(_fromUtf8("rasOptGeomToolBar"))
         RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasOptGeomToolBar)
@@ -147,7 +146,6 @@ class Ui_RiverGIS(object):
         self.rasImportExportToolBar = QtGui.QToolBar(RiverGIS)
         self.rasImportExportToolBar.setObjectName(_fromUtf8("rasImportExportToolBar"))
         RiverGIS.addToolBar(QtCore.Qt.TopToolBarArea, self.rasImportExportToolBar)
-        RiverGIS.insertToolBarBreak(self.rasImportExportToolBar)
         self.actionRASCreate2dAreaPoints = QtGui.QAction(RiverGIS)
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras2dareaCreate.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -182,7 +180,7 @@ class Ui_RiverGIS(object):
         self.actionRASPreview2DMesh.setObjectName(_fromUtf8("actionRASPreview2DMesh"))
         self.actionRASCreateRdbTables = QtGui.QAction(RiverGIS)
         icon14 = QtGui.QIcon()
-        icon14.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/createPgTables.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon14.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/dbCreateRasTables.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionRASCreateRdbTables.setIcon(icon14)
         self.actionRASCreateRdbTables.setObjectName(_fromUtf8("actionRASCreateRdbTables"))
         self.actionRASManningsNValues = QtGui.QAction(RiverGIS)
