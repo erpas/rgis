@@ -126,8 +126,8 @@ class RiverGIS(QMainWindow):
 
         # restore the window state
         s = QSettings()
-        self.restoreGeometry(s.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray ))
-        self.restoreState(s.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray ))
+        self.restoreGeometry(s.value("/rivergis/mainWindow/geometry", QByteArray(), type=QByteArray))
+        self.restoreState(s.value("/rivergis/mainWindow/windowState", QByteArray(), type=QByteArray))
 
         # get PostGIS connections details and populate connections' combo
         self.connChanged()
@@ -222,6 +222,13 @@ class RiverGIS(QMainWindow):
             self.addInfo('Droping schema cancelled.')
 
     def connChanged(self, conn_name='', schema_name=''):
+        # close any existing connection to a river database
+        if self.rdb:
+            self.addInfo("Closing existing connection to {0}@{1} river database".format(self.rdb.dbname, self.rdb.host))
+            self.rdb.disconnect_pg()
+            self.rdb = None
+        else:
+            pass
         s = QSettings()
         s.beginGroup('/PostgreSQL/connections')
         connsNames = s.childGroups()
@@ -241,6 +248,9 @@ class RiverGIS(QMainWindow):
             i = 0
         self.ui.connsCbo.setCurrentIndex(i)
         if self.ui.connsCbo.currentIndex() == 0:
+            self.ui.schemasCbo.clear()
+            self.ui.schemasCbo.addItem('')
+            self.disableActions()
             return
         connName = self.ui.connsCbo.currentText()
         s.endGroup()
@@ -252,20 +262,12 @@ class RiverGIS(QMainWindow):
         self.passwd = s.value('password')
         s.endGroup()
 
-        # close any existing connection to a river database
-        if self.rdb:
-            self.addInfo("Closing existing connection to {0}@{1} river database".format(
-                self.rdb.dbname, self.rdb.host))
-            self.rdb.disconnect_pg()
-            self.rdb = None
-
         # create a new connection to river database
         self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SRID = int(self.crs.postgisSrid())
         self.rdb.connect_pg()
         self.rdb.create_spatial_index()
-        self.addInfo('Created connection to river database: {0}@{1}'.format(
-            self.rdb.dbname, self.rdb.host))
+        self.addInfo('Created connection to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host))
         self.rdb.last_conn = connName
 
         # refresh schemas combo
@@ -286,7 +288,10 @@ class RiverGIS(QMainWindow):
         self.schemaChanged()
 
     def schemaChanged(self):
-        self.rdb.register.clear()
+        if self.rdb:
+            self.rdb.register.clear()
+        else:
+            return
         if not self.ui.schemasCbo.currentText() == '':
             self.schema = self.ui.schemasCbo.currentText()
             self.addInfo('Current DB schema is: {0}'.format(self.schema))
@@ -296,8 +301,7 @@ class RiverGIS(QMainWindow):
             self.rdb.register_existing(heco)
             reg = [self.rdb.register[k].name for k in sorted(self.rdb.register.keys())]
             if self.DEBUG:
-                self.addInfo('Objects registered in the database:<br>  {0}'.format(
-                    '<br>  '.join(reg)))
+                self.addInfo('Objects registered in the database:<br>  {0}'.format('<br>  '.join(reg)))
                 self.addInfo('You can load them now using RAS Geometry > Load River Database Tables Into QGIS')
             else:
                 if reg:
@@ -305,6 +309,9 @@ class RiverGIS(QMainWindow):
                 else:
                     self.addInfo('River database is empty.<br>Create or import your river network data.')
             self.enableAllActions()
+        else:
+            self.disableActions()
+            self.enableDBActions()
 
     # MENU Database
 
