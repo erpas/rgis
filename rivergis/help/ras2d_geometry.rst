@@ -1,7 +1,8 @@
 .. _stepbystep2d:
 
-Step by step tutorial: Create HEC-RAS 2D Geometry
--------------------------------------------------------
+=================================
+Step by step: HEC-RAS 2D Geometry
+=================================
 
 Required data: 
 
@@ -40,10 +41,10 @@ Step 1. Create/load required data
 ---------------------------------------------------------
 .. note::
 
-  QGIS User Manual `Loading raster data <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_raster/supported_data.html>`_ and `Loading vector data in QGIS <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_vector/supported_data.html>`_ is an excellent start point for QGIS beginners.
+  QGIS User Manual `Loading raster data <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_raster/supported_data.html>`_ and `Loading vector data in QGIS <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_vector/supported_data.html>`_ is an excellent start point for QGIS beginners.
   
 1. **Start from saving QGIS project** in a favourite directory :menuselection:`Project --> Save` 
-2. **Load a raster of digital terrain model (DTM)**\ . Below you can see a DTM with a hillshade as an overlay (`see QGIS Training Manual  <http://docs.qgis.org/2.6/en/docs/training_manual/rasters/terrain_analysis.html?highlight=hillshade>`_).
+2. **Load a raster of digital terrain model (DTM)**\ . Below you can see a DTM with a hillshade as an overlay (`see QGIS Training Manual  <http://docs.qgis.org/2.8/en/docs/training_manual/rasters/terrain_analysis.html?highlight=hillshade>`_).
 
   .. _fig_sbs_loadDtm:
   .. figure:: img/sbs02.png
@@ -56,7 +57,7 @@ Step 1. Create/load required data
   * name of 2D Flow Area (text) and
   * cell size (whole number) --- a default mesh points spacing in layer's CRS units.
   
-  The layer's :abbr:`CRS (Coordinate Reference System)` should be identical with DTM's CRS. See `QGIS Training Manual <http://docs.qgis.org/2.6/en/docs/training_manual/create_vector_data/create_new_vector.html#basic-fa-the-layer-creation-dialog>`_ for creating vector layer details. Finally, **change the layer's rendering style** by double clicking the layer in the legend tree (`ref <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_vector/vector_properties.html#style-menu>`_).
+  The layer's :abbr:`CRS (Coordinate Reference System)` should be identical with DTM's CRS. See `QGIS Training Manual <http://docs.qgis.org/2.8/en/docs/training_manual/create_vector_data/create_new_vector.html#basic-fa-the-layer-creation-dialog>`_ for creating vector layer details. Finally, **change the layer's rendering style** by double clicking the layer in the legend tree (`ref <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_vector/vector_properties.html#style-menu>`_).
 
   .. _fig_sbs_create2dFlowAreaLayer:
   .. figure:: img/sbs03.png
@@ -83,7 +84,7 @@ Step 1. Create/load required data
 5. **Digitize 2D Flow Area**\ . 
 
   .. note:: 
-       `QGIS User Manual <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_vector/editing_geometry_attributes.html>`_ has extensive part on vector layers editing.
+       `QGIS User Manual <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_vector/editing_geometry_attributes.html>`_ has extensive part on vector layers editing.
    
   In the legend window select the 2D flow areas layer and toggle editing mode by clicking |toggle_editting| button, then |capture_polygon| and **capture your 2D flow area polygon** clicking on its vertices. Finish drawing with right click. 
   
@@ -140,7 +141,7 @@ Step 2. Create 2D Flow Area
 
 1. **Select PostGIS connection and schema**
    
-  Open RiverGIS plugin main window. Creating the mesh requires an active connection to a PostGIS database. Please refer to `QGIS User Manual for creating PostGIS connection description <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_vector/supported_data.html#creating-a-stored-connection>`_.
+  Open RiverGIS plugin main window. Creating the mesh requires an active connection to a PostGIS database. Please refer to `QGIS User Manual for creating PostGIS connection description <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_vector/supported_data.html#creating-a-stored-connection>`_.
 
   .. _fig_sbs_rivergisConnSchemaSelected:
   .. figure:: img/sbs10.png

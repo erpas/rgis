@@ -1,7 +1,7 @@
 Welcome to RiverGIS!
 ====================
 
-.. figure:: img/mesh2d_aligned_2.jpg
+.. figure:: img/rivergis_logo.png
    :align: right
 
 RiverGIS is a `QGIS plugin <http://qgis.org/>`_ that helps you create HEC-RAS flow model. The functionality is similar to that of `HEC-GeoRAS <http://www.hec.usace.army.mil/software/hec-georas/>`_. For data store and spatial operations it needs a `PostGIS <http://postgis.net>`_ database.
@@ -14,17 +14,11 @@ Table of contents:
    :maxdepth: 2
    
    requirements
-   stepByStep1d
-   stepByStep2d
+   ras1d_geometry
+   ras1d_geometry_org
+   ras2d_geometry
    create2darea
+   about
 
 
--------------
-What's new
--------------
-2015.11.10, ver. 1.0
-
-2015.02.05, ver. 0.15.1
-
-* a new tutorial: :ref:`stepbystep2d`
 

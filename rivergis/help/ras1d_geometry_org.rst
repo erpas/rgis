@@ -1,8 +1,8 @@
 .. _stepbystep1d:
 
-=================================================
-Step by step tutorial: Create HEC-RAS 1D Geometry
-=================================================
+=======================================
+Step by step: HEC-RAS 1D Geometry (org)
+=======================================
 
 --------------------------------------
 1. Create source geometry of the model
@@ -24,7 +24,7 @@ Optional geometry data:
 
 4. Channel Bank lines
 
-5. Flow Paths --- flow centerlines for each cross-section part:main channel, right and left overbank (polylines)
+5. Flow Paths --- flow centerlines for each cross-section part: main channel, right and left overbank (polylines)
 
 6. Levees (polylines)
 
@@ -32,16 +32,16 @@ Optional geometry data:
 
 8. Blocked obstructions (polygons)
 
-9. Land cover --- a polygon layer. HEC-RAS will use it to calculate mesh cells roughness.
+9. Land cover (polygons)
 
 
 
 .. note::
 
-  QGIS User Manual `Loading raster data <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_raster/supported_data.html>`_ and `Loading vector data in QGIS <http://docs.qgis.org/2.6/en/docs/user_manual/working_with_vector/supported_data.html>`_ is an excellent start point for QGIS beginners.
+  QGIS User Manual `Loading raster data <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_raster/supported_data.html>`_ and `Loading vector data in QGIS <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_vector/supported_data.html>`_ is an excellent start point for QGIS beginners.
   
 1. **Start from saving QGIS project** in a favourite directory :menuselection:`Project --> Save` 
-2. **Load a raster of digital terrain model (DTM)**\ . Below you can see a DTM with a hillshade as an overlay (`see QGIS Training Manual  <http://docs.qgis.org/2.6/en/docs/training_manual/rasters/terrain_analysis.html?highlight=hillshade>`_).
+2. **Load a raster of digital terrain model (DTM)**\ . Below you can see a DTM with a hillshade as an overlay (`see QGIS Training Manual  <http://docs.qgis.org/2.8/en/docs/training_manual/rasters/terrain_analysis.html?highlight=hillshade>`_).
 
   .. _fig_sbs_loadDtm:
   .. figure:: img/sbs02.png
@@ -89,7 +89,7 @@ Land use layer must contain “LUID”, “LUCode” and “N_Value” attribute
   .. figure:: img/lu_att_table.png
      :align: center
 
-     Exemplary Land use attribute table
+     Exemplary Landuse attribute table
 
 For correct Manning's values extraction all of the cross sections in XSCutLines layer have to cover land use polygons
 
