@@ -31,7 +31,7 @@ class RasGisImport(object):
             if hasattr(obj, 'components') is True:
                 for elem in obj.components:
                     if elem not in tabs:
-                        msg = 'WARNING! Non-existen "{0}" table. This part of SDF file will be ommited.'.format(elem)
+                        msg = 'WARNING! Nonexistent "{0}" table. This part of SDF file will be omitted.'.format(elem)
                         self.rgis.addInfo(msg)
                     else:
                         pass
@@ -64,7 +64,7 @@ class RasGisImport(object):
             sidx = 9
             eidx = -2
         else:
-            raise ValueError('Inappropariate WKT geometry type. WKT must be POINT, LINSTRING or POLYGON.')
+            raise ValueError('Inappropriate WKT geometry type. WKT must be POINT, LINESTRING or POLYGON.')
         pnts = (p.split() for p in wkt[sidx:eidx].split(','))
         return pnts
 
