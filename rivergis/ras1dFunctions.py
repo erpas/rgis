@@ -464,7 +464,10 @@ def ras1dCreateRasGisImportFile(rgis):
         return
 
     s.setValue("rivergis/lastRasGisImportDir", dirname(import_fname))
+    rgis.rdb.register.clear()
+    rgis.rdb.register_existing(heco)
     rgi = RasGisImport(rgis)
+    rgi.check_components()
     sdf = rgi.gis_import_file()
     if rgis.DEBUG:
         rgis.addInfo(sdf)

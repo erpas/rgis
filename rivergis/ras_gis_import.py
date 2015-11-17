@@ -23,6 +23,21 @@ class RasGisImport(object):
         self.storage_areas = StorageAreasBuilder(rgis)
         self.sa_connections = SAConnectionsBuilder(rgis)
 
+    def check_components(self):
+        tabs = self.rgis.rdb.register
+        attrs = self.__dict__
+        for k in attrs:
+            obj = attrs[k]
+            if hasattr(obj, 'components') is True:
+                for elem in obj.components:
+                    if elem not in tabs:
+                        msg = 'WARNING! Non-existen "{0}" table. This part of SDF file will be ommited.'.format(elem)
+                        self.rgis.addInfo(msg)
+                    else:
+                        pass
+            else:
+                pass
+
     def gis_import_file(self):
         imp = self.header.build_header()
         imp += self.network.build_network()
@@ -132,12 +147,16 @@ class NetworkBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['NodesTable', 'StreamCenterlines']
 
     def get_nodes(self):
         qry = 'SELECT "NodeID", "X", "Y" FROM "{0}"."NodesTable";'
         qry = qry.format(self.schema)
-        nodes = self.rgis.rdb.run_query(qry, fetch=True)
-        return nodes
+        nodes = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
+        if nodes is None:
+            return []
+        else:
+            return nodes
 
     def get_reaches(self):
         qry = '''
@@ -154,8 +173,11 @@ WHERE
     "ReachCode" IS NOT NULL;
 '''
         qry = qry.format(self.schema)
-        reaches = self.rgis.rdb.run_query(qry, fetch=True)
-        return reaches
+        reaches = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
+        if reaches is None:
+            return []
+        else:
+            return reaches
 
     def build_network(self):
         net_all = 'BEGIN STREAM NETWORK:\n'
@@ -193,6 +215,7 @@ class XSBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['XSCutLines', 'Manning', 'LeveePoints', 'IneffLines', 'BlockLines', 'XSSurface']
 
     def get_xsections(self):
         qry = '''
@@ -211,7 +234,7 @@ FROM
     "{0}"."XSCutLines";
 '''
         qry = qry.format(self.schema)
-        xsections = self.rgis.rdb.run_query(qry, fetch=True)
+        xsections = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if xsections is None:
             return []
         else:
@@ -220,7 +243,7 @@ FROM
     def get_nvalues(self, xs_id):
         qry = 'SELECT "Fraction", "N_Value" FROM "{0}"."Manning" WHERE "XsecID" = {1};'
         qry = qry.format(self.schema, xs_id)
-        nvalues = self.rgis.rdb.run_query(qry, fetch=True)
+        nvalues = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if nvalues is None:
             return []
         else:
@@ -229,7 +252,7 @@ FROM
     def get_levee_points(self, xs_id):
         qry = 'SELECT "LeveeID", "Fraction", "Elevation" FROM "{0}"."LeveePoints" WHERE "XsecID" = {1};'
         qry = qry.format(self.schema, xs_id)
-        levee_points = self.rgis.rdb.run_query(qry, fetch=True)
+        levee_points = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if levee_points is None:
             return []
         else:
@@ -238,7 +261,7 @@ FROM
     def get_ineffs(self, xs_id):
         qry = 'SELECT "IneffID", "FromFract", "ToFract", "Elevation" FROM "{0}"."IneffLines" WHERE "XsecID" = {1};'
         qry = qry.format(self.schema, xs_id)
-        ineffs = self.rgis.rdb.run_query(qry, fetch=True)
+        ineffs = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if ineffs is None:
             return []
         else:
@@ -247,7 +270,7 @@ FROM
     def get_blocks(self, xs_id):
         qry = 'SELECT "BlockID", "FromFract", "ToFract", "Elevation" FROM "{0}"."BlockLines" WHERE "XsecID" = {1};'
         qry = qry.format(self.schema, xs_id)
-        blocks = self.rgis.rdb.run_query(qry, fetch=True)
+        blocks = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if blocks is None:
             return []
         else:
@@ -256,7 +279,7 @@ FROM
     def get_surf(self, xs_id):
         qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."XSSurface" WHERE "XsecID" = {1} ORDER BY "Station";'
         qry = qry.format(self.schema, xs_id)
-        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if surfs is None:
             return []
         else:
@@ -322,6 +345,7 @@ class BridgesBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['Bridges', 'BRSurface']
 
     def get_bridges(self):
         qry = '''
@@ -338,7 +362,7 @@ FROM
     "{0}"."Bridges";
 '''
         qry = qry.format(self.schema)
-        bridges = self.rgis.rdb.run_query(qry, fetch=True)
+        bridges = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if bridges is None:
             return []
         else:
@@ -347,7 +371,7 @@ FROM
     def get_surf(self, br_id):
         qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."BRSurface" WHERE "BridgeID" = {1} ORDER BY "Station";'
         qry = qry.format(self.schema, br_id)
-        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if surfs is None:
             return []
         else:
@@ -392,6 +416,7 @@ class InlineStrBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['InlineStructures', 'ISSurface']
 
     def get_inline_str(self):
         qry = '''
@@ -408,7 +433,7 @@ FROM
     "{0}"."InlineStructures";
 '''
         qry = qry.format(self.schema)
-        inline_str = self.rgis.rdb.run_query(qry, fetch=True)
+        inline_str = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if inline_str is None:
             return []
         else:
@@ -417,7 +442,7 @@ FROM
     def get_surf(self, ins_id):
         qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."ISSurface" WHERE "InlineSID" = {1} ORDER BY "Station";'
         qry = qry.format(self.schema, ins_id)
-        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if surfs is None:
             return []
         else:
@@ -462,6 +487,7 @@ class LateralStrBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['LateralStructures', 'LSSurface']
 
     def get_lateral_str(self):
         qry = '''
@@ -478,7 +504,7 @@ FROM
     "{0}"."LateralStructures";
 '''
         qry = qry.format(self.schema)
-        lateral_str = self.rgis.rdb.run_query(qry, fetch=True)
+        lateral_str = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if lateral_str is None:
             return []
         else:
@@ -487,7 +513,7 @@ FROM
     def get_surf(self, ls_id):
         qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."LSSurface" WHERE "LateralSID" = {1} ORDER BY "Station";'
         qry = qry.format(self.schema, ls_id)
-        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if surfs is None:
             return []
         else:
@@ -532,11 +558,12 @@ class LeveesBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['LeveeAlignment']
 
     def get_levees(self):
         qry = 'SELECT "LeveeID", ST_AsText(geom) AS wkt FROM "{0}"."LeveeAlignment";'
         qry = qry.format(self.schema)
-        levees = self.rgis.rdb.run_query(qry, fetch=True)
+        levees = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if levees is None:
             return []
         else:
@@ -570,11 +597,12 @@ class IneffAreasBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['IneffAreas']
 
     def get_ineffective_areas(self):
         qry = 'SELECT "IneffID", ST_AsText(geom) AS wkt FROM "{0}"."IneffAreas";'
         qry = qry.format(self.schema)
-        ineff_areas = self.rgis.rdb.run_query(qry, fetch=True)
+        ineff_areas = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if ineff_areas is None:
             return []
         else:
@@ -608,11 +636,12 @@ class BlockedObsBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['BlockedObs']
 
     def get_blocked_obstructions(self):
         qry = 'SELECT "BlockID", ST_AsText(geom) AS wkt FROM "{0}"."BlockedObs";'
         qry = qry.format(self.schema)
-        block_obs = self.rgis.rdb.run_query(qry, fetch=True)
+        block_obs = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if block_obs is None:
             return []
         else:
@@ -646,11 +675,12 @@ class StorageAreasBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['StorageAreas', 'SAVolume']
 
     def get_storage_areas(self):
         qry = 'SELECT "StorageID", ST_AsText(geom) AS wkt FROM "{0}"."StorageAreas";'
         qry = qry.format(self.schema)
-        storage_areas = self.rgis.rdb.run_query(qry, fetch=True)
+        storage_areas = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if storage_areas is None:
             return []
         else:
@@ -659,7 +689,7 @@ class StorageAreasBuilder(object):
     def get_storage_volume(self, sa_id):
         qry = 'SELECT "level", "volume" FROM "{0}"."SAVolume" WHERE "StorageID" = {1} ORDER BY "level";'
         qry = qry.format(self.schema, sa_id)
-        storage_volume = self.rgis.rdb.run_query(qry, fetch=True)
+        storage_volume = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if storage_volume is None:
             return []
         else:
@@ -687,7 +717,6 @@ class StorageAreasBuilder(object):
             for pt in pnts:
                 x, y = pt
                 vertices += sa_vertex.format(x, y)
-
             for v in self.get_storage_volume(sa_id):
                 elev += sa_elev.format(v['level'], v['volume'])
             sa_all += sa_poly.format(sa_id, vertices, elev)
@@ -702,11 +731,12 @@ class SAConnectionsBuilder(object):
     def __init__(self, rgis):
         self.rgis = rgis
         self.schema = rgis.rdb.SCHEMA
+        self.components = ['SAConnections', 'SACSurface']
 
     def get_sa_conn(self):
         qry = 'SELECT "SAConnID", "USSA", "DSSA", "TopWidth", "NodeName", ST_AsText(geom) AS wkt FROM "{0}"."SAConnections";'
         qry = qry.format(self.schema)
-        sa_connections = self.rgis.rdb.run_query(qry, fetch=True)
+        sa_connections = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if sa_connections is None:
             return []
         else:
@@ -715,7 +745,7 @@ class SAConnectionsBuilder(object):
     def get_surf(self, sac_id):
         qry = 'SELECT ST_X(geom) AS x, ST_Y(geom) AS y, "Elevation" FROM "{0}"."SACSurface" WHERE "SAConnID" = {1} ORDER BY "Station";'
         qry = qry.format(self.schema, sac_id)
-        surfs = self.rgis.rdb.run_query(qry, fetch=True)
+        surfs = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
         if surfs is None:
             return []
         else:

@@ -76,7 +76,7 @@ class RiverDatabase(object):
         else:
             self.rgis.addInfo('Can not disconnect. There is no opened connection!')
 
-    def run_query(self, qry, fetch=False, arraysize=0):
+    def run_query(self, qry, fetch=False, arraysize=0, be_quiet=False):
         """
         Running PostgreSQL queries.
 
@@ -84,6 +84,7 @@ class RiverDatabase(object):
             qry (str): Query for database.
             fetch (bool): Flag for returning result from query.
             arraysize (int): Number of items returned from query - default 0 mean using fetchall method.
+            be_quiet (bool): Flag for printing exception message.
 
         Returns:
             list/generator/None: Returned value depends on the 'fetch' and 'arraysize' parameters.
@@ -104,7 +105,10 @@ class RiverDatabase(object):
                 self.rgis.addInfo('There is no opened connection! Use "connect_pg" method before running query.')
         except Exception, e:
             self.con.rollback()
-            self.rgis.addInfo(repr(e))
+            if be_quiet is False:
+                self.rgis.addInfo(repr(e))
+            else:
+                pass
         finally:
             return result
 
