@@ -472,7 +472,7 @@ class RiverDatabase(object):
         The function checks if a spatial index exists for the table - if not, it is created.
         """
         qry = '''
-CREATE OR REPLACE FUNCTION create_spatial_index(schema text, t_name text)
+CREATE OR REPLACE FUNCTION "{0}".create_spatial_index(schema text, t_name text)
     RETURNS VOID AS
 $BODY$
 DECLARE
@@ -492,4 +492,5 @@ END;
 $BODY$
     LANGUAGE plpgsql;
 '''
+        qry = qry.format(self.SCHEMA)
         self.run_query(qry)

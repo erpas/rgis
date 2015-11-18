@@ -266,7 +266,6 @@ class RiverGIS(QMainWindow):
         self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SRID = int(self.crs.postgisSrid())
         self.rdb.connect_pg()
-        self.rdb.create_spatial_index()
         self.addInfo('Created connection to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host))
         self.rdb.last_conn = connName
 
@@ -297,6 +296,7 @@ class RiverGIS(QMainWindow):
             self.addInfo('Current DB schema is: {0}'.format(self.schema))
             # change river database parameters
             self.rdb.SCHEMA = self.schema
+            self.rdb.create_spatial_index()
             self.rdb.last_schema = self.schema
             self.rdb.register_existing(heco)
             reg = [self.rdb.register[k].name for k in sorted(self.rdb.register.keys())]

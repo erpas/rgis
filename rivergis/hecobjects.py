@@ -35,7 +35,7 @@ class HecRasObject(object):
         else:
             qry = 'CREATE TABLE {0}(\n\t{1});\n'.format(schema_name, ',\n\t'.join(attrs))
         if self.spatial_index is True:
-            qry += 'SELECT create_spatial_index(\'{0}\', \'{1}\');'.format(self.schema, self.name)
+            qry += 'SELECT "{0}".create_spatial_index(\'{1}\', \'{2}\');'.format(self.schema, self.schema, self.name)
         else:
             pass
         return qry
