@@ -1,24 +1,48 @@
 ﻿------------------------------------------------------------------------------------------------------------------------
-CREATE TABLE tmp1 AS
-SELECT "RiverCode", "ReachCode", ST_StartPoint(geom) AS geom, 'start' AS typ_punktu
-FROM "StreamCenterlines"
-UNION ALL
-SELECT "RiverCode", "ReachCode", ST_EndPoint(geom) AS geom, 'end' AS typ_punktu
-FROM "StreamCenterlines";
+WITH all_nodes AS
+    (SELECT
+        "RiverCode",
+        "ReachCode",
+        ST_StartPoint(geom) AS geom,
+        'start' AS point_type
+    FROM
+        "StreamCenterlines"
+    UNION ALL
+    SELECT
+        "RiverCode",
+        "ReachCode",
+        ST_EndPoint(geom) AS geom,
+        'end' AS point_type
+    FROM
+        "StreamCenterlines"),
+    single_nodes AS
+    (SELECT
+        "RiverCode",
+        geom
+    FROM
+        all_nodes
+    GROUP BY
+        "RiverCode",
+        geom
+    HAVING
+        COUNT(geom) = 1)
 
-CREATE TABLE tmp2 AS
-SELECT "RiverCode", geom
-FROM tmp1
-GROUP BY "RiverCode", geom
-HAVING COUNT(geom) = 1;
+    INSERT INTO "Endpoints"(geom, "RiverCode", "ReachCode", "NodeID")
+    SELECT
+        all_nodes.geom,
+        all_nodes."RiverCode",
+        all_nodes."ReachCode",
+        "NodesTable"."NodeID"
+    FROM
+        all_nodes,
+        single_nodes,
+        "NodesTable"
+    WHERE
+        all_nodes."RiverCode" = single_nodes."RiverCode" AND
+        all_nodes.geom = single_nodes.geom AND
+        all_nodes.point_type = 'end' AND
+        all_nodes.geom = "NodesTable".geom;
 
-DROP TABLE IF EXISTS "Endpoints";
-SELECT tmp1.geom::geometry(POINT, 2180), tmp1."RiverCode", tmp1."ReachCode", "NodesTable"."NodeID" INTO "Endpoints"
-FROM tmp1, tmp2, "NodesTable"
-WHERE tmp1."RiverCode" = tmp2."RiverCode" AND tmp1.geom = tmp2.geom AND tmp1.typ_punktu = 'end' AND tmp1.geom = "NodesTable".geom;
-
-DROP TABLE tmp1;
-DROP TABLE tmp2;
 ------------------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION from_to_stations ()
     RETURNS VOID AS
