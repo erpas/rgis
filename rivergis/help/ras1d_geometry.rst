@@ -43,25 +43,33 @@ Stream Centerlines
 
 If you have properly prepared stream network layer you can use such RiverGIS tools as:
 
-**1. Topology**  ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Topology`` or  |topology|  button.
+1. **Topology**
+
+``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Topology`` or  |topology|  button.
 
   .. |topology| image:: img_ico/ras1dStreamCenterlinesTopology.png
 This tool builds topology over **StreamCenterlines** table and fill *'FromNode'* and *'ToNode'* fields. It will also create auxiliary **NodesTable** table inside schema. Remember to split network lines on every reach intersection (junctions).
 
 
-**2. Lengths/Stations**   ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Lengths/Stations`` or |lengths_stations|  button.
+2. **Lengths/Stations**
+
+``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Lengths/Stations`` or |lengths_stations|  button.
 
   .. |lengths_stations| image:: img_ico/ras1dStreamCenterlinesLengthsStations.png
 This tool calculates reaches lengths taking into account stream network topology. It will fill *'ReachLen'*, *'FromSta'*, *'ToSta'* fields and generate **Endpoints** auxiliary table.
 
 
-**3. All**  ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``All`` or  |stream_all|  button.
+3. **All**
+
+``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``All`` or  |stream_all|  button.
 
   .. |stream_all| image:: img_ico/ras1dStreamCenterlinesAll.png
 It will launch all tools (defined above) for **StreamCenterlines** geometry one after another.
 
 
-**4. Copy Stream Centerlines to Flowpaths**  ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Copy Stream Centerlines to Flowpaths``
+4. **Copy Stream Centerlines to Flowpaths**
+
+``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Copy Stream Centerlines to Flowpaths``
 
 This option is for copying features from **StreamCenterlines** table to **Flowpaths** as *'Channel'* type. Note that **Flowpaths** table have to be already created.
 
@@ -72,38 +80,50 @@ Cross-sections Cut Lines
 
 If you have properly prepared cross-sections layer you can use such RiverGIS tools as:
 
-**1. River/Reach Names**  ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``River/Reach Names`` or  |xs_names|  button.
+1. **River/Reach Names**
+
+``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``River/Reach Names`` or  |xs_names|  button.
 
   .. |xs_names| image:: img_ico/ras1dXsRiverNames.png
 This tool assigns *'ReachID'*, *'RiverCode'* and *'ReachCode'* values from **StreamCenterlines** layer to cross sections.
 Note that each cross section can intersect only once with any **StreamCenterlines+* feature.
 
 
-**2. Stationing**  ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Stationing`` or |xs_stationing|  button.
+2. **Stationing**
+
+``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Stationing`` or |xs_stationing|  button.
 
   .. |xs_stationing| image:: img_ico/ras1dXsStationing.png
 This tool calculates *'Station'* values for each cross section.
 
 
-**3. Bank Stations**  ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Bank Stations`` or  |xs_banks|  button.
+3. **Bank Stations**
+
+``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Bank Stations`` or  |xs_banks|  button.
 
   .. |xs_banks| image:: img_ico/ras1dXsBanks.png
 This tool calculates fraction on which features from **BankLines** table intersects with each cross section and decides if bank is left or right. Calculated values fills *'LeftBank'* and *'RightBank'* fields in **XSCutLines** table.
 
 
-**4. Downstream Reach Lengths**  ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Downstream Reach Lengths`` or  |xs_dsl|  button.
+4. **Downstream Reach Lengths**
+
+``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Downstream Reach Lengths`` or  |xs_dsl|  button.
 
   .. |xs_dsl| image:: img_ico/ras1dXsDSLengths.png
 This tool calculates each cross section station along flow paths. Calculated values fills *'LLength'*, *'ChLength'* and *'RLength'* fields in **XSCutLines**.
 
 
-**5. Elevations**  ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Elevations`` or  |xs_elev|  button.
+5. **Elevations**
+
+``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Elevations`` or  |xs_elev|  button.
 
   .. |xs_elev| image:: img_ico/ras1dXsElevations.png
-This tool generates points along cross sections (and saves them into **XSSurface** table) and use them to probe DTM rasters. Note that before running tool you have add  DTM tiles into QGIS view and select them in ``RiverGIS Options`` window on ``DTM`` tab. If you have high resolution DTMs consider changing ``chunksize`` value. This option says how many points can be load at once to memory to probe DTM. Default value ``0`` means RiverGIS will try to take all points at once into the analysis.
+This tool generates points along cross sections (and saves them into **XSSurface** table) and use them to probe DTM rasters. Note that before running tool you have add  DTM tiles into QGIS view and select them in ``RiverGIS Options`` window on ``DTM`` tab. If you have high resolution DTMs consider changing ``chunksize`` value. This option says how many points can be load at once to memory to probe DTM. Default value ``'0'`` means RiverGIS will try to take all points at once into the analysis.
 
 
-**6. All**  ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``All`` or  |xs_all|  button.
+6. **All**
+
+``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``All`` or  |xs_all|  button.
 
   .. |xs_all| image:: img_ico/ras1dXsAll.png
 It will launch all **XSCutLines** tools one after another.
