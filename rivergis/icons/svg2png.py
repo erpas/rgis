@@ -5,7 +5,7 @@ from os import mkdir
 from os.path import isdir, abspath, dirname, join
 from subprocess import call
 
-dpi = 300
+dpi = 150
 
 path = abspath(dirname(__file__))
 
@@ -16,7 +16,7 @@ if not isdir(pngsDir):
 
 for svg in svgs:
     png = join(pngsDir, svg[:-4]+'.png')
-    call(['C:/Program Files/Inkscape/inkscape.exe',
+    call(['inkscape',
           '--export-png={}'.format(png),
           '-d {}'.format(dpi),
           svg])

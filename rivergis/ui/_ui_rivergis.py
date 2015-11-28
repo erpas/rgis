@@ -227,7 +227,7 @@ class Ui_RiverGIS(object):
         self.actionRASXSBankStations.setObjectName(_fromUtf8("actionRASXSBankStations"))
         self.actionRASXSDownstreamReachLengths = QtGui.QAction(RiverGIS)
         icon23 = QtGui.QIcon()
-        icon23.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras1dXsDSLenghts.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon23.addPixmap(QtGui.QPixmap(_fromUtf8(":/rivergis/icons/ras1dXsDSLengths.svg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.actionRASXSDownstreamReachLengths.setIcon(icon23)
         self.actionRASXSDownstreamReachLengths.setObjectName(_fromUtf8("actionRASXSDownstreamReachLengths"))
         self.actionRASXSElevations = QtGui.QAction(RiverGIS)

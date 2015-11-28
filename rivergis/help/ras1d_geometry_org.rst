@@ -28,7 +28,7 @@ Optional geometry data:
 
 6. Levees (polylines)
 
-7. Ineffecive flow areas (polygons)
+7. Ineffective flow areas (polygons)
 
 8. Blocked obstructions (polygons)
 
@@ -58,7 +58,7 @@ Optional geometry data:
 2. Manning's values extraction
 --------------------------------------
 
-To prepare Manning’s value table you need to prepare two layers:
+To make Manning’s values table you need to prepare two layers:
 
 * LanduseAreas polygon layer
 * XSCutLines polyline layer
@@ -131,7 +131,7 @@ You should obtain table with "XsecID", "Fraction", "N_Value" and "LUCode" attrib
 
 This chapter describes processing of bridges/culverts layer. There are three layers required for complete extraction of the data:
 
-* StreamCenterline polyline layer
+* StreamCenterlines polyline layer
 * Bridges/Culverts polyline layer
 * DTM layer (optional)
 
@@ -141,7 +141,7 @@ Both StreamCenterline and Bridges/Culverts you can create by clicking this butto
 
   .. note::
 
-     For more information about creation and edition of StreamCenterline layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
+     For more information about creation and edition of StreamCenterlines layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
 
 
   .. _fig_bridgecreate:
@@ -188,7 +188,7 @@ You have also access to “All” function from main RiverGIS toolbar by clickin
 
 This chapter describes processing of Inline Structures layer. There are three layers required for complete extraction of the data:
 
-* StreamCenterline polyline layer
+* StreamCenterlines polyline layer
 * InlineStructures polyline layer
 * DTM layer (optional)
 

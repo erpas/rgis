@@ -31,11 +31,11 @@ class HecRasObject(object):
             attrs = []
         attrs += [' '.join(field) for field in self.attrs]
         if self.overwrite is True:
-            qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {1}(\n\t{2});\n'.format(schema_name, schema_name, ',\n\t'.join(attrs))
+            qry = 'DROP TABLE IF EXISTS {0};\nCREATE TABLE {0}(\n\t{1});\n'.format(schema_name, ',\n\t'.join(attrs))
         else:
             qry = 'CREATE TABLE {0}(\n\t{1});\n'.format(schema_name, ',\n\t'.join(attrs))
         if self.spatial_index is True:
-            qry += 'SELECT "{0}".create_spatial_index(\'{1}\', \'{2}\');'.format(self.schema, self.schema, self.name)
+            qry += 'SELECT "{0}".create_spatial_index(\'{0}\', \'{1}\');'.format(self.schema, self.name)
         else:
             pass
         return qry

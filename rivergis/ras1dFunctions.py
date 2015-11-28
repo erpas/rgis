@@ -50,7 +50,7 @@ def ras1dStreamCenterlineLengthsStations(rgis):
         rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build stream centerlines topology first.<br>Cancelling...')
         return
 
-    rgis.addInfo('<br><b>Calculating river reach(es) lenghts and their end stations...</b>')
+    rgis.addInfo('<br><b>Calculating river reach(es) lengths and their end stations...</b>')
     rgis.rdb.process_hecobject(heco.Endpoints, 'pg_create_table')
     if rgis.rdb.process_hecobject(heco.StreamCenterlines, 'pg_lengths_stations'):
         rgis.rdb.add_to_view(heco.Endpoints())
