@@ -587,7 +587,7 @@
   <action name="actionRASXSDownstreamReachLengths">
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsDSLenghts.svg</normaloff>:/rivergis/icons/ras1dXsDSLenghts.svg</iconset>
+     <normaloff>:/rivergis/icons/ras1dXsDSLengths.svg</normaloff>:/rivergis/icons/ras1dXsDSLengths.svg</iconset>
    </property>
    <property name="text">
     <string>Downstream Reach Lengths</string>

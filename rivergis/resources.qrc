@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/rivergis">
+    <file>icons/ras1dXsDSLengths.svg</file>
     <file>icons/ras1dXsRiverNames.svg</file>
     <file>icons/dbDeleteSchema.svg</file>
     <file>icons/dbCreateSchema.svg</file>
@@ -32,7 +33,6 @@
     <file>icons/ras1dXsIneffective.svg</file>
     <file>icons/dtmSetup.svg</file>
     <file>icons/ras1dXsElevations.svg</file>
-    <file>icons/ras1dXsDSLenghts.svg</file>
     <file>icons/ras1dXsBanks.svg</file>
     <file>icons/ras1dXsUpdate.svg</file>
     <file>icons/importLayersIntoRdb.svg</file>

@@ -6,7 +6,6 @@ Step by step: HEC-RAS 2D Geometry
 
 Required data: 
 
-
 1. Flow area(s) shape --- a polygon layer with a name and a mesh spacing attributes.
 
 2. DTM, digital terrain model --- a raster layer.

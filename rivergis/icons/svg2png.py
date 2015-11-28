@@ -16,6 +16,7 @@ if not isdir(pngsDir):
 
 for svg in svgs:
     png = join(pngsDir, svg[:-4]+'.png')
+    # on win: call(['C:/Program Files/Inkscape/inkscape.exe',
     call(['inkscape',
           '--export-png={}'.format(png),
           '-d {}'.format(dpi),
