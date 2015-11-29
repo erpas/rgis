@@ -31,11 +31,27 @@ Optional geometry data:
 
 9. Land cover (polygons)
 
-* To create an empty geometry tables for model data (with right attribute structure) you can use ``Database`` -> ``Create River Databse Tables`` option from context menu or press this button from main RiverGIS window. Next choose tables you want to create. Tables will be created at current active schema and with chosen projection, so be sure that they are defined properly before creating tables.
+* To **create** an empty geometry tables for model data (with right attribute structure) you can use ``Database`` -> ``Create River Databse Tables`` option from context menu or press  |createbutton|  button from main RiverGIS window. Next choose tables you want to create. Tables will be created at current active schema and with chosen projection, so be sure that they are defined properly before creating tables.
 
-* To import already existing geometry data into empty PostGIS tables you can use ``Database`` -> ``Import Layers Into River Database Tables`` option from context menu or press this button from main RiverGIS window. Next chose layers you want to import. You can insert multiple geometry data to PostGIS tables at once.
+  .. |createbutton| image:: img_ico/dbCreateRasTables.png
 
-* To add model geometry data from schema to QGIS view you can use ``Database`` -> ``Load River Database Tables Into QGIS`` option from context menu or press this button from main RiverGIS window. RiverGIS will find all registered model geometry data inside active schema and add as QGIS layers with preserved order and symbology.
+* To **import** already existing geometry data into empty PostGIS tables you can use ``Database`` -> ``Import Layers Into River Database Tables`` option from context menu or press  |importbutton|  button from main RiverGIS window. Next chose layers you want to import. You can insert multiple geometry data to PostGIS tables at once.
+
+  .. |importbutton| image:: img_ico/importLayersIntoRdb.png
+
+* To **load** model geometry data from schema to QGIS view you can use ``Database`` -> ``Load River Database Tables Into QGIS`` option from context menu or press  |loadbutton|  button from main RiverGIS window. RiverGIS will find all registered model geometry data inside active schema and add as QGIS layers with preserved order and symbology.
+
+  .. |loadbutton| image:: img_ico/loadRdbTablesIntoQgis.png
+
+* Before running RiverGIS tools we recommend to **setup DTM options first**. You have to add DTM tiles into QGIS view and select them from ``Settings`` -> ``Options``  or  |optionbutton| in ``DTM`` tab. If you have high resolution DTMs consider changing ``Chunk size`` value. This option says how many points can be load at once to memory to probe DTMs. Default value is ``'0'`` and it means that RiverGIS will try to take all points at once into the analysis.
+
+  .. |optionbutton| image:: img_ico/options.png
+
+  .. _fig_bridgdtm:
+  .. figure:: img/dtm_setup.png
+     :align: center
+
+     DTM option window
 
 ------------------
 Stream Centerlines
@@ -43,35 +59,44 @@ Stream Centerlines
 
 If you have properly prepared stream network layer you can use such RiverGIS tools as:
 
-1. **Topology**
-
+```````````````
+Topology
+```````````````
 ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Topology`` or  |topology|  button.
 
   .. |topology| image:: img_ico/ras1dStreamCenterlinesTopology.png
-This tool builds topology over **StreamCenterlines** table and fill *'FromNode'* and *'ToNode'* fields. It will also create auxiliary **NodesTable** table inside schema. Remember to split network lines on every reach intersection (junctions).
+This tool builds topology over **StreamCenterlines** table and fill *'FromNode'* and *'ToNode'* fields. It will also create auxiliary **NodesTable** table inside schema.
 
+  .. note::
 
-2. **Lengths/Stations**
+    Remember to split network lines on every reach intersection (junctions).
 
+```````````````
+Lengths/Stations
+```````````````
 ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Lengths/Stations`` or |lengths_stations|  button.
 
   .. |lengths_stations| image:: img_ico/ras1dStreamCenterlinesLengthsStations.png
 This tool calculates reaches lengths taking into account stream network topology. It will fill *'ReachLen'*, *'FromSta'*, *'ToSta'* fields and generate **Endpoints** auxiliary table.
 
-
-3. **All**
-
+```````````````
+All
+```````````````
 ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``All`` or  |stream_all|  button.
 
   .. |stream_all| image:: img_ico/ras1dStreamCenterlinesAll.png
 It will launch all tools (defined above) for **StreamCenterlines** geometry one after another.
 
-
-4. **Copy Stream Centerlines to Flowpaths**
-
+```````````````
+Copy Stream Centerlines to Flowpaths
+```````````````
 ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Copy Stream Centerlines to Flowpaths``
 
-This option is for copying features from **StreamCenterlines** table to **Flowpaths** as *'Channel'* type. Note that **Flowpaths** table have to be already created.
+This option is for copying features from **StreamCenterlines** table to **Flowpaths** as *'Channel'* type.
+
+  .. note::
+
+    **Flowpaths** empty table have to be created before running this tool. U can use |createbutton| button.
 
 
 ------------------------
@@ -80,49 +105,55 @@ Cross-sections Cut Lines
 
 If you have properly prepared cross-sections layer you can use such RiverGIS tools as:
 
-1. **River/Reach Names**
-
+```````````````
+River/Reach Names
+```````````````
 ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``River/Reach Names`` or  |xs_names|  button.
 
   .. |xs_names| image:: img_ico/ras1dXsRiverNames.png
-This tool assigns *'ReachID'*, *'RiverCode'* and *'ReachCode'* values from **StreamCenterlines** layer to cross sections.
-Note that each cross section can intersect only once with any **StreamCenterlines+* feature.
+This tool assigns *'ReachID'*, *'RiverCode'* and *'ReachCode'* values from **StreamCenterlines** layer to cross sections. Each cross section can intersect only once with any **StreamCenterlines** feature.
 
-
-2. **Stationing**
+```````````````
+Stationing
+```````````````
 
 ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Stationing`` or |xs_stationing|  button.
 
   .. |xs_stationing| image:: img_ico/ras1dXsStationing.png
-This tool calculates *'Station'* values for each cross section.
+This tool calculates *'Station'* values for each cross section based on the intersection with river. Note that each cross section can have only one intersection point with river. Each cross section can intersect only once with any **StreamCenterlines** feature.
 
-
-3. **Bank Stations**
-
+```````````````
+Bank Stations
+```````````````
 ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Bank Stations`` or  |xs_banks|  button.
 
   .. |xs_banks| image:: img_ico/ras1dXsBanks.png
 This tool calculates fraction on which features from **BankLines** table intersects with each cross section and decides if bank is left or right. Calculated values fills *'LeftBank'* and *'RightBank'* fields in **XSCutLines** table.
 
-
-4. **Downstream Reach Lengths**
-
+```````````````
+Downstream Reach Lengths
+```````````````
 ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Downstream Reach Lengths`` or  |xs_dsl|  button.
 
   .. |xs_dsl| image:: img_ico/ras1dXsDSLengths.png
 This tool calculates each cross section station along flow paths. Calculated values fills *'LLength'*, *'ChLength'* and *'RLength'* fields in **XSCutLines**.
 
-
-5. **Elevations**
+```````````````
+Elevations
+```````````````
 
 ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Elevations`` or  |xs_elev|  button.
 
   .. |xs_elev| image:: img_ico/ras1dXsElevations.png
-This tool generates points along cross sections (and saves them into **XSSurface** table) and use them to probe DTM rasters. Note that before running tool you have add  DTM tiles into QGIS view and select them in ``RiverGIS Options`` window on ``DTM`` tab. If you have high resolution DTMs consider changing ``chunksize`` value. This option says how many points can be load at once to memory to probe DTM. Default value ``'0'`` means RiverGIS will try to take all points at once into the analysis.
+This tool generates points along cross sections (and saves them into **XSSurface** table) and use them to probe DTM rasters.
 
+  .. note::
 
-6. **All**
+    Before running tool you should customize DTM options. But if you forgot - don't worry -  DTM options dialog will appear anyway. ;)
 
+```````````````
+All
+```````````````
 ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``All`` or  |xs_all|  button.
 
   .. |xs_all| image:: img_ico/ras1dXsAll.png
@@ -134,56 +165,44 @@ Flow Path Centerlines
 ---------------------
 There are 2 methods connected with **FlowPaths** geometry type. Both were already shortly introduced in chapters about **StreamCenterlines** and **XSCutLines**:
 
-1. ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Copy Stream Centerlines to Flowpaths``
+```````````````
+Copy Stream Centerlines to Flowpaths
+```````````````
+* ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Copy Stream Centerlines to Flowpaths``
 
-2. ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Downstream Reach Lengths`` or  |xs_dsl|  button.
+```````````````
+Downstream Reach Lengths
+```````````````
+* ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Downstream Reach Lengths`` or  |xs_dsl|  button.
 
 ---------------------
 Main Channel Banks
 ---------------------
+There is only one method for **BankLines** layer and it depends on **XSCutLines** polyline layer.
 
------------------
-Ineffective Areas
------------------
-
---------------------
-Blocked Obstructions
---------------------
-
-----------------
-Levee Alignments
-----------------
+```````````````
+Bank Stations
+```````````````
+It can be run from context menu ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Bank Stations`` or by pressing   |xs_banks|  button.
 
 --------
-Land Use
+Land Use Areas
 --------
+**LanduseAreas** layer have one method and it depends on **XSCutLines** polyline layer.
 
-To make Manning’s values table you need to prepare two layers:
+```````````````
+Extract Manning's n Values
+```````````````
+``RAS Geometry`` -> ``Extract Manning's n Values`` or  |manbutton|  button.
 
-* LanduseAreas polygon layer
-* XSCutLines polyline layer
-
-Both LanduseAreas and XSCutLines you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as it is shown below. Created layers are empty and must be edited manually. This guide assume that XSCutLines and LanduseAreas layers are already done and all attributes are filled.
-
-  .. |createbutton| image:: img_ico/dbCreateRasTables.png
+  .. |manbutton| image:: img_ico/ras1dXsMannings.png
 
   .. note::
 
      For more information about creation and edition of XSCutLines and LanduseAreas layers please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-11 and 4-28
 
 
-  .. _fig_man_create:
-  .. figure:: img/create_layer.png
-
-     Database context menu
-
-  .. figure:: img/landuse_create.png
-     :align: center
-
-     Create RAS Layers window
-
-
-Land use layer must contain “LUID”, “LUCode” and “N_Value” attributes and it should contain multipart polygons. In this example "LUID" and "LUCode" is the same but it can be different.
+**LanduseAreas** layer must contain *'LUID'*, *'LUCode'* and *'N_Value'* attributes and it should contain *multipart* polygons. In this example *'LUID'* and *'LUCode'* is the same but it can be different.
 
   .. _fig_man_luatttable:
   .. figure:: img/lu_att_table.png
@@ -191,7 +210,7 @@ Land use layer must contain “LUID”, “LUCode” and “N_Value” attribute
 
      Exemplary Landuse attribute table
 
-For correct Manning's values extraction all of the cross sections in XSCutLines layer have to cover land use polygons
+For correct Manning's values extraction all of the cross sections in **XSCutLines** layer have to cover land use polygons
 
   .. _fig_man_xslupic:
   .. figure:: img/xs_lu_pic.png
@@ -199,31 +218,56 @@ For correct Manning's values extraction all of the cross sections in XSCutLines 
 
      Cross sections and Land use layers coverage
 
-Next step is pushing a button |mannbuton| which is located on main toolbar or you can find it also in context menu as is shown below
-
-  .. |mannbuton| image:: img/man_ico.png
-
-  .. _fig_man_mancontextmenu:
-  .. figure:: img/man_context_menu.png
-     :align: center
-
-     RAS Geometry context menu
-
-Main RiverGIS window should display following message if the extraction was done properly
-
-  .. _fig_manmandone:
-  .. figure:: img/man_done.png
-     :align: center
-
-     Correct Manning's values extraction
-
-You should obtain table with "XsecID", "Fraction", "N_Value" and "LUCode" attributes. Table will be added to view and in this form is ready for SDF export.
+After running tool you should obtain **Manning** table with *'XsecID'*, *'Fraction'*, *'N_Value'* and *'LUCode'* attributes. Table will be added to view and in this form is ready for SDF export.
 
   .. _fig_man_mantable:
   .. figure:: img/man_table.png
      :align: center
 
      Exemplary Manning's values table
+
+----------------
+Levee Alignments
+----------------
+There is one method for **LeveeAlignments** layer and it depends on **XSCutLines** polyline layer.
+
+```````````````
+Levees
+```````````````
+It can be run from context menu ``RAS Geometry`` -> ``Levees`` or by pressing  |leveebutton|  button.
+
+  .. |leveebutton| image:: img_ico/ras1dXsLevees.png
+
+Result is **LeveePoints** table inside schema which will be used during export to SDF file.
+
+-----------------
+Ineffective Areas
+-----------------
+There is one method for **IneffAreas** layer and it depends on **XSCutLines** polyline layer.
+
+```````````````
+Ineffective Flow Areas
+```````````````
+It can be run from context menu ``RAS Geometry`` -> ``Ineffective Flow Areas`` or by pressing  |ineffbutton|  button.
+
+  .. |ineffbutton| image:: img_ico/ras1dXsIneffective.png
+
+Result is **IneffLines** table inside schema which will be used during export to SDF file.
+
+--------------------
+Blocked Obstructions
+--------------------
+There is one method for **BlockedObs** layer and it depends on **XSCutLines** polyline layer.
+
+```````````````
+Blocked Obstructions
+```````````````
+It can be run from context menu ``RAS Geometry`` -> ``Blocked Obstructions`` or by pressing  |blockbutton|  button.
+
+  .. |blockbutton| image:: img_ico/ras1dXsBlockedObs.png
+
+Result is **BlockLines** table inside schema which will be used during export to SDF file.
+
 ----------------
 Bridges/Culverts
 ----------------
@@ -266,14 +310,6 @@ After finishing sketch and living edit mode go to RAS Geometry tab and from cont
      :align: center
 
      Bridge/Culvert menu
-
-If particular function is done without any problem you will see message in main RiverGIS window about successful processing. For elevation extraction you need DTM which covers bridges extent. After clicking “Elevation” or “All” functions there will be dialog window displayed with current DTM rasters. Choose any and click “OK”.
-
-  .. _fig_bridgdtm:
-  .. figure:: img/bridge_dtm.png
-     :align: center
-
-     DTM option window
 
 You have also access to “All” function from main RiverGIS toolbar by clicking this |bridgebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all bridges/culverts otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect bridge/culver elevation data.
 
@@ -392,10 +428,15 @@ Stationing is calculated basing on upstream start point of lateral structure wit
 You have also access to “All” function from main RiverGIS toolbar by clicking this |lateralbutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all lateral structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect lateral structures elevation data.
 
   .. |lateralbutton| image:: img/lateral_ico.png
+
 -------------
 Storage Areas
 -------------
 
-``````
+-------------
+Storage Areas Connections
+-------------
+
+-------------
 Create HEC-RAS GIS Import file (SDF)
-``````
+-------------
