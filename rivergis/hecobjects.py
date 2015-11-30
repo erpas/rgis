@@ -1570,7 +1570,7 @@ class BreakPoints2d(HecRasObject):
         self.attrs = [
             ('"BPID"', 'serial primary key'),
             ('"AreaID"', 'integer'),
-            ('"BLID"', 'integer'),
+            ('"BLmID"', 'integer'),
             ('"Fraction"', 'double precision')]
 
 

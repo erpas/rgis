@@ -67,7 +67,7 @@ def ras2dCreate2dPoints(rgis):
     SELECT
         "AreaID",
         -1,
-        (ST_Dump(makegrid(geom, "CellSize", {1}))).geom as geom
+        (ST_Dump("{0}".makegrid(geom, "CellSize", {1}))).geom as geom
     FROM
         "{0}"."FlowAreas2d";
 
@@ -88,12 +88,10 @@ def ras2dCreate2dPoints(rgis):
                 "{0}"."MeshPoints2d" as pts,
                 areas2dshrinked
             WHERE
-                pts.geom && areas2dshrinked.geom AND
                 ST_Intersects(pts.geom, areas2dshrinked.geom)
             );
     '''.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
     rgis.rdb.run_query(qry)
-
 
     # find which breakline line belongs to which 2d flow area
     # and create breaklines with a linear measure
@@ -144,7 +142,6 @@ def ras2dCreate2dPoints(rgis):
     '''.format(rgis.rdb.SCHEMA, rgis.rdb.SRID)
     rgis.rdb.run_query(qry)
 
-
     qry = '''
     WITH brbuf AS (
     SELECT
@@ -165,74 +162,87 @@ def ras2dCreate2dPoints(rgis):
 
     rgis.addInfo("  Creating mesh points along structures..." )
 
-    # find breakline that a breakpoint is located on ( tolerance = 10 [map units] )
-    breakPtsLocTol = 10
-    qry = '''
-    WITH ids AS (
+    # check if breaklines and breakpoints exist in the database
+    bls_exist = False
+    bps_exist = False
+    # rgis.addInfo("  List of tables: {}".format(rgis.rdb.list_tables()) )
+    for t in rgis.rdb.list_tables():
+        if t[0] == 'BreakLines2d':
+            bls_exist = True
+        if t[0] == 'BreakPoints2d':
+            bps_exist = True
+
+    if bls_exist:
+
+        # find measures of breakpoints along breaklines
+        # there was a change in the alg name between PostGIS 2.0 and 2.1
+        # ST_Line_Locate_Point -> ST_LineLocatePoint
+        qry = "select PostGIS_Full_Version() as ver;"
+        postgisVersion = rgis.rdb.run_query(qry, True)[0]['ver'].split('\"')[1][:5]
+        pgMajV = int(postgisVersion[:1])
+        pgMinV = int(postgisVersion[2:3])
+        if pgMajV < 2:
+            locate = "ST_Line_Locate_Point"
+        elif pgMajV >= 2 and pgMinV == 0:
+            locate = "ST_Line_Locate_Point"
+        else:
+            locate = "ST_LineLocatePoint"
+
+        if bps_exist:
+            # find breakline that a breakpoint is located on ( tolerance = 10 [map units] )
+            breakPtsLocTol = 10
+            qry = '''
+            WITH ids AS (
+                SELECT
+                    b."BLmID",
+                    p."BPID",
+                    b."AreaID"
+                FROM
+                    "{0}"."BreakLines2d_m" b,
+                    "{0}"."BreakPoints2d" p
+                WHERE
+                    ST_Buffer(p.geom, {1}) && b.geom and
+                    ST_Contains(ST_Buffer(b.geom, {1}), p.geom)
+            )
+            UPDATE
+                "{0}"."BreakPoints2d" p
+            SET
+                "BLmID" = ids."BLmID",
+                "AreaID" = ids."AreaID"
+            FROM
+                ids
+            WHERE
+                ids."BPID" = p."BPID";
+            '''.format(rgis.rdb.SCHEMA, breakPtsLocTol)
+            rgis.rdb.run_query(qry)
+
+            # find breakpoints measures along a breakline
+            qry = '''
+            UPDATE
+                "{0}"."BreakPoints2d" p
+            SET
+                "Fraction" = {1}(b.geom, p.geom)
+            FROM
+                "{0}"."BreakLines2d_m" b
+            WHERE
+                p."BLmID" = b."BLmID";
+            '''.format(rgis.rdb.SCHEMA, locate)
+            rgis.rdb.run_query(qry)
+
+        # find breaklines with measures
+        qry = '''
         SELECT
-            b."BLID",
-            p."BPID",
-            b."AreaID"
-        FROM
-            "{0}"."BreakLines2d" b,
-            "{0}"."BreakPoints2d" p
-        WHERE
-            ST_Buffer(p.geom, {1}) && b.geom and
-            ST_Contains(ST_Buffer(b.geom, {1}), p.geom)
-    )
-    UPDATE
-        "{0}"."BreakPoints2d" p
-    SET
-        "BLID" = ids."BLID",
-        "AreaID" = ids."AreaID"
-    FROM
-        ids
-    WHERE
-        ids."BPID" = p."BPID";
-    '''.format(rgis.rdb.SCHEMA, breakPtsLocTol)
-    rgis.rdb.run_query(qry)
+            "BLmID",
+            "AreaID",
+            "CellSizeAlong" as csx,
+            "CellSizeAcross" as csy,
+            ST_Length(geom) as len,
+            "RowsAligned" as rows
+        from
+            "{0}"."BreakLines2d_m";
+        '''.format(rgis.rdb.SCHEMA)
+        bls = rgis.rdb.run_query(qry, True)
 
-    # find measures of breakpoints along breaklines
-    # there was a change in the alg name between PostGIS 2.0 and 2.1
-    # ST_Line_Locate_Point -> ST_LineLocatePoint
-    qry = "select PostGIS_Full_Version() as ver;"
-    postgisVersion = rgis.rdb.run_query(qry, True)[0]['ver'].split('\"')[1][:5]
-    pgMajV = int(postgisVersion[:1])
-    pgMinV = int(postgisVersion[2:3])
-    if pgMajV < 2:
-        locate = "ST_Line_Locate_Point"
-    elif pgMajV >= 2 and pgMinV == 0:
-        locate = "ST_Line_Locate_Point"
-    else:
-        locate = "ST_LineLocatePoint"
-    qry = '''
-    UPDATE
-        "{0}"."BreakPoints2d" p
-    SET
-        "Fraction" = {1}(b.geom, p.geom)
-    FROM
-        "{0}"."BreakLines2d" b
-    WHERE
-        p."BLID" = b."BLID";
-    '''.format(rgis.rdb.SCHEMA, locate)
-    rgis.rdb.run_query(qry)
-
-    rgis.addInfo("  Creating aligned mesh points along structures..." )
-
-    qry = '''
-    SELECT
-        "BLmID",
-        "AreaID",
-        "CellSizeAlong" as csx,
-        "CellSizeAcross" as csy,
-        ST_Length(geom) as len,
-        "RowsAligned" as rows
-    from
-        "{0}"."BreakLines2d_m";
-    '''.format(rgis.rdb.SCHEMA)
-    bls = rgis.rdb.run_query(qry, True)
-
-    if bls:
         for line in bls:
             if not line['csx'] or not line['csy'] or not line['rows']:
                 rgis.addInfo('<br><b>  Empty BreakLines2d attribute! Cancelling...<b><br>')
@@ -245,21 +255,25 @@ def ras2dCreate2dPoints(rgis):
             rows = int(line['rows'])
             imax = int(leng/(odl))
 
+            # check if breakpoints exist on the breakline
             qry = '''
-            SELECT DISTINCT
-                p."Fraction"
+            SELECT
+                bp."BPID"
             FROM
-                "{0}"."BreakPoints2d" p,
-                "{0}"."BreakLines2d" l
+                "{0}"."BreakLines2d_m" bl,
+                "{0}"."BreakPoints2d" bp
             WHERE
-                p."BLID" = {1};
+                bl."BLmID" = {1} AND
+                bp."BLmID" = bl."BLmID";
             '''.format(rgis.rdb.SCHEMA, id)
-            ms = rgis.rdb.run_query(qry, True)
+            bp_on_bl = rgis.rdb.run_query(qry, True)
+            if rgis.DEBUG:
+                rgis.addInfo("  Breakline BLmID={0}, {1}".format(id, bp_on_bl))
 
-            if not ms:
+            if not bp_on_bl:
                 # no BreakPoints2d: create aligned mesh at regular interval = CellSizeAlong
                 if rgis.DEBUG:
-                    rgis.addInfo("  Creating regular points for structure id=%i (no breakpoints)" % id )
+                    rgis.addInfo("  Creating regular points for breakline BLmID=%i (no breakpoints)" % id )
                 for i in range(0, imax+1):
                     dist = i * odl
                     for j in range(0,rows):
@@ -291,6 +305,16 @@ def ras2dCreate2dPoints(rgis):
                         rgis.rdb.run_query(qry)
 
             else: # create cell faces at breakline's breakpoints
+                qry = '''
+                SELECT DISTINCT
+                    p."Fraction"
+                FROM
+                    "{0}"."BreakPoints2d" p
+                WHERE
+                    p."BLmID" = {1};
+                '''.format(rgis.rdb.SCHEMA, id)
+                ms = rgis.rdb.run_query(qry, True)
+
                 if rgis.DEBUG:
                     rgis.addInfo("  Creating breakpoints for structure id=%i (with breakpoints)" % id )
                 sm_param = 4
@@ -373,10 +397,6 @@ def ras2dCreate2dPoints(rgis):
                         '''.format(rgis.rdb.SCHEMA, cs_min, m*leng, j*szer+szer/2, id)
                         rgis.rdb.run_query(qry)
 
-                        # qry = 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, %.2f)) from  %s."Breaklines_m" where gid = %i;\n' % (rgis.rdb.SCHEMA, cs_min, m*leng, j*odl+odl/2, rgis.rdb.SCHEMA, id)
-                        # qry += 'insert into %s.mesh_pts (lid, aid, cellsize, geom) select gid, aid, %.2f, ST_Centroid(ST_LocateAlong(geom, %.2f, -%.2f)) from %s."Breaklines_m" where gid = %i;' % (rgis.rdb.SCHEMA, cs_min, m*leng, j*odl+odl/2, rgis.rdb.SCHEMA, id)
-                        # rgis.rdb.run_query(qry)
-
     rgis.addInfo("  Deleting mesh points located too close to each other or outside the 2D area..." )
 
     qry = '''
@@ -396,6 +416,7 @@ def ras2dCreate2dPoints(rgis):
     USING
         "{0}"."FlowAreas2d" as a
     WHERE
+        a."AreaID" = p."AreaID" AND
         NOT ST_Contains(ST_Buffer(a.geom,-0.3*a."CellSize"), p.geom );
     '''.format(rgis.rdb.SCHEMA)
     rgis.rdb.run_query(qry)
