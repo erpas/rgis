@@ -433,9 +433,64 @@ You have also access to “All” function from main RiverGIS toolbar by clickin
 Storage Areas
 -------------
 
+**StorageAreas** have 3 methods for volume calculations which are:
+
+```````````````
+Terrain Point Extraction
+```````````````
+Algorithm can be run from context menu ``RAS Geometry`` -> ``Storage Areas`` -> ``Terrain Point Extraction`` or by pressing  |extractionbutton|  button.
+
+  .. |extractionbutton| image:: img_ico\ras1dSATerPtExtract.png
+
+Tool generates point grid inside every storage area and probe elevation rasters with it. Spacing between points equals DTMs cellsize. Result is **SASurface** which contains those points. They are needed to calculate volume of the storages. Also remember to setup DTMs before running algorithm.
+
+  .. note::
+
+     Creating points grid for large storage areas and high resolution DTMs can take a while, so please be patient. Changing ``Chunk size`` value is recomended in such situations.
+
+```````````````
+Elevation-Volume Data
+```````````````
+Next step after ``Terrain Point Extraction`` is ``RAS Geometry`` -> ``Storage Areas`` -> ``Elevation-Volume Data``. It can also be run by pressing |volumebutton| button. Algorithm will ask you about number of slices for volume calculations.
+
+  .. |volumebutton| image:: img_ico\ras1dSAElevVolume.png
+
+Result is **SAVolume** table inside schema which will be used during export to SDF file.
+
+```````````````
+All
+```````````````
+``RAS Geometry`` -> ``Storage Areas`` -> ``All`` or  |sa_all|  button.
+
+  .. |sa_all| image:: img_ico\ras1dStorageAreas.png
+It will launch all **StorageAreas** tools one after another.
+
+
 -------------
 Storage Areas Connections
 -------------
+
+**SAConnections** is another geometry class related with storage areas. Tool has 3 methods which are:
+
+```````````````
+Assign Nearest SA
+```````````````
+Algorithm can be run from context menu ``RAS Geometry`` -> ``Storage Areas Connections`` -> ``Assign Nearest SA``. This tool defines which storage area is upstream and downstream. It saves results (which is *'StorageID'* from **StorageAreas**) in *'USSA'* and *'DSSA'* columns inside **SAConnections** table.
+
+```````````````
+Elevations
+```````````````
+``RAS Geometry`` -> ``Storage Areas Connections`` -> ``Elevations``.
+
+This tool generates points along storage area connections (and saves them into **SACSurface** table) and use them to probe DTM rasters.
+
+```````````````
+All
+```````````````
+``RAS Geometry`` -> ``Storage Areas Connections`` -> ``All`` or  |sac_all|  button.
+
+  .. |sac_all| image:: img_ico\ras1dSAConnections.png
+It will launch all **StorageAreas** tools one after another.
 
 -------------
 Create HEC-RAS GIS Import file (SDF)
