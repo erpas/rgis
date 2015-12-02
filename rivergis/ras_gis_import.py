@@ -24,33 +24,36 @@ class RasGisImport(object):
         self.sa_connections = SAConnectionsBuilder(rgis)
 
     def check_components(self):
+        schema = self.rgis.rdb.SCHEMA
         tabs = self.rgis.rdb.register
         attrs = self.__dict__
-        for k in attrs:
-            obj = attrs[k]
+        for key in attrs:
+            obj = attrs[key]
             if hasattr(obj, 'components') is True:
                 for elem in obj.components:
                     if elem not in tabs:
                         msg = 'WARNING! Nonexistent "{0}" table. This part of SDF file will be omitted.'.format(elem)
                         self.rgis.addInfo(msg)
                     else:
-                        pass
+                        self.check_SRID(schema, elem, 'geom', 'Manning', 'SAVolume')
             else:
                 pass
 
-    def gis_import_file(self):
-        imp = self.header.build_header()
-        imp += self.network.build_network()
-        imp += self.xsections.build_cross_sections()
-        imp += self.bridges.build_bridges()
-        imp += self.inline_str.build_inline_str()
-        imp += self.lateral_str.build_lateral_str()
-        imp += self.levees.build_levees()
-        imp += self.ineff_areas.build_ineff_areas()
-        imp += self.blocked_obs.build_blocked_obs()
-        imp += self.storage_areas.build_storage_areas()
-        imp += self.sa_connections.build_sa_connections()
-        return imp
+    def check_SRID(self, schema, table, geom, *no_geom):
+        if table in no_geom:
+            return
+        else:
+            pass
+        qry = '''SELECT Find_SRID('{0}', '{1}', '{2}');'''
+        qry = qry.format(schema, table, geom)
+        srid = self.rgis.rdb.run_query(qry, fetch=True)[0][0]
+        crs = int(self.rgis.crs.postgisSrid())
+        if srid != crs:
+            msg = 'WARNING! Differences between "{0}" table SRID ({1}) and project CRS ({2}).'.format(table, srid, crs)
+            self.rgis.addInfo(msg)
+        else:
+            pass
+        return srid
 
     @staticmethod
     def unpack_wkt(wkt):
@@ -67,6 +70,20 @@ class RasGisImport(object):
             raise ValueError('Inappropriate WKT geometry type. WKT must be POINT, LINESTRING or POLYGON.')
         pnts = (p.split() for p in wkt[sidx:eidx].split(','))
         return pnts
+
+    def gis_import_file(self):
+        imp = self.header.build_header()
+        imp += self.network.build_network()
+        imp += self.xsections.build_cross_sections()
+        imp += self.bridges.build_bridges()
+        imp += self.inline_str.build_inline_str()
+        imp += self.lateral_str.build_lateral_str()
+        imp += self.levees.build_levees()
+        imp += self.ineff_areas.build_ineff_areas()
+        imp += self.blocked_obs.build_blocked_obs()
+        imp += self.storage_areas.build_storage_areas()
+        imp += self.sa_connections.build_sa_connections()
+        return imp
 
 
 class HeaderBuilder(object):
