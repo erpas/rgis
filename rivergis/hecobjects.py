@@ -1184,7 +1184,8 @@ WITH cpnt AS
         geom,
         "LateralSID",
         "ReachCode",
-         ("ToSta"-"FromSta") AS "Length"
+         ("ToSta"-"FromSta") AS "Length",
+         "FromSta"
     FROM
         (SELECT
             ST_ClosestPoint(sc.geom, ST_StartPoint(ls.geom))::geometry(POINT, {1}) AS geom,
@@ -1203,7 +1204,7 @@ WITH cpnt AS
 
 UPDATE "{0}"."LateralStructures" AS ls
 SET
-   "Station" = cpnt."Length"*(1-ST_Line_Locate_Point(sc.geom, cpnt.geom))
+   "Station" = cpnt."Length"*(1-ST_Line_Locate_Point(sc.geom, cpnt.geom)) + cpnt."FromSta"
 FROM
     cpnt,
     "{0}"."StreamCenterlines" AS sc
