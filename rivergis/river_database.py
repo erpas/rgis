@@ -422,7 +422,7 @@ class RiverDatabase(object):
             if attr_map:
                 am = ['{0} - {1}'.format(key, value) for key, value in attr_map.iteritems()]
                 info = '  attr_map:\n    '
-                info += '\n    {0}'.join(am)
+                info += '\n    '.join(am)
                 self.rgis.addInfo(info)
             else:
                 pass
