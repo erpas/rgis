@@ -1364,7 +1364,7 @@ WHERE
         qry = qry.format(self.schema)
         return qry
 
-    def pg_storage_calculator(self, slices=5):
+    def pg_storage_calculator(self, slices=10):
         qry = '''
 CREATE OR REPLACE FUNCTION "{0}".storage_calculator (slices integer)
     RETURNS VOID AS
@@ -1375,8 +1375,9 @@ DECLARE
     area double precision;
     emin double precision;
     emax double precision;
-    lev double precision;
     h double precision;
+    lev double precision;
+    vol double precision;
 BEGIN
     FOR r IN c LOOP
         area := (SELECT dtm."CellSize" FROM "{0}"."DTMs" AS dtm WHERE dtm."DtmID" = r."DtmID")^2;
@@ -1384,18 +1385,12 @@ BEGIN
         emax := (SELECT CASE WHEN r."UserElev" IS NULL THEN MAX("Elevation") ELSE r."UserElev" END FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID");
         h := (emax-emin)/slices;
         lev := emin+h;
-        INSERT INTO "{0}"."SAVolume" VALUES (r."StorageID", emin, 0);
+        vol := 0;
+        INSERT INTO "{0}"."SAVolume" VALUES (r."StorageID", emin, vol);
         FOR i IN 1..slices LOOP
-            INSERT INTO "{0}"."SAVolume" ("StorageID", level, volume)
-            SELECT
-                r."StorageID",
-                lev,
-                COUNT("Elevation")*area*h
-            FROM
-                "{0}"."SASurface"
-            WHERE
-                "StorageID" = r."StorageID" AND
-                "Elevation" <= lev+h;
+            vol := vol + (SELECT COUNT("Elevation")*area*h FROM "{0}"."SASurface" WHERE "StorageID" = r."StorageID" AND "Elevation" <= lev+h);
+            INSERT INTO "{0}"."SAVolume" ("StorageID", "level", "volume")
+            SELECT r."StorageID", lev, vol;
             lev := lev+h;
         END LOOP;
     END LOOP;
