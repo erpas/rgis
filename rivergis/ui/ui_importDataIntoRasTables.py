@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_importDataIntoRasTables.ui'
 #
-# Created: Thu Oct 22 10:50:07 2015
+# Created: Thu Dec 03 10:27:39 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_importDataIntoRasTables(object):
     def setupUi(self, importDataIntoRasTables):
         importDataIntoRasTables.setObjectName(_fromUtf8("importDataIntoRasTables"))
-        importDataIntoRasTables.resize(362, 610)
+        importDataIntoRasTables.resize(362, 648)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -53,6 +53,35 @@ class Ui_importDataIntoRasTables(object):
         self.cboStreamCenterlines.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.cboStreamCenterlines.setObjectName(_fromUtf8("cboStreamCenterlines"))
         self.verticalLayout.addWidget(self.cboStreamCenterlines)
+        self.horizontalLayout_30 = QtGui.QHBoxLayout()
+        self.horizontalLayout_30.setObjectName(_fromUtf8("horizontalLayout_30"))
+        self.label_35 = QtGui.QLabel(self.general)
+        self.label_35.setObjectName(_fromUtf8("label_35"))
+        self.horizontalLayout_30.addWidget(self.label_35)
+        self.cboRiverNameAttr = QtGui.QComboBox(self.general)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cboRiverNameAttr.sizePolicy().hasHeightForWidth())
+        self.cboRiverNameAttr.setSizePolicy(sizePolicy)
+        self.cboRiverNameAttr.setObjectName(_fromUtf8("cboRiverNameAttr"))
+        self.horizontalLayout_30.addWidget(self.cboRiverNameAttr)
+        self.verticalLayout.addLayout(self.horizontalLayout_30)
+        self.horizontalLayout_31 = QtGui.QHBoxLayout()
+        self.horizontalLayout_31.setContentsMargins(-1, 0, -1, 0)
+        self.horizontalLayout_31.setObjectName(_fromUtf8("horizontalLayout_31"))
+        self.label_36 = QtGui.QLabel(self.general)
+        self.label_36.setObjectName(_fromUtf8("label_36"))
+        self.horizontalLayout_31.addWidget(self.label_36)
+        self.cboReachNameAttr = QtGui.QComboBox(self.general)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cboReachNameAttr.sizePolicy().hasHeightForWidth())
+        self.cboReachNameAttr.setSizePolicy(sizePolicy)
+        self.cboReachNameAttr.setObjectName(_fromUtf8("cboReachNameAttr"))
+        self.horizontalLayout_31.addWidget(self.cboReachNameAttr)
+        self.verticalLayout.addLayout(self.horizontalLayout_31)
         self.label_2 = QtGui.QLabel(self.general)
         self.label_2.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.label_2.setObjectName(_fromUtf8("label_2"))
@@ -675,6 +704,8 @@ class Ui_importDataIntoRasTables(object):
     def retranslateUi(self, importDataIntoRasTables):
         importDataIntoRasTables.setWindowTitle(_translate("importDataIntoRasTables", "Import Data Into RAS PostGIS Tables", None))
         self.label.setText(_translate("importDataIntoRasTables", "Rivers Layer", None))
+        self.label_35.setText(_translate("importDataIntoRasTables", "River name attribute", None))
+        self.label_36.setText(_translate("importDataIntoRasTables", "Reach name attribute", None))
         self.label_2.setText(_translate("importDataIntoRasTables", "Cross-sections Layer", None))
         self.label_4.setText(_translate("importDataIntoRasTables", "Banks Layer", None))
         self.label_7.setText(_translate("importDataIntoRasTables", "Flow Paths Layer", None))

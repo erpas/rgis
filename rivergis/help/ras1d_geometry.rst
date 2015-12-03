@@ -4,44 +4,126 @@
 Step by step: HEC-RAS 1D Geometry
 =================================
 
-----------------------------
-Create geometry of the model
-----------------------------
+RiverGIS tries to mimic the workflow of HEC-GeoRAS where it is possible and users are encouraged to read the `HEC-GeoRAS documentation`_.
 
-Required data of the model geometry:
-
-1. River centerlines (polylines)
-
-2. Cross-sections (polylines)
-
-3. DTM, digital terrain model --- a raster layer
+  .. _HEC-GeoRAS documentation: http://rivergis.com/GeoRAS_docs/HEC_GeoRAS_10_for_ArcGIS_10.pdf
 
 
-Optional geometry data:
+-------------------------
+Typical RiverGIS workflow
+-------------------------
 
-4. Channel Bank lines
+#. :ref:`Create a new database schema for a model<ras1d_create_schema>`
+#. :ref:`Set model's spatial projection <ras1d_projection>`
+#. :ref:`Create/import geometry <ras1d_geometry_creation>` of the model (river lines, cross-sections, hydraulic structures)
+#. Build river network topology (reach connectivity and order, reach lengths)
+#. Calculate cross-sections' attributes (stations, downstream lengths, etc.)
+#. Probe vertical shape of cross-sections from a DTM raster(s)
+#. Define additional cross-sections' data (banks, levees, ineffecive flow areas, obstructions et.)
+#. Find Manning's roughness coefficients for each cross-section
+#. Build hydraulic structures (bridges/culverts, inline and lateral structures, storage areas, etc.).
+#. Create HEC-RAS GIS Import file (*.sdf)
 
-5. Flow Paths --- flow centerlines for each cross-section part: main channel, right and left overbank (polylines)
+.. _ras1d_create_schema:
 
-6. Levees (polylines)
+----------------------
+Create database schema
+----------------------
 
-7. Ineffective flow areas (polygons)
+A fundamental difference from HEC-GeoRAS is that the RiverGIS uses a ``PostgreSQL`` database with ``PostGIS`` spatial extension for data storage (see :ref:`requirements` for installation instructions). A term *river database* refers to a database used by RiverGIS. Until a database and schema are set in RiverGIS window, most of the tools are inactive.
 
-8. Blocked obstructions (polygons)
+A single ``PostgreSQL`` database can be used to store many models geometries. Each model goes to its own `schema <http://www.postgresql.org/docs/current/static/ddl-schemas.html>`_, a kind of database directory for data grouping. Therefore, the first step is to create a new schema for a model.
 
-9. Land cover (polygons)
+Users can create a schema in a number of ways: using `pgAdmin <http://pgadmin.org>`_, QGIS' own `DB Manager <http://docs.qgis.org/2.8/en/docs/user_manual/plugins/plugins_db_manager.html>`_ or from within RiverGIS dialog by choosing ``Database`` > ``Create New Schema`` or clicking |createschema| tool icon from Database toolbar. RiverGIS will automatically switch to the newly created schema, as shown below.
 
-* To **create** an empty geometry tables for model data (with right attribute structure) you can use ``Database`` -> ``Create River Databse Tables`` option from context menu or press  |createbutton|  button from main RiverGIS window. Next choose tables you want to create. Tables will be created at current active schema and with chosen projection, so be sure that they are defined properly before creating tables.
+.. |createschema| image:: img_ico/dbCreateSchema.png
 
-  .. |createbutton| image:: img_ico/dbCreateRasTables.png
+.. figure:: img/ras1d_new_schema_created.png
+   :align: center
 
-* To **import** already existing geometry data into empty PostGIS tables you can use ``Database`` -> ``Import Layers Into River Database Tables`` option from context menu or press  |importbutton|  button from main RiverGIS window. Next chose layers you want to import. You can insert multiple geometry data to PostGIS tables at once.
+HEC-RAS 1D flow model geometry consist of rivers network, cross-sections and, optionally, hydraulic structures such as weirs, bridges or storage areas. Users have an option to import spatial data to the database from other data formats (i.e. ESRI Shapefiles) or create it from scratch.
 
-  .. |importbutton| image:: img_ico/importLayersIntoRdb.png
+.. note::
+    In PostgreSQL spatial layer data are kept in tables. In this manual we will use terms *table* and *layer* interchangably.
 
-* To **load** model geometry data from schema to QGIS view you can use ``Database`` -> ``Load River Database Tables Into QGIS`` option from context menu or press  |loadbutton|  button from main RiverGIS window. RiverGIS will find all registered model geometry data inside active schema and add as QGIS layers with preserved order and symbology.
+Each table has a number of columns defining object attributes. Some of the attributes, such as `RiverCode` (a river name), are to be set by a user and some are produced by RiverGIS. Users should *not* change the structure of river database tables.
 
-  .. |loadbutton| image:: img_ico/loadRdbTablesIntoQgis.png
+.. _ras1d_projection:
+
+------------------------
+Model spatial projection
+------------------------
+
+.. note::
+    Spatial data are always stored using a projection. See QGIS Manual for `Working with Projections <http://docs.qgis.org/2.2/en/docs/user_manual/working_with_projections/working_with_projections.html>`_
+
+.. figure:: img/ras1d_projection.png
+   :align: center
+
+Before creating geometry objects users must choose a projection for a model data using projection selector at the bottom of RiverGIS window (shown above). **All the model geometry data must use projection defined in the projection selector**. If data for a model already exist in a spatial layer a user must check its projection for consistency with a projection chosen in RiverGIS projection selector and convert it if needed.
+
+.. _ras1d_geometry_creation:
+
+------------------------------
+Model Geometry Creation/Import
+------------------------------
+
+Model geometry data are stored in a river database tables. There is a table for river lines, cross-sections etc. The table below lists river database tables that can be created by RiverGIS. If a table needs a user specified attribute, it is given in the *Required attributes* column.
+
+======================  ==================  ==========  ====================
+Table name              Contains            Type        Required attributes
+======================  ==================  ==========  ====================
+``StreamCenterlines``   river lines         polyline    ``RiverCode``
+                                                        ``ReachCode``
+``XSCutlines``          cross-sections      polyline    ---
+``Flowpaths``           flow paths          polyline    ``LineType`` ---
+                                                        Channel, Left or
+                                                        Right
+``BankLines``           channel bank lines  polyline    ---
+``LeveeAlignment``      levees              polyline    ---
+``IneffAreas``          ineffective flow    polygon     ``Elevation``
+                        areas
+``BlockedObs``          blocked             polygon     ``Elevation``
+                        obstructions
+``LanduseAreas``        landuse             polygon     ``N_Value`` ---
+                                                        Manning's *n* value
+``Bridges``             bridges/culverts    polyline    ---
+``InlineStructures``    inline structures   polyline    ---
+``LateralStructures``   lateral structures  polyline    ---
+``StorageAreas``        storage areas       polygon     ---
+``SAConnections``       storage areas       polyline    ---
+                        connections
+======================  ==================  ==========  ====================
+
+There three tables always required for a model creation: river lines, cross-sections and flow paths. The rest is optional.
+
+Users create new tables using ``Database`` -> ``Create River Database Tables`` or |createtables| tool. The following dialog allows for selection of tables to be created.
+
+  .. |createtables| image:: img_ico/dbCreateRasTables.png
+
+.. figure:: img/ras1d_create_tables.png
+   :align: center
+
+Newly created tables are automatically loaded into current QGIS project. Users have an option to add all tables into QGIS project using ``Database`` -> ``Load River Database Tables Into QGIS`` or |loadtables| tool. RiverGIS finds all geometry data tables in the current schema and adds them into QGIS project.
+
+  .. |loadtables| image:: img_ico/loadRdbTablesIntoQgis.png
+
+The loaded tables can be `edited using QGIS editing tools <http://docs.qgis.org/2.8/en/docs/user_manual/working_with_vector/editing_geometry_attributes.html>`_ or populated by importing data from other spatial layers using ``Database`` -> ``Import Layers Into River Database Tables`` or |importlayers| tool. Multiple geometry data can be specified.
+
+  .. |importlayers| image:: img_ico/importLayersIntoRdb.png
+
+
+Here, we use modified Bald Eagle project data from HEC-RAS Unsteady Examples. The project spatial data can be downloaded from `rivergis.com <http://rivergis.com/examples/baldeagle.zip>`_. The archive contains also QGIS project file with all the data and projection defined (NAD 1983 StatePlane Pennsylvania North FIPS 3701 Feet). Unzip the archive and open the QGIS project ``BaldEagle.qgs``.
+
+.. figure:: img/ras1d_bald_start.png
+   :align: center
+
+The data should be always inspected before importing into a river database. At least layer's projection should be the same as RiverGIS projection. If the source layer's attribute names differ from the database table required attribute, you can always map a source attribute name to the right column. If the required attributes are empty or nonexistant, you will have to fill the database columns by hand after the import.
+
+The Bald Eagle example contains river lines, cross-sections, flowpaths, banklines etc. --- let's import them all to a new schema.
+
+
+
 
 * Before running RiverGIS tools we recommend to **setup DTM options first**. You have to add DTM tiles into QGIS view and select them from ``Settings`` -> ``Options``  or  |optionbutton| in ``DTM`` tab. If you have high resolution DTMs consider changing ``Chunk size`` value. This option says how many points can be load at once to memory to probe DTMs. Default value is ``'0'`` and it means that RiverGIS will try to take all points at once into the analysis.
 
@@ -96,7 +178,7 @@ This option is for copying features from **StreamCenterlines** table to **Flowpa
 
   .. note::
 
-    **Flowpaths** empty table have to be created before running this tool. U can use |createbutton| button.
+    **Flowpaths** empty table have to be created before running this tool. You can use |createbutton| button.
 
 
 ------------------------

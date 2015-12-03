@@ -70,6 +70,11 @@ Use |sqlbutton| to open SQL query editor and create ``PostGIS`` extensions for t
    :align: center
 
 
-The database is ready for connection from QGIS.
+In QGIS define a new database connection from :menuselection:`Layer --> Add layer > Add PostGIS Layers...`. Pick ``New`` and fill in the connection details, for example:
+
+.. figure:: img/create_pg_connection.png
+   :align: center
+
+Here the database server is installed on the local mashine (localhost) and is working on the default port 5432. The database is ``rivergis`` and user is ``postgres`` --- a superuser with administrative rigths, that was created during the database installation. Check the connection using ``Test Connection``. If the connection was succesful, close the dialog by clicking ``OK``. If it fails to connect, check the connection details and try again.
 
 
