@@ -167,7 +167,7 @@ class DlgImportDataIntoRasTables(QDialog):
                     },
                     'USDistance': {
                         'cbo': self.ui.cboBridgesUsDist,
-                        'checkName': ['usdist', 'usdistance', 'distance']
+                        'checkName': ['usdist', 'usdistance', 'distance', 'dist']
                     },
                     'TopWidth': {
                         'cbo': self.ui.cboBridgesTopWidth,
@@ -187,7 +187,7 @@ class DlgImportDataIntoRasTables(QDialog):
                     },
                     'USDistance': {
                         'cbo': self.ui.cboInlineStrUsDist,
-                        'checkName': ['usdist', 'usdistance', 'distance']
+                        'checkName': ['usdist', 'usdistance', 'distance', 'dist']
                     },
                     'TopWidth': {
                         'cbo': self.ui.cboInlineStrTopWidth,
@@ -207,7 +207,7 @@ class DlgImportDataIntoRasTables(QDialog):
                     },
                     'USDistance': {
                         'cbo': self.ui.cboLateralStrUsDist,
-                        'checkName': ['usdist', 'usdistance', 'distance']
+                        'checkName': ['usdist', 'usdistance', 'distance', 'dist']
                     },
                     'TopWidth': {
                         'cbo': self.ui.cboLateralStrTopWidth,

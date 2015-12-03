@@ -4,10 +4,16 @@
 Step by step: HEC-RAS 1D Geometry
 =================================
 
+This manual presents using the RiverGIS plugin for creation of HEC-RAS 1D flow model.
+
 RiverGIS tries to mimic the workflow of HEC-GeoRAS where it is possible and users are encouraged to read the `HEC-GeoRAS documentation`_.
 
   .. _HEC-GeoRAS documentation: http://rivergis.com/GeoRAS_docs/HEC_GeoRAS_10_for_ArcGIS_10.pdf
 
+As an example, a modified *Bald Eagle* project data from *HEC-RAS Unsteady Examples* are used. The project source data can be downloaded from `rivergis.com <http://rivergis.com/download/baldeagle.zip>`_. The archive contains also QGIS project file with all the data and projection defined (NAD 1983 StatePlane Pennsylvania North FIPS 3701 Feet). Unzip the archive and open ``BaldEagle.qgs`` project file.
+
+.. figure:: img/ras1d_bald_start.png
+   :align: center
 
 -------------------------
 Typical RiverGIS workflow
@@ -16,7 +22,7 @@ Typical RiverGIS workflow
 #. :ref:`Create a new database schema for a model<ras1d_create_schema>`
 #. :ref:`Set model's spatial projection <ras1d_projection>`
 #. :ref:`Create/import geometry <ras1d_geometry_creation>` of the model (river lines, cross-sections, hydraulic structures)
-#. Build river network topology (reach connectivity and order, reach lengths)
+#. :ref:`Build rivers network <ras1d_network>` (topology, i.e. reach connectivity and order, reach lengths)
 #. Calculate cross-sections' attributes (stations, downstream lengths, etc.)
 #. Probe vertical shape of cross-sections from a DTM raster(s)
 #. Define additional cross-sections' data (banks, levees, ineffecive flow areas, obstructions et.)
@@ -46,7 +52,7 @@ HEC-RAS 1D flow model geometry consist of rivers network, cross-sections and, op
 .. note::
     In PostgreSQL spatial layer data are kept in tables. In this manual we will use terms *table* and *layer* interchangably.
 
-Each table has a number of columns defining object attributes. Some of the attributes, such as `RiverCode` (a river name), are to be set by a user and some are produced by RiverGIS. Users should *not* change the structure of river database tables.
+Each table has a number of columns defining object attributes. Some of the attributes, such as ``RiverCode`` , are to be set by a user and some are produced by RiverGIS. Users should *not* change the structure of river database tables.
 
 .. _ras1d_projection:
 
@@ -67,16 +73,17 @@ Before creating geometry objects users must choose a projection for a model data
 ------------------------------
 Model Geometry Creation/Import
 ------------------------------
+.. _user_def_attrs:
 
-Model geometry data are stored in a river database tables. There is a table for river lines, cross-sections etc. The table below lists river database tables that can be created by RiverGIS. If a table needs a user specified attribute, it is given in the *Required attributes* column.
+Model geometry data are stored in a river database tables. There is a table for river lines, cross-sections etc. The table below lists river database tables created by RiverGIS. If a table needs a user specified attribute, it is given in the *User defined attributes* column.
 
-======================  ==================  ==========  ====================
-Table name              Contains            Type        Required attributes
-======================  ==================  ==========  ====================
+======================  ==================  ==========  =======================
+Table name              Contains            Type        User defined attributes
+======================  ==================  ==========  =======================
 ``StreamCenterlines``   river lines         polyline    ``RiverCode``
                                                         ``ReachCode``
 ``XSCutlines``          cross-sections      polyline    ---
-``Flowpaths``           flow paths          polyline    ``LineType`` ---
+``Flowpaths``           flow paths          polyline    ``LineType``:
                                                         Channel, Left or
                                                         Right
 ``BankLines``           channel bank lines  polyline    ---
@@ -85,17 +92,20 @@ Table name              Contains            Type        Required attributes
                         areas
 ``BlockedObs``          blocked             polygon     ``Elevation``
                         obstructions
-``LanduseAreas``        landuse             polygon     ``N_Value`` ---
+``LanduseAreas``        landuse             polygon     ``N_Value``:
                                                         Manning's *n* value
-``Bridges``             bridges/culverts    polyline    ---
-``InlineStructures``    inline structures   polyline    ---
-``LateralStructures``   lateral structures  polyline    ---
-``StorageAreas``        storage areas       polygon     ---
-``SAConnections``       storage areas       polyline    ---
+``Bridges``             bridges/culverts    polyline    ``USDistance``,
+                                                        ``TopWidth``
+``InlineStructures``    inline structures   polyline    ``USDistance``,
+                                                        ``TopWidth``
+``LateralStructures``   lateral structures  polyline    ``USDistance``,
+                                                        ``TopWidth``
+``StorageAreas``        storage areas       polygon     ``Name``
+``SAConnections``       storage areas       polyline    ``Name``
                         connections
-======================  ==================  ==========  ====================
+======================  ==================  ==========  =======================
 
-There three tables always required for a model creation: river lines, cross-sections and flow paths. The rest is optional.
+There are three tables always required for a model creation: river lines, cross-sections and flow paths. The rest is optional.
 
 Users create new tables using ``Database`` -> ``Create River Database Tables`` or |createtables| tool. The following dialog allows for selection of tables to be created.
 
@@ -104,7 +114,9 @@ Users create new tables using ``Database`` -> ``Create River Database Tables`` o
 .. figure:: img/ras1d_create_tables.png
    :align: center
 
-Newly created tables are automatically loaded into current QGIS project. Users have an option to add all tables into QGIS project using ``Database`` -> ``Load River Database Tables Into QGIS`` or |loadtables| tool. RiverGIS finds all geometry data tables in the current schema and adds them into QGIS project.
+Newly created tables are automatically loaded into current QGIS project. QGIS always adds new layers above the active layer selected in the layers panel tree.
+
+``Database`` -> ``Load River Database Tables Into QGIS`` or |loadtables| tool loads all river database tables that are not loaded already into QGIS project.
 
   .. |loadtables| image:: img_ico/loadRdbTablesIntoQgis.png
 
@@ -112,127 +124,155 @@ The loaded tables can be `edited using QGIS editing tools <http://docs.qgis.org/
 
   .. |importlayers| image:: img_ico/importLayersIntoRdb.png
 
+Geometry objects created by a user must comply the rules described in `HEC-GeoRAS documentation`_, chapter 4.
 
-Here, we use modified Bald Eagle project data from HEC-RAS Unsteady Examples. The project spatial data can be downloaded from `rivergis.com <http://rivergis.com/examples/baldeagle.zip>`_. The archive contains also QGIS project file with all the data and projection defined (NAD 1983 StatePlane Pennsylvania North FIPS 3701 Feet). Unzip the archive and open the QGIS project ``BaldEagle.qgs``.
+We will import the Bald Eagle example data into the newly created schema. The source layers are grouped in the ``src`` group and there is ``RiverGIS`` group for data produced by the plugin. Select the ``RiverGIS`` as a target group for loading new layers before starting the import.
 
-.. figure:: img/ras1d_bald_start.png
+.. figure:: img/ras1d_import.png
    :align: center
 
-The data should be always inspected before importing into a river database. At least layer's projection should be the same as RiverGIS projection. If the source layer's attribute names differ from the database table required attribute, you can always map a source attribute name to the right column. If the required attributes are empty or nonexistant, you will have to fill the database columns by hand after the import.
+Attribute names of the source data can differ from the database attribute names, but can be mapped easilly to the right column, as shown above. If the required attributes are empty or nonexistent, users have to fill the database columns by hand after the import.
 
-The Bald Eagle example contains river lines, cross-sections, flowpaths, banklines etc. --- let's import them all to a new schema.
+.. figure:: img/ras1d_imported.png
+   :align: center
+
+If the source layers group is switch off, only the imported layers should be visible. In the above picture also the landuse layer is turned off for clarity.
+
+It is always good idea to check the imported data visually and have a look into the attribute tables. Here we check the ``StreamCenterlines`` if the :ref:`required attributes <req_attrs>` are defined.
+
+.. figure:: img/ras1d_import_check_table.png
+   :align: center
+
+Creating the HEC-RAS geometry requires all user defined attributes to be non-empty.
+
+.. _ras1d_network:
+
+-------------
+River network
+-------------
+
+Topology
+--------
+
+==============  ========================================================================
+|topology|      ``RAS Geometry`` > ``Stream Centerline Attributes`` > ``Topology``
+==============  ========================================================================
+
+The river network is built from ``StreamCenterlines`` layer by ``Topology`` |topology| tool . At each reach end a node is created (``FromNode`` and ``ToNode``), as shown below.
+
+.. |topology| image:: img_ico/ras1dStreamCenterlinesTopology.png
+
+.. figure:: img/ras1d_nodes.png
+   :align: center
+
+Lengths/Stations
+----------------
+
+==================  =============================================================================
+|lengths_stations|  ``RAS Geometry`` > ``Stream Centerline Attributes`` > ``Lengths/Stations``
+==================  =============================================================================
+
+The ``Lengths/Station`` tool finds flow direction and calculates river stationing for each reach end. It fills ``ReachLen``, ``FromSta`` and ``ToSta`` reach attributes. Users can override the calculated values to adjust cross-sections stationing.
+
+.. |lengths_stations| image:: img_ico/ras1dStreamCenterlinesLengthsStations.png
+
+.. figure:: img/ras1d_length_stations_table.png
+   :align: center
+
+All
+----
+
+==============  ========================================================================
+|stream_all|    ``RAS Geometry`` > ``Stream Centerline Attributes`` > ``All``
+==============  ========================================================================
+
+Runs all river network tools, i.e. ``Topology`` and ``Lengths/Stations``.
+
+.. |stream_all| image:: img_ico/ras1dStreamCenterlinesAll.png
+
+
+Copy Stream Centerlines to Flowpaths
+------------------------------------
+
+====  =================================================================================================
+.      ``RAS Geometry`` > ``Stream Centerline Attributes`` > ``Copy Stream Centerlines to Flowpaths``
+====  =================================================================================================
+
+This will copy ``StreamCenterlines`` features to ``Flowpaths`` table and assign them ``Channel`` type.
 
 
 
+--------------
+Cross-sections
+--------------
 
-* Before running RiverGIS tools we recommend to **setup DTM options first**. You have to add DTM tiles into QGIS view and select them from ``Settings`` -> ``Options``  or  |optionbutton| in ``DTM`` tab. If you have high resolution DTMs consider changing ``Chunk size`` value. This option says how many points can be load at once to memory to probe DTMs. Default value is ``'0'`` and it means that RiverGIS will try to take all points at once into the analysis.
 
-  .. |optionbutton| image:: img_ico/options.png
+River/Reach Names
+-----------------
+==============  ========================================================================
+|xs_names|      ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``River/Reach Names``
+==============  ========================================================================
+
+.. |xs_names| image:: img_ico/ras1dXsRiverNames.png
+
+Assigns each cross-sections a ``ReachID``, ``RiverCode`` and ``ReachCode`` values.
+
+
+Stationing
+----------
+
+==============  ========================================================================
+|xs_station|    ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``Stationing``
+==============  ========================================================================
+
+  .. |xs_station| image:: img_ico/ras1dXsStationing.png
+
+Calculates ``Station`` value for each cross-section.
+
+
+Bank Stations
+-------------
+
+==============  ========================================================================
+|xs_banks|      ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``Bank Stations``
+==============  ========================================================================
+
+.. |xs_banks| image:: img_ico/ras1dXsBanks.png
+
+Calculates banks positions for each cross-section. Fills ``LeftBank`` and ``RightBank`` fields in **XSCutLines** table.
+
+
+Downstream Reach Lengths
+------------------------
+
+==============  ==============================================================================
+|xs_dsl|        ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``Downstream Reach Lengths``
+==============  ==============================================================================
+
+.. |xs_dsl| image:: img_ico/ras1dXsDSLengths.png
+
+Calculates distances to a next downstream cross-section along a flowpath. Fills the ``LLength``, ``ChLength`` and ``RLength`` attributes of ``XSCutLines`` table.
+
+
+Elevations
+----------
+
+==============  ==============================================================================
+|xs_elev|       ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``Elevations``
+==============  ==============================================================================
+
+.. |xs_elev| image:: img_ico/ras1dXsElevations.png
+
+This tool generates points along cross-sections, saves them to ``XSSurface`` table and probes chosen DTM rasters for point elevation. The tool requires a proper DTM setup, i.e. which raster layers are to be probed for elevation. Multiple raster are allowed. If rasters overlap always a raster with higher resolution is used. The rasters must completely cover all cross-sections.
+
+
+* Before running RiverGIS tools we recommend to **setup DTM options first**. You have to add DTM tiles into QGIS view and select them from
 
   .. _fig_bridgdtm:
   .. figure:: img/dtm_setup.png
      :align: center
 
      DTM option window
-
-------------------
-Stream Centerlines
-------------------
-
-If you have properly prepared stream network layer you can use such RiverGIS tools as:
-
-```````````````
-Topology
-```````````````
-``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Topology`` or  |topology|  button.
-
-  .. |topology| image:: img_ico/ras1dStreamCenterlinesTopology.png
-This tool builds topology over **StreamCenterlines** table and fill *'FromNode'* and *'ToNode'* fields. It will also create auxiliary **NodesTable** table inside schema.
-
-  .. note::
-
-    Remember to split network lines on every reach intersection (junctions).
-
-```````````````
-Lengths/Stations
-```````````````
-``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Lengths/Stations`` or |lengths_stations|  button.
-
-  .. |lengths_stations| image:: img_ico/ras1dStreamCenterlinesLengthsStations.png
-This tool calculates reaches lengths taking into account stream network topology. It will fill *'ReachLen'*, *'FromSta'*, *'ToSta'* fields and generate **Endpoints** auxiliary table.
-
-```````````````
-All
-```````````````
-``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``All`` or  |stream_all|  button.
-
-  .. |stream_all| image:: img_ico/ras1dStreamCenterlinesAll.png
-It will launch all tools (defined above) for **StreamCenterlines** geometry one after another.
-
-```````````````
-Copy Stream Centerlines to Flowpaths
-```````````````
-``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Copy Stream Centerlines to Flowpaths``
-
-This option is for copying features from **StreamCenterlines** table to **Flowpaths** as *'Channel'* type.
-
-  .. note::
-
-    **Flowpaths** empty table have to be created before running this tool. You can use |createbutton| button.
-
-
-------------------------
-Cross-sections Cut Lines
-------------------------
-
-If you have properly prepared cross-sections layer you can use such RiverGIS tools as:
-
-```````````````
-River/Reach Names
-```````````````
-``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``River/Reach Names`` or  |xs_names|  button.
-
-  .. |xs_names| image:: img_ico/ras1dXsRiverNames.png
-This tool assigns *'ReachID'*, *'RiverCode'* and *'ReachCode'* values from **StreamCenterlines** layer to cross sections. Each cross section can intersect only once with any **StreamCenterlines** feature.
-
-```````````````
-Stationing
-```````````````
-
-``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Stationing`` or |xs_stationing|  button.
-
-  .. |xs_stationing| image:: img_ico/ras1dXsStationing.png
-This tool calculates *'Station'* values for each cross section based on the intersection with river. Note that each cross section can have only one intersection point with river. Each cross section can intersect only once with any **StreamCenterlines** feature.
-
-```````````````
-Bank Stations
-```````````````
-``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Bank Stations`` or  |xs_banks|  button.
-
-  .. |xs_banks| image:: img_ico/ras1dXsBanks.png
-This tool calculates fraction on which features from **BankLines** table intersects with each cross section and decides if bank is left or right. Calculated values fills *'LeftBank'* and *'RightBank'* fields in **XSCutLines** table.
-
-```````````````
-Downstream Reach Lengths
-```````````````
-``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Downstream Reach Lengths`` or  |xs_dsl|  button.
-
-  .. |xs_dsl| image:: img_ico/ras1dXsDSLengths.png
-This tool calculates each cross section station along flow paths. Calculated values fills *'LLength'*, *'ChLength'* and *'RLength'* fields in **XSCutLines**.
-
-```````````````
-Elevations
-```````````````
-
-``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Elevations`` or  |xs_elev|  button.
-
-  .. |xs_elev| image:: img_ico/ras1dXsElevations.png
-This tool generates points along cross sections (and saves them into **XSSurface** table) and use them to probe DTM rasters.
-
-  .. note::
-
-    Before running tool you should customize DTM options. But if you forgot - don't worry -  DTM options dialog will appear anyway. ;)
-
 ```````````````
 All
 ```````````````
@@ -577,3 +617,12 @@ It will launch all **StorageAreas** tools one after another.
 -------------
 Create HEC-RAS GIS Import file (SDF)
 -------------
+
+
+
+---------------
+Plugin Settings
+---------------
+``Settings`` -> ``Options``  or  |optionbutton| in ``DTM`` tab. If you have high resolution DTMs consider changing ``Chunk size`` value. This option says how many points can be load at once to memory to probe DTMs. Default value is ``'0'`` and it means that RiverGIS will try to take all points at once into the analysis.
+
+  .. |optionbutton| image:: img_ico/options.png

@@ -27,7 +27,7 @@ Source code and bugtrucker
 
 Contact
 -------
-Please, report issues on github bugtracker.
+Please, report issues on `GitHub Issues <https://github.com/erpas/rgis/issues>'_.
 
 email: info@rivergis.com
 
