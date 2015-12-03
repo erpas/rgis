@@ -263,49 +263,23 @@ Elevations
 
 .. |xs_elev| image:: img_ico/ras1dXsElevations.png
 
-This tool generates points along cross-sections, saves them to ``XSSurface`` table and probes chosen DTM rasters for point elevation. The tool requires a proper DTM setup, i.e. which raster layers are to be probed for elevation. Multiple raster are allowed. If rasters overlap always a raster with higher resolution is used. The rasters must completely cover all cross-sections.
+This tool generates points along cross-sections, saves them to ``XSSurface`` table and probes chosen DTM rasters for point elevation. The tool requires a proper DTM setup, i.e. which raster layers are to be probed for elevation (see :ref:`options_dtm`). Multiple raster are allowed. If rasters overlap,a raster with higher resolution is used. The rasters must completely cover all cross-sections.
 
 
-* Before running RiverGIS tools we recommend to **setup DTM options first**. You have to add DTM tiles into QGIS view and select them from
-
-  .. _fig_bridgdtm:
-  .. figure:: img/dtm_setup.png
-     :align: center
-
-     DTM option window
-```````````````
 All
-```````````````
-``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``All`` or  |xs_all|  button.
+----
+==============  ==============================================================================
+|xs_all|        ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``All``
+==============  ==============================================================================
 
   .. |xs_all| image:: img_ico/ras1dXsAll.png
-It will launch all **XSCutLines** tools one after another.
+
+Runs all the ``XSCutLines`` tools.
 
 
----------------------
-Flow Path Centerlines
----------------------
-There are 2 methods connected with **FlowPaths** geometry type. Both were already shortly introduced in chapters about **StreamCenterlines** and **XSCutLines**:
 
-```````````````
-Copy Stream Centerlines to Flowpaths
-```````````````
-* ``RAS Geometry`` -> ``Stream Centerline Attributes`` -> ``Copy Stream Centerlines to Flowpaths``
+TODO....
 
-```````````````
-Downstream Reach Lengths
-```````````````
-* ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Downstream Reach Lengths`` or  |xs_dsl|  button.
-
----------------------
-Main Channel Banks
----------------------
-There is only one method for **BankLines** layer and it depends on **XSCutLines** polyline layer.
-
-```````````````
-Bank Stations
-```````````````
-It can be run from context menu ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``Bank Stations`` or by pressing   |xs_banks|  button.
 
 --------
 Land Use Areas
@@ -347,6 +321,7 @@ After running tool you should obtain **Manning** table with *'XsecID'*, *'Fracti
      :align: center
 
      Exemplary Manning's values table
+
 
 ----------------
 Levee Alignments
@@ -623,6 +598,37 @@ Create HEC-RAS GIS Import file (SDF)
 ---------------
 Plugin Settings
 ---------------
-``Settings`` -> ``Options``  or  |optionbutton| in ``DTM`` tab. If you have high resolution DTMs consider changing ``Chunk size`` value. This option says how many points can be load at once to memory to probe DTMs. Default value is ``'0'`` and it means that RiverGIS will try to take all points at once into the analysis.
+==============  ===================================================
+|optionbutton|  ``Settings`` > ``Options``
+==============  ===================================================
 
-  .. |optionbutton| image:: img_ico/options.png
+Options dialog allows users to set up the plugin parameters. Options are divided into several tabs described below.
+
+.. |optionbutton| image:: img_ico/options.png
+
+.. _options_general:
+
+General Options
+---------------
+
+TODO
+
+.. _options_db:
+
+Database Options
+----------------
+
+TODO
+
+
+.. _options_dtm:
+
+DTM Options
+-----------
+  .. figure:: img/options_dtm.png
+    :align: center
+
+This options alows users to choose rasters for probing (currently only elevation is probed from rasters).
+
+``Chunk size`` decides how many points can be load at once to memory to probe DTMs. Default value ``0`` allows the plugin to take all points at once.
+
