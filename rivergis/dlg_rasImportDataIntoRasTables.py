@@ -28,7 +28,16 @@ class DlgImportDataIntoRasTables(QDialog):
             'Stream Centerlines': {
                 'cbo': self.ui.cboStreamCenterlines,
                 'className': 'StreamCenterlines',
-                'attrs': {},
+                'attrs': {
+                    'RiverCode': {
+                        'cbo': self.ui.cboRiverNameAttr,
+                        'checkName': ['name', 'river', 'nazwa']
+                    },
+                    'ReachCode': {
+                        'cbo': self.ui.cboReachNameAttr,
+                        'checkName': ['name', 'reach', 'nazwa']
+                    }
+                },
                 'geomType': 1 # lines
             },
 
