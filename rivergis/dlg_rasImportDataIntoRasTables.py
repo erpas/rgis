@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import psycopg2
-import psycopg2.extras
-
+import hecobjects as heco
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
@@ -250,31 +248,38 @@ class DlgImportDataIntoRasTables(QDialog):
                 data['cbo'].currentIndexChanged.connect(self.layerCboChanged)
 
     def processLayers(self, name, data):
-        if not data['cbo'].currentText() == '':
-            curInd = data['cbo'].currentIndex()
-            lid = data['cbo'].itemData(curInd)
-            layer = self.rgis.mapRegistry.mapLayer(lid)
-            attrMap = {}
-            for attr, attrData in data['attrs'].iteritems():
-                curText = attrData['cbo'].currentText()
-                if curText:
-                    attrMap[attr] = curText
-            self.rgis.rdb.insert_layer(
-                        layer,
-                        self.rgis.rdb.register[data['className']],
-                        attr_map=attrMap,
-                        selected=self.onlySel
-            )
-            self.importInfo.append(name)
-            if self.rgis.iface.mapCanvas().isCachingEnabled():
-                layer.setCacheImage(None)
+        curInd = data['cbo'].currentIndex()
+        lid = data['cbo'].itemData(curInd)
+        layer = self.rgis.mapRegistry.mapLayer(lid)
+        attrMap = {}
+        for attr, attrData in data['attrs'].iteritems():
+            curText = attrData['cbo'].currentText()
+            if curText:
+                attrMap[attr] = curText
+        self.rgis.rdb.insert_layer(
+                    layer,
+                    self.rgis.rdb.register[data['className']],
+                    attr_map=attrMap,
+                    selected=self.onlySel)
+        self.importInfo.append(name)
+        if self.rgis.iface.mapCanvas().isCachingEnabled():
+            layer.setCacheImage(None)
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         self.onlySel = self.ui.chkOnlySelected.isChecked()
+        tabs = self.rgis.rdb.list_tables()
         for key, data in self.layers.iteritems():
-            self.processLayers(key, data)
-        self.rgis.addInfo("  Imported layers:\n    {0}".format('\n    '.join(self.importInfo)))
+            if not data['cbo'].currentText() == '':
+                if data['className'] not in tabs:
+                    hecobject = getattr(heco, data['className'])
+                    self.rgis.rdb.process_hecobject(hecobject, 'pg_create_table')
+                else:
+                    pass
+                self.processLayers(key, data)
+            else:
+                pass
+        self.rgis.addInfo('  Imported layers:\n    {0}'.format('\n    '.join(self.importInfo)))
         self.rgis.iface.mapCanvas().refresh()
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)

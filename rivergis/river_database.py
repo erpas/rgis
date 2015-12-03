@@ -207,9 +207,8 @@ class RiverDatabase(object):
         """
         tabs = self.list_tables(schema)
         for tab in tabs:
-            tab_name = tab[0]
-            if tab_name in dir(hydro_module):
-                hydro_object = getattr(hydro_module, tab_name)
+            if tab in dir(hydro_module):
+                hydro_object = getattr(hydro_module, tab)
                 self.setup_hydro_object(hydro_object, schema, srid)
                 obj = hydro_object()
                 self.register_object(obj)
@@ -238,14 +237,14 @@ class RiverDatabase(object):
             schema (str): Schema where tables will be created or processed.
 
         Returns:
-            list: List of tuples with table names in schema.
+            list: List of table names in schema.
         """
         if schema is None:
             SCHEMA = self.SCHEMA
         else:
             SCHEMA = schema
         qry = 'SELECT table_name FROM information_schema.tables WHERE table_schema = \'{0}\''.format(SCHEMA)
-        tabs = self.run_query(qry, fetch=True)
+        tabs = [tab[0] for tab in self.run_query(qry, fetch=True)]
         return tabs
 
     def refresh_uris(self):
@@ -433,6 +432,7 @@ class RiverDatabase(object):
         qry = self.layer_to_pgsql(features, imp_attrs, hecobject, SCHEMA, SRID)
         if qry is not None:
             self.run_query(qry)
+            self.add_to_view(hecobject)
             self.rgis.addInfo('OK')
         else:
             pass

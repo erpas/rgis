@@ -45,7 +45,7 @@ def ras1dStreamCenterlineTopology(rgis):
 
 def ras1dStreamCenterlineLengthsStations(rgis):
     """Calculate river reaches length and their endpoints stations"""
-    nt_exists = 'NodesTable' in [t[0] for t in rgis.rdb.list_tables()]
+    nt_exists = 'NodesTable' in rgis.rdb.list_tables()
     if not nt_exists:
         rgis.addInfo('<br>NodesTable is not registered in the river database.<br>Build stream centerlines topology first.<br>Cancelling...')
         return
@@ -387,7 +387,7 @@ def ras1dSAElevations(rgis):
 def ras1dSAVolumeData(rgis):
     nr_slices, ok = QInputDialog.getInteger(rgis, 'Number of slices', 'Number of slices for volume calculation:', 10, 3, 30, 1)
     if not ok:
-        rgis.addInfo("  Incorrect number of slices. Cancelling...")
+        rgis.addInfo('  Incorrect number of slices. Cancelling...')
         return
 
     rgis.addInfo('<br><b>Calculating elevation-volume data for Storage Areas...</b>')
@@ -454,7 +454,7 @@ def ras1dCreateRasGisImportFile(rgis):
     """
     rgis.addInfo('<br><b>Creating RAS GIS Import file from HEC-RAS model geometry...</b>')
     s = QSettings()
-    last_dir = s.value("rivergis/lastRasGisImportDir", "")
+    last_dir = s.value('rivergis/lastRasGisImportDir', '')
     import_fname = QFileDialog.getSaveFileName(None,
                      'Target HEC-RAS GIS Import file',
                      directory=last_dir,
@@ -463,7 +463,7 @@ def ras1dCreateRasGisImportFile(rgis):
         rgis.addInfo('Creating RAS GIS Import file cancelled.')
         return
 
-    s.setValue("rivergis/lastRasGisImportDir", dirname(import_fname))
+    s.setValue('rivergis/lastRasGisImportDir', dirname(import_fname))
     rgis.rdb.register.clear()
     rgis.rdb.register_existing(heco)
     rgi = RasGisImport(rgis)

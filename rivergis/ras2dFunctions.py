@@ -65,9 +65,9 @@ def ras2dCreate2dPoints(rgis):
     bls_exist = False
     bps_exist = False
     for t in rgis.rdb.list_tables():
-        if t[0] == 'BreakLines2d':
+        if t == 'BreakLines2d':
             bls_exist = True
-        if t[0] == 'BreakPoints2d':
+        if t == 'BreakPoints2d':
             bps_exist = True
 
     if bls_exist:
