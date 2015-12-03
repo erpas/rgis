@@ -1562,6 +1562,76 @@ class BreakLines2d(HecRasObject):
             ('"CellSizeAcross"', 'double precision'),
             ('"RowsAligned"', 'integer')]
 
+    def pg_flow_to_breakline(self):
+        qry = '''
+WITH ids AS
+    (SELECT
+        a."AreaID",
+        l."BLID"
+    FROM
+        "{0}"."BreakLines2d" AS l,
+        "{0}"."FlowAreas2d" AS a
+    WHERE
+        ST_Contains(a.geom, l.geom))
+
+UPDATE "{0}"."BreakLines2d" AS l
+SET
+    "AreaID" = ids."AreaID"
+FROM
+    ids
+ WHERE
+    ids."BLID" = l."BLID";
+'''
+        qry = qry.format(self.schema)
+        return qry
+
+    def pg_breaklines_m(self):
+        qry = '''
+DROP TABLE IF EXISTS "{0}"."BreakLines2d_m";
+
+CREATE TABLE "{0}"."BreakLines2d_m"
+    ("BLmID" serial primary key,
+    "AreaID" integer,
+    "CellSizeAlong" double precision,
+    "CellSizeAcross" double precision,
+    "RowsAligned" integer,
+    geom geometry(LINESTRINGM, {1}));
+
+INSERT INTO "{0}"."BreakLines2d_m"
+    ("AreaID",
+    "CellSizeAlong",
+    "CellSizeAcross",
+    "RowsAligned",
+    geom)
+SELECT
+    "AreaID",
+    "CellSizeAlong",
+    "CellSizeAcross",
+    "RowsAligned",
+    (ST_Dump(ST_AddMeasure(geom, 0, ST_Length(geom)))).geom
+FROM
+    "{0}"."BreakLines2d";
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+    def pg_drop_by_buffer(self):
+        qry = '''
+WITH brbuf AS
+    (SELECT
+        ST_Buffer(geom, "RowsAligned" * "CellSizeAcross" + "CellSizeAlong" * 0.2, \'endcap=flat join=round\') AS geom
+    FROM
+        "{0}"."BreakLines2d_m")
+DELETE FROM
+    "{0}"."MeshPoints2d" AS p
+USING
+    brbuf
+WHERE
+    ST_Intersects(brbuf.geom, p.geom);
+'''
+        qry = qry.format(self.schema)
+        return qry
+
 
 class BreakPoints2d(HecRasObject):
     def __init__(self):
@@ -1573,6 +1643,41 @@ class BreakPoints2d(HecRasObject):
             ('"AreaID"', 'integer'),
             ('"BLmID"', 'integer'),
             ('"Fraction"', 'double precision')]
+
+    def pg_bpoints_along_blines(self, tolerance=None, func_name=None):
+        qry = '''
+WITH ids AS
+    (SELECT
+        b."BLmID",
+        p."BPID",
+        b."AreaID"
+    FROM
+        "{0}"."BreakLines2d_m" AS b,
+        "{0}"."BreakPoints2d" AS p
+    WHERE
+        ST_Buffer(p.geom, {1}) && b.geom AND
+        ST_Contains(ST_Buffer(b.geom, {1}), p.geom))
+UPDATE
+    "{0}"."BreakPoints2d" AS p
+SET
+    "BLmID" = ids."BLmID",
+    "AreaID" = ids."AreaID"
+FROM
+    ids
+WHERE
+    ids."BPID" = p."BPID";
+
+UPDATE
+    "{0}"."BreakPoints2d" AS p
+SET
+    "Fraction" = {2}(b.geom, p.geom)
+FROM
+    "{0}"."BreakLines2d_m" AS b
+WHERE
+    p."BLmID" = b."BLmID";
+'''
+        qry = qry.format(self.schema, tolerance, func_name)
+        return qry
 
 
 class MeshPoints2d(HecRasObject):
@@ -1587,6 +1692,109 @@ class MeshPoints2d(HecRasObject):
             ('"AreaID"', 'integer'),
             ('"BLID"', 'integer'),
             ('"CellSize"', 'double precision')]
+
+    def pg_create_mesh(self):
+        qry = '''
+CREATE OR REPLACE FUNCTION "{0}".makegrid(geometry, float, integer)
+    RETURNS geometry AS
+$BODY$
+    SELECT
+        ST_Collect(ST_SetSRID(ST_POINT(x/1000000::float, y/1000000::float), $3))
+    FROM
+        generate_series(floor(st_xmin($1)*1000000)::bigint, ceiling(st_xmax($1)*1000000)::bigint, ($2*1000000)::bigint) AS x,
+        generate_series(floor(st_ymin($1)*1000000)::bigint, ceiling(st_ymax($1)*1000000)::bigint, ($2*1000000)::bigint) AS y
+    WHERE
+        ST_Intersects($1, ST_SetSRID(ST_POINT(x/1000000::float, y/1000000::float), $3))
+$BODY$
+    LANGUAGE sql;
+
+------------------------------------------------------------------------------------------------------------------------
+INSERT INTO
+    "{0}"."MeshPoints2d" ("AreaID", "BLID", geom)
+SELECT
+    "AreaID",
+    -1,
+    (ST_Dump("{0}".makegrid(geom, "CellSize", {1}))).geom AS geom
+FROM
+    "{0}"."FlowAreas2d";
+
+WITH areas2dshrinked AS
+    (SELECT
+        "AreaID",
+        ST_Buffer(a2d.geom, -0.3 * a2d."CellSize") AS geom
+    FROM
+        "{0}"."FlowAreas2d" AS a2d)
+DELETE FROM
+    "{0}"."MeshPoints2d" AS pts_a
+WHERE
+    pts_a."MPID" NOT IN
+        (SELECT
+            pts."MPID"
+        FROM
+            "{0}"."MeshPoints2d" AS pts,
+            areas2dshrinked
+        WHERE
+            ST_Intersects(pts.geom, areas2dshrinked.geom));
+
+DROP FUNCTION IF EXISTS "{0}".makegrid(geometry, float, integer);
+'''
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
+    def pg_aligned_mesh(self, a1=None, a2=None, a3=None, a4=None):
+        qry = '''
+INSERT INTO
+    "{0}"."MeshPoints2d" ("BLID", "AreaID", "CellSize", geom)
+SELECT
+    "BLmID",
+    "AreaID",
+    {1},
+    ST_Centroid(ST_LocateAlong(geom, {2}, {3}))
+FROM
+    "{0}"."BreakLines2d_m"
+WHERE
+    "BLmID" = {4};
+
+INSERT INTO
+    "{0}"."MeshPoints2d" ("BLID", "AreaID", "CellSize", geom)
+SELECT
+    "BLmID",
+    "AreaID",
+    {1},
+    ST_Centroid(ST_LocateAlong(geom, {2}, -{3}))
+FROM
+    "{0}"."BreakLines2d_m"
+WHERE
+    "BLmID" = {4};
+'''
+        qry = qry.format(self.schema, a1, a2, a3, a4)
+        return qry
+
+    def pg_clean_points(self):
+        qry = '''
+DELETE FROM
+    "{0}"."MeshPoints2d" AS p1
+USING
+    "{0}"."MeshPoints2d" AS p2
+WHERE
+    p1."BLID" <> -1 AND
+    p2."BLID" <> -1 AND
+    p1."BLID" <> p2."BLID" AND
+    p1."MPID" > p2."MPID" AND
+    ST_DWithin(p1.geom, p2.geom, 0.75 * LEAST(p1."CellSize", p2."CellSize"));
+
+DELETE FROM
+    "{0}"."MeshPoints2d" AS p
+USING
+    "{0}"."FlowAreas2d" AS a
+WHERE
+    a."AreaID" = p."AreaID" AND
+    NOT ST_Contains(ST_Buffer(a.geom, -0.3*a."CellSize"), p.geom);
+
+DROP TABLE IF EXISTS "{0}"."BreakLines2d_m";
+'''
+        qry = qry.format(self.schema)
+        return qry
 
 
 class Bathymetry(HecRasObject):
