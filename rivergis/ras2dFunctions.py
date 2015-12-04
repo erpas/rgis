@@ -139,7 +139,7 @@ def ras2dCreate2dPoints(rgis):
                 for i in range(0, imax+1):
                     dist = i * dist_x
                     for j in range(0, rows):
-                        rgis.rdb.process_hecobject(heco.MeshPoints2d, 'pg_aligned_mesh', a1=dist_x, a2=dist, a3=j*width+width/2, a4=id)
+                        rgis.rdb.process_hecobject(heco.MeshPoints2d, 'pg_aligned_mesh', cellsize=dist_x, measure=dist, offset=j*width+width/2, blid=id)
 
             # create cell faces at breakline's breakpoints
             else:
@@ -211,7 +211,7 @@ def ras2dCreate2dPoints(rgis):
                 # insert aligned mesh points into table
                 for m in sorted(mpts):
                     for j in range(0, rows):
-                        rgis.rdb.process_hecobject(heco.MeshPoints2d, 'pg_aligned_mesh', a1=cs_min, a2=m*leng, a3=j*width+width/2, a4=id)
+                        rgis.rdb.process_hecobject(heco.MeshPoints2d, 'pg_aligned_mesh', cellsize=cs_min, measure=m*leng, offset=j*width+width/2, blid=id)
 
     rgis.addInfo('Deleting mesh points located too close to each other or outside the 2D area...')
     rgis.rdb.process_hecobject(heco.MeshPoints2d, 'pg_clean_points')

@@ -287,7 +287,6 @@ class RiverDatabase(object):
             vlayer.loadNamedStyle(style_file)
             QgsMapLayerRegistry.instance().addMapLayer(vlayer)
         except Exception, e:
-            self.rgis.addInfo(vlayer.name())
             self.rgis.addInfo(repr(e))
 
     def add_to_view(self, obj):

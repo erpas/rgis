@@ -1736,7 +1736,7 @@ DROP FUNCTION IF EXISTS "{0}".makegrid(geometry, float, integer);
         qry = qry.format(self.schema, self.srid)
         return qry
 
-    def pg_aligned_mesh(self, a1=None, a2=None, a3=None, a4=None):
+    def pg_aligned_mesh(self, cellsize=None, measure=None, offset=None, blid=None):
         qry = '''
 INSERT INTO
     "{0}"."MeshPoints2d" ("BLID", "AreaID", "CellSize", geom)
@@ -1762,7 +1762,7 @@ FROM
 WHERE
     "BLmID" = {4};
 '''
-        qry = qry.format(self.schema, a1, a2, a3, a4)
+        qry = qry.format(self.schema, cellsize, measure, offset, blid)
         return qry
 
     def pg_clean_points(self):
