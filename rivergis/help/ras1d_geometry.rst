@@ -23,12 +23,11 @@ Typical RiverGIS workflow
 #. :ref:`Set model's spatial projection <ras1d_projection>`
 #. :ref:`Create/import geometry <ras1d_geometry_creation>` of the model (river lines, cross-sections, hydraulic structures)
 #. :ref:`Build rivers network <ras1d_network>` (topology, i.e. reach connectivity and order, reach lengths)
-#. Calculate cross-sections' attributes (stations, downstream lengths, etc.)
-#. Probe vertical shape of cross-sections from a DTM raster(s)
-#. Define additional cross-sections' data (banks, levees, ineffecive flow areas, obstructions et.)
-#. Find Manning's roughness coefficients for each cross-section
-#. Build hydraulic structures (bridges/culverts, inline and lateral structures, storage areas, etc.).
-#. Create HEC-RAS GIS Import file (*.sdf)
+#. :ref:`Calculate cross-sections' attributes <ras1d_xsections>` (stations, downstream lengths, etc.) and vertical shape (probe a DTM raster)
+#. :ref:`Find Manning's roughness coefficients <ras1d_manning>` for cross-sections
+#. :ref:`Define additional cross-sections' data <ras1d_xs_additional>` (levees, ineffecive flow areas and obstructions)
+#. :ref:`Build hydraulic structures <ras1_structures>` (bridges/culverts, inline and lateral structures, storage areas, etc.).
+#. :ref:`Create HEC-RAS GIS Import file <ras1d_sdf>` (*.sdf)
 
 .. _ras1d_create_schema:
 
@@ -73,6 +72,7 @@ Before creating geometry objects users must choose a projection for a model data
 ------------------------------
 Model Geometry Creation/Import
 ------------------------------
+
 .. _user_def_attrs:
 
 Model geometry data are stored in a river database tables. There is a table for river lines, cross-sections etc. The table below lists river database tables created by RiverGIS. If a table needs a user specified attribute, it is given in the *User defined attributes* column.
@@ -151,6 +151,9 @@ Creating the HEC-RAS geometry requires all user defined attributes to be non-emp
 River network
 -------------
 
+The river network is represented by ``StreamCenterlines`` layer. It has to obey the rules described in the `HEC-GeoRAS documentation`_ on p. 4-7.
+
+
 Topology
 --------
 
@@ -158,7 +161,7 @@ Topology
 |topology|      ``RAS Geometry`` > ``Stream Centerline Attributes`` > ``Topology``
 ==============  ========================================================================
 
-The river network is built from ``StreamCenterlines`` layer by ``Topology`` |topology| tool . At each reach end a node is created (``FromNode`` and ``ToNode``), as shown below.
+The river network is built from ``StreamCenterlines`` layer by ``Topology`` tool . At each reach end a node is created (``FromNode`` and ``ToNode``), as shown below. The nodes are stored in ``NodesTable``.
 
 .. |topology| image:: img_ico/ras1dStreamCenterlinesTopology.png
 
@@ -172,7 +175,7 @@ Lengths/Stations
 |lengths_stations|  ``RAS Geometry`` > ``Stream Centerline Attributes`` > ``Lengths/Stations``
 ==================  =============================================================================
 
-The ``Lengths/Station`` tool finds flow direction and calculates river stationing for each reach end. It fills ``ReachLen``, ``FromSta`` and ``ToSta`` reach attributes. Users can override the calculated values to adjust cross-sections stationing.
+The ``Lengths/Station`` tool finds flow direction and calculates river stationing for each reach end. It fills ``ReachLen``, ``FromSta`` and ``ToSta`` reach attributes. Users can override the calculated values to adjust cross-sections stationing. The tool creates ``
 
 .. |lengths_stations| image:: img_ico/ras1dStreamCenterlinesLengthsStations.png
 
@@ -201,14 +204,18 @@ Copy Stream Centerlines to Flowpaths
 This will copy ``StreamCenterlines`` features to ``Flowpaths`` table and assign them ``Channel`` type.
 
 
+.. _ras1d_xsections:
 
 --------------
 Cross-sections
 --------------
 
+Cross-sections are represented by ``XSCutlines`` table. See rules for the layer in `HEC-GeoRAS documentation`_ on p. 4-11.
+
 
 River/Reach Names
 -----------------
+
 ==============  ========================================================================
 |xs_names|      ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``River/Reach Names``
 ==============  ========================================================================
@@ -239,7 +246,7 @@ Bank Stations
 
 .. |xs_banks| image:: img_ico/ras1dXsBanks.png
 
-Calculates banks positions for each cross-section. Fills ``LeftBank`` and ``RightBank`` fields in **XSCutLines** table.
+Calculates banks positions for each cross-section. Fills ``LeftBank`` and ``RightBank`` fields in ``XSCutLines`` table.
 
 
 Downstream Reach Lengths
@@ -263,13 +270,14 @@ Elevations
 
 .. |xs_elev| image:: img_ico/ras1dXsElevations.png
 
-This tool generates points along cross-sections, saves them to ``XSSurface`` table and probes chosen DTM rasters for point elevation. The tool requires a proper DTM setup, i.e. which raster layers are to be probed for elevation (see :ref:`options_dtm`). Multiple raster are allowed. If rasters overlap,a raster with higher resolution is used. The rasters must completely cover all cross-sections.
+This tool generates points along cross-sections, saves them to ``XSSurface`` table and probes chosen DTM rasters for point elevation. The tool requires a proper DTM setup, i.e. which raster layers are to be probed for elevation (see :ref:`options_dtm`). Multiple rasters are allowed. If rasters overlap, a raster with higher resolution is used. The chosen set of rasters must completely cover all cross-sections.
 
 
 All
 ----
+
 ==============  ==============================================================================
-|xs_all|        ``RAS Geometry`` -> ``XS Cut Line Attributes`` -> ``All``
+|xs_all|        ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``All``
 ==============  ==============================================================================
 
   .. |xs_all| image:: img_ico/ras1dXsAll.png
@@ -278,323 +286,233 @@ Runs all the ``XSCutLines`` tools.
 
 
 
-TODO....
+.. _ras1d_manning:
 
-
---------
-Land Use Areas
---------
-**LanduseAreas** layer have one method and it depends on **XSCutLines** polyline layer.
-
-```````````````
+--------------------------
 Extract Manning's n Values
-```````````````
-``RAS Geometry`` -> ``Extract Manning's n Values`` or  |manbutton|  button.
+--------------------------
 
-  .. |manbutton| image:: img_ico/ras1dXsMannings.png
+==============  ==============================================================================
+|manbutton|     ``RAS Geometry`` > ``Extract Manning's n Values``
+==============  ==============================================================================
 
-  .. note::
+.. |manbutton| image:: img_ico/ras1dXsMannings.png
 
-     For more information about creation and edition of XSCutLines and LanduseAreas layers please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-11 and 4-28
-
-
-**LanduseAreas** layer must contain *'LUID'*, *'LUCode'* and *'N_Value'* attributes and it should contain *multipart* polygons. In this example *'LUID'* and *'LUCode'* is the same but it can be different.
-
-  .. _fig_man_luatttable:
-  .. figure:: img/lu_att_table.png
-     :align: center
-
-     Exemplary Landuse attribute table
-
-For correct Manning's values extraction all of the cross sections in **XSCutLines** layer have to cover land use polygons
-
-  .. _fig_man_xslupic:
-  .. figure:: img/xs_lu_pic.png
-     :align: center
-
-     Cross sections and Land use layers coverage
-
-After running tool you should obtain **Manning** table with *'XsecID'*, *'Fraction'*, *'N_Value'* and *'LUCode'* attributes. Table will be added to view and in this form is ready for SDF export.
-
-  .. _fig_man_mantable:
-  .. figure:: img/man_table.png
-     :align: center
-
-     Exemplary Manning's values table
+The roughness coefficients for cross-sections are probed from ``LanduseAreas`` layer. The layer must completely cover cross-sections and the ``N_Value`` attribute of the layer must be specified for polygons covering cross-sections.
 
 
-----------------
-Levee Alignments
-----------------
-There is one method for **LeveeAlignments** layer and it depends on **XSCutLines** polyline layer.
+.. _ras1d_xs_additional:
 
-```````````````
+-------------------------------
+Additional cross-sections' data
+-------------------------------
+
 Levees
-```````````````
-It can be run from context menu ``RAS Geometry`` -> ``Levees`` or by pressing  |leveebutton|  button.
+------
+==============  ======================================================
+|leveebutton|   ``RAS Geometry`` > ``Levees``
+==============  ======================================================
 
-  .. |leveebutton| image:: img_ico/ras1dXsLevees.png
+.. |leveebutton| image:: img_ico/ras1dXsLevees.png
 
-Result is **LeveePoints** table inside schema which will be used during export to SDF file.
+Calculates levee positions for each cross-section.
 
------------------
-Ineffective Areas
------------------
-There is one method for **IneffAreas** layer and it depends on **XSCutLines** polyline layer.
 
-```````````````
+
 Ineffective Flow Areas
-```````````````
-It can be run from context menu ``RAS Geometry`` -> ``Ineffective Flow Areas`` or by pressing  |ineffbutton|  button.
+----------------------
 
-  .. |ineffbutton| image:: img_ico/ras1dXsIneffective.png
+==============  ======================================================
+|ineffbutton|   ``RAS Geometry`` > ``Ineffective Flow Areas``
+==============  ======================================================
 
-Result is **IneffLines** table inside schema which will be used during export to SDF file.
+.. |ineffbutton| image:: img_ico/ras1dXsIneffective.png
 
---------------------
+Finds ineffective flow area positions for each cross-section.
+
+
 Blocked Obstructions
 --------------------
-There is one method for **BlockedObs** layer and it depends on **XSCutLines** polyline layer.
 
-```````````````
-Blocked Obstructions
-```````````````
-It can be run from context menu ``RAS Geometry`` -> ``Blocked Obstructions`` or by pressing  |blockbutton|  button.
+==============  ======================================================
+|blockbutton|   ``RAS Geometry`` > ``Blocked Obstructions``
+==============  ======================================================
 
-  .. |blockbutton| image:: img_ico/ras1dXsBlockedObs.png
+.. |blockbutton| image:: img_ico/ras1dXsBlockedObs.png
 
-Result is **BlockLines** table inside schema which will be used during export to SDF file.
+Finds blocked obstruction positions for each cross-section.
 
-----------------
+
+
+.. _ras1_structures:
+
+--------------------
+Hydraulic Structures
+--------------------
+
+
+
 Bridges/Culverts
 ----------------
 
-This chapter describes processing of bridges/culverts layer. There are three layers required for complete extraction of the data:
+==============  =================================================================
+.               ``RAS Geometry`` > ``Bridges/Culverts`` > ``River/Reach Names``
+==============  =================================================================
 
-* StreamCenterlines polyline layer
-* Bridges/Culverts polyline layer
-* DTM layer (optional)
+==============  =================================================================
+.               ``RAS Geometry`` > ``Bridges/Culverts`` > ``Stationing``
+==============  =================================================================
 
-Both StreamCenterline and Bridges/Culverts you can create by clicking this button |createtables| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on Bridges/Culverts layer and its functionality.
+==============  =================================================================
+.               ``RAS Geometry`` > ``Bridges/Culverts`` > ``Elevations``
+==============  =================================================================
 
-  .. note::
+==============  =================================================================
+|bridgebutton|  ``RAS Geometry`` > ``Bridges/Culverts`` > ``All``
+==============  =================================================================
 
-     For more information about creation and edition of StreamCenterlines layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
+.. |bridgebutton| image:: img_ico/ras1dBridges.png
 
 
-  .. _fig_bridgecreate:
-  .. figure:: img/create_layer.png
 
-     Database context menu
 
-  .. figure:: img/bridge_create.png
-     :align: center
-
-     Create RAS Layers window
-
-Bridges/Culverts layer should contain “BridgeID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize bridges. “BridgeID” will be filed automatically while digitizing. Remember that drawing has to be performed from left bank to right bank looking downstream.
-
-  .. _fig_bridgeedit:
-  .. figure:: img/bridge_edit.png
-     :align: center
-
-     Exemplary bridge edition
-
-After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Bridges/Culverts position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”.
-
-  .. _fig_bridgemenu:
-  .. figure:: img/bridge_submenu.png
-     :align: center
-
-     Bridge/Culvert menu
-
-You have also access to “All” function from main RiverGIS toolbar by clicking this |bridgebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all bridges/culverts otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect bridge/culver elevation data.
-
-  .. |bridgebutton| image:: img_ico/ras1dBridges.png
-
------------------
 Inline Structures
 -----------------
 
-This chapter describes processing of Inline Structures layer. There are three layers required for complete extraction of the data:
+==============  =================================================================
+.               ``RAS Geometry`` > ``Inline Structures`` > ``River/Reach Names``
+==============  =================================================================
 
-* StreamCenterlines polyline layer
-* InlineStructures polyline layer
-* DTM layer (optional)
+==============  =================================================================
+.               ``RAS Geometry`` > ``Inline Structures`` > ``Stationing``
+==============  =================================================================
 
-Both StreamCenterline and InlineStructures you can create by clicking this button |createtables| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on InlineStructures layer and its functionality.
+==============  =================================================================
+.               ``RAS Geometry`` > ``Inline Structures`` > ``Elevations``
+==============  =================================================================
 
-  .. note::
-
-     For more information about creation and edition of StreamCenterline layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
-
-
-  .. _fig_inline_create:
-  .. figure:: img/create_layer.png
-
-     Database context menu
-
-  .. figure:: img/inline_create.png
-     :align: center
-
-     Create RAS Layers window
-
-InlineStructures layer should contain “InlineSID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize inline structures. “InlineSID” will be filed automatically while digitizing. Remember that drawing has to be performed from left bank to right bank looking downstream.
-
-  .. _fig_inlineedit:
-  .. figure:: img/inline_edit.png
-     :align: center
-
-     Exemplary inline structures
-
-After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Inline Structures position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”.
-
-  .. _fig_inlinemenu:
-  .. figure:: img/inline_submenu.png
-     :align: center
-
-     Inline Structures menu
-
-If particular function is done without any problem you will see message in main RiverGIS window about successful processing. For elevation extraction you need DTM which covers inline structures extent. After clicking “Elevation” or “All” functions there will be dialog window displayed with current DTM rasters. Choose any and click “OK”.
-
-  .. _fig_inlinedtm:
-  .. figure:: img/bridge_dtm.png
-     :align: center
-
-     DTM option window
-
-You have also access to “All” function from main RiverGIS toolbar by clicking this |inlinebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all inline structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect inline structures elevation data.
+==============  =================================================================
+|inlinebutton|  ``RAS Geometry`` > ``Inline Structures`` > ``All``
+==============  =================================================================
 
   .. |inlinebutton| image:: img_ico/ras1dInlineStruct.png
+
+
+
 
 ------------------
 Lateral Structures
 ------------------
 
-This chapter describes processing of Lateral Structures layer. There are three layers required for complete extraction of the data:
+==============  ==================================================================
+.               ``RAS Geometry`` > ``Lateral Structures`` > ``River/Reach Names``
+==============  ==================================================================
 
-* StreamCenterline polyline layer
-* LateralStructures polyline layer
-* DTM layer (optional)
+==============  ==================================================================
+.               ``RAS Geometry`` > ``Lateral Structures`` > ``Stationing``
+==============  ==================================================================
 
-Both StreamCenterline and LateralStructures you can create by clicking this button |createtables| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on LateralStructures layer and its functionality.
+==============  ==================================================================
+.               ``RAS Geometry`` > ``Lateral Structures`` > ``Elevations``
+==============  ==================================================================
 
-  .. note::
+==============  ==================================================================
+|latbutton|  ``RAS Geometry`` > ``Lateral Structures`` > ``All``
+==============  ==================================================================
 
-     For more information about creation and edition of StreamCenterline layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-7
+
+  .. |latbutton| image:: img_ico/ras1dLateralStruct.png
 
 
-  .. _fig_lateral_create:
-  .. figure:: img/create_layer.png
 
-     Database context menu
-
-  .. figure:: img/lateral_create.png
-     :align: center
-
-     Create RAS Layers window
-
-LateralStructures layer should contain “LateralSID”, “RiverCode”, “ReachCode”, “Station”, “USDistance”, “TopWidth”, “NodeName” and DtmID” attributes. Edit layer and digitize lateral structures. “LateralSID” will be filed automatically while digitizing. Remember that drawing has to be performed from upstream to downstream.
-
-  .. _fig_lateraledit:
-  .. figure:: img/lateral_edit.png
-     :align: center
-
-     Exemplary lateral structure
-
-After finishing sketch and living edit mode go to RAS Geometry tab and from context menu choose Lateral Structures position. You will see sub menu where you can extract River/Reach Names, calculate Stationing and Elevations. There is also option to proceed all of the functions by once by clicking “All”. If particular function is done without any problem you will see message in main RiverGIS window about successful processing.
-
-  .. _fig_lateralmenu:
-  .. figure:: img/lateral_submenu.png
-     :align: center
-
-     Lateral Structures menu
-
-Stationing is calculated basing on upstream start point of lateral structure with shortest distance to StreamCenterline. Please inspect correctness of River/Reach Names and Stationing for lateral structures. There exist probability of mistake in a situation where other channel lie closer to upstream start point of lateral structure than channel to which lateral structure should be referenced to.  For elevation extraction you need DTM which covers lateral structures extent. After clicking “Elevation” or “All” functions there will be dialog window displayed with current DTM rasters. Choose any and click “OK”.
-
-  .. note::
-
-     For more information about creation and edition of LateralStructures layer please look `HERE <http://www.hec.usace.army.mil/software/hec-georas/documentation/HEC-GeoRAS_43_Users_Manual.pdf>`_ Chapter 4-37
-
-  .. _fig_lateraldtm:
-  .. figure:: img/bridge_dtm.png
-     :align: center
-
-     DTM option window
-
-You have also access to “All” function from main RiverGIS toolbar by clicking this |lateralbutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all lateral structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect lateral structures elevation data.
-
-  .. |lateralbutton| image:: img_ico/ras1dLateralStruct.png
 
 -------------
 Storage Areas
 -------------
 
-**StorageAreas** have 3 methods for volume calculations which are:
 
-```````````````
 Terrain Point Extraction
-```````````````
-Algorithm can be run from context menu ``RAS Geometry`` -> ``Storage Areas`` -> ``Terrain Point Extraction`` or by pressing  |extractionbutton|  button.
+------------------------
 
-  .. |extractionbutton| image:: img_ico/ras1dSATerPtExtract.png
+==============  ===================================================================
+|saptextract|   ``RAS Geometry`` > ``Storage Areas`` > ``Terrain Point Extraction``
+==============  ===================================================================
 
-Tool generates point grid inside every storage area and probe elevation rasters with it. Spacing between points equals DTMs cellsize. Result is **SASurface** which contains those points. They are needed to calculate volume of the storages. Also remember to setup DTMs before running algorithm.
+  .. |saptextract| image:: img_ico/ras1dSATerPtExtract.png
 
-  .. note::
+Tool generates point grid inside every storage area and probe elevation rasters with it. Spacing between points equals DTMs cellsize. Result is ``SASurface`` which contains those points. They are needed to calculate volume of the storages. Also remember to setup DTMs before running algorithm.
 
-     Creating points grid for large storage areas and high resolution DTMs can take a while, so please be patient. Changing ``Chunk size`` value is recomended in such situations.
+Creating points grid for large storage areas and high resolution DTMs can take a while, so please be patient. Changing ``Chunk size`` value is recomended in such situations.
 
-```````````````
+
 Elevation-Volume Data
-```````````````
-Next step after ``Terrain Point Extraction`` is ``RAS Geometry`` -> ``Storage Areas`` -> ``Elevation-Volume Data``. It can also be run by pressing |volumebutton| button. Algorithm will ask you about number of slices for volume calculations.
+---------------------
+
+==============  =================================================================
+|volumebutton|  ``RAS Geometry`` > ``Storage Areas`` > ``Elevation-Volume Data``
+==============  =================================================================
 
   .. |volumebutton| image:: img_ico/ras1dSAElevVolume.png
 
 Result is **SAVolume** table inside schema which will be used during export to SDF file.
 
-```````````````
+
 All
-```````````````
-``RAS Geometry`` -> ``Storage Areas`` -> ``All`` or  |sa_all|  button.
+----
+
+==============  =================================================================
+|sa_all|        ``RAS Geometry`` > ``Storage Areas`` > ``All``
+==============  =================================================================
 
   .. |sa_all| image:: img_ico/ras1dStorageAreas.png
 
-It will launch all **StorageAreas** tools one after another.
+Launches all ``StorageAreas`` tools.
 
 
--------------
+-------------------------
 Storage Areas Connections
--------------
+-------------------------
 
 **SAConnections** is another geometry class related with storage areas. Tool has 3 methods which are:
 
-```````````````
-Assign Nearest SA
-```````````````
-Algorithm can be run from context menu ``RAS Geometry`` -> ``Storage Areas Connections`` -> ``Assign Nearest SA``. This tool defines which storage area is upstream and downstream. It saves results (which is *'StorageID'* from **StorageAreas**) in *'USSA'* and *'DSSA'* columns inside **SAConnections** table.
 
-```````````````
+Assign Nearest SA
+-----------------
+
+======  ==============================================================================
+ .      ``RAS Geometry`` > ``Storage Areas Connections`` > ``Assign Nearest SA``
+======  ==============================================================================
+
+This tool defines which storage area is upstream and downstream. It saves results (which is *'StorageID'* from **StorageAreas**) in *'USSA'* and *'DSSA'* columns inside **SAConnections** table.
+
+
 Elevations
-```````````````
-``RAS Geometry`` -> ``Storage Areas Connections`` -> ``Elevations``.
+----------
+
+======  ==============================================================================
+.       ``RAS Geometry`` > ``Storage Areas Connections`` > ``Elevations``.
+======  ==============================================================================
 
 This tool generates points along storage area connections (and saves them into **SACSurface** table) and use them to probe DTM rasters.
 
-```````````````
+
 All
-```````````````
-``RAS Geometry`` -> ``Storage Areas Connections`` -> ``All`` or  |sac_all|  button.
+----
+
+==============  =================================================================
+|sac_all|       ``RAS Geometry`` > ``Storage Areas Connections`` > ``All``
+==============  =================================================================
 
   .. |sac_all| image:: img_ico/ras1dSAConnections.png
 
 It will launch all **StorageAreas** tools one after another.
 
+
 -------------
 Create HEC-RAS GIS Import file (SDF)
 -------------
 
+TODO
 
 
 ---------------
