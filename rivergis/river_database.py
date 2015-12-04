@@ -265,13 +265,14 @@ class RiverDatabase(object):
         Returns:
             QgsVectorLayer: QGIS Vector Layer object.
         """
+        vl_schema, vl_name = obj.schema, obj.name
         uri = QgsDataSourceURI()
         uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
         if obj.geom_type is not None:
-            uri.setDataSource(obj.schema, obj.name, 'geom')
+            uri.setDataSource(vl_schema, vl_name, 'geom')
         else:
-            uri.setDataSource(obj.schema, obj.name, None)
-        vlayer = QgsVectorLayer(uri.uri(), obj.name, 'postgres')
+            uri.setDataSource(vl_schema, vl_name, None)
+        vlayer = QgsVectorLayer(uri.uri(), vl_name, 'postgres')
         return vlayer
 
     def add_vlayer(self, vlayer):
@@ -282,10 +283,9 @@ class RiverDatabase(object):
             vlayer (QgsVectorLayer): QgsVectorLayer object.
         """
         try:
-            map_registry = QgsMapLayerRegistry.instance()
-            map_layer = map_registry.addMapLayer(vlayer)
             style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
-            map_layer.loadNamedStyle(style_file)
+            vlayer.loadNamedStyle(style_file)
+            QgsMapLayerRegistry.instance().addMapLayer(vlayer)
         except Exception, e:
             self.rgis.addInfo(vlayer.name())
             self.rgis.addInfo(repr(e))
