@@ -309,6 +309,9 @@ Additional cross-sections' data
 
 Levees
 ------
+
+Levees are represented by ``LeveeAlignment`` layer. Rules for the layer are listed on p. 4-32 of the `HEC-GeoRAS documentation`_.
+
 ==============  ======================================================
 |leveebutton|   ``RAS Geometry`` > ``Levees``
 ==============  ======================================================
@@ -322,6 +325,8 @@ Calculates levee positions for each cross-section.
 Ineffective Flow Areas
 ----------------------
 
+Ineffective flow areas, used to identify non-conveyance portion of the floodplain, are represented by ``IneffAreas`` layer. Rules for the layer are described on p. 4-24 of the `HEC-GeoRAS documentation`_.
+
 ==============  ======================================================
 |ineffbutton|   ``RAS Geometry`` > ``Ineffective Flow Areas``
 ==============  ======================================================
@@ -333,6 +338,8 @@ Finds ineffective flow area positions for each cross-section.
 
 Blocked Obstructions
 --------------------
+
+Blocked obstructions, used to permanently block a portion of a cross-section, are represented by ``BlockedObs`` layer. Rules for the layer are listed on p. 4-26 of the `HEC-GeoRAS documentation`_.
 
 ==============  ======================================================
 |blockbutton|   ``RAS Geometry`` > ``Blocked Obstructions``
@@ -355,21 +362,31 @@ Hydraulic Structures
 Bridges/Culverts
 ----------------
 
+Bridge and culverts locations are represented by ``Bridges`` layer. The layer is processed in a similar manner as cross-sections: intersections with stream centerlines are used to calculate the stations, while elevations represents the top-of-road of the bridge deck. Rules for the layer are listed on p. 4-22 of the `HEC-GeoRAS documentation`_.
+
 ==============  =================================================================
 .               ``RAS Geometry`` > ``Bridges/Culverts`` > ``River/Reach Names``
 ==============  =================================================================
+
+Finds a river that the structures are crossing.
 
 ==============  =================================================================
 .               ``RAS Geometry`` > ``Bridges/Culverts`` > ``Stationing``
 ==============  =================================================================
 
+Calculates stations of bridges/culverts.
+
 ==============  =================================================================
 .               ``RAS Geometry`` > ``Bridges/Culverts`` > ``Elevations``
 ==============  =================================================================
 
+Probes DTM raster(s) for the deck elevations.
+
 ==============  =================================================================
 |bridgebutton|  ``RAS Geometry`` > ``Bridges/Culverts`` > ``All``
 ==============  =================================================================
+
+Performs all of the above bridge/culverts actions.
 
 .. |bridgebutton| image:: img_ico/ras1dBridges.png
 
@@ -379,21 +396,31 @@ Bridges/Culverts
 Inline Structures
 -----------------
 
+Inline structures are represented by the ``InlineStructures`` layer and are treated similar to bridge/culverts layer. The rules for the layer can be found on p. 4-36 of the `HEC-GeoRAS documentation`_
+
 ==============  =================================================================
 .               ``RAS Geometry`` > ``Inline Structures`` > ``River/Reach Names``
 ==============  =================================================================
+
+Finds a river that the structures are located on.
 
 ==============  =================================================================
 .               ``RAS Geometry`` > ``Inline Structures`` > ``Stationing``
 ==============  =================================================================
 
+Calculates stations of the structures.
+
 ==============  =================================================================
 .               ``RAS Geometry`` > ``Inline Structures`` > ``Elevations``
 ==============  =================================================================
 
+Probes DTM raster(s) for the top-of-weir elevations.
+
 ==============  =================================================================
 |inlinebutton|  ``RAS Geometry`` > ``Inline Structures`` > ``All``
 ==============  =================================================================
+
+Performs all of the above inline structure actions.
 
   .. |inlinebutton| image:: img_ico/ras1dInlineStruct.png
 
@@ -404,22 +431,31 @@ Inline Structures
 Lateral Structures
 ------------------
 
+Lateral structures are represented by ``LateralStructures`` layer. The layer can be also used to model levees or high ground that can be overtopped and connected to a storage area or another river. It is treated in a similar manner to inline structures. Rules for the layer are described on p. 4-38 of the `HEC-GeoRAS documentation`_.
+
 ==============  ==================================================================
 .               ``RAS Geometry`` > ``Lateral Structures`` > ``River/Reach Names``
 ==============  ==================================================================
+
+Finds a river that the structures are located on.
 
 ==============  ==================================================================
 .               ``RAS Geometry`` > ``Lateral Structures`` > ``Stationing``
 ==============  ==================================================================
 
+Calculates stations of the structures.
+
 ==============  ==================================================================
 .               ``RAS Geometry`` > ``Lateral Structures`` > ``Elevations``
 ==============  ==================================================================
+
+Probes DTM raster(s) for the top-of-weir elevations.
 
 ==============  ==================================================================
 |latbutton|  ``RAS Geometry`` > ``Lateral Structures`` > ``All``
 ==============  ==================================================================
 
+Performs all of the above lateral structure actions.
 
   .. |latbutton| image:: img_ico/ras1dLateralStruct.png
 
@@ -430,6 +466,7 @@ Lateral Structures
 Storage Areas
 -------------
 
+Storage areas, used for floodplain detension where the water surface will be horizontal, are represented by ``StorageAreas`` layer. Rules for the layer are listed on p. 4-40 of the `HEC-GeoRAS documentation`_.
 
 Terrain Point Extraction
 ------------------------
@@ -440,9 +477,9 @@ Terrain Point Extraction
 
   .. |saptextract| image:: img_ico/ras1dSATerPtExtract.png
 
-Tool generates point grid inside every storage area and probe elevation rasters with it. Spacing between points equals DTMs cellsize. Result is ``SASurface`` which contains those points. They are needed to calculate volume of the storages. Also remember to setup DTMs before running algorithm.
+The tool probes the DTM raster(s) cells for elevation. No part of a storage area should be located outside the DTM. As a result, a ``SASurface`` table is created for storage areas volume calculation.
 
-Creating points grid for large storage areas and high resolution DTMs can take a while, so please be patient. Changing ``Chunk size`` value is recomended in such situations.
+Creating the points grid for a large storage area and a high resolution DTM can be time consuming. For very large storage areas changing the tool's ``Chunk size`` parameter is recomended.
 
 
 Elevation-Volume Data
@@ -454,7 +491,7 @@ Elevation-Volume Data
 
   .. |volumebutton| image:: img_ico/ras1dSAElevVolume.png
 
-Result is **SAVolume** table inside schema which will be used during export to SDF file.
+The tool calculates elevation--volume curve for each storage area. The curves are written to ``SAVolume`` table.
 
 
 All
@@ -473,8 +510,7 @@ Launches all ``StorageAreas`` tools.
 Storage Areas Connections
 -------------------------
 
-**SAConnections** is another geometry class related with storage areas. Tool has 3 methods which are:
-
+Storage areas connections, used to pass a flow between storage areas, are represented by ``SAConnections`` layer. The rules for the layer are described on p. 4-45 of the `HEC-GeoRAS documentation`_.
 
 Assign Nearest SA
 -----------------
@@ -483,7 +519,7 @@ Assign Nearest SA
  .      ``RAS Geometry`` > ``Storage Areas Connections`` > ``Assign Nearest SA``
 ======  ==============================================================================
 
-This tool defines which storage area is upstream and downstream. It saves results (which is *'StorageID'* from **StorageAreas**) in *'USSA'* and *'DSSA'* columns inside **SAConnections** table.
+This tool is used to identify storage areas for each connection. The result is saved to ``SAConnections`` table.
 
 
 Elevations
@@ -493,8 +529,7 @@ Elevations
 .       ``RAS Geometry`` > ``Storage Areas Connections`` > ``Elevations``.
 ======  ==============================================================================
 
-This tool generates points along storage area connections (and saves them into **SACSurface** table) and use them to probe DTM rasters.
-
+Probes DTM ratser(s) along each storage area connection and saves the points into ``SACSurface`` table.
 
 All
 ----
@@ -505,50 +540,15 @@ All
 
   .. |sac_all| image:: img_ico/ras1dSAConnections.png
 
-It will launch all **StorageAreas** tools one after another.
+Runs all the ``StorageAreas`` tools.
 
 
--------------
+
+.. _ ras1d_sdf:
+
+------------------------------------
 Create HEC-RAS GIS Import file (SDF)
--------------
+------------------------------------
 
-TODO
-
-
----------------
-Plugin Settings
----------------
-==============  ===================================================
-|optionbutton|  ``Settings`` > ``Options``
-==============  ===================================================
-
-Options dialog allows users to set up the plugin parameters. Options are divided into several tabs described below.
-
-.. |optionbutton| image:: img_ico/options.png
-
-.. _options_general:
-
-General Options
----------------
-
-TODO
-
-.. _options_db:
-
-Database Options
-----------------
-
-TODO
-
-
-.. _options_dtm:
-
-DTM Options
------------
-  .. figure:: img/options_dtm.png
-    :align: center
-
-This options alows users to choose rasters for probing (currently only elevation is probed from rasters).
-
-``Chunk size`` decides how many points can be load at once to memory to probe DTMs. Default value ``0`` allows the plugin to take all points at once.
+This will save the model geometry in the *HEC-RAS GIS Import* file format. Importing the file into HEC-RAS is described on p. 5-1 of the `HEC-GeoRAS documentation`_.
 

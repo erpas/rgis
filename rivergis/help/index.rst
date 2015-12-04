@@ -15,9 +15,8 @@ Table of contents:
    
    requirements
    ras1d_geometry
-   ras1d_geometry_org
    ras2d_geometry
-   create2darea
+   settings
    about
 
 

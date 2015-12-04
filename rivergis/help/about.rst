@@ -22,12 +22,12 @@ Contributions:
 
 Source code and bugtrucker
 --------------------------
-`github <https://github.com/erpas/rgis>`_
+Visit the plugin page on `GitHub <https://github.com/erpas/rgis>`_.
 
 
 Contact
 -------
-Please, report issues on `GitHub Issues <https://github.com/erpas/rgis/issues>'_.
+Please, report issues on `GitHub Issues <https://github.com/erpas/rgis/issues>`_.
 
 email: info@rivergis.com
 
