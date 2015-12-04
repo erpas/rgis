@@ -375,7 +375,7 @@ This chapter describes processing of bridges/culverts layer. There are three lay
 * Bridges/Culverts polyline layer
 * DTM layer (optional)
 
-Both StreamCenterline and Bridges/Culverts you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on Bridges/Culverts layer and its functionality.
+Both StreamCenterline and Bridges/Culverts you can create by clicking this button |createtables| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on Bridges/Culverts layer and its functionality.
 
   .. note::
 
@@ -410,7 +410,7 @@ After finishing sketch and living edit mode go to RAS Geometry tab and from cont
 
 You have also access to “All” function from main RiverGIS toolbar by clicking this |bridgebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all bridges/culverts otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect bridge/culver elevation data.
 
-  .. |bridgebutton| image:: img/bridge_ico.png
+  .. |bridgebutton| image:: img_ico/ras1dBridges.png
 
 -----------------
 Inline Structures
@@ -422,7 +422,7 @@ This chapter describes processing of Inline Structures layer. There are three la
 * InlineStructures polyline layer
 * DTM layer (optional)
 
-Both StreamCenterline and InlineStructures you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on InlineStructures layer and its functionality.
+Both StreamCenterline and InlineStructures you can create by clicking this button |createtables| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on InlineStructures layer and its functionality.
 
   .. note::
 
@@ -465,7 +465,7 @@ If particular function is done without any problem you will see message in main 
 
 You have also access to “All” function from main RiverGIS toolbar by clicking this |inlinebutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all inline structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect inline structures elevation data.
 
-  .. |inlinebutton| image:: img/inline_ico.png
+  .. |inlinebutton| image:: img_ico/ras1dInlineStruct.png
 
 ------------------
 Lateral Structures
@@ -477,7 +477,7 @@ This chapter describes processing of Lateral Structures layer. There are three l
 * LateralStructures polyline layer
 * DTM layer (optional)
 
-Both StreamCenterline and LateralStructures you can create by clicking this button |createbutton| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on LateralStructures layer and its functionality.
+Both StreamCenterline and LateralStructures you can create by clicking this button |createtables| on toolbar and choosing appropriate layers to create. You can also find it in database context menu as is shown below. Created layers are empty and must be edited manually. This guide assume that StreamCenterline layer is already done and all attributes are filled. We will focus on LateralStructures layer and its functionality.
 
   .. note::
 
@@ -524,7 +524,7 @@ Stationing is calculated basing on upstream start point of lateral structure wit
 
 You have also access to “All” function from main RiverGIS toolbar by clicking this |lateralbutton| button . “USDistance”, “TopWidth”, “NodeName” have to be filled manually by the user. DtmID will be filled after elevation extraction but for end user filled data are not important. Remember that DTM has to cover all lateral structures otherwise extraction will not proceed. If you have more than one DTM in the same extent then raster with better resolution will be chosen for processing. For elevation control after processing point layer will be added to view where you can inspect lateral structures elevation data.
 
-  .. |lateralbutton| image:: img/lateral_ico.png
+  .. |lateralbutton| image:: img_ico/ras1dLateralStruct.png
 
 -------------
 Storage Areas
@@ -537,7 +537,7 @@ Terrain Point Extraction
 ```````````````
 Algorithm can be run from context menu ``RAS Geometry`` -> ``Storage Areas`` -> ``Terrain Point Extraction`` or by pressing  |extractionbutton|  button.
 
-  .. |extractionbutton| image:: img_ico\ras1dSATerPtExtract.png
+  .. |extractionbutton| image:: img_ico/ras1dSATerPtExtract.png
 
 Tool generates point grid inside every storage area and probe elevation rasters with it. Spacing between points equals DTMs cellsize. Result is **SASurface** which contains those points. They are needed to calculate volume of the storages. Also remember to setup DTMs before running algorithm.
 
@@ -550,7 +550,7 @@ Elevation-Volume Data
 ```````````````
 Next step after ``Terrain Point Extraction`` is ``RAS Geometry`` -> ``Storage Areas`` -> ``Elevation-Volume Data``. It can also be run by pressing |volumebutton| button. Algorithm will ask you about number of slices for volume calculations.
 
-  .. |volumebutton| image:: img_ico\ras1dSAElevVolume.png
+  .. |volumebutton| image:: img_ico/ras1dSAElevVolume.png
 
 Result is **SAVolume** table inside schema which will be used during export to SDF file.
 
@@ -559,7 +559,8 @@ All
 ```````````````
 ``RAS Geometry`` -> ``Storage Areas`` -> ``All`` or  |sa_all|  button.
 
-  .. |sa_all| image:: img_ico\ras1dStorageAreas.png
+  .. |sa_all| image:: img_ico/ras1dStorageAreas.png
+
 It will launch all **StorageAreas** tools one after another.
 
 
@@ -586,7 +587,8 @@ All
 ```````````````
 ``RAS Geometry`` -> ``Storage Areas Connections`` -> ``All`` or  |sac_all|  button.
 
-  .. |sac_all| image:: img_ico\ras1dSAConnections.png
+  .. |sac_all| image:: img_ico/ras1dSAConnections.png
+
 It will launch all **StorageAreas** tools one after another.
 
 -------------
