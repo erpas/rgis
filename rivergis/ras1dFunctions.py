@@ -103,11 +103,11 @@ def ras1dXSDownstreamLengths(rgis):
             rgis.addInfo('Check the Flowpaths LineType attribute values - it should be one of: Channel, Right, Left, C, L, or r')
             return
 
-    if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Channel', sort=True):
+    if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Channel'):
         rgis.addInfo('Channel flowpaths done.')
-    if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Left', sort=False):
+    if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Left'):
         rgis.addInfo('Left flowpaths done.')
-    if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Right', sort=False):
+    if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_downstream_reach_lengths', line_type='Right'):
         rgis.addInfo('Right flowpaths done.')
 
 
