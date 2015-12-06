@@ -247,16 +247,6 @@
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_9">
                   <item>
-                   <widget class="QCheckBox" name="db_overwriteChbox">
-                    <property name="text">
-                     <string>Overwrite existing objects</string>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
                    <widget class="QCheckBox" name="db_loadAllChbox">
                     <property name="text">
                      <string>Load all tables in preview</string>
@@ -306,8 +296,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>322</width>
-                <height>369</height>
+                <width>119</width>
+                <height>189</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_29">

@@ -8,7 +8,7 @@ This manual presents using the RiverGIS plugin for creation of HEC-RAS 1D flow m
 
 RiverGIS tries to mimic the workflow of HEC-GeoRAS where it is possible and users are encouraged to read the `HEC-GeoRAS documentation`_.
 
-  .. _HEC-GeoRAS documentation: http://rivergis.com/GeoRAS_docs/HEC_GeoRAS_10_for_ArcGIS_10.pdf
+  .. _HEC-GeoRAS documentation: http://rivergis.com/docs/HEC_GeoRAS_10_for_ArcGIS_10.pdf
 
 As an example, a modified *Bald Eagle* project data from *HEC-RAS Unsteady Examples* are used. The project source data can be downloaded from `rivergis.com <http://rivergis.com/download/baldeagle.zip>`_. The archive contains also QGIS project file with all the data and projection defined (NAD 1983 StatePlane Pennsylvania North FIPS 3701 Feet). Unzip the archive and open ``BaldEagle.qgs`` project file.
 
@@ -529,7 +529,7 @@ Elevations
 .       ``RAS Geometry`` > ``Storage Areas Connections`` > ``Elevations``.
 ======  ==============================================================================
 
-Probes DTM ratser(s) along each storage area connection and saves the points into ``SACSurface`` table.
+Probes DTM raster(s) along each storage area connection and saves the points into ``SACSurface`` table.
 
 All
 ----
@@ -544,7 +544,7 @@ Runs all the ``StorageAreas`` tools.
 
 
 
-.. _ ras1d_sdf:
+.. _ras1d_sdf:
 
 ------------------------------------
 Create HEC-RAS GIS Import file (SDF)
@@ -552,3 +552,5 @@ Create HEC-RAS GIS Import file (SDF)
 
 This will save the model geometry in the *HEC-RAS GIS Import* file format. Importing the file into HEC-RAS is described on p. 5-1 of the `HEC-GeoRAS documentation`_.
 
+.. figure:: img/ras1d_geom_all.png
+   :align: center

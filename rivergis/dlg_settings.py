@@ -51,7 +51,6 @@ class DlgSettings(QDialog):
         self.ui.debugModeChbox.setChecked(self.rgis.DEBUG)
         self.ui.rgisAlwaysOnTopChbox.setChecked(self.rgis.always_on_top)
         # DB
-        self.ui.db_overwriteChbox.setChecked(self.rgis.rdb.OVERWRITE)
         self.ui.db_loadAllChbox.setChecked(self.rgis.rdb.LOAD_ALL)
 
 
@@ -65,7 +64,7 @@ class DlgSettings(QDialog):
         self.rgis.toggleAlwaysOnTop()
 
         # River DB
-        self.rgis.rdb.OVERWRITE = self.ui.db_overwriteChbox.isChecked()
+        self.rgis.rdb.OVERWRITE = True
         self.rgis.rdb.LOAD_ALL = self.ui.db_loadAllChbox.isChecked()
 
         # DTMs

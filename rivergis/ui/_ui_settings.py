@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_settings.ui'
 #
-# Created: Thu Oct 29 13:01:02 2015
+# Created: Sun Dec 06 22:49:39 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -138,10 +138,6 @@ class Ui_Settings(object):
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.verticalLayout_9 = QtGui.QVBoxLayout(self.groupBox_2)
         self.verticalLayout_9.setObjectName(_fromUtf8("verticalLayout_9"))
-        self.db_overwriteChbox = QtGui.QCheckBox(self.groupBox_2)
-        self.db_overwriteChbox.setChecked(True)
-        self.db_overwriteChbox.setObjectName(_fromUtf8("db_overwriteChbox"))
-        self.verticalLayout_9.addWidget(self.db_overwriteChbox)
         self.db_loadAllChbox = QtGui.QCheckBox(self.groupBox_2)
         self.db_loadAllChbox.setChecked(True)
         self.db_loadAllChbox.setObjectName(_fromUtf8("db_loadAllChbox"))
@@ -162,7 +158,7 @@ class Ui_Settings(object):
         self.mOptionsScrollArea_04.setWidgetResizable(True)
         self.mOptionsScrollArea_04.setObjectName(_fromUtf8("mOptionsScrollArea_04"))
         self.mOptionsScrollAreaContents_04 = QtGui.QWidget()
-        self.mOptionsScrollAreaContents_04.setGeometry(QtCore.QRect(0, 0, 322, 369))
+        self.mOptionsScrollAreaContents_04.setGeometry(QtCore.QRect(0, 0, 119, 189))
         self.mOptionsScrollAreaContents_04.setObjectName(_fromUtf8("mOptionsScrollAreaContents_04"))
         self.verticalLayout_29 = QtGui.QVBoxLayout(self.mOptionsScrollAreaContents_04)
         self.verticalLayout_29.setObjectName(_fromUtf8("verticalLayout_29"))
@@ -225,10 +221,10 @@ class Ui_Settings(object):
         self.debugModeChbox.setText(_translate("Settings", "Debugging mode", None))
         self.rgisAlwaysOnTopChbox.setText(_translate("Settings", "Plugin window always on top", None))
         self.groupBox_2.setTitle(_translate("Settings", "Database", None))
-        self.db_overwriteChbox.setText(_translate("Settings", "Overwrite existing objects", None))
         self.db_loadAllChbox.setText(_translate("Settings", "Load all tables in preview", None))
         self.groupBox.setTitle(_translate("Settings", "Rasters selection", None))
         self.dtm_selectAllChbox.setText(_translate("Settings", "Select all", None))
         self.label_2.setToolTip(_translate("Settings", "<html><head/><body><p>Maximum number of raster cell values fetched at once by a database query. </p><p>If the number of raster cells exceeds the chunk size they are fetched successively.</p></body></html>", None))
         self.label_2.setText(_translate("Settings", "Chunk size:", None))
         self.dtm_chunksize.setToolTip(_translate("Settings", "<html><head/><body><p>Maximum number of raster cell values fetched at once by a database query. </p><p>If the number of raster cells exceeds the chunk size they are fetched successively.</p></body></html>", None))
+

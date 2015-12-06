@@ -36,8 +36,10 @@ Plugin window always on top
 Database Options
 ----------------
 
-TODO
+  .. figure:: img/options_db.png
+    :align: center
 
+By default, all river database tables are loaded when ``Load River Database Tables into QGIS`` is choosen. When unchecked, RiverGIS will not load some temporary tables.
 
 
 .. _options_dtm:
