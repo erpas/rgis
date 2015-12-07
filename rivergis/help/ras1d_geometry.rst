@@ -27,7 +27,7 @@ Typical RiverGIS workflow
 #. :ref:`Find Manning's roughness coefficients <ras1d_manning>` for cross-sections
 #. :ref:`Define additional cross-sections' data <ras1d_xs_additional>` (levees, ineffecive flow areas and obstructions)
 #. :ref:`Build hydraulic structures <ras1_structures>` (bridges/culverts, inline and lateral structures, storage areas, etc.).
-#. :ref:`Create HEC-RAS GIS Import file <ras1d_sdf>` (*.sdf)
+#. :ref:`Create HEC-RAS GIS Import file <ras1d_sdf>`
 
 .. _ras1d_create_schema:
 
@@ -452,7 +452,7 @@ Calculates stations of the structures.
 Probes DTM raster(s) for the top-of-weir elevations.
 
 ==============  ==================================================================
-|latbutton|  ``RAS Geometry`` > ``Lateral Structures`` > ``All``
+|latbutton|     ``RAS Geometry`` > ``Lateral Structures`` > ``All``
 ==============  ==================================================================
 
 Performs all of the above lateral structure actions.
@@ -550,7 +550,15 @@ Runs all the ``StorageAreas`` tools.
 Create HEC-RAS GIS Import file (SDF)
 ------------------------------------
 
+==============  =================================================================
+|ras_imp|       ``RAS Geometry`` > ``Create RAS GIS Import File``
+==============  =================================================================
+
+  .. |ras_imp| image:: img_ico/ras1dCreateRASImport.png
+
 This will save the model geometry in the *HEC-RAS GIS Import* file format. Importing the file into HEC-RAS is described on p. 5-1 of the `HEC-GeoRAS documentation`_.
 
 .. figure:: img/ras1d_geom_all.png
    :align: center
+
+Usually users have to run cross-section points filter to decrease their number (``Tools`` > ``Cross Sections Points Filter`` in the HEC-RAS geometry editor).
