@@ -8,7 +8,7 @@ This manual presents creating HEC-RAS 2D Flow Areas in RiverGIS plugin. For 1D g
 
 2D flow functionality is introduced in HEC-RAS version 5.0. Users are strongly encouraged to read the `2D Modeling with HEC-RAS 5.0`_. Also `The RAS Solution Blog <http://hecrasmodel.blogspot.com/>`_ is a great source of information about new HEC-RAS releases and 2D modeling.
 
-  .. _2D Modeling with HEC-RAS 5.0: http://rivergis.com/GeoRAS_docs/2D_Modeling_with_HEC_RAS_50.pdf
+  .. _2D Modeling with HEC-RAS 5.0: http://rivergis.com/docs/2D_Modeling_with_HEC_RAS_50.pdf
 
 RiverGIS builds 2D HEC-RAS geometry using following river database tables created by a user:
 
