@@ -8,8 +8,6 @@ RiverGIS is a `QGIS plugin <http://qgis.org/>`_ that helps you create HEC-RAS fl
 
 RiverGIS is `free/libre software <https://www.gnu.org/philosophy/free-sw.en.html>`_ and is released under the `GNU General Public License <http://www.gnu.org/copyleft/gpl.html>`_. Browse the `source code on github <https://github.com/erpas/rgis>`_.
 
-.. figure:: img/rivergis_logo.png
-   :align: right
 
 Table of contents:
 
