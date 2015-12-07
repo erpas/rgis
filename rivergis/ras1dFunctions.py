@@ -4,9 +4,9 @@
 /***************************************************************************
 Name                 : RiverGIS
 Description          : HEC-RAS tools for QGIS
-Date                 : January, 2015
+Date                 : December, 2015
 copyright            : (C) 2015 by RiverGIS Group
-email                : rpasiok@gmail.com
+email                : rpasiok@gmail.com, damnback333@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
