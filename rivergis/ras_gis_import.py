@@ -248,7 +248,10 @@ SELECT
     "RLength",
     ST_AsText(geom) AS wkt
 FROM
-    "{0}"."XSCutLines";
+    "{0}"."XSCutLines"
+ORDER BY
+    "RiverCode",
+    "Station";
 '''
         qry = qry.format(self.schema)
         xsections = self.rgis.rdb.run_query(qry, fetch=True, be_quiet=True)
