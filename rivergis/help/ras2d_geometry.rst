@@ -78,6 +78,10 @@ If the mesh has to aligned to a structure and there special locations where a ce
 .. figure:: img/ras2d_mesh_brkpts.png
    :align: center
 
+The breakpoints are especially useful when modeling groins, as shown below.
+
+.. figure:: img/ras2d_mesh_brkpts2.jpg
+   :align: center
 
 
 Preview 2D Mesh
