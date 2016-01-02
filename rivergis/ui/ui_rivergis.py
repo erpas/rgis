@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ui_rivergis.ui'
 #
-# Created: Mon Dec 07 23:22:00 2015
+# Created: Sat Jan 02 11:00:09 2016
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -532,7 +532,7 @@ class Ui_RiverGIS(object):
         self.actionDebugMode.setText(_translate("RiverGIS", "Debug mode", None))
         self.actionCopyStreamCenterlines2Flowpaths.setText(_translate("RiverGIS", "Copy Stream Centerlines to Flowpaths", None))
         self.actionAlwaysOnTop.setText(_translate("RiverGIS", "Always on top", None))
-        self.actionRASXSUpdateInsertMeasuredPoints.setText(_translate("RiverGIS", "Update - Insert Measured Points", None))
+        self.actionRASXSUpdateInsertMeasuredPoints.setText(_translate("RiverGIS", "Update Elevations", None))
         self.actionRASBRRiverReachNames.setText(_translate("RiverGIS", "River/Reach Names", None))
         self.actionRASBRRiverReachNames.setToolTip(_translate("RiverGIS", "Bridges/Culverts River Reach Names", None))
         self.actionRASBRStationing.setText(_translate("RiverGIS", "Stationing", None))

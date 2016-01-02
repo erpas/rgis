@@ -27,9 +27,11 @@ Visit the plugin page on `GitHub <https://github.com/erpas/rgis>`_.
 
 Contact
 -------
-Please, report issues on `GitHub Issues <https://github.com/erpas/rgis/issues>`_.
+`RiverGIS Questions & Answers (http://q2a.rivergis.com) <http://q2a.rivergis.com>`_.
 
-email: info@rivergis.com
+Reporting bugs: `GitHub Issues <https://github.com/erpas/rgis/issues>`_.
+
+Email developers: info@rivergis.com
 
 
 

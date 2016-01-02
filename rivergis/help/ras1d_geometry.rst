@@ -39,9 +39,11 @@ A fundamental difference from HEC-GeoRAS is that the RiverGIS uses a ``PostgreSQ
 
 A single ``PostgreSQL`` database can be used to store many models geometries. Each model goes to its own `schema <http://www.postgresql.org/docs/current/static/ddl-schemas.html>`_, a kind of database directory for data grouping. Therefore, the first step is to create a new schema for a model.
 
-Users can create a schema in a number of ways: using `pgAdmin <http://pgadmin.org>`_, QGIS' own `DB Manager <http://docs.qgis.org/2.8/en/docs/user_manual/plugins/plugins_db_manager.html>`_ or from within RiverGIS dialog by choosing ``Database`` > ``Create New Schema`` or clicking |createschema| tool icon from Database toolbar. RiverGIS will automatically switch to the newly created schema, as shown below.
+Users can create a schema in a number of ways: using `pgAdmin <http://pgadmin.org>`_, QGIS' own `DB Manager <http://docs.qgis.org/2.8/en/docs/user_manual/plugins/plugins_db_manager.html>`_ or from within RiverGIS dialog by choosing ``Database`` > ``Create New Schema`` or clicking |createschema| tool icon from Database toolbar. RiverGIS will automatically switch to the newly created schema, as shown below. If a connection or schema was created in a previous session, it can be chosen from the ``DB Connection`` or ``Schema`` dropdown lists. When a schema is created from outside the ``RiverGIS`` use the ``Database`` > ``Refresh Connections List`` or the |refreshconns| tool.
 
 .. |createschema| image:: img_ico/dbCreateSchema.png
+
+.. |refreshconns| image:: img_ico/refreshConnections.png
 
 .. figure:: img/ras1d_new_schema_created.png
    :align: center
@@ -124,7 +126,7 @@ The loaded tables can be `edited using QGIS editing tools <http://docs.qgis.org/
 
   .. |importlayers| image:: img_ico/importLayersIntoRdb.png
 
-Geometry objects created by a user must comply the rules described in `HEC-GeoRAS documentation`_, chapter 4.
+Geometry objects created by a user must comply to the rules described in `HEC-GeoRAS documentation`_, chapter 4.
 
 We will import the Bald Eagle example data into the newly created schema. The source layers are grouped in the ``src`` group and there is ``RiverGIS`` group for data produced by the plugin. Select the ``RiverGIS`` as a target group for loading new layers before starting the import.
 
@@ -175,7 +177,7 @@ Lengths/Stations
 |lengths_stations|  ``RAS Geometry`` > ``Stream Centerline Attributes`` > ``Lengths/Stations``
 ==================  =============================================================================
 
-The ``Lengths/Station`` tool finds flow direction and calculates river stationing for each reach end. It fills ``ReachLen``, ``FromSta`` and ``ToSta`` reach attributes. Users can override the calculated values to adjust cross-sections stationing. The tool creates ``
+The ``Lengths/Station`` tool finds flow direction and calculates river stationing for each reach end. It fills ``ReachLen``, ``FromSta`` and ``ToSta`` reach attributes. Users can override the calculated values to adjust cross-sections stationing.
 
 .. |lengths_stations| image:: img_ico/ras1dStreamCenterlinesLengthsStations.png
 
@@ -285,6 +287,30 @@ All
 Runs all the ``XSCutLines`` tools.
 
 
+Update Elevations
+-----------------
+
+==============  =======================================================================
+|updatexsbut|   ``RAS Geometry`` > ``XS Cut Line Attributes`` > ``Update Elevations``
+==============  =======================================================================
+
+.. |updatexsbut| image:: img_ico/ras1dXsUpdate.png
+
+This option is meant to replace original cross-section points with bathymetric information. In a range of limiting features the cross-section points extracted from the DTM are being replaced with measured points. The limiting features can be either bank lines or a polygon layer. ``XS Tolerance`` parameter can be used to filter out points located too far from a cross-section.
+
+.. figure:: img/ras1d_update_elev_map.png
+   :align: center
+
+If bank lines limit the update process, a cross-section part (channel, left or right overbank) have to be specified. Warning: all original points from the chosen cross-section part will be removed.
+
+A polygon layer limiting the update process can span to entire cross-section or its any portion. A single polygon can contain many cross-sections. No attributes for the polygons are required.
+
+The elevation update process is described on p. 4-16 of the `HEC-GeoRAS documentation`_. The following picture shows differences between the HEC-GeoRAS and RiverGIS versions of the tool:
+
+.. figure:: img/ras1d_update_elev_diff.png
+   :align: center
+
+
 
 .. _ras1d_manning:
 
@@ -348,6 +374,7 @@ Blocked obstructions, used to permanently block a portion of a cross-section, ar
 .. |blockbutton| image:: img_ico/ras1dXsBlockedObs.png
 
 Finds blocked obstruction positions for each cross-section.
+
 
 
 

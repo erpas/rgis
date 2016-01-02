@@ -3,11 +3,21 @@
 ------------
 Requirements
 ------------
+QGIS LTR (2.8) is the minimum required QGIS version for RiverGIS 1.0.
+RiverGIS can be installed from the plugin manager:
+
+``Plugins`` > ``Manage and Install Plugins...``.
+
+In the ``All`` tab search for *rivergis*, select it and click ``Install plugin`` button.
+
+.. figure:: img/plugin_manager.png
+   :align: center
+
 ``RiverGIS`` needs a connection to ``PostgreSQL`` database with spatial extensions of ``PostGIS``.
 
 
-Installation
-============
+PostGIS Installation
+====================
 ``PostGIS`` is a spatial database extender for ``PostgreSQL`` database. ``PostgreSQL`` is released under the `PostgreSQL License <http://www.opensource.org/licenses/postgresql>`_, a liberal Open Source license, similar to the BSD or MIT licenses. ``PostGIS`` is released under the `GNU General Public License (GPLv2) <http://www.gnu.org/copyleft/gpl.html>`_.
 
 
@@ -39,7 +49,7 @@ Run ``pgAdmin`` and connect to server. If you have just installed ``PostgreSQL``
 .. figure:: img/pgadmin01.png
    :align: center
 
-Double-click on the server and enter the password you choose during the installation.
+Double-click on the server and enter the password you set during the installation.
 
 .. figure:: img/pgadmin02.png
    :align: center
@@ -70,11 +80,13 @@ Use |sqlbutton| to open SQL query editor and create ``PostGIS`` extensions for t
    :align: center
 
 
-In QGIS define a new database connection from :menuselection:`Layer --> Add layer > Add PostGIS Layers...`. Pick ``New`` and fill in the connection details, for example:
+In QGIS define a new database connection from ``Layer`` > ``Add layer`` > ``Add PostGIS Layers...``.
+
+Pick ``New`` and fill in the connection details, for example:
 
 .. figure:: img/create_pg_connection.png
    :align: center
 
-Here the database server is installed on the local mashine (localhost) and is working on the default port 5432. The database is ``rivergis`` and user is ``postgres`` --- a superuser with administrative rigths, that was created during the database installation. Check the connection using ``Test Connection``. If the connection was succesful, close the dialog by clicking ``OK``. If it fails to connect, check the connection details and try again.
+In this case the database server is installed on the local mashine (localhost) and is working on the default port 5432. The database is ``rivergis`` and user is ``postgres`` --- a superuser with administrative rigths, that was created during the database installation. Check the connection using ``Test Connection``. If the connection was succesful, close the dialog by clicking ``OK``. If it fails to connect, check the connection details and try again.
 
 

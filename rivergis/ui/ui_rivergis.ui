@@ -719,7 +719,7 @@
      <normaloff>:/rivergis/icons/ras1dXsUpdate.svg</normaloff>:/rivergis/icons/ras1dXsUpdate.svg</iconset>
    </property>
    <property name="text">
-    <string>Update - Insert Measured Points</string>
+    <string>Update Elevations</string>
    </property>
   </action>
   <action name="actionRASBRRiverReachNames">

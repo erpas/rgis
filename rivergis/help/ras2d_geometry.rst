@@ -73,7 +73,7 @@ If the mesh has to be aligned to a structure, use breaklines (``BreakLines2D``):
 .. figure:: img/ras2d_mesh_brklines.png
    :align: center
 
-If the mesh has to aligned to a structure and there special locations where a cell face is needed, use breaklines and breakpoints:
+If special locations of cell faces are needed, use breaklines with breakpoints:
 
 .. figure:: img/ras2d_mesh_brkpts.png
    :align: center
