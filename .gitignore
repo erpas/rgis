@@ -4,6 +4,9 @@
 out
 gen
 
+rivergis/help/_build/
+rivergis/settings.json
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/

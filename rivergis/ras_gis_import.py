@@ -18,8 +18,9 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import object
 
-from qgis.core import QGis
+from qgis.core import QgsUnitTypes
 
 
 class RasGisImport(object):
@@ -144,7 +145,7 @@ class HeaderBuilder(object):
 
     def spatial_unit(self):
         u = self.rgis.crs.mapUnits()
-        su = QGis.toLiteral(u).upper()
+        su = QgsUnitTypes.toString(u).upper()
         return su
 
     def build_header(self):

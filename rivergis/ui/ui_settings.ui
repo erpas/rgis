@@ -91,8 +91,8 @@
            <string>General</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources.qrc">
-            <normaloff>:/rivergis/icons/rivergis_big.svg</normaloff>:/rivergis/icons/rivergis_big.svg</iconset>
+           <iconset>
+            <normaloff>../icons/rivergis_big.svg</normaloff>../icons/rivergis_big.svg</iconset>
           </property>
          </item>
          <item>
@@ -100,8 +100,8 @@
            <string>River Database</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources.qrc">
-            <normaloff>:/rivergis/icons/rdb.svg</normaloff>:/rivergis/icons/rdb.svg</iconset>
+           <iconset>
+            <normaloff>../icons/rdb.svg</normaloff>../icons/rdb.svg</iconset>
           </property>
          </item>
          <item>
@@ -112,8 +112,8 @@
            <string>System</string>
           </property>
           <property name="icon">
-           <iconset resource="../resources.qrc">
-            <normaloff>:/rivergis/icons/dtmSetup.svg</normaloff>:/rivergis/icons/dtmSetup.svg</iconset>
+           <iconset>
+            <normaloff>../icons/dtmSetup.svg</normaloff>../icons/dtmSetup.svg</iconset>
           </property>
          </item>
         </widget>
@@ -388,7 +388,6 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources.qrc"/>
  </resources>
  <connections>
   <connection>

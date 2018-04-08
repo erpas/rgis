@@ -18,21 +18,21 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
-
-import hecobjects as heco
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
-from qgis.utils import *
-from ui.ui_importDataIntoRasTables import *
+from __future__ import absolute_import
+import os
+from . import hecobjects as heco
+from qgis.core import QgsProject
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QDialog, QApplication
 
 
 class DlgImportDataIntoRasTables(QDialog):
     def __init__(self, rgis):
         QDialog.__init__(self)
-        self.ui = Ui_importDataIntoRasTables()
-        self.ui.setupUi(self)
+        tdir = os.path.dirname(os.path.realpath(__file__))
+        uif = os.path.join(tdir, "ui", "ui_importDataIntoRasTables.ui")
+        self.ui = uic.loadUi(uif, self)
         self.rgis = rgis
         self.ui.buttonBox.accepted.connect(self.acceptDialog)
         self.ui.buttonBox.rejected.connect(self.rejectDlg)
@@ -262,16 +262,16 @@ class DlgImportDataIntoRasTables(QDialog):
         }
 
         self.populateCbos()
-        for layer, data in self.layers.iteritems():
+        for layer, data in self.layers.items():
             if data['attrs']:
                 data['cbo'].currentIndexChanged.connect(self.layerCboChanged)
 
     def processLayers(self, name, data):
         curInd = data['cbo'].currentIndex()
         lid = data['cbo'].itemData(curInd)
-        layer = self.rgis.mapRegistry.mapLayer(lid)
+        layer = QgsProject.instance().mapLayer(lid)
         attrMap = {}
-        for attr, attrData in data['attrs'].iteritems():
+        for attr, attrData in data['attrs'].items():
             curText = attrData['cbo'].currentText()
             if curText:
                 attrMap[attr] = curText
@@ -281,14 +281,14 @@ class DlgImportDataIntoRasTables(QDialog):
                     attr_map=attrMap,
                     selected=self.onlySel)
         self.importInfo.append(name)
-        if self.rgis.iface.mapCanvas().isCachingEnabled():
-            layer.setCacheImage(None)
+        # if self.rgis.iface.mapCanvas().isCachingEnabled():
+        #     layer.setCacheImage(None)
 
     def acceptDialog(self):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         self.onlySel = self.ui.chkOnlySelected.isChecked()
         tabs = self.rgis.rdb.list_tables()
-        for key, data in self.layers.iteritems():
+        for key, data in self.layers.items():
             if not data['cbo'].currentText() == '':
                 if data['className'] not in tabs:
                     hecobject = getattr(heco, data['className'])
@@ -305,14 +305,14 @@ class DlgImportDataIntoRasTables(QDialog):
 
     def populateCbos(self):
         allCbosByGeomType = {0: [], 1: [], 2: []}
-        for impLayer, data in self.layers.iteritems():
+        for impLayer, data in self.layers.items():
             data['cbo'].clear()
             data['cbo'].addItem('')
             allCbosByGeomType[data['geomType']].append(data['cbo'])
-            for attr, attrData in data['attrs'].iteritems():
+            for attr, attrData in data['attrs'].items():
                 attrData['cbo'].clear()
                 attrData['cbo'].addItem('')
-        for layerId, layer in sorted(self.rgis.mapRegistry.mapLayers().iteritems()):
+        for layerId, layer in sorted(QgsProject.instance().mapLayers().items()):
             if layer.type() == 0 and layer.geometryType() == 0: # vector and points
                 for cbo in allCbosByGeomType[0]:
                     cbo.addItem(layer.name(), layerId)
@@ -329,16 +329,16 @@ class DlgImportDataIntoRasTables(QDialog):
         layerCbo = self.sender()
         curInd = layerCbo.currentIndex()
         lid = layerCbo.itemData(curInd)
-        cboLayer = self.rgis.mapRegistry.mapLayer(lid)
+        cboLayer = QgsProject.instance().mapLayer(lid)
         if cboLayer:
             if cboLayer.featureCount():
-                impLayerAttrs = cboLayer.pendingFields()
+                impLayerAttrs = cboLayer.fields()
                 # find data of the current combo
-                for layer, data in self.layers.iteritems():
+                for layer, data in self.layers.items():
                     # if the combos match
                     if data['cbo'] == layerCbo:
                         # for all attributes combos
-                        for attr, attrData in data['attrs'].iteritems():
+                        for attr, attrData in data['attrs'].items():
                             # clear it
                             attrData['cbo'].clear()
                             attrData['cbo'].addItem('')

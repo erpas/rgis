@@ -18,21 +18,22 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
-
-import hecobjects as heco
-from qgis.core import *
-from qgis.utils import *
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from math import floor
-from os.path import join, dirname, isfile
-import processing
+from __future__ import absolute_import
+from builtins import range
+import os
 from time import sleep
+
+from . import hecobjects as heco
+from qgis.core import QgsDataSourceUri, QgsVectorLayer, QgsProject, QgsFeature, QgsGeometry
+from qgis.PyQt.QtCore import QSettings, Qt
+from qgis.PyQt.QtWidgets import QApplication, QFileDialog
+from math import floor
+import processing
 
 
 def ras2dCreate2dPoints(rgis):
     """
-    Create 2D computational points for each 2D flow area. 
+    Create 2D computational points for each 2D flow area.
     Points are regularly spaced (based on CellSize attribute of the FlowArea2D table) except for breaklines, where they are aligned to form a cell face exactly at a breakline.
     Points spacing along and across a breakline is read from CellSizeAlong and CellSizeAcross attributes of BreakLines2D table, respectively. A number of cells rows to align with a beakline can be given.
     Create breakpoints at locations where a cell face is needed (on a breakline).
@@ -222,44 +223,46 @@ def ras2dCreate2dPoints(rgis):
 
 
 def ras2dPreviewMesh(rgis):
-    """Loads the mesh points to the canvas and builds Voronoi polygons"""
-    areas = None
-    u1 = QgsDataSourceURI()
+    """Build and load Voronoi polygons for the mesh points"""
+    u1 = QgsDataSourceUri()
     u1.setConnection(rgis.host, rgis.port, rgis.database, rgis.user, rgis.passwd)
     u1.setDataSource(rgis.schema, 'MeshPoints2d', 'geom')
     mesh_pts = QgsVectorLayer(u1.uri(), 'MeshPoints2d', 'postgres')
-    voronoi = processing.runalg('qgis:voronoipolygons', mesh_pts, 3, None)
-    # QgsMapLayerRegistry.instance().addMapLayers([mesh_pts])
+    u2 = QgsDataSourceUri()
+    u2.setConnection(rgis.host, rgis.port, rgis.database, rgis.user, rgis.passwd)
+    u2.setDataSource(rgis.schema, 'FlowAreas2d', 'geom')
+    areas = QgsVectorLayer(u2.uri(), 'FlowAreas2d', 'postgres')
 
-    # try to load the 2D Area polygon and clip the Voronoi diagram
-    try:
-        u2 = QgsDataSourceURI()
-        u2.setConnection(rgis.host, rgis.port, rgis.database, rgis.user, rgis.passwd)
-        u2.setDataSource(rgis.schema, 'FlowAreas2d', 'geom')
-        areas = QgsVectorLayer(u2.uri(), 'FlowAreas2d', 'postgres')
-        if rgis.DEBUG:
-            rgis.addInfo('Voronoi layer: \n{0}\nFlow Areas 2d layer ok? {1}'.format(voronoi['OUTPUT'], areas.isValid()))
-        # TODO: construct voronoi polygons separately for each 2d mesh area
-        voronoiClip = processing.runalg('qgis:clip', voronoi['OUTPUT'], areas, None)
-        if rgis.DEBUG:
-            rgis.addInfo('Cutted Voronoi polygons:\n{0}'.format(voronoiClip['OUTPUT']))
-        sleep(1)
-        voronoiClipLayer = QgsVectorLayer(voronoiClip['OUTPUT'], 'Mesh preview', 'ogr')
-        QgsMapLayerRegistry.instance().addMapLayers([voronoiClipLayer])
+    pts_list = []
+    for pt in mesh_pts.getFeatures():
+        pts_list.append(pt.geometry())
+    multipts = QgsGeometry().unaryUnion(pts_list)
 
-    except:
-        voronoiLayer = QgsVectorLayer(voronoi['OUTPUT'], 'Mesh preview', 'ogr')
-        QgsMapLayerRegistry.instance().addMapLayers([voronoiLayer])
+    voronoi = multipts.voronoiDiagram()
+
+    voronoi_lyr = QgsVectorLayer('Polygon?crs=epsg:102728', 'Mesh preview', 'memory')
+    voronoi_dp = voronoi_lyr.dataProvider()
+
+    new_feats = []
+    for area in areas.getFeatures():
+        for item in voronoi.asGeometryCollection():
+            poly = QgsGeometry.fromPolygonXY(item.asPolygon())
+            poly_cut = poly.intersection(area.geometry())
+            fet = QgsFeature()
+            fet.setGeometry(poly_cut)
+            new_feats.append(fet)
+
+    _ = voronoi_dp.addFeatures(new_feats)
+
+    QgsProject.instance().addMapLayer(voronoi_lyr)
 
     # change layers' style
     root = QgsProject.instance().layerTreeRoot()
-    legItems = root.findLayers()
-    for item in legItems:
-        if item.layerName() == 'Mesh preview':
-            stylePath = join(rgis.rivergisPath, 'styles/Mesh2d.qml')
-            item.layer().loadNamedStyle(stylePath)
-            rgis.iface.legendInterface().refreshLayerSymbology(item.layer())
-            rgis.iface.mapCanvas().refresh()
+    leg_items = root.findLayers()
+    for item in leg_items:
+        if item.name() == 'Mesh preview':
+            style_path = os.path.join(rgis.rivergisPath, 'styles/Mesh2d.qml')
+            item.layer().loadNamedStyle(style_path)
 
 
 def ras2dSaveMeshPtsToGeometry(rgis, geoFileName=None):
@@ -267,10 +270,10 @@ def ras2dSaveMeshPtsToGeometry(rgis, geoFileName=None):
     if not geoFileName:
         s = QSettings()
         lastGeoFileDir = s.value('rivergis/lastGeoDir', '')
-        geoFileName = QFileDialog.getSaveFileName(None, 'Target HEC-RAS geometry file', directory=lastGeoFileDir, filter='HEC-RAS geometry (*.g**)')
+        geoFileName, __ = QFileDialog.getSaveFileName(None, 'Target HEC-RAS geometry file', directory=lastGeoFileDir, filter='HEC-RAS geometry (*.g**)')
         if not geoFileName:
             return
-        s.setValue('rivergis/lastGeoDir', dirname(geoFileName))
+        s.setValue('rivergis/lastGeoDir', os.path.dirname(geoFileName))
 
     rgis.addInfo('<br><b>Saving 2D Flow Area to HEC-RAS geometry file...</b>')
 
@@ -362,7 +365,7 @@ Storage Area Mannings=0.06
 
 '''.format(len(pkty), coords)
 
-    if not isfile(geoFileName):
+    if not os.path.isfile(geoFileName):
         createNewGeometry(geoFileName, pExtStr)
 
     geoFile = open(geoFileName, 'r')

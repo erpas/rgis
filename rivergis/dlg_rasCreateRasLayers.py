@@ -18,18 +18,21 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-import hecobjects as heco
-from ui.ui_rasCreateRASLayers import *
+from __future__ import absolute_import
+import os
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QDialog, QApplication
+from . import hecobjects as heco
+# from .ui.ui_rasCreateRASLayers import *
+from qgis.PyQt import uic
 
 
 class DlgCreateRasLayers(QDialog):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        self.ui = Ui_CreateRasLayers()
-        self.ui.setupUi(self)
+        tdir = os.path.dirname(os.path.realpath(__file__))
+        uif = os.path.join(tdir, "ui", "ui_rasCreateRasLayers.ui")
+        self.ui = uic.loadUi(uif, self)
         self.rgis = parent
         self.rdb = parent.rdb
 

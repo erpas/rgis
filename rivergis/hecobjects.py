@@ -18,6 +18,7 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import object
 
 
 class HecRasObject(object):
