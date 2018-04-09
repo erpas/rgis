@@ -85,6 +85,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASXSDownstreamReachLengths.triggered.connect(lambda: r1d.ras1dXSDownstreamLengths(self))
         self.ui.actionRASXSElevations.triggered.connect(lambda: r1d.ras1dXSElevations(self))
         self.ui.actionRASXSAll.triggered.connect(lambda: r1d.ras1dXSAll(self))
+        self.ui.actionRASHealLanduseGeometries.triggered.connect(lambda: r1d.ras1dHealLanduseGeoms(self))
         self.ui.actionRASManningsNValues.triggered.connect(lambda: r1d.ras1dXSExtractMannings(self))
         self.ui.actionRASLevees.triggered.connect(lambda: r1d.ras1dLevees(self))
         self.ui.actionRASIneffectiveFlowAreas.triggered.connect(lambda: r1d.ras1dIneffective(self))

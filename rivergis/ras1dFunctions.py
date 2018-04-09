@@ -158,6 +158,12 @@ def ras1dXSAll(rgis):
     ras1dXSElevations(rgis)
 
 
+def ras1dHealLanduseGeoms(rgis):
+    rgis.addInfo('<br><b>Healing Landuse Areas geometries</b>')
+    if rgis.rdb.process_hecobject(heco.LanduseAreas, 'pg_heal_manning_geometries'):
+        rgis.addInfo('Done.')
+
+
 def ras1dXSExtractMannings(rgis):
     rgis.addInfo('<br><b>Extracting Manning\'s n values for cross-sections</b>')
     rgis.rdb.process_hecobject(heco.Manning, 'pg_create_table')

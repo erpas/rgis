@@ -112,7 +112,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -137,7 +137,7 @@
      <x>0</x>
      <y>0</y>
      <width>617</width>
-     <height>30</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -259,6 +259,7 @@
     </widget>
     <addaction name="menuStreamCenterlineAttributes"/>
     <addaction name="menuXS_Cut_Line_Attributes"/>
+    <addaction name="actionRASHealLanduseGeometries"/>
     <addaction name="actionRASManningsNValues"/>
     <addaction name="actionRASLevees"/>
     <addaction name="actionRASIneffectiveFlowAreas"/>
@@ -950,6 +951,11 @@
     <string>Delete Schema</string>
    </property>
   </action>
+  <action name="actionRASHealLanduseGeometries">
+   <property name="text">
+    <string>Heal Landuse Areas Geometries</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -962,7 +968,6 @@
  <tabstops>
   <tabstop>textEdit</tabstop>
  </tabstops>
- <resources>
- </resources>
+ <resources/>
  <connections/>
 </ui>

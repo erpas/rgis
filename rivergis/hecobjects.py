@@ -786,6 +786,17 @@ class LanduseAreas(HecRasObject):
             ('"LUCode"', 'text'),
             ('"N_Value"', 'double precision')]
 
+    def pg_heal_manning_geometries(self):
+        qry = '''
+UPDATE "{0}"."LanduseAreas" 
+SET
+    geom = ST_MakeValid(geom)
+WHERE
+    NOT ST_IsValid(geom);'''
+
+        qry = qry.format(self.schema, self.srid)
+        return qry
+
     def pg_extract_manning(self):
         qry = '''
 ------------------------------------------------------------------------------------------------------------------------
