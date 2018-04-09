@@ -685,7 +685,7 @@ class IneffAreas(HecRasObject):
         qry = '''
 INSERT INTO "{0}"."IneffLines"(geom, "XsecID", "IneffID", "Elevation")
 SELECT
-    ST_Intersection(xs.geom, ineff.geom) AS geom,
+    (St_Dump(ST_Intersection(xs.geom, ineff.geom))).geom AS geom,
     xs."XsecID",
     ineff."IneffID",
     ineff."Elevation"
@@ -737,7 +737,7 @@ class BlockedObs(HecRasObject):
         qry = '''
 INSERT INTO "{0}"."BlockLines"(geom, "XsecID", "BlockID", "Elevation")
 SELECT
-    ST_Intersection(xs.geom, block.geom) AS geom,
+    (ST_Dump(ST_Intersection(xs.geom, block.geom))).geom AS geom,
     xs."XsecID",
     block."BlockID",
     block."Elevation"

@@ -239,8 +239,7 @@ def ras2dPreviewMesh(rgis):
     multipts = QgsGeometry().unaryUnion(pts_list)
 
     voronoi = multipts.voronoiDiagram()
-
-    voronoi_lyr = QgsVectorLayer('Polygon?crs=epsg:102728', 'Mesh preview', 'memory')
+    voronoi_lyr = QgsVectorLayer('Polygon?crs=proj4:{}'.format(rgis.crs.toProj4()), 'Mesh preview', 'memory')
     voronoi_dp = voronoi_lyr.dataProvider()
 
     new_feats = []
