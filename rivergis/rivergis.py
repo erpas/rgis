@@ -142,10 +142,13 @@ class RiverGIS(QMainWindow):
         self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapSettings().destinationCrs())
         self.updateDefaultCrs()
 
-        # check if we should connect to previuosly used RDB
+        # check if we should connect to previously used RDB
         if self.open_last_conn:
-            self.connChanged(conn_name=self.opts['rdb']['last_conn'],
+            try:
+                self.connChanged(conn_name=self.opts['rdb']['last_conn'],
                              schema_name=self.opts['rdb']['last_schema'])
+            except:
+                pass
 
         # disable some actions until a connection to river database is established
         if not self.rdb:

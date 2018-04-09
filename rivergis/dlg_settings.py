@@ -57,7 +57,7 @@ class DlgSettings(QDialog):
                 # skip the raster if already in the model
                 if layerId in modelDtmLids:
                     continue
-                item = QStandardItem('{0}'.format(layer.name())) #layerId
+                item = QStandardItem('{0}'.format(layer.name()))  #layerId
                 check = Qt.Unchecked
                 item.setCheckState(check)
                 item.setCheckable(True)
@@ -99,7 +99,6 @@ class DlgSettings(QDialog):
 
         # write settings to json
         self.rgis.writeSettings()
-        # print self.rgis.opts
 
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)
