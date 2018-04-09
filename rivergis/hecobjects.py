@@ -1591,16 +1591,18 @@ class BreakLines2d(HecRasObject):
 WITH ids AS
     (SELECT
         a."AreaID",
-        l."BLID"
+        l."BLID",
+        ST_Intersection(a.geom, l.geom) AS igeom
     FROM
         "{0}"."BreakLines2d" AS l,
         "{0}"."FlowAreas2d" AS a
     WHERE
-        ST_Contains(a.geom, l.geom))
+        ST_Intersects(a.geom, l.geom))
 
 UPDATE "{0}"."BreakLines2d" AS l
 SET
-    "AreaID" = ids."AreaID"
+    "AreaID" = ids."AreaID",
+    geom = igeom
 FROM
     ids
  WHERE
