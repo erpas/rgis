@@ -3,7 +3,8 @@
 ------------
 Requirements
 ------------
-QGIS LTR (2.8) is the minimum required QGIS version for RiverGIS 1.0.
+QGIS 3.0 is the minimum required QGIS version for RiverGIS 3.
+
 RiverGIS can be installed from the plugin manager:
 
 ``Plugins`` > ``Manage and Install Plugins...``.
@@ -20,23 +21,11 @@ PostGIS Installation
 ====================
 ``PostGIS`` is a spatial database extender for ``PostgreSQL`` database. ``PostgreSQL`` is released under the `PostgreSQL License <http://www.opensource.org/licenses/postgresql>`_, a liberal Open Source license, similar to the BSD or MIT licenses. ``PostGIS`` is released under the `GNU General Public License (GPLv2) <http://www.gnu.org/copyleft/gpl.html>`_.
 
-
-The Database
-------------
 Download an installer that suits your needs from http://www.enterprisedb.com/products-services-training/pgdownload#windows. If you're on 64-bit Windows, we suggest stable (non-beta) Win-x86-64 installer. For a guidance visit `PostgreSQL installation wiki <https://wiki.postgresql.org/wiki/Running_%26_Installing_PostgreSQL_On_Native_Windows>`_.
 
-During the installation you will be asked for database superuser (postgres) password -- remember it well. Choose the default port for connections (5432). In the end the installer offers a Stack Builder for installing additional tools. Please, skip it.
+During the installation you will be asked for database superuser (postgres) password -- remember it well. Choose the default port for connections (5432). In the end the installer offers a Stack Builder for installing additional tools - select PostGIS bundle for your PostgreSQL version.
 
-.. figure:: img/postgre_stackbuilder.png
-   :align: center
-
-
-PostGIS
--------
-
-Download appropriate ``PostGIS`` installer from ``PostGIS`` windows installers page http://download.osgeo.org/postgis/windows/. For ``PostgreSQL`` 9.4 64-bit you need `postgis-bundle-pg94x64-setup-2.2.0-1.exe <http://download.osgeo.org/postgis/windows/pg94/postgis-bundle-pg94x64-setup-2.2.0-1.exe>`_.
-
-Run the installer and choose 'Yes' for all questions (set GDAL_DATA environment variable, enable raster drivers and out of db rasters).
+Please consult `installation instructions on PostGIS webpage. <https://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01>`_.
 
 
 PostgreSQL Configuration
@@ -87,6 +76,6 @@ Pick ``New`` and fill in the connection details, for example:
 .. figure:: img/create_pg_connection.png
    :align: center
 
-In this case the database server is installed on the local mashine (localhost) and is working on the default port 5432. The database is ``rivergis`` and user is ``postgres`` --- a superuser with administrative rigths, that was created during the database installation. Check the connection using ``Test Connection``. If the connection was succesful, close the dialog by clicking ``OK``. If it fails to connect, check the connection details and try again.
+In this case the database server is installed on the local machine (localhost) and is working on the default port 5432. The database is ``rivergis`` and user is ``postgres`` --- a superuser with administrative rigths, that was created during the database installation. Check the connection using ``Test Connection``. If the connection was successful, close the dialog by clicking ``OK``. If it fails to connect, check the connection details and try again.
 
 

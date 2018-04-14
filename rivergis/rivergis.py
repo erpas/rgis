@@ -25,9 +25,9 @@ import json
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QByteArray, QSettings, Qt, QUrl
-from qgis.PyQt.QtWidgets import QMainWindow, QMenu, QToolBar, QAction, QToolButton, QInputDialog
+from qgis.PyQt.QtWidgets import QMainWindow, QMenu, QToolBar, QAction, QToolButton, QInputDialog, QApplication
 from qgis.PyQt.QtGui import QDesktopServices
-from qgis.utils import *
+from qgis.core import QgsAuthMethodConfig, QgsApplication
 
 from . import river_database as rivdb
 from . import hecobjects as heco
@@ -262,19 +262,38 @@ class RiverGIS(QMainWindow):
         connName = self.ui.connsCbo.currentText()
         s.endGroup()
         s.beginGroup('/PostgreSQL/connections/{0}'.format(connName))
+
+        # first try to get the credentials from AuthManager, then from the basic settings
+        authconf = s.value('authcfg', None)
+        if authconf:
+            auth_manager = QgsApplication.authManager()
+            conf = QgsAuthMethodConfig()
+            auth_manager.loadAuthenticationConfig(authconf, conf, True)
+            if conf.id():
+                self.user = conf.config('username', '')
+                self.passwd = conf.config('password', '')
+        else:
+            self.user = s.value('username')
+            self.passwd = s.value('password')
+
         self.host = s.value('host')
         self.port = s.value('port')
         self.database = s.value('database')
-        self.user = s.value('username')
-        self.passwd = s.value('password')
+
         s.endGroup()
 
         # create a new connection to river database
         self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SRID = int(self.crs.postgisSrid())
-        self.rdb.connect_pg()
-        self.addInfo('Created connection to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host))
-        self.rdb.last_conn = connName
+        if self.rdb.connect_pg():
+            self.addInfo('Created connection to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host))
+            self.rdb.last_conn = connName
+        else:
+            info = 'Couldn\'t connect to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host)
+            info += '\nPlease, check you database connection settings!'
+            self.addInfo(info)
+            self.ui.schemasCbo.clear()
+            return
 
         # refresh schemas combo
         schemaName = self.ui.schemasCbo.currentText()

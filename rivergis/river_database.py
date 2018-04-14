@@ -77,7 +77,7 @@ class RiverDatabase(object):
             msg = 'Connection established.'
         except Exception as e:
             self.rgis.iface.messageBar().pushMessage("Error", 'Can\'t connect to PostGIS database. Check connection details!', level=QgsMessageBar.CRITICAL, duration=10)
-            msg = e
+            msg = repr(e)
         finally:
             self.rgis.addInfo(msg)
             return msg
@@ -121,8 +121,7 @@ class RiverDatabase(object):
                 self.con.commit()
             else:
                 msg = 'There is no opened connection!'
-                msg += 'Please use Basic Authentication method if you experience troubles \
-                        with configured authentication.'
+                msg += 'Please check your database connection authentication settings.'
                 self.rgis.addInfo(msg)
         except Exception as e:
             self.con.rollback()

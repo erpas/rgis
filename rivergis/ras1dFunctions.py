@@ -74,6 +74,8 @@ def ras1dXSRiverReachNames(rgis):
         rgis.addInfo('<br>StreamCenterlines or XSCutLines table is not registered in the river database. Cancelling...')
         return
 
+    # TODO: check stream centerlines names are distinct
+
     rgis.addInfo('<br><b>Setting river and reach names for each cross-section...</b>')
     if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_river_reach_names'):
         rgis.addInfo('Done.')

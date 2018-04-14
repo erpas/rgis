@@ -21,14 +21,13 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
 from __future__ import absolute_import
 from builtins import range
 import os
-from time import sleep
 
 from . import hecobjects as heco
 from qgis.core import QgsDataSourceUri, QgsVectorLayer, QgsProject, QgsFeature, QgsGeometry
 from qgis.PyQt.QtCore import QSettings, Qt
 from qgis.PyQt.QtWidgets import QApplication, QFileDialog
 from math import floor
-import processing
+from psycopg2 import ProgrammingError
 
 
 def ras2dCreate2dPoints(rgis):
@@ -129,10 +128,13 @@ def ras2dCreate2dPoints(rgis):
                 bl."BLmID" = {1} AND
                 bp."BLmID" = bl."BLmID";
             '''
-            qry = qry.format(rgis.rdb.SCHEMA, id)
-            bp_on_bl = rgis.rdb.run_query(qry, True)
-            if rgis.DEBUG:
-                rgis.addInfo('Breakline BLmID={0}, {1}'.format(id, bp_on_bl))
+            try:
+                qry = qry.format(rgis.rdb.SCHEMA, id)
+                bp_on_bl = rgis.rdb.run_query(qry, True)
+                if rgis.DEBUG:
+                    rgis.addInfo('Breakline BLmID={0}, {1}'.format(id, bp_on_bl))
+            except ProgrammingError:
+                bp_on_bl = None
 
             if not bp_on_bl:
                 # no BreakPoints2d: create aligned mesh at regular interval = CellSizeAlong
