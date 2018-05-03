@@ -18,21 +18,22 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+import os
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
-from qgis.utils import *
-from ui.ui_rasXSUpdate import *
-import hecobjects as heco
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QDialog, QApplication
+from qgis.PyQt import uic
+from . import hecobjects as heco
+from qgis.core import QgsProject
 
 
 class DlgXSUpdateInsertMeasuredPts(QDialog):
     def __init__(self, rgis):
         QDialog.__init__(self)
-        self.ui = Ui_rasXSUpdate()
-        self.ui.setupUi(self)
+        tdir = os.path.dirname(os.path.realpath(__file__))
+        uif = os.path.join(tdir, "ui", "ui_rasXSUpdate.ui")
+        self.ui = uic.loadUi(uif, self)
         self.rgis = rgis
         self.ui.buttonBox.accepted.connect(self.acceptDialog)
         self.ui.buttonBox.rejected.connect(self.rejectDialog)
@@ -72,9 +73,9 @@ class DlgXSUpdateInsertMeasuredPts(QDialog):
         if not data['cbo'].currentText() == '':
             curInd = data['cbo'].currentIndex()
             lid = data['cbo'].itemData(curInd)
-            layer = self.rgis.mapRegistry.mapLayer(lid)
+            layer = QgsProject.instance().mapLayer(lid)
             attrMap = {}
-            for attr, attrData in data['attrs'].iteritems():
+            for attr, attrData in data['attrs'].items():
                 curText = attrData['cbo'].currentText()
                 if curText:
                     attrMap[attr] = curText
@@ -109,7 +110,6 @@ xs."RightBank" IS NULL;
             upArea = self.ui.cboInterpArea.currentText()
             self.rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_update_banks', area=upArea, xs_tol=tol)
 
-
         # Update area defined by bathymetry extents polygons
 
         else:
@@ -131,9 +131,9 @@ xs."RightBank" IS NULL;
             if not data['cbo'].currentText() == '':
                 curInd = data['cbo'].currentIndex()
                 lid = data['cbo'].itemData(curInd)
-                layer = self.rgis.mapRegistry.mapLayer(lid)
+                layer = QgsProject.instance().mapLayer(lid)
                 attrMap = {}
-                for attr, attrData in data['attrs'].iteritems():
+                for attr, attrData in data['attrs'].items():
                     curText = attrData['cbo'].currentText()
                     if curText:
                         attrMap[attr] = curText
@@ -149,13 +149,12 @@ xs."RightBank" IS NULL;
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)
 
-
     def populateCbos(self):
         self.ui.cboMeasuredLayer.clear()
         self.ui.cboMeasuredLayer.addItem('')
         self.ui.cboBathyExtLayer.clear()
         self.ui.cboBathyExtLayer.addItem('')
-        for layerId, layer in sorted(self.rgis.mapRegistry.mapLayers().iteritems()):
+        for layerId, layer in sorted(QgsProject.instance().mapLayers().items()):
             if layer.type() == 0 and layer.geometryType() == 0: # vector and points
                 self.ui.cboMeasuredLayer.addItem(layer.name(), layerId)
             if layer.type() == 0 and layer.geometryType() == 1: # vector and polylines
@@ -169,16 +168,15 @@ xs."RightBank" IS NULL;
             self.ui.cboInterpArea.addItem(area)
             self.ui.cboInterpArea.setCurrentIndex(0)
 
-
     def cboMeasuredLayerChanged(self):
         curInd = self.ui.cboMeasuredLayer.currentIndex()
         lid = self.ui.cboMeasuredLayer.itemData(curInd)
-        cboLayer = self.rgis.mapRegistry.mapLayer(lid)
+        cboLayer = QgsProject.instance().mapLayer(lid)
         if cboLayer:
             if cboLayer.featureCount():
                 self.ui.cboMeasuredElevation.clear()
                 self.ui.cboMeasuredElevation.addItem('')
-                for a in cboLayer.pendingFields():
+                for a in cboLayer.fields():
                     self.ui.cboMeasuredElevation.addItem(a.name())
                 attrIndex = self.ui.cboMeasuredElevation.findText('elevation', flags=Qt.MatchFixedString)
                 if attrIndex > 0:

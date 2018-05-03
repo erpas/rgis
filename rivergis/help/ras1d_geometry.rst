@@ -140,7 +140,10 @@ Attribute names of the source data can differ from the database attribute names,
 
 If the source layers group is switch off, only the imported layers should be visible. In the above picture also the landuse layer is turned off for clarity.
 
-It is always good idea to check the imported data visually and have a look into the attribute tables. Here we check the ``StreamCenterlines`` if the :ref:`required attributes <req_attrs>` are defined.
+It is always good idea to check the imported data visually and have a look into the attribute tables. Here we check the ``StreamCenterlines`` if the :ref:`required attributes <user_def_attrs>` are defined.
+
+.. note::
+    Each ``StreamCenterline`` must have a distinct ``RiverCode`` and ``ReachCode`` attributes.
 
 .. figure:: img/ras1d_import_check_table.png
    :align: center

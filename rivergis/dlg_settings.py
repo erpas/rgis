@@ -18,21 +18,23 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import range
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
-from qgis.utils import *
-from ui._ui_settings import *
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QDialog, QApplication
+from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
+from qgis.core import QgsProject
+import os
 
 
 class DlgSettings(QDialog):
 
     def __init__(self, parent=None, widget=0):
         QDialog.__init__(self, parent)
-        self.ui = Ui_Settings()
-        self.ui.setupUi(self)
+        tdir = os.path.dirname(os.path.realpath(__file__))
+        uif = os.path.join(tdir, "ui", "ui_settings.ui")
+        self.ui = uic.loadUi(uif, self)
         self.ui.optionsList.setCurrentRow(widget)
         self.rgis = parent
         self.rdb = parent.rdb
@@ -50,12 +52,12 @@ class DlgSettings(QDialog):
         for row in range(self.rgis.dtmModel.rowCount()):
             modelDtmLids.append(self.rgis.dtmModel.item(row).data()[1])
 
-        for layerId, layer in sorted(self.rgis.mapRegistry.mapLayers().iteritems()):
+        for layerId, layer in sorted(QgsProject.instance().mapLayers().items()):
             if layer.type() == 1: # it's a raster
                 # skip the raster if already in the model
                 if layerId in modelDtmLids:
                     continue
-                item = QStandardItem('{0}'.format(layer.name())) #layerId
+                item = QStandardItem('{0}'.format(layer.name()))  #layerId
                 check = Qt.Unchecked
                 item.setCheckState(check)
                 item.setCheckable(True)
@@ -97,7 +99,6 @@ class DlgSettings(QDialog):
 
         # write settings to json
         self.rgis.writeSettings()
-        # print self.rgis.opts
 
         QApplication.restoreOverrideCursor()
         QDialog.accept(self)

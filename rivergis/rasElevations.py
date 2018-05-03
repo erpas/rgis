@@ -18,11 +18,11 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import absolute_import
+from builtins import str
 
-from hecobjects import DTMs
-from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from .hecobjects import DTMs
+from qgis.core import QgsPointXY, QgsRaster, QgsProject
 
 
 def prepare_DTMs(rgis):
@@ -36,7 +36,7 @@ def prepare_DTMs(rgis):
     rgis.rdb.process_hecobject(DTMs, 'pg_create_table')
     dtms_params = []
     for layer_id in rgis.dtms:
-        rlayer = rgis.mapRegistry.mapLayer(layer_id)
+        rlayer = QgsProject.instance().mapLayer(layer_id)
         name = '\'{0}\''.format(rlayer.name())
         uri = '\'{0}\''.format(rlayer.dataProvider().dataSourceUri())
         dp = '\'{0}\''.format(rlayer.dataProvider().name())
@@ -89,7 +89,7 @@ def probe_DTMs(rgis, surface_obj, parent_obj, chunksize=0):
     for dtm in dtms:
         dtm_id = dtm['DtmID']
         lid = dtm['LayerID']
-        rlayer = rgis.mapRegistry.mapLayer(lid)
+        rlayer = QgsProject.instance().mapLayer(lid)
         qry = '''
 SELECT
     surf."PtID" AS "PtID",
@@ -118,7 +118,7 @@ WHERE
                 pass
             qry = ''
             for pt in pts:
-                ident = rlayer.dataProvider().identify(QgsPoint(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
+                ident = rlayer.dataProvider().identify(QgsPointXY(pt[1], pt[2]), QgsRaster.IdentifyFormatValue)
                 try:
                     if ident.isValid():
                         pt.append(round(ident.results()[1], 2))

@@ -18,20 +18,22 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
-import hecobjects as heco
-from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, QgsPoint, QgsRaster
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from os.path import dirname
-from ras_gis_import import RasGisImport
-from rasElevations import prepare_DTMs, update_DtmID, probe_DTMs
-from dlg_rasXSUpdate import DlgXSUpdateInsertMeasuredPts
+from __future__ import absolute_import
+import os
+
+from . import hecobjects as heco
+from qgis.PyQt.QtCore import Qt, QSettings
+from qgis.PyQt.QtWidgets import QApplication, QInputDialog, QFileDialog
+
+from .ras_gis_import import RasGisImport
+from .rasElevations import prepare_DTMs, update_DtmID, probe_DTMs
+from .dlg_rasXSUpdate import DlgXSUpdateInsertMeasuredPts
 
 
 def ras1dStreamCenterlineTopology(rgis):
     """Create river network topology. Create nodes at reach ends and find the direction of flow (fromNode, toNode)"""
     # check if streamlines table is registered
-    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
+    sc_exist = 'StreamCenterlines' in list(rgis.rdb.register.keys())
     if not sc_exist:
         rgis.addInfo('<br>StreamCenterlines are not registered in the river database. Import or create stream centerlines. <br>Cancelling...')
         return
@@ -66,11 +68,13 @@ def ras1dStreamCenterlineAll(rgis):
 def ras1dXSRiverReachNames(rgis):
     """Finds river and reach name for each cross-section"""
     # check if streamlines  and xsec tables are registered
-    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
-    xs_exist = 'XSCutLines' in rgis.rdb.register.keys()
+    sc_exist = 'StreamCenterlines' in list(rgis.rdb.register.keys())
+    xs_exist = 'XSCutLines' in list(rgis.rdb.register.keys())
     if not sc_exist or not xs_exist:
         rgis.addInfo('<br>StreamCenterlines or XSCutLines table is not registered in the river database. Cancelling...')
         return
+
+    # TODO: check stream centerlines names are distinct
 
     rgis.addInfo('<br><b>Setting river and reach names for each cross-section...</b>')
     if rgis.rdb.process_hecobject(heco.XSCutLines, 'pg_river_reach_names'):
@@ -156,6 +160,12 @@ def ras1dXSAll(rgis):
     ras1dXSElevations(rgis)
 
 
+def ras1dHealLanduseGeoms(rgis):
+    rgis.addInfo('<br><b>Healing Landuse Areas geometries</b>')
+    if rgis.rdb.process_hecobject(heco.LanduseAreas, 'pg_heal_manning_geometries'):
+        rgis.addInfo('Done.')
+
+
 def ras1dXSExtractMannings(rgis):
     rgis.addInfo('<br><b>Extracting Manning\'s n values for cross-sections</b>')
     rgis.rdb.process_hecobject(heco.Manning, 'pg_create_table')
@@ -188,8 +198,8 @@ def ras1dObstructions(rgis):
 
 def ras1dBRRiverReachNames(rgis):
     """Finds river and reach name for each bridge"""
-    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
-    br_exist = 'Bridges' in rgis.rdb.register.keys()
+    sc_exist = 'StreamCenterlines' in list(rgis.rdb.register.keys())
+    br_exist = 'Bridges' in list(rgis.rdb.register.keys())
     if not sc_exist or not br_exist:
         rgis.addInfo('<br>StreamCenterlines or Bridges table is not registered in the river database. Cancelling...')
         return
@@ -242,8 +252,8 @@ def ras1dRASBRAll(rgis):
 
 def ras1dISRiverReachNames(rgis):
     """Finds river and reach name for each inline structure"""
-    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
-    is_exist = 'InlineStructures' in rgis.rdb.register.keys()
+    sc_exist = 'StreamCenterlines' in list(rgis.rdb.register.keys())
+    is_exist = 'InlineStructures' in list(rgis.rdb.register.keys())
     if not sc_exist or not is_exist:
         rgis.addInfo('<br>StreamCenterlines or InlineStructures table is not registered in the river database. Cancelling...')
         return
@@ -296,8 +306,8 @@ def ras1dISAll(rgis):
 
 def ras1dLatRiverReachNames(rgis):
     """Finds river and reach name for each lateral structure"""
-    sc_exist = 'StreamCenterlines' in rgis.rdb.register.keys()
-    ls_exist = 'LateralStructures' in rgis.rdb.register.keys()
+    sc_exist = 'StreamCenterlines' in list(rgis.rdb.register.keys())
+    ls_exist = 'LateralStructures' in list(rgis.rdb.register.keys())
     if not sc_exist or not ls_exist:
         rgis.addInfo('<br>StreamCenterlines or LateralStructures table is not registered in the river database. Cancelling...')
         return
@@ -381,7 +391,7 @@ def ras1dSAElevations(rgis):
 
 
 def ras1dSAVolumeData(rgis):
-    nr_slices, ok = QInputDialog.getInteger(rgis, 'Number of slices', 'Number of slices for volume calculation:', 10, 3, 30, 1)
+    nr_slices, ok = QInputDialog.getInt(rgis, 'Number of slices', 'Number of slices for volume calculation:', 10, 3, 30, 1)
     if not ok:
         rgis.addInfo('  Incorrect number of slices. Cancelling...')
         return
@@ -450,7 +460,7 @@ def ras1dCreateRasGisImportFile(rgis):
     rgis.addInfo('<br><b>Creating RAS GIS Import file from HEC-RAS model geometry...</b>')
     s = QSettings()
     last_dir = s.value('rivergis/lastRasGisImportDir', '')
-    import_fname = QFileDialog.getSaveFileName(None,
+    import_fname, __ = QFileDialog.getSaveFileName(None,
                      'Target HEC-RAS GIS Import file',
                      directory=last_dir,
                      filter='HEC-RAS GIS Import (*.sdf)')
@@ -458,7 +468,7 @@ def ras1dCreateRasGisImportFile(rgis):
         rgis.addInfo('Creating RAS GIS Import file cancelled.')
         return
 
-    s.setValue('rivergis/lastRasGisImportDir', dirname(import_fname))
+    s.setValue('rivergis/lastRasGisImportDir', os.path.dirname(import_fname))
     rgis.rdb.register.clear()
     rgis.rdb.register_existing(heco)
     rgi = RasGisImport(rgis)

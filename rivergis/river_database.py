@@ -18,13 +18,14 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import object
 
 import psycopg2
 import psycopg2.extras
 
-from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsDataSourceURI, NULL, QGis
+from qgis.core import QgsVectorLayer, QgsProject, QgsDataSourceUri, NULL
 from qgis.gui import QgsMessageBar
-from os.path import join
+import os
 
 
 class RiverDatabase(object):
@@ -74,9 +75,9 @@ class RiverDatabase(object):
             conn_params = 'dbname={0} host={1} port={2} user={3} password={4}'.format(self.dbname, self.host, self.port, self.user, self.password)
             self.con = psycopg2.connect(conn_params)
             msg = 'Connection established.'
-        except Exception, e:
+        except Exception as e:
             self.rgis.iface.messageBar().pushMessage("Error", 'Can\'t connect to PostGIS database. Check connection details!', level=QgsMessageBar.CRITICAL, duration=10)
-            msg = e
+            msg = repr(e)
         finally:
             self.rgis.addInfo(msg)
             return msg
@@ -119,8 +120,10 @@ class RiverDatabase(object):
                     result = []
                 self.con.commit()
             else:
-                self.rgis.addInfo('There is no opened connection! Use "connect_pg" method before running query.')
-        except Exception, e:
+                msg = 'There is no opened connection!'
+                msg += 'Please check your database connection authentication settings.'
+                self.rgis.addInfo(msg)
+        except Exception as e:
             self.con.rollback()
             if be_quiet is False:
                 self.rgis.addInfo(repr(e))
@@ -238,7 +241,7 @@ class RiverDatabase(object):
         """
         Load hydrodynamic model objects from register.
         """
-        for k in sorted(self.register.keys(), key=lambda x: self.register[x].order):
+        for k in sorted(list(self.register.keys()), key=lambda x: self.register[x].order):
             obj = self.register[k]
             if obj.visible is True or self.LOAD_ALL is True:
                 self.add_to_view(obj)
@@ -266,9 +269,9 @@ class RiverDatabase(object):
 
     def refresh_uris(self):
         """
-        Setting layers uris list from QgsMapLayerRegistry.
+        Setting layers uris list from QgsProject
         """
-        self.uris = [vl.source() for vl in QgsMapLayerRegistry.instance().mapLayers().values()]
+        self.uris = [vl.source() for vl in list(QgsProject.instance().mapLayers().values())]
         if self.rgis.DEBUG:
             self.rgis.addInfo('Layers sources:\n    {0}'.format('\n    '.join(self.uris)))
 
@@ -283,7 +286,7 @@ class RiverDatabase(object):
             QgsVectorLayer: QGIS Vector Layer object.
         """
         vl_schema, vl_name = obj.schema, obj.name
-        uri = QgsDataSourceURI()
+        uri = QgsDataSourceUri()
         uri.setConnection(self.host, self.port, self.dbname, self.user, self.password)
         if obj.geom_type is not None:
             uri.setDataSource(vl_schema, vl_name, 'geom')
@@ -300,10 +303,10 @@ class RiverDatabase(object):
             vlayer (QgsVectorLayer): QgsVectorLayer object.
         """
         try:
-            style_file = join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
+            style_file = os.path.join(self.rgis.rivergisPath, 'styles', '{0}.qml'.format(vlayer.name()))
             vlayer.loadNamedStyle(style_file)
-            QgsMapLayerRegistry.instance().addMapLayer(vlayer)
-        except Exception, e:
+            QgsProject.instance().addMapLayer(vlayer)
+        except Exception as e:
             self.rgis.addInfo(repr(e))
 
     def add_to_view(self, obj):
@@ -345,7 +348,7 @@ class RiverDatabase(object):
         for attr in fields[1:]:
             attr_name = attr[0].strip('"')
             if attr_map:
-                if attr_name in attr_map.keys():
+                if attr_name in list(attr_map.keys()):
                     imp_attrs.append([attr[0], attr_map[attr_name], attr[1]])
                 else:
                     pass
@@ -380,12 +383,20 @@ class RiverDatabase(object):
         single2multi = False
         for feat in features:
             vals = []
-            geom_wkt = feat.geometry().exportToWkt()
+            geom_wkt = feat.geometry().asWkt()
             target_multi = hecobject.geom_type.startswith('MULTI')
             src_multi = feat.geometry().isMultipart()
             if not target_multi and src_multi:
-                self.rgis.addInfo('WARNING:<br>Source geometry is MULTIPART but target is SINGLEPART! Layer skipped.')
-                return None
+
+                # try to convert a copy of the feature geometry to singlepart
+                geom_copy = feat.geometry()
+                is_single = geom_copy.convertToSingleType()
+                if is_single:
+                    geometry = 'ST_GeomFromText(\'{0}\', {1})'.format(geom_copy.asWkt(), srid)
+                else:
+                    self.rgis.addInfo('WARNING:<br>Source geometry is reported as MULTIPART but target \
+                        is SINGLEPART! skipping...')
+                    continue
             elif target_multi and not src_multi:
                 single2multi = True
                 geometry = 'ST_Multi(ST_GeomFromText(\'{0}\', {1}))'.format(geom_wkt, srid)
@@ -435,7 +446,7 @@ class RiverDatabase(object):
 
         if self.rgis.DEBUG:
             if attr_map:
-                am = ['{0} - {1}'.format(key, value) for key, value in attr_map.iteritems()]
+                am = ['{0} - {1}'.format(key, value) for key, value in attr_map.items()]
                 info = '  attr_map:\n    '
                 info += '\n    '.join(am)
                 self.rgis.addInfo(info)

@@ -18,25 +18,26 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import object
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-try:
-    import resources
-except ImportError:
-    pass
+from qgis.PyQt.QtCore import QObject, Qt
+from qgis.PyQt.QtWidgets import QAction, QApplication
+from qgis.PyQt.QtGui import QIcon
+from .utils import icon_path
 
 
-class RiverGISPlugin:
+class RiverGISPlugin(object):
     def __init__(self, iface):
         self.iface = iface
         self.dlg = None
 
-    def initGui(self): 
-        self.action = QAction(QIcon(':/rivergis/icons/rivergis.svg'), QApplication.translate('RiverGIS', 'RiverGIS'), self.iface.mainWindow())
+    def initGui(self):
+        rg_icon = QIcon(icon_path('rivergis.svg'))
+        self.action = QAction(rg_icon, 'RiverGIS', self.iface.mainWindow())
         self.action.setObjectName('rivergis')
-        QObject.connect(self.action, SIGNAL('triggered()'), self.run)
+        self.action.triggered.connect(self.run)
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(QApplication.translate('RiverGIS', 'RiverGIS'), self.action)
@@ -52,9 +53,9 @@ class RiverGISPlugin:
     def run(self):
         # keep opened only one instance
         if self.dlg is None:
-            from rivergis import RiverGIS
+            from .rivergis import RiverGIS
             self.dlg = RiverGIS(self.iface)
-            QObject.connect(self.dlg, SIGNAL('destroyed(QObject *)'), self.onDestroyed)
+            self.dlg.destroyed.connect(self.onDestroyed)
         self.dlg.show()
         self.dlg.raise_()
         self.dlg.setWindowState(self.dlg.windowState() & ~Qt.WindowMinimized)

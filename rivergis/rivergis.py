@@ -18,39 +18,42 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.utils import *
-from os.path import join, isfile
+from __future__ import absolute_import
+from builtins import range
+import os
 import json
 
-from ui._ui_rivergis import Ui_RiverGIS
-import river_database as rivdb
-import hecobjects as heco
-import ras1dFunctions as r1d
-import ras2dFunctions as r2d
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import QByteArray, QSettings, Qt, QUrl
+from qgis.PyQt.QtWidgets import QMainWindow, QMenu, QToolBar, QAction, QToolButton, QInputDialog, QApplication
+from qgis.PyQt.QtGui import QDesktopServices
+from qgis.core import QgsAuthMethodConfig, QgsApplication
+
+from . import river_database as rivdb
+from . import hecobjects as heco
+from . import ras1dFunctions as r1d
+from . import ras2dFunctions as r2d
 
 
 class RiverGIS(QMainWindow):
 
-    OPT_GENERAL, OPT_RDB, OPT_DTM = range(3)
+    OPT_GENERAL, OPT_RDB, OPT_DTM = list(range(3))
 
     def __init__(self, iface, parent=None):
         QMainWindow.__init__(self, parent)
         if QApplication.overrideCursor():
             QApplication.restoreOverrideCursor()
         self.setAttribute(Qt.WA_DeleteOnClose)
-        self.ui = Ui_RiverGIS()
-        self.ui.setupUi(self)
+        tdir = os.path.dirname(os.path.realpath(__file__))
+        uif = os.path.join(tdir, "ui", "ui_rivergis.ui")
+        self.ui = uic.loadUi(uif, self)
         self.conn = None
         self.curConnName = None
         self.schema = None
         self.passwd = None
         self.rdb = None
         self.iface = iface
-        self.mapRegistry = QgsMapLayerRegistry.instance()
+        # self.mapRegistry = QgsMapLayerRegistry.instance()
         self.rivergisPath = os.path.dirname(__file__)
         self.dtms = []
         # restore settings
@@ -82,6 +85,7 @@ class RiverGIS(QMainWindow):
         self.ui.actionRASXSDownstreamReachLengths.triggered.connect(lambda: r1d.ras1dXSDownstreamLengths(self))
         self.ui.actionRASXSElevations.triggered.connect(lambda: r1d.ras1dXSElevations(self))
         self.ui.actionRASXSAll.triggered.connect(lambda: r1d.ras1dXSAll(self))
+        self.ui.actionRASHealLanduseGeometries.triggered.connect(lambda: r1d.ras1dHealLanduseGeoms(self))
         self.ui.actionRASManningsNValues.triggered.connect(lambda: r1d.ras1dXSExtractMannings(self))
         self.ui.actionRASLevees.triggered.connect(lambda: r1d.ras1dLevees(self))
         self.ui.actionRASIneffectiveFlowAreas.triggered.connect(lambda: r1d.ras1dIneffective(self))
@@ -136,13 +140,16 @@ class RiverGIS(QMainWindow):
         self.readSettings()
 
         # set QGIS projection CRS as a default for RiverGIS
-        self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapRenderer().destinationCrs())
+        self.ui.crsWidget.setCrs(self.iface.mapCanvas().mapSettings().destinationCrs())
         self.updateDefaultCrs()
 
-        # check if we should connect to previuosly used RDB
+        # check if we should connect to previously used RDB
         if self.open_last_conn:
-            self.connChanged(conn_name=self.opts['rdb']['last_conn'],
+            try:
+                self.connChanged(conn_name=self.opts['rdb']['last_conn'],
                              schema_name=self.opts['rdb']['last_schema'])
+            except:
+                pass
 
         # disable some actions until a connection to river database is established
         if not self.rdb:
@@ -255,19 +262,38 @@ class RiverGIS(QMainWindow):
         connName = self.ui.connsCbo.currentText()
         s.endGroup()
         s.beginGroup('/PostgreSQL/connections/{0}'.format(connName))
+
+        # first try to get the credentials from AuthManager, then from the basic settings
+        authconf = s.value('authcfg', None)
+        if authconf:
+            auth_manager = QgsApplication.authManager()
+            conf = QgsAuthMethodConfig()
+            auth_manager.loadAuthenticationConfig(authconf, conf, True)
+            if conf.id():
+                self.user = conf.config('username', '')
+                self.passwd = conf.config('password', '')
+        else:
+            self.user = s.value('username')
+            self.passwd = s.value('password')
+
         self.host = s.value('host')
         self.port = s.value('port')
         self.database = s.value('database')
-        self.user = s.value('username')
-        self.passwd = s.value('password')
+
         s.endGroup()
 
         # create a new connection to river database
         self.rdb = rivdb.RiverDatabase(self, self.database, self.host, self.port, self.user, self.passwd)
         self.rdb.SRID = int(self.crs.postgisSrid())
-        self.rdb.connect_pg()
-        self.addInfo('Created connection to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host))
-        self.rdb.last_conn = connName
+        if self.rdb.connect_pg():
+            self.addInfo('Created connection to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host))
+            self.rdb.last_conn = connName
+        else:
+            info = 'Couldn\'t connect to river database: {0}@{1}'.format(self.rdb.dbname, self.rdb.host)
+            info += '\nPlease, check you database connection settings!'
+            self.addInfo(info)
+            self.ui.schemasCbo.clear()
+            return
 
         # refresh schemas combo
         schemaName = self.ui.schemasCbo.currentText()
@@ -275,6 +301,8 @@ class RiverGIS(QMainWindow):
         schemas = self.rdb.run_query(qry, fetch=True)
         self.ui.schemasCbo.clear()
         self.ui.schemasCbo.addItem('')
+        if not schemas:
+            schemas = []
         for schema in schemas:
             self.ui.schemasCbo.addItem(schema[0])
         if schema_name:
@@ -316,7 +344,7 @@ class RiverGIS(QMainWindow):
     # MENU Database
 
     def rasCreateRdbTables(self):
-        from dlg_rasCreateRasLayers import DlgCreateRasLayers
+        from .dlg_rasCreateRasLayers import DlgCreateRasLayers
         dlg = DlgCreateRasLayers(self)
         dlg.exec_()
 
@@ -329,7 +357,7 @@ class RiverGIS(QMainWindow):
 
     def rasImportLayersIntoRdbTables(self):
         """Import chosen layers into PostGIS database."""
-        from dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
+        from .dlg_rasImportDataIntoRasTables import DlgImportDataIntoRasTables
         self.addInfo("<br><b>Import data into RAS PostGIS tables...</b>")
         if not self.curConnName or not self.schema:
             self.addInfo("No PostGIS database or schema selected. Choose a connection and schema.")
@@ -340,7 +368,7 @@ class RiverGIS(QMainWindow):
     # MENU Settings
 
     def options(self, widget):
-        from dlg_settings import DlgSettings
+        from .dlg_settings import DlgSettings
         dlg = DlgSettings(self, widget=widget)
         dlg.exec_()
 
@@ -375,23 +403,23 @@ class RiverGIS(QMainWindow):
         self.showHelp('index.html')
 
     def readSettings(self, defaults=False):
-        sFile = join(self.rivergisPath, 'settings.json')
-        if not isfile(sFile) or defaults:
-            sFile = join(self.rivergisPath, 'default_settings.json')
+        sFile = os.path.join(self.rivergisPath, 'settings.json')
+        if not os.path.isfile(sFile) or defaults:
+            sFile = os.path.join(self.rivergisPath, 'default_settings.json')
         with open(sFile, 'r') as f:
             self.opts = json.load(f)
-        for group, options in self.opts.iteritems():
-            for name, defaultValue in options.iteritems():
-                if group == 'rgis' and name in self.opts['rgis'].keys():
+        for group, options in self.opts.items():
+            for name, defaultValue in options.items():
+                if group == 'rgis' and name in list(self.opts['rgis'].keys()):
                     setattr(self, name, self.opts['rgis'][name])
-                elif group == 'rdb' and name in self.opts['rdb'].keys():
+                elif group == 'rdb' and name in list(self.opts['rdb'].keys()):
                     setattr(self, name, self.opts['rdb'][name])
                 else:
                     self.addInfo("Options have no key ['{}']['{}']".format(group, name))
 
     def writeSettings(self):
-        for group, options in self.opts.iteritems():
-            for name, defaultValue in options.iteritems():
+        for group, options in self.opts.items():
+            for name, defaultValue in options.items():
                 if group == 'rgis':
                     try:
                         self.opts['rgis'][name] = getattr(self, name)
@@ -403,5 +431,5 @@ class RiverGIS(QMainWindow):
                     except:
                         pass
 
-        with open(join(self.rivergisPath, 'settings.json'), 'w') as f:
+        with open(os.path.join(self.rivergisPath, 'settings.json'), 'w') as f:
             json.dump(self.opts, f)

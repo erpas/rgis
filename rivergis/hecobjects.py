@@ -18,6 +18,7 @@ email                : rpasiok@gmail.com, damnback333@gmail.com
  *                                                                         *
  ***************************************************************************/
 """
+from builtins import object
 
 
 class HecRasObject(object):
@@ -684,7 +685,7 @@ class IneffAreas(HecRasObject):
         qry = '''
 INSERT INTO "{0}"."IneffLines"(geom, "XsecID", "IneffID", "Elevation")
 SELECT
-    ST_Intersection(xs.geom, ineff.geom) AS geom,
+    (St_Dump(ST_Intersection(xs.geom, ineff.geom))).geom AS geom,
     xs."XsecID",
     ineff."IneffID",
     ineff."Elevation"
@@ -736,7 +737,7 @@ class BlockedObs(HecRasObject):
         qry = '''
 INSERT INTO "{0}"."BlockLines"(geom, "XsecID", "BlockID", "Elevation")
 SELECT
-    ST_Intersection(xs.geom, block.geom) AS geom,
+    (ST_Dump(ST_Intersection(xs.geom, block.geom))).geom AS geom,
     xs."XsecID",
     block."BlockID",
     block."Elevation"
@@ -784,6 +785,17 @@ class LanduseAreas(HecRasObject):
             ('"LUID"', 'serial primary key'),
             ('"LUCode"', 'text'),
             ('"N_Value"', 'double precision')]
+
+    def pg_heal_manning_geometries(self):
+        qry = '''
+UPDATE "{0}"."LanduseAreas" 
+SET
+    geom = ST_MakeValid(geom)
+WHERE
+    NOT ST_IsValid(geom);'''
+
+        qry = qry.format(self.schema, self.srid)
+        return qry
 
     def pg_extract_manning(self):
         qry = '''
@@ -1579,16 +1591,18 @@ class BreakLines2d(HecRasObject):
 WITH ids AS
     (SELECT
         a."AreaID",
-        l."BLID"
+        l."BLID",
+        ST_Intersection(a.geom, l.geom) AS igeom
     FROM
         "{0}"."BreakLines2d" AS l,
         "{0}"."FlowAreas2d" AS a
     WHERE
-        ST_Contains(a.geom, l.geom))
+        ST_Intersects(a.geom, l.geom))
 
 UPDATE "{0}"."BreakLines2d" AS l
 SET
-    "AreaID" = ids."AreaID"
+    "AreaID" = ids."AreaID",
+    geom = igeom
 FROM
     ids
  WHERE

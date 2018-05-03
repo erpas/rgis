@@ -17,8 +17,8 @@
    <string>RiverGIS</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources.qrc">
-    <normaloff>:/rivergis/icons/rivergis_big.svg</normaloff>:/rivergis/icons/rivergis_big.svg</iconset>
+   <iconset>
+    <normaloff>../icons/rivergis_big.svg</normaloff>../icons/rivergis_big.svg</iconset>
   </property>
   <property name="iconSize">
    <size>
@@ -112,7 +112,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QgsProjectionSelectionWidget" name="crsWidget">
+       <widget class="QgsProjectionSelectionWidget" name="crsWidget" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -157,8 +157,8 @@
       <string>XS Cut Line Attributes</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/rivergis/icons/ras1dXs.svg</normaloff>:/rivergis/icons/ras1dXs.svg</iconset>
+      <iconset>
+       <normaloff>../icons/ras1dXs.svg</normaloff>../icons/ras1dXs.svg</iconset>
      </property>
      <addaction name="actionRASXSRiverReachNames"/>
      <addaction name="actionRASXSStationing"/>
@@ -176,8 +176,8 @@
       <string>Stream Centerline Attributes</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/rivergis/icons/ras1dStreamCenterlines.svg</normaloff>:/rivergis/icons/ras1dStreamCenterlines.svg</iconset>
+      <iconset>
+       <normaloff>../icons/ras1dStreamCenterlines.svg</normaloff>../icons/ras1dStreamCenterlines.svg</iconset>
      </property>
      <addaction name="actionRASTopology1D"/>
      <addaction name="actionRASLengthsStations"/>
@@ -191,8 +191,8 @@
       <string>Bridges/Culverts</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/rivergis/icons/ras1dBridges.svg</normaloff>:/rivergis/icons/ras1dBridges.svg</iconset>
+      <iconset>
+       <normaloff>../icons/ras1dBridges.svg</normaloff>../icons/ras1dBridges.svg</iconset>
      </property>
      <addaction name="actionRASBRRiverReachNames"/>
      <addaction name="actionRASBRStationing"/>
@@ -206,8 +206,8 @@
       <string>Inline Structures</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/rivergis/icons/ras1dInlineStruct.svg</normaloff>:/rivergis/icons/ras1dInlineStruct.svg</iconset>
+      <iconset>
+       <normaloff>../icons/ras1dInlineStruct.svg</normaloff>../icons/ras1dInlineStruct.svg</iconset>
      </property>
      <addaction name="actionRASInlRiverReachNames"/>
      <addaction name="actionRASInlStationing"/>
@@ -221,8 +221,8 @@
       <string>Lateral Structures</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/rivergis/icons/ras1dLateralStruct.svg</normaloff>:/rivergis/icons/ras1dLateralStruct.svg</iconset>
+      <iconset>
+       <normaloff>../icons/ras1dLateralStruct.svg</normaloff>../icons/ras1dLateralStruct.svg</iconset>
      </property>
      <addaction name="actionRASLatRiverReachNames"/>
      <addaction name="actionRASLatStationing"/>
@@ -236,8 +236,8 @@
       <string>Storage Areas</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/rivergis/icons/ras1dStorageAreas.svg</normaloff>:/rivergis/icons/ras1dStorageAreas.svg</iconset>
+      <iconset>
+       <normaloff>../icons/ras1dStorageAreas.svg</normaloff>../icons/ras1dStorageAreas.svg</iconset>
      </property>
      <addaction name="actionRASSATerrainPointExtraction"/>
      <addaction name="actionRASSAElevationVolumeData"/>
@@ -249,8 +249,8 @@
       <string>Storage Area Connections</string>
      </property>
      <property name="icon">
-      <iconset resource="../resources.qrc">
-       <normaloff>:/rivergis/icons/ras1dSAConnections.svg</normaloff>:/rivergis/icons/ras1dSAConnections.svg</iconset>
+      <iconset>
+       <normaloff>../icons/ras1dSAConnections.svg</normaloff>../icons/ras1dSAConnections.svg</iconset>
      </property>
      <addaction name="actionRASSacAssignNearestSA"/>
      <addaction name="actionRASSacElevations"/>
@@ -259,6 +259,7 @@
     </widget>
     <addaction name="menuStreamCenterlineAttributes"/>
     <addaction name="menuXS_Cut_Line_Attributes"/>
+    <addaction name="actionRASHealLanduseGeometries"/>
     <addaction name="actionRASManningsNValues"/>
     <addaction name="actionRASLevees"/>
     <addaction name="actionRASIneffectiveFlowAreas"/>
@@ -421,8 +422,8 @@
   </widget>
   <action name="actionRASCreate2dAreaPoints">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras2dareaCreate.svg</normaloff>:/rivergis/icons/ras2dareaCreate.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras2dareaCreate.svg</normaloff>../icons/ras2dareaCreate.svg</iconset>
    </property>
    <property name="text">
     <string>Create 2D Computational Points</string>
@@ -430,8 +431,8 @@
   </action>
   <action name="actionHelpContents">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/helpContents.svg</normaloff>:/rivergis/icons/helpContents.svg</iconset>
+    <iconset>
+     <normaloff>../icons/helpContents.svg</normaloff>../icons/helpContents.svg</iconset>
    </property>
    <property name="text">
     <string>Contents</string>
@@ -442,8 +443,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/createWselRaster.svg</normaloff>:/rivergis/icons/createWselRaster.svg</iconset>
+    <iconset>
+     <normaloff>../icons/createWselRaster.svg</normaloff>../icons/createWselRaster.svg</iconset>
    </property>
    <property name="text">
     <string>Water Surface Generation</string>
@@ -451,8 +452,8 @@
   </action>
   <action name="actionRefreshConnections">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/refreshConnections.svg</normaloff>:/rivergis/icons/refreshConnections.svg</iconset>
+    <iconset>
+     <normaloff>../icons/refreshConnections.svg</normaloff>../icons/refreshConnections.svg</iconset>
    </property>
    <property name="text">
     <string>Refresh Connections List</string>
@@ -460,8 +461,8 @@
   </action>
   <action name="actionRASSave2DPointsToHECRASGeometry">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras2dareaSaveToGeo.svg</normaloff>:/rivergis/icons/ras2dareaSaveToGeo.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras2dareaSaveToGeo.svg</normaloff>../icons/ras2dareaSaveToGeo.svg</iconset>
    </property>
    <property name="text">
     <string>Save 2D Points to HEC-RAS Geometry</string>
@@ -472,8 +473,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras2dareaPreview.svg</normaloff>:/rivergis/icons/ras2dareaPreview.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras2dareaPreview.svg</normaloff>../icons/ras2dareaPreview.svg</iconset>
    </property>
    <property name="text">
     <string>Preview 2D Mesh</string>
@@ -481,8 +482,8 @@
   </action>
   <action name="actionRASCreateRdbTables">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/dbCreateRasTables.svg</normaloff>:/rivergis/icons/dbCreateRasTables.svg</iconset>
+    <iconset>
+     <normaloff>../icons/dbCreateRasTables.svg</normaloff>../icons/dbCreateRasTables.svg</iconset>
    </property>
    <property name="text">
     <string>Create River Database Tables</string>
@@ -493,8 +494,8 @@
   </action>
   <action name="actionRASManningsNValues">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsMannings.svg</normaloff>:/rivergis/icons/ras1dXsMannings.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsMannings.svg</normaloff>../icons/ras1dXsMannings.svg</iconset>
    </property>
    <property name="text">
     <string>Extract Manning's n Values</string>
@@ -505,8 +506,8 @@
   </action>
   <action name="actionRASCreateRASGISImport">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dCreateRASImport.svg</normaloff>:/rivergis/icons/ras1dCreateRASImport.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dCreateRASImport.svg</normaloff>../icons/ras1dCreateRASImport.svg</iconset>
    </property>
    <property name="text">
     <string>Create RAS GIS Import File</string>
@@ -514,8 +515,8 @@
   </action>
   <action name="actionRASTopology1D">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dStreamCenterlinesTopology.svg</normaloff>:/rivergis/icons/ras1dStreamCenterlinesTopology.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dStreamCenterlinesTopology.svg</normaloff>../icons/ras1dStreamCenterlinesTopology.svg</iconset>
    </property>
    <property name="text">
     <string>Topology</string>
@@ -526,8 +527,8 @@
   </action>
   <action name="actionRASLengthsStations">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dStreamCenterlinesLengthsStations.svg</normaloff>:/rivergis/icons/ras1dStreamCenterlinesLengthsStations.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dStreamCenterlinesLengthsStations.svg</normaloff>../icons/ras1dStreamCenterlinesLengthsStations.svg</iconset>
    </property>
    <property name="text">
     <string>Lengths/Stations</string>
@@ -538,8 +539,8 @@
   </action>
   <action name="actionRASStreamCenterlineAll">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dStreamCenterlinesAll.svg</normaloff>:/rivergis/icons/ras1dStreamCenterlinesAll.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dStreamCenterlinesAll.svg</normaloff>../icons/ras1dStreamCenterlinesAll.svg</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -550,8 +551,8 @@
   </action>
   <action name="actionRASXSRiverReachNames">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsRiverNames.svg</normaloff>:/rivergis/icons/ras1dXsRiverNames.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsRiverNames.svg</normaloff>../icons/ras1dXsRiverNames.svg</iconset>
    </property>
    <property name="text">
     <string>River/Reach Names</string>
@@ -562,8 +563,8 @@
   </action>
   <action name="actionRASXSStationing">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsStationing.svg</normaloff>:/rivergis/icons/ras1dXsStationing.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsStationing.svg</normaloff>../icons/ras1dXsStationing.svg</iconset>
    </property>
    <property name="text">
     <string>Stationing</string>
@@ -574,8 +575,8 @@
   </action>
   <action name="actionRASXSBankStations">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsBanks.svg</normaloff>:/rivergis/icons/ras1dXsBanks.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsBanks.svg</normaloff>../icons/ras1dXsBanks.svg</iconset>
    </property>
    <property name="text">
     <string>Bank Stations</string>
@@ -586,8 +587,8 @@
   </action>
   <action name="actionRASXSDownstreamReachLengths">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsDSLengths.svg</normaloff>:/rivergis/icons/ras1dXsDSLengths.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsDSLengths.svg</normaloff>../icons/ras1dXsDSLengths.svg</iconset>
    </property>
    <property name="text">
     <string>Downstream Reach Lengths</string>
@@ -598,8 +599,8 @@
   </action>
   <action name="actionRASXSElevations">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsElevations.svg</normaloff>:/rivergis/icons/ras1dXsElevations.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsElevations.svg</normaloff>../icons/ras1dXsElevations.svg</iconset>
    </property>
    <property name="text">
     <string>Elevations</string>
@@ -610,8 +611,8 @@
   </action>
   <action name="actionRASXSAll">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsAll.svg</normaloff>:/rivergis/icons/ras1dXsAll.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsAll.svg</normaloff>../icons/ras1dXsAll.svg</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -622,8 +623,8 @@
   </action>
   <action name="actionRASImportLayersIntoRdbTables">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/importLayersIntoRdb.svg</normaloff>:/rivergis/icons/importLayersIntoRdb.svg</iconset>
+    <iconset>
+     <normaloff>../icons/importLayersIntoRdb.svg</normaloff>../icons/importLayersIntoRdb.svg</iconset>
    </property>
    <property name="text">
     <string>Import Layers Into River Database Tables</string>
@@ -634,8 +635,8 @@
   </action>
   <action name="actionRASLevees">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsLevees.svg</normaloff>:/rivergis/icons/ras1dXsLevees.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsLevees.svg</normaloff>../icons/ras1dXsLevees.svg</iconset>
    </property>
    <property name="text">
     <string>Levees</string>
@@ -646,8 +647,8 @@
   </action>
   <action name="actionRASIneffectiveFlowAreas">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsIneffective.svg</normaloff>:/rivergis/icons/ras1dXsIneffective.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsIneffective.svg</normaloff>../icons/ras1dXsIneffective.svg</iconset>
    </property>
    <property name="text">
     <string>Ineffective Flow Areas</string>
@@ -658,8 +659,8 @@
   </action>
   <action name="actionRASBlockedObstructions">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsBlockedObs.svg</normaloff>:/rivergis/icons/ras1dXsBlockedObs.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsBlockedObs.svg</normaloff>../icons/ras1dXsBlockedObs.svg</iconset>
    </property>
    <property name="text">
     <string>Blocked Obstructions</string>
@@ -670,8 +671,8 @@
   </action>
   <action name="actionRASLoadRdbTablesIntoQGIS">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/loadRdbTablesIntoQgis.svg</normaloff>:/rivergis/icons/loadRdbTablesIntoQgis.svg</iconset>
+    <iconset>
+     <normaloff>../icons/loadRdbTablesIntoQgis.svg</normaloff>../icons/loadRdbTablesIntoQgis.svg</iconset>
    </property>
    <property name="text">
     <string>Load River Database Tables Into QGIS</string>
@@ -682,8 +683,8 @@
   </action>
   <action name="actionOptions">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/options.svg</normaloff>:/rivergis/icons/options.svg</iconset>
+    <iconset>
+     <normaloff>../icons/options.svg</normaloff>../icons/options.svg</iconset>
    </property>
    <property name="text">
     <string>Options</string>
@@ -715,8 +716,8 @@
   </action>
   <action name="actionRASXSUpdateInsertMeasuredPoints">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dXsUpdate.svg</normaloff>:/rivergis/icons/ras1dXsUpdate.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dXsUpdate.svg</normaloff>../icons/ras1dXsUpdate.svg</iconset>
    </property>
    <property name="text">
     <string>Update Elevations</string>
@@ -751,8 +752,8 @@
   </action>
   <action name="actionRASBRAll">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dBridges.svg</normaloff>:/rivergis/icons/ras1dBridges.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dBridges.svg</normaloff>../icons/ras1dBridges.svg</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -790,8 +791,8 @@
   </action>
   <action name="actionRASInlAll">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dInlineStruct.svg</normaloff>:/rivergis/icons/ras1dInlineStruct.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dInlineStruct.svg</normaloff>../icons/ras1dInlineStruct.svg</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -829,8 +830,8 @@
   </action>
   <action name="actionRASLatAll">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dLateralStruct.svg</normaloff>:/rivergis/icons/ras1dLateralStruct.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dLateralStruct.svg</normaloff>../icons/ras1dLateralStruct.svg</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -841,8 +842,8 @@
   </action>
   <action name="actionRASSAElevationVolumeData">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dSAElevVolume.svg</normaloff>:/rivergis/icons/ras1dSAElevVolume.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dSAElevVolume.svg</normaloff>../icons/ras1dSAElevVolume.svg</iconset>
    </property>
    <property name="text">
     <string>Elevation-Volume Data</string>
@@ -856,8 +857,8 @@
   </action>
   <action name="actionRASSATerrainPointExtraction">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dSATerPtExtract.svg</normaloff>:/rivergis/icons/ras1dSATerPtExtract.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dSATerPtExtract.svg</normaloff>../icons/ras1dSATerPtExtract.svg</iconset>
    </property>
    <property name="text">
     <string>Terrain Point Extraction</string>
@@ -871,8 +872,8 @@
   </action>
   <action name="actionRASSAAll">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dStorageAreas.svg</normaloff>:/rivergis/icons/ras1dStorageAreas.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dStorageAreas.svg</normaloff>../icons/ras1dStorageAreas.svg</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -899,8 +900,8 @@
   </action>
   <action name="actionRASSacAll">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/ras1dSAConnections.svg</normaloff>:/rivergis/icons/ras1dSAConnections.svg</iconset>
+    <iconset>
+     <normaloff>../icons/ras1dSAConnections.svg</normaloff>../icons/ras1dSAConnections.svg</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -911,8 +912,8 @@
   </action>
   <action name="actionWebsite">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/webSite.svg</normaloff>:/rivergis/icons/webSite.svg</iconset>
+    <iconset>
+     <normaloff>../icons/webSite.svg</normaloff>../icons/webSite.svg</iconset>
    </property>
    <property name="text">
     <string>Web site</string>
@@ -920,8 +921,8 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/rivergis.svg</normaloff>:/rivergis/icons/rivergis.svg</iconset>
+    <iconset>
+     <normaloff>../icons/rivergis.svg</normaloff>../icons/rivergis.svg</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -934,8 +935,8 @@
   </action>
   <action name="actionCreateNewSchema">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/dbCreateSchema.svg</normaloff>:/rivergis/icons/dbCreateSchema.svg</iconset>
+    <iconset>
+     <normaloff>../icons/dbCreateSchema.svg</normaloff>../icons/dbCreateSchema.svg</iconset>
    </property>
    <property name="text">
     <string>Create New Schema</string>
@@ -943,11 +944,16 @@
   </action>
   <action name="actionDeleteSchema">
    <property name="icon">
-    <iconset resource="../resources.qrc">
-     <normaloff>:/rivergis/icons/dbDeleteSchema.svg</normaloff>:/rivergis/icons/dbDeleteSchema.svg</iconset>
+    <iconset>
+     <normaloff>../icons/dbDeleteSchema.svg</normaloff>../icons/dbDeleteSchema.svg</iconset>
    </property>
    <property name="text">
     <string>Delete Schema</string>
+   </property>
+  </action>
+  <action name="actionRASHealLanduseGeometries">
+   <property name="text">
+    <string>Heal Landuse Areas Geometries</string>
    </property>
   </action>
  </widget>
@@ -955,15 +961,13 @@
   <customwidget>
    <class>QgsProjectionSelectionWidget</class>
    <extends>QWidget</extends>
-   <header>qgsprojectionselectionwidget.h</header>
+   <header>qgis.gui</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>textEdit</tabstop>
  </tabstops>
- <resources>
-  <include location="../resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
