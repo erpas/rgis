@@ -135,6 +135,15 @@ class HeaderBuilder(object):
         qry = 'SELECT ST_Extent(geom) FROM "{0}"."XSCutLines";'
         qry = qry.format(self.schema)
         box = self.rgis.rdb.run_query(qry, fetch=True)[0][0]
+        if not box:
+            qry = 'SELECT ST_Extent(geom) FROM "{0}"."FlowAreas2d";'
+            qry = qry.format(self.schema)
+            box = self.rgis.rdb.run_query(qry, fetch=True)[0][0]
+        if not box:
+            msg = 'No data to find spatial extent of the study!\nThe HEC-RAS geometry '
+            msg += 'file created with an invalid spatial extent.'
+            self.rgis.addInfo(msg)
+            return 'XMIN: 0\n      YMIN: 0\n      XMAX: 1\n      YMAX: 1\n   '
         box_min = box[box.index('(')+1:box.index(',')].split()
         box_max = box[box.index(',')+1:box.index(')')].split()
         ext = 'XMIN: {0}\n      YMIN: {1}\n      XMAX: {2}\n      YMAX: {3}\n   '
