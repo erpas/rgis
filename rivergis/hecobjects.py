@@ -836,7 +836,7 @@ WITH inter_xs_dump AS
         "XsecID",
         "N_Value",
         "LUCode",
-        ST_Line_Interpolate_Point(inter_xs_dump.geom, 0.00005)::geometry(POINT, {1}) AS geom
+        ST_LineInterpolatePoint(inter_xs_dump.geom, 0.00005)::geometry(POINT, {1}) AS geom
     FROM
         inter_xs_dump),
     tmpman AS
